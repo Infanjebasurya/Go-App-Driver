@@ -83,7 +83,7 @@ class DocumentCaptureCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    captured ? 'Captured ?' : 'Tap to Capture',
+                    captured ? 'Captured' : 'Tap to Capture',
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w500,

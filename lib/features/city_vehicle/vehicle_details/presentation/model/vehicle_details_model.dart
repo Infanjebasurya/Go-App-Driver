@@ -48,6 +48,7 @@ class FieldError {
   final String? seatOption;
   final String? fuelType;
   final String? year;
+  final String? photo;
 
   const FieldError({
     this.modelName,
@@ -55,6 +56,7 @@ class FieldError {
     this.seatOption,
     this.fuelType,
     this.year,
+    this.photo,
   });
 
   bool get hasErrors =>
@@ -62,7 +64,8 @@ class FieldError {
       bikeType != null ||
       seatOption != null ||
       fuelType != null ||
-      year != null;
+      year != null ||
+      photo != null;
 
   FieldError copyWith({
     String? modelName,
@@ -70,11 +73,13 @@ class FieldError {
     String? seatOption,
     String? fuelType,
     String? year,
+    String? photo,
     bool clearModel = false,
     bool clearBikeType = false,
     bool clearSeatOption = false,
     bool clearFuelType = false,
     bool clearYear = false,
+    bool clearPhoto = false,
   }) {
     return FieldError(
       modelName: clearModel ? null : (modelName ?? this.modelName),
@@ -82,6 +87,7 @@ class FieldError {
       seatOption: clearSeatOption ? null : (seatOption ?? this.seatOption),
       fuelType: clearFuelType ? null : (fuelType ?? this.fuelType),
       year: clearYear ? null : (year ?? this.year),
+      photo: clearPhoto ? null : (photo ?? this.photo),
     );
   }
 }
@@ -188,6 +194,7 @@ class VehicleDetailsState extends Equatable {
         errors.seatOption,
         errors.fuelType,
         errors.year,
+        errors.photo,
         successMessage,
       ];
 }

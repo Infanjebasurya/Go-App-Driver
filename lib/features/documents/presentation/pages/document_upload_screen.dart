@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/documents/presentation/widgets/doc_number_field.dart';
@@ -226,6 +227,54 @@ class _DocStepContent extends StatelessWidget {
     required this.numberController,
   });
 
+  void _showImageSourceSheet(
+    BuildContext context, {
+    required Future<void> Function(ImageSource source) onPick,
+  }) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Upload Document',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A2236),
+                ),
+              ),
+              const SizedBox(height: 6),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  onPick(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  onPick(ImageSource.gallery);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (numberController.text != stepData.documentNumber) {
@@ -265,7 +314,12 @@ class _DocStepContent extends StatelessWidget {
             key: ValueKey('front_${config.step.name}'),
             label: 'Front Side',
             captured: stepData.frontCaptured,
-            onTap: () => context.read<DocumentUploadCubit>().captureFront(),
+            onTap: () => _showImageSourceSheet(
+              context,
+              onPick: (source) => context
+                  .read<DocumentUploadCubit>()
+                  .captureFront(source: source),
+            ),
             onRemove: () => context.read<DocumentUploadCubit>().removeFront(),
           ),
           const SizedBox(height: 14),
@@ -273,9 +327,24 @@ class _DocStepContent extends StatelessWidget {
             key: ValueKey('back_${config.step.name}'),
             label: 'Back Side',
             captured: stepData.backCaptured,
-            onTap: () => context.read<DocumentUploadCubit>().captureBack(),
+            onTap: () => _showImageSourceSheet(
+              context,
+              onPick: (source) => context
+                  .read<DocumentUploadCubit>()
+                  .captureBack(source: source),
+            ),
             onRemove: () => context.read<DocumentUploadCubit>().removeBack(),
           ),
+          if (stepData.imageError != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              stepData.imageError!,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Color(0xFFE53935),
+              ),
+            ),
+          ],
           const SizedBox(height: 28),
           DocNumberField(
             key: ValueKey('number_${config.step.name}'),

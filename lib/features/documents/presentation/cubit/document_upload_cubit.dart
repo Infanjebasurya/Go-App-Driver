@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -9,6 +13,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       : super(DocumentUploadState.initial().copyWith(
           currentStepIndex: initialStepIndex,
         ));
+
+  final ImagePicker _picker = ImagePicker();
+  final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
+  bool _isPicking = false;
 
   DocumentType _mapStepToDocType(DocumentStep step) {
     switch (step) {
@@ -25,28 +33,126 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     }
   }
 
-  void captureFront() {
+  Future<void> captureFront({required ImageSource source}) async {
     if (state.isCurrentStepBank) return;
-    final updated = state.currentDocStep.copyWith(frontCaptured: true);
-    emit(state.copyWithDocStep(updated));
+    if (_isPicking) return;
+    if (state.currentDocStep.imageError != null) {
+      emit(state.copyWithDocStep(state.currentDocStep.copyWith(clearImageError: true)));
+    }
+    if (_isTest) {
+      final updated = state.currentDocStep.copyWith(frontCaptured: true);
+      emit(state.copyWithDocStep(updated));
+      return;
+    }
+    if (!await _ensurePermission(source)) return;
+
+    _isPicking = true;
+    try {
+      final picked = await _picker.pickImage(source: source);
+      if (picked == null) return;
+
+      final sizeBytes = await picked.length();
+      const maxBytes = 1024 * 1024;
+      if (sizeBytes > maxBytes) {
+        emit(
+          state.copyWithDocStep(
+            state.currentDocStep.copyWith(
+              imageError: 'Image must be less than 1 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setFrontImagePath(
+        _mapStepToDocType(state.currentDocStep.step),
+        picked.path,
+      );
+      final updated = state.currentDocStep.copyWith(frontCaptured: true);
+      emit(state.copyWithDocStep(updated));
+    } finally {
+      _isPicking = false;
+    }
   }
 
-  void captureBack() {
+  Future<void> captureBack({required ImageSource source}) async {
     if (state.isCurrentStepBank) return;
-    final updated = state.currentDocStep.copyWith(backCaptured: true);
-    emit(state.copyWithDocStep(updated));
+    if (_isPicking) return;
+    if (state.currentDocStep.imageError != null) {
+      emit(state.copyWithDocStep(state.currentDocStep.copyWith(clearImageError: true)));
+    }
+    if (_isTest) {
+      final updated = state.currentDocStep.copyWith(backCaptured: true);
+      emit(state.copyWithDocStep(updated));
+      return;
+    }
+    if (!await _ensurePermission(source)) return;
+
+    _isPicking = true;
+    try {
+      final picked = await _picker.pickImage(source: source);
+      if (picked == null) return;
+
+      final sizeBytes = await picked.length();
+      const maxBytes = 1024 * 1024;
+      if (sizeBytes > maxBytes) {
+        emit(
+          state.copyWithDocStep(
+            state.currentDocStep.copyWith(
+              imageError: 'Image must be less than 1 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setBackImagePath(
+        _mapStepToDocType(state.currentDocStep.step),
+        picked.path,
+      );
+      final updated = state.currentDocStep.copyWith(backCaptured: true);
+      emit(state.copyWithDocStep(updated));
+    } finally {
+      _isPicking = false;
+    }
   }
 
   void removeFront() {
     if (state.isCurrentStepBank) return;
-    final updated = state.currentDocStep.copyWith(frontCaptured: false);
+    DocumentProgressStore.setFrontImagePath(
+      _mapStepToDocType(state.currentDocStep.step),
+      null,
+    );
+    final updated =
+        state.currentDocStep.copyWith(frontCaptured: false, clearImageError: true);
     emit(state.copyWithDocStep(updated));
   }
 
   void removeBack() {
     if (state.isCurrentStepBank) return;
-    final updated = state.currentDocStep.copyWith(backCaptured: false);
+    DocumentProgressStore.setBackImagePath(
+      _mapStepToDocType(state.currentDocStep.step),
+      null,
+    );
+    final updated =
+        state.currentDocStep.copyWith(backCaptured: false, clearImageError: true);
     emit(state.copyWithDocStep(updated));
+  }
+
+  Future<bool> _ensurePermission(ImageSource source) async {
+    if (source == ImageSource.gallery && Platform.isAndroid) {
+      return true;
+    }
+
+    final Permission permission = source == ImageSource.camera
+        ? Permission.camera
+        : Permission.photos;
+
+    final status = await permission.status;
+    if (status.isGranted) return true;
+
+    final result = await permission.request();
+    return result.isGranted;
   }
 
   void updateDocumentNumber(String value) {

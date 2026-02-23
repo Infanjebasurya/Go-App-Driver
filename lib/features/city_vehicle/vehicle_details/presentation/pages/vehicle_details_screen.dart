@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/cubit/vehicle_details_cubit.dart';
@@ -110,9 +111,19 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                       VehiclePhotoUpload(
                         hasPhoto: state.hasPhoto,
                         vehicleType: state.vehicleType,
-                        onTap: () => context.read<VehicleDetailsCubit>().pickPhoto(),
+                        onTap: () => _showPhotoSourceSheet(context),
                         onRemove: () => context.read<VehicleDetailsCubit>().removePhoto(),
                       ),
+                      if (state.errors.photo != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          state.errors.photo!,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFFE53935),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 28),
                       if (state.vehicleType != VehicleType.auto) ...[
                         UnderlineInputField(
@@ -206,6 +217,55 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
       selected: state.selectedFuelType,
       labelBuilder: (t) => t.label,
       onSelect: (t) => context.read<VehicleDetailsCubit>().selectFuelType(t),
+    );
+  }
+
+  void _showPhotoSourceSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Upload Photo',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A2236),
+                ),
+              ),
+              const SizedBox(height: 6),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<VehicleDetailsCubit>().pickPhoto(
+                        source: ImageSource.camera,
+                      );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<VehicleDetailsCubit>().pickPhoto(
+                        source: ImageSource.gallery,
+                      );
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 

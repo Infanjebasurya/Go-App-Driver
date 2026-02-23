@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
@@ -138,12 +140,8 @@ class _DocumentCard extends StatelessWidget {
                   color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  _iconData(document.iconAsset),
-                  color: const Color(0xFF444444),
-                  size: 22,
-                ),
-              ),
+            child: _DocumentThumbnail(document: document),
+          ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -189,6 +187,57 @@ class _DocumentCard extends StatelessWidget {
       case DocumentStatus.notUploaded:
         return const Color(0xFFCCCCCC);
     }
+  }
+
+  IconData _iconData(String asset) {
+    switch (asset) {
+      case 'driving_license':
+        return Icons.badge_outlined;
+      case 'vehicle_rc':
+        return Icons.directions_car_outlined;
+      case 'aadhaar_card':
+        return Icons.fingerprint;
+      case 'pan_card':
+        return Icons.account_balance_outlined;
+      case 'bank_account':
+      case 'add bank account':
+        return Icons.account_balance_outlined;
+      default:
+        return Icons.description_outlined;
+    }
+  }
+}
+
+class _DocumentThumbnail extends StatelessWidget {
+  final DocumentModel document;
+
+  const _DocumentThumbnail({required this.document});
+
+  @override
+  Widget build(BuildContext context) {
+    final imagePath = document.frontImagePath ?? document.backImagePath;
+    if (imagePath == null || imagePath.isEmpty) {
+      return Icon(
+        _iconData(document.iconAsset),
+        color: const Color(0xFF444444),
+        size: 22,
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.file(
+        File(imagePath),
+        width: 44,
+        height: 44,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Icon(
+          _iconData(document.iconAsset),
+          color: const Color(0xFF444444),
+          size: 22,
+        ),
+      ),
+    );
   }
 
   IconData _iconData(String asset) {

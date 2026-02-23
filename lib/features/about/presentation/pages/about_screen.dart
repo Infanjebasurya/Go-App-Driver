@@ -21,19 +21,27 @@ class _AboutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.surfaceF5,
-      appBar: const _AppBar(title: 'About'),
-      body: BlocBuilder<AboutCubit, AboutState>(
-        builder: (context, state) {
-          if (state is AboutLoading || state is AboutInitial) {
-            return const _SkeletonList();
-          }
-          if (state is AboutLoaded) {
-            return _AboutMenuList(state: state);
-          }
-          return const SizedBox.shrink();
-        },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Navigator.of(context).pop(true);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.surfaceF5,
+        appBar: const _AppBar(title: 'About', returnToDrawer: true),
+        body: BlocBuilder<AboutCubit, AboutState>(
+          builder: (context, state) {
+            if (state is AboutLoading || state is AboutInitial) {
+              return const _SkeletonList();
+            }
+            if (state is AboutLoaded) {
+              return _AboutMenuList(state: state);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -208,8 +216,9 @@ class _ContentScreen extends StatelessWidget {
 
 class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final bool returnToDrawer;
 
-  const _AppBar({required this.title});
+  const _AppBar({required this.title, this.returnToDrawer = false});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -220,11 +229,13 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      leading: GestureDetector(
-        onTap: () => Navigator.of(context).pop(),
-        child: const Padding(
-          padding: EdgeInsets.all(14),
-          child: Icon(Icons.arrow_back_ios, color: AppColors.headingDark, size: 18),
+      leading: IconButton(
+        onPressed: () =>
+            Navigator.of(context).pop(returnToDrawer ? true : null),
+        icon: const Icon(
+          Icons.arrow_back_ios,
+          color: AppColors.headingDark,
+          size: 18,
         ),
       ),
       title: Text(

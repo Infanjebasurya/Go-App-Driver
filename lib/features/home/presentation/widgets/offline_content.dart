@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
 import 'status_header.dart';
@@ -297,7 +298,11 @@ class _WalletCard extends StatelessWidget {
           ),
           const Spacer(),
           ElevatedButton(
-            onPressed: () => _showAddMoneyDialog(context),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const WalletPage()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
               foregroundColor: Colors.white,

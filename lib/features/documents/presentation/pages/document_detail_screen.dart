@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/documents/presentation/model/document_model.dart';
@@ -61,24 +63,45 @@ class DocumentDetailScreen extends StatelessWidget {
   Widget _buildContent() {
     switch (document.iconAsset) {
       case 'driving_license':
-        return const _DrivingLicenseDetail();
+        return _DrivingLicenseDetail(
+          frontImagePath: document.frontImagePath,
+          backImagePath: document.backImagePath,
+        );
       case 'vehicle_rc':
-        return const _VehicleRCDetail();
+        return _VehicleRCDetail(
+          frontImagePath: document.frontImagePath,
+          backImagePath: document.backImagePath,
+        );
       case 'aadhaar_card':
-        return const _AadhaarCardDetail();
+        return _AadhaarCardDetail(
+          frontImagePath: document.frontImagePath,
+          backImagePath: document.backImagePath,
+        );
       case 'pan_card':
-        return const _PanCardDetail();
+        return _PanCardDetail(
+          frontImagePath: document.frontImagePath,
+          backImagePath: document.backImagePath,
+        );
       case 'bank_account':
       case 'add bank account':
         return const _PanCardDetail();
       default:
-        return const _DrivingLicenseDetail();
+        return _DrivingLicenseDetail(
+          frontImagePath: document.frontImagePath,
+          backImagePath: document.backImagePath,
+        );
     }
   }
 }
 
 class _DrivingLicenseDetail extends StatelessWidget {
-  const _DrivingLicenseDetail();
+  final String? frontImagePath;
+  final String? backImagePath;
+
+  const _DrivingLicenseDetail({
+    this.frontImagePath,
+    this.backImagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +116,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
               child: _CardImageBox(
                 label: 'FRONT VIEW',
                 color: const Color(0xFF8A9BAE),
+                imagePath: frontImagePath,
               ),
             ),
             const SizedBox(width: 12),
@@ -100,6 +124,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
               child: _CardImageBox(
                 label: 'BACK VIEW',
                 color: const Color(0xFF2C3A4A),
+                imagePath: backImagePath,
               ),
             ),
           ],
@@ -151,7 +176,13 @@ class _DrivingLicenseDetail extends StatelessWidget {
 }
 
 class _VehicleRCDetail extends StatelessWidget {
-  const _VehicleRCDetail();
+  final String? frontImagePath;
+  final String? backImagePath;
+
+  const _VehicleRCDetail({
+    this.frontImagePath,
+    this.backImagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +197,7 @@ class _VehicleRCDetail extends StatelessWidget {
               child: _CardImageBox(
                 label: 'FRONT VIEW',
                 color: const Color(0xFF8A9BAE),
+                imagePath: frontImagePath,
               ),
             ),
             const SizedBox(width: 12),
@@ -173,6 +205,7 @@ class _VehicleRCDetail extends StatelessWidget {
               child: _CardImageBox(
                 label: 'BACK VIEW',
                 color: const Color(0xFF2C3A4A),
+                imagePath: backImagePath,
               ),
             ),
           ],
@@ -227,7 +260,13 @@ class _VehicleRCDetail extends StatelessWidget {
 }
 
 class _AadhaarCardDetail extends StatefulWidget {
-  const _AadhaarCardDetail();
+  final String? frontImagePath;
+  final String? backImagePath;
+
+  const _AadhaarCardDetail({
+    this.frontImagePath,
+    this.backImagePath,
+  });
 
   @override
   State<_AadhaarCardDetail> createState() => _AadhaarCardDetailState();
@@ -241,18 +280,20 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _CardImageBox(
+        _CardImageBox(
           label: 'FRONT VIEW',
           color: Color(0xFF9EC8B0),
           showVerified: true,
           fullWidth: true,
+          imagePath: widget.frontImagePath,
         ),
         const SizedBox(height: 14),
-        const _CardImageBox(
+        _CardImageBox(
           label: 'BACK VIEW',
           color: Color(0xFFA8C4B8),
           showVerified: true,
           fullWidth: true,
+          imagePath: widget.backImagePath,
         ),
         const SizedBox(height: 20),
         _VerifiedSection(
@@ -299,7 +340,13 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
 }
 
 class _PanCardDetail extends StatefulWidget {
-  const _PanCardDetail();
+  final String? frontImagePath;
+  final String? backImagePath;
+
+  const _PanCardDetail({
+    this.frontImagePath,
+    this.backImagePath,
+  });
 
   @override
   State<_PanCardDetail> createState() => _PanCardDetailState();
@@ -313,11 +360,12 @@ class _PanCardDetailState extends State<_PanCardDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _CardImageBox(
+        _CardImageBox(
           label: 'FRONT VIEW',
           color: Color(0xFF7FB5C8),
           showVerified: true,
           fullWidth: true,
+          imagePath: widget.frontImagePath,
         ),
         const SizedBox(height: 20),
         _VerifiedSection(
@@ -396,12 +444,14 @@ class _CardImageBox extends StatelessWidget {
   final Color color;
   final bool showVerified;
   final bool fullWidth;
+  final String? imagePath;
 
   const _CardImageBox({
     required this.label,
     required this.color,
     this.showVerified = false,
     this.fullWidth = false,
+    this.imagePath,
   });
 
   @override
@@ -421,20 +471,10 @@ class _CardImageBox extends StatelessWidget {
         const SizedBox(height: 8),
         Stack(
           children: [
-            Container(
-              width: fullWidth ? double.infinity : null,
-              height: fullWidth ? 160 : 90,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.credit_card,
-                  color: Colors.white.withValues(alpha: 0.3),
-                  size: 36,
-                ),
-              ),
+            _ImageBox(
+              imagePath: imagePath,
+              color: color,
+              fullWidth: fullWidth,
             ),
             if (showVerified)
               Positioned(
@@ -481,6 +521,66 @@ class _CardImageBox extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _ImageBox extends StatelessWidget {
+  final String? imagePath;
+  final Color color;
+  final bool fullWidth;
+
+  const _ImageBox({
+    required this.imagePath,
+    required this.color,
+    required this.fullWidth,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final width = fullWidth ? double.infinity : null;
+    final height = fullWidth ? 160.0 : 90.0;
+    if (imagePath == null || imagePath!.isEmpty) {
+      return Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.credit_card,
+            color: Colors.white.withValues(alpha: 0.3),
+            size: 36,
+          ),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.file(
+        File(imagePath!),
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.credit_card,
+              color: Colors.white.withValues(alpha: 0.3),
+              size: 36,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

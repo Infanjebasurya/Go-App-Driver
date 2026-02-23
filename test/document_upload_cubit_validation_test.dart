@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:goapp/features/documents/presentation/cubit/document_upload_cubit.dart';
 
 void main() {
@@ -12,11 +13,11 @@ void main() {
       expect(cubit.state.currentStepIndex, 0);
       expect(cubit.state.currentDocStep.numberError, isNotNull);
 
-      cubit.captureFront();
+      await cubit.captureFront(source: ImageSource.gallery);
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 0);
 
-      cubit.captureBack();
+      await cubit.captureBack(source: ImageSource.gallery);
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 1);
     });
@@ -25,8 +26,8 @@ void main() {
       final cubit = DocumentUploadCubit(initialStepIndex: 0);
       addTearDown(cubit.close);
 
-      cubit.captureFront();
-      cubit.captureBack();
+      await cubit.captureFront(source: ImageSource.gallery);
+      await cubit.captureBack(source: ImageSource.gallery);
       cubit.updateDocumentNumber('abc123');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 0);
@@ -41,8 +42,8 @@ void main() {
       final cubit = DocumentUploadCubit(initialStepIndex: 1);
       addTearDown(cubit.close);
 
-      cubit.captureFront();
-      cubit.captureBack();
+      await cubit.captureFront(source: ImageSource.gallery);
+      await cubit.captureBack(source: ImageSource.gallery);
       cubit.updateDocumentNumber('12345');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 1);
@@ -57,8 +58,8 @@ void main() {
       final cubit = DocumentUploadCubit(initialStepIndex: 2);
       addTearDown(cubit.close);
 
-      cubit.captureFront();
-      cubit.captureBack();
+      await cubit.captureFront(source: ImageSource.gallery);
+      await cubit.captureBack(source: ImageSource.gallery);
       cubit.updateDocumentNumber('1234ABCD5678');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 2);
@@ -73,8 +74,8 @@ void main() {
       final cubit = DocumentUploadCubit(initialStepIndex: 3);
       addTearDown(cubit.close);
 
-      cubit.captureFront();
-      cubit.captureBack();
+      await cubit.captureFront(source: ImageSource.gallery);
+      await cubit.captureBack(source: ImageSource.gallery);
       cubit.updateDocumentNumber('ABCDE12345');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 3);
@@ -90,8 +91,8 @@ void main() {
       final licenseCubit = DocumentUploadCubit(initialStepIndex: 0);
       addTearDown(licenseCubit.close);
 
-      licenseCubit.captureFront();
-      licenseCubit.captureBack();
+      await licenseCubit.captureFront(source: ImageSource.gallery);
+      await licenseCubit.captureBack(source: ImageSource.gallery);
       licenseCubit.updateDocumentNumber('mh 12-2018 0012345');
       await licenseCubit.saveAndNext();
       expect(licenseCubit.state.steps[0].documentNumber, 'MH1220180012345');
@@ -99,8 +100,8 @@ void main() {
       final rcCubit = DocumentUploadCubit(initialStepIndex: 1);
       addTearDown(rcCubit.close);
 
-      rcCubit.captureFront();
-      rcCubit.captureBack();
+      await rcCubit.captureFront(source: ImageSource.gallery);
+      await rcCubit.captureBack(source: ImageSource.gallery);
       rcCubit.updateDocumentNumber('tn 01 ab 1234');
       await rcCubit.saveAndNext();
       expect(rcCubit.state.steps[1].documentNumber, 'TN01AB1234');

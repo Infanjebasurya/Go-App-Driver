@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 
@@ -55,7 +56,10 @@ class _ProfileView extends StatelessWidget {
         listener: (BuildContext context, ProfileEditState state) {
           if (state.status == ProfileEditStatus.loggedOut ||
               state.status == ProfileEditStatus.deleted) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const RLoginPage()),
+              (route) => false,
+            );
           }
         },
         builder: (BuildContext context, ProfileEditState state) {

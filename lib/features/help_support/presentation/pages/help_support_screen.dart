@@ -15,63 +15,74 @@ class HelpSupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => HelpCubit(),
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: AppBar(
-          leading: const Icon(Icons.chevron_left),
-          centerTitle: true,
-          title: const Text('Help & Support', style: TextStyle(fontSize: 18)),
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            Navigator.of(context).pop(true);
+          }
+        },
+        child: Scaffold(
           backgroundColor: AppColors.white,
-          elevation: 0,
-        ),
-        body: BlocBuilder<HelpCubit, HelpState>(
-          builder: (context, state) {
-            return Column(
-              children: [
-                HelpSearchBar(
-                  onChanged: context.read<HelpCubit>().updateSearch,
-                ),
-                const SizedBox(height: 8),
-                _MenuTile(
-                  icon: Icons.report_outlined,
-                  title: 'Make Complaint',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => ComplaintCubit(),
-                        child: const ComplaintScreen(),
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+            centerTitle: true,
+            title: const Text('Help & Support', style: TextStyle(fontSize: 18)),
+            backgroundColor: AppColors.white,
+            elevation: 0,
+          ),
+          body: BlocBuilder<HelpCubit, HelpState>(
+            builder: (context, state) {
+              return Column(
+                children: [
+                  HelpSearchBar(
+                    onChanged: context.read<HelpCubit>().updateSearch,
+                  ),
+                  const SizedBox(height: 8),
+                  _MenuTile(
+                    icon: Icons.report_outlined,
+                    title: 'Make Complaint',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => ComplaintCubit(),
+                          child: const ComplaintScreen(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                _MenuTile(
-                  icon: Icons.help_outline,
-                  title: 'Explore all Issue',
-                  onTap: () {
-                    context.read<HelpCubit>().goToExplore();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: context.read<HelpCubit>(),
-                          child: const ExploreScreen(),
+                  _MenuTile(
+                    icon: Icons.help_outline,
+                    title: 'Explore all Issue',
+                    onTap: () {
+                      context.read<HelpCubit>().goToExplore();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<HelpCubit>(),
+                            child: const ExploreScreen(),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                _MenuTile(
-                  icon: Icons.shield_outlined,
-                  title: 'Safety',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SafetyPage()),
+                      );
+                    },
                   ),
-                ),
-              ],
-            );
-          },
+                  _MenuTile(
+                    icon: Icons.shield_outlined,
+                    title: 'Safety',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SafetyPage()),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

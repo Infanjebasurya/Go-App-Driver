@@ -6,6 +6,8 @@ class DocumentModel {
   final String subtitle;
   final String iconAsset;
   final DocumentStatus status;
+  final String? frontImagePath;
+  final String? backImagePath;
 
   const DocumentModel({
     required this.id,
@@ -13,15 +15,23 @@ class DocumentModel {
     required this.subtitle,
     required this.iconAsset,
     required this.status,
+    this.frontImagePath,
+    this.backImagePath,
   });
 
-  DocumentModel copyWith({DocumentStatus? status}) {
+  DocumentModel copyWith({
+    DocumentStatus? status,
+    String? frontImagePath,
+    String? backImagePath,
+  }) {
     return DocumentModel(
       id: id,
       title: title,
       subtitle: subtitle,
       iconAsset: iconAsset,
       status: status ?? this.status,
+      frontImagePath: frontImagePath ?? this.frontImagePath,
+      backImagePath: backImagePath ?? this.backImagePath,
     );
   }
 }

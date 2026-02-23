@@ -83,6 +83,8 @@ class AppTextField extends StatelessWidget {
                 ),
               ),
         filled: filled,
+        fillColor: Colors.transparent
+
       ),
     );
   }

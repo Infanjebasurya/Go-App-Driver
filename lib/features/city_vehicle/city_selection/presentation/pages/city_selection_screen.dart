@@ -41,7 +41,29 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const AppAppBar(title: 'GoApp'),
+      appBar: const AppAppBar(
+        title: 'GoApp',
+        backEnabled: false,
+      ),
+      bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
+        builder: (context, state) {
+          return _ContinueButton(
+            enabled: state.hasSelection,
+            onTap: () {
+              if (state.hasSelection) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => VehicleSelectionScreen(
+                      selectedCity: state.selectedCity!,
+                    ),
+                  ),
+                );
+              }
+            },
+          );
+        },
+      ),
       body: BlocBuilder<CitySelectionCubit, CitySelectionState>(
         builder: (context, state) {
           return Padding(
@@ -133,21 +155,6 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                             );
                           },
                         ),
-                ),
-                _ContinueButton(
-                  enabled: state.hasSelection,
-                  onTap: () {
-                    if (state.hasSelection) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => VehicleSelectionScreen(
-                            selectedCity: state.selectedCity!,
-                          ),
-                        ),
-                      );
-                    }
-                  },
                 ),
               ],
             ),

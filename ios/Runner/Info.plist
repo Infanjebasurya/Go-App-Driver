@@ -30,6 +30,10 @@
 	<string>We use your location to show your current position on the online map.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We use your location to show your current position on the online map.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to capture your vehicle photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need photo library access to select your vehicle photo.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

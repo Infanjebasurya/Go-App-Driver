@@ -428,8 +428,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             backgroundColor: Colors.white,
             appBar: AppAppBar(
               title: 'GoApp',
-              backEnabled: widget.allowBack,
-              onBack: widget.allowBack ? () => Navigator.of(context).pop() : null,
+              backEnabled: false,
+              onBack: null,
             ),
             body: MultiBlocListener(
               listeners: [

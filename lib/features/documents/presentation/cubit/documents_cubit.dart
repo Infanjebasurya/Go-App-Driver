@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../document_verify/presentation/model/document_progress_store.dart';
+import '../../../document_verify/presentation/model/document_model.dart' show DocumentType;
 import '../model/document_model.dart';
 import 'documents_state.dart';
 
@@ -51,7 +53,7 @@ class DocumentsCubit extends Cubit<DocumentsState> {
   Future<void> loadDocuments() async {
     emit(const DocumentsLoading());
     await Future.delayed(const Duration(milliseconds: 800));
-    final docs = List<DocumentModel>.from(_defaultDocuments);
+    final docs = _defaultDocuments.map(_applyProgress).toList();
     final allVerified = docs.every((d) => d.status == DocumentStatus.verified);
     emit(DocumentsLoaded(documents: docs, allVerified: allVerified));
   }
@@ -70,4 +72,57 @@ class DocumentsCubit extends Cubit<DocumentsState> {
   }
 
   void refresh() => loadDocuments();
+
+  DocumentModel _applyProgress(DocumentModel doc) {
+    switch (doc.id) {
+      case 'driving_license':
+        return _withProgress(
+          doc,
+          DocumentProgressStore.frontImagePath(DocumentType.drivingLicense),
+          DocumentProgressStore.backImagePath(DocumentType.drivingLicense),
+        );
+      case 'vehicle_rc':
+        return _withProgress(
+          doc,
+          DocumentProgressStore.frontImagePath(DocumentType.vehicleRC),
+          DocumentProgressStore.backImagePath(DocumentType.vehicleRC),
+        );
+      case 'aadhaar_card':
+        return _withProgress(
+          doc,
+          DocumentProgressStore.frontImagePath(DocumentType.aadhaarCard),
+          DocumentProgressStore.backImagePath(DocumentType.aadhaarCard),
+        );
+      case 'pan_card':
+        return _withProgress(
+          doc,
+          DocumentProgressStore.frontImagePath(DocumentType.panCard),
+          DocumentProgressStore.backImagePath(DocumentType.panCard),
+        );
+      case _bankAccountId:
+        final completed =
+            DocumentProgressStore.isCompleted(DocumentType.bankDetails);
+        final status =
+            completed ? DocumentStatus.verified : DocumentStatus.notUploaded;
+        return doc.copyWith(status: status);
+      default:
+        return doc;
+    }
+  }
+
+  DocumentModel _withProgress(
+    DocumentModel doc,
+    String? frontPath,
+    String? backPath,
+  ) {
+    final hasImages = (frontPath?.isNotEmpty ?? false) &&
+        (backPath?.isNotEmpty ?? false);
+    final status =
+        hasImages ? DocumentStatus.verified : DocumentStatus.notUploaded;
+    return doc.copyWith(
+      status: status,
+      frontImagePath: frontPath,
+      backImagePath: backPath,
+    );
+  }
 }

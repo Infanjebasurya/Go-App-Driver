@@ -155,6 +155,7 @@ class StepData extends Equatable {
   final bool backCaptured;
   final String documentNumber;
   final String? numberError;
+  final String? imageError;
 
   const StepData({
     required this.step,
@@ -162,6 +163,7 @@ class StepData extends Equatable {
     this.backCaptured = false,
     this.documentNumber = '',
     this.numberError,
+    this.imageError,
   });
 
   bool get isNumberValid => documentNumber.trim().isNotEmpty;
@@ -173,6 +175,8 @@ class StepData extends Equatable {
     String? documentNumber,
     String? numberError,
     bool clearError = false,
+    String? imageError,
+    bool clearImageError = false,
   }) {
     return StepData(
       step: step,
@@ -180,11 +184,19 @@ class StepData extends Equatable {
       backCaptured: backCaptured ?? this.backCaptured,
       documentNumber: documentNumber ?? this.documentNumber,
       numberError: clearError ? null : (numberError ?? this.numberError),
+      imageError: clearImageError ? null : (imageError ?? this.imageError),
     );
   }
 
   @override
-  List<Object?> get props => [step, frontCaptured, backCaptured, documentNumber, numberError];
+  List<Object?> get props => [
+        step,
+        frontCaptured,
+        backCaptured,
+        documentNumber,
+        numberError,
+        imageError,
+      ];
 }
 
 class DocumentUploadState extends Equatable {

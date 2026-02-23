@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/model/vehicle_details_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 
 class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   VehicleDetailsCubit({required VehicleType vehicleType})
       : super(VehicleDetailsState.initial(vehicleType: vehicleType));
+
+  final ImagePicker _picker = ImagePicker();
 
   void updateModelName(String value) {
     final err = state.errors.copyWith(
@@ -33,12 +39,74 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     emit(state.copyWith(year: value, errors: err));
   }
 
-  void pickPhoto() {
-    emit(state.copyWith(hasPhoto: true));
+  Future<void> pickPhoto({required ImageSource source}) async {
+    if (state.errors.photo != null) {
+      emit(state.copyWith(errors: state.errors.copyWith(clearPhoto: true)));
+    }
+
+    final granted = await _ensurePermission(source);
+    if (!granted) {
+      emit(
+        state.copyWith(
+          errors: state.errors.copyWith(
+            photo: source == ImageSource.camera
+                ? 'Camera permission is required'
+                : 'Photo library permission is required',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final picked = await _picker.pickImage(source: source);
+    if (picked == null) return;
+
+    final sizeBytes = await picked.length();
+    const maxBytes = 1024 * 1024;
+    if (sizeBytes > maxBytes) {
+      emit(
+        state.copyWith(
+          hasPhoto: false,
+          errors: state.errors.copyWith(
+            photo: 'Image must be less than 1 MB',
+          ),
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        hasPhoto: true,
+        errors: state.errors.copyWith(clearPhoto: true),
+      ),
+    );
   }
 
   void removePhoto() {
-    emit(state.copyWith(hasPhoto: false));
+    emit(
+      state.copyWith(
+        hasPhoto: false,
+        errors: state.errors.copyWith(clearPhoto: true),
+      ),
+    );
+  }
+
+  Future<bool> _ensurePermission(ImageSource source) async {
+    if (source == ImageSource.gallery && Platform.isAndroid) {
+      // Android system picker doesn't require explicit storage permission.
+      return true;
+    }
+
+    final Permission permission = source == ImageSource.camera
+        ? Permission.camera
+        : Permission.photos;
+
+    final status = await permission.status;
+    if (status.isGranted) return true;
+
+    final result = await permission.request();
+    return result.isGranted;
   }
 
   bool _validate() {
@@ -94,6 +162,11 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   }
 
   void clearSuccess() {
-    emit(state.copyWith(clearSuccess: true));
+    emit(
+      state.copyWith(
+        isSubmitted: false,
+        clearSuccess: true,
+      ),
+    );
   }
 }

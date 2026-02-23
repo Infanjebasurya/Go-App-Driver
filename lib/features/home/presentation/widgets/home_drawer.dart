@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/about/presentation/pages/about_screen.dart';
-import 'package:goapp/features/demand_planner/presentation/pages/demand_planner_screen.dart';
-import 'package:goapp/features/documents/presentation/pages/documents_screen.dart';
-import 'package:goapp/features/earnings/presentation/pages/earnings_screen.dart';
-import 'package:goapp/features/incentives/presentation/pages/incentives_page.dart';
-import 'package:goapp/features/help_support/presentation/pages/help_support_screen.dart';
-import 'package:goapp/features/profile/presentation/pages/profile_screen.dart';
-import 'package:goapp/features/refer_earn/presentation/pages/refer_earn_screen.dart';
-import 'package:goapp/features/rate_app/presentation/pages/rate_app_screen.dart';
+
+import '../../../about/presentation/pages/about_screen.dart';
+import '../../../auth/presentation/theme/auth_ui_tokens.dart';
+import '../../../demand_planner/presentation/pages/demand_planner_screen.dart';
+import '../../../documents/presentation/pages/documents_screen.dart';
+import '../../../help_support/presentation/pages/help_support_screen.dart';
+import '../../../profile/presentation/pages/profile_screen.dart';
+import '../../../rate_app/presentation/pages/rate_app_screen.dart';
+import '../../../refer_earn/presentation/pages/refer_earn_screen.dart';
+
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -17,232 +17,382 @@ class HomeDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: Colors.white,
-      child: SingleChildScrollView(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+      ),
+      child: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 50),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: const DecorationImage(
-                      image: NetworkImage('https://i.pravatar.cc/300'),
-                      fit: BoxFit.cover,
-                    ),
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: AppColors.verifiedMint,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            InkWell(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(24),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Sam Yogi',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(Icons.chevron_right, color: Colors.grey[600]),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.earningsAccentSoft,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.earningsAccentLine),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.shield_outlined,
-                    size: 16,
-                    color: AppColors.greenStrong,
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    'PLATINUM MEMBER',
-                    style: TextStyle(
-                      color: AppColors.greenStrong,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            _buildMenuItem(
+
+            _ProfileHeader(context: context),
+
+            const SizedBox(height: 16),
+
+
+            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+            const SizedBox(height: 16),
+
+
+            _DrawerItem(
               icon: Icons.account_balance_wallet_outlined,
-              title: 'Earning & Wallet',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const EarningsScreen(),
-                  ),
-                );
-              },
+              label: 'Earning & Wallet',
+              onTap: () => _navigate(context, 'Earning & Wallet'),
             ),
-            _buildMenuItem(
-              icon: Icons.monetization_on_outlined,
-              title: 'Incentives',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const IncentivesPage(),
-                  ),
-                );
-              },
+            _DrawerItem(
+              icon: Icons.card_giftcard_outlined,
+              label: 'Incentives',
+              onTap: () => _navigate(context, 'Incentives'),
             ),
-            _buildMenuItem(
+            _DrawerItem(
               icon: Icons.description_outlined,
-              title: 'Documents',
+              label: 'Documents',
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const DocumentsScreen(),
+                    builder: (_) => const DocumentsScreen(),
                   ),
                 );
               },
             ),
-            _buildMenuItem(
-              icon: Icons.trending_up,
-              title: 'Demand Planner',
+            _DrawerItem(
+              icon: Icons.insights_outlined,
+              label: 'Demand Planner',
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const DemandPlannerScreen(),
+                    builder: (_) => const DemandPlannerScreen(),
                   ),
                 );
               },
             ),
-            _buildMenuItem(
-              icon: Icons.person_add_alt_1_outlined,
-              title: 'Refer & Earn',
+            _DrawerItem(
+              icon: Icons.share_outlined,
+              label: 'Refer & Earn',
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ReferEarnScreen(),
+                    builder: (_) => const ReferEarnScreen(),
                   ),
                 );
               },
             ),
-            const Divider(height: 32, thickness: 1, indent: 16, endIndent: 16),
-            _buildMenuItem(
+
+            const SizedBox(height: 8),
+            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+            const SizedBox(height: 8),
+
+
+            _DrawerItem(
               icon: Icons.info_outline,
-              title: 'About',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AboutScreen()),
-                );
-              },
-            ),
-            _buildMenuItem(
-              icon: Icons.star_border,
-              title: 'Rate App',
+              label: 'About',
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const RateAppScreen(),
+                    builder: (_) => const AboutScreen(),
                   ),
                 );
               },
             ),
-            _buildMenuItem(
+            _DrawerItem(
+              icon: Icons.star_outline,
+              label: 'Rate App',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const RateAppScreen(),
+                  ),
+                );
+              },
+            ),
+            _DrawerItem(
               icon: Icons.help_outline,
-              title: 'Help & Support',
+              label: 'Help & Support',
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const HelpSupportScreen(),
+                    builder: (_) => const HelpSupportScreen(),
                   ),
                 );
               },
             ),
-            const SizedBox(height: 20),
+
+            const Spacer(),
+
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.black87),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
+  void _navigate(BuildContext context, String page) {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _PlaceholderPage(title: page),
+      ),
+    );
+  }
+}
+
+
+class _ProfileHeader extends StatelessWidget {
+  final BuildContext context;
+  const _ProfileHeader({required this.context});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const ProfileScreen(),
+            ),
+          );
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AuthUiColors.brandGreen,
+                          width: 2,
+                        ),
+                      ),
+                      child: ClipOval(
+                        child: Container(
+                          color: const Color(0xFF3A3A3A),
+                          child: const Icon(
+                            Icons.person,
+                            size: 44,
+                            color: Colors.white54,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: const BoxDecoration(
+                          color: AuthUiColors.brandGreen,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Sam Yogi',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AuthUiColors.brandGreen.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AuthUiColors.brandGreen.withOpacity(0.4),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.verified,
+                        color: AuthUiColors.brandGreen,
+                        size: 13,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'PLATINUM MEMBER',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color:AuthUiColors.brandGreen,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: const Icon(
+                Icons.chevron_right,
+                color: Colors.grey,
+                size: 22,
+              ),
+            ),
+          ],
         ),
       ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+    );
+  }
+}
+
+
+class _DrawerItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _DrawerItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      splashColor: AuthUiColors.brandGreen.withOpacity(0.08),
+      highlightColor: AuthUiColors.brandGreen.withOpacity(0.04),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: const Color(0xFF444444),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class _PlaceholderPage extends StatelessWidget {
+  final String title;
+  const _PlaceholderPage({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1A1A1A),
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AuthUiColors.brandGreen.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.construction_outlined,
+                color: AuthUiColors.brandGreen,
+                size: 36,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Coming soon...',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF999999),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
