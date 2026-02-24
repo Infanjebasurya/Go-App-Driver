@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
+import 'package:goapp/features/home/presentation/pages/home_page.dart';
 
 import '../cubit/verification_cubit.dart';
 import '../model/document_model.dart';
@@ -21,8 +27,21 @@ class VerificationScreen extends StatelessWidget {
   }
 }
 
-class _VerificationView extends StatelessWidget {
+class _VerificationView extends StatefulWidget {
   const _VerificationView();
+
+  @override
+  State<_VerificationView> createState() => _VerificationViewState();
+}
+
+class _VerificationViewState extends State<_VerificationView> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      RegistrationProgressStore.setStep(RegistrationStep.verification),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +134,12 @@ class _VerificationView extends StatelessWidget {
   ) {
     final stepIndex = _stepIndexForDoc(doc.type);
     if (stepIndex != null) {
+      unawaited(
+        RegistrationProgressStore.setStep(
+          RegistrationStep.documentUpload,
+          documentStepIndex: stepIndex,
+        ),
+      );
       Navigator.of(context)
           .push(
         MaterialPageRoute(
@@ -204,6 +229,16 @@ class _VerificationView extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(ctx);
                   context.read<VerificationCubit>().reset();
+                  RegistrationProgressStore.clear();
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider<DriverCubit>(
+                        create: (_) => DriverCubit(),
+                        child: const HomeScreen(),
+                      ),
+                    ),
+                    (route) => false,
+                  );
                 },
                 child: const Text(
                   'Done',
@@ -245,7 +280,11 @@ class _SubmitSection extends StatelessWidget {
         16,
         12,
         16,
-        MediaQuery.of(context).padding.bottom + 16,
+        math.max(
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
+            16,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,

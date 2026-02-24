@@ -80,11 +80,11 @@ Widget _lightSlide({
 }
 
 Route<void> loginFormRoute() {
-  return MaterialPageRoute(builder: (_) => const _LoginFormPage());
+  return MaterialPageRoute(builder: (_) => const LoginFormPage());
 }
 
-class _LoginFormPage extends StatelessWidget {
-  const _LoginFormPage();
+class LoginFormPage extends StatelessWidget {
+  const LoginFormPage({super.key});
 
   @override
   Widget build(BuildContext context) {

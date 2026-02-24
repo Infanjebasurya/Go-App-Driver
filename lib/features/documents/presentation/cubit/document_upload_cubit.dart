@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -10,13 +12,59 @@ import '../../../document_verify/presentation/model/document_progress_store.dart
 
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   DocumentUploadCubit({int initialStepIndex = 0})
-      : super(DocumentUploadState.initial().copyWith(
-          currentStepIndex: initialStepIndex,
-        ));
+      : super(_buildInitialState(initialStepIndex)) {
+    unawaited(
+      RegistrationProgressStore.setStep(
+        RegistrationStep.documentUpload,
+        documentStepIndex: initialStepIndex,
+      ),
+    );
+  }
 
   final ImagePicker _picker = ImagePicker();
   final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
   bool _isPicking = false;
+
+  static DocumentUploadState _buildInitialState(int initialStepIndex) {
+    final steps = [
+      DocumentStep.drivingLicense,
+      DocumentStep.vehicleRC,
+      DocumentStep.identityAadhaar,
+      DocumentStep.identityPan,
+    ].map((step) {
+      final type = _mapStepToDocTypeStatic(step);
+      final front = DocumentProgressStore.frontImagePath(type) != null;
+      final back = DocumentProgressStore.backImagePath(type) != null;
+      final number = DocumentProgressStore.documentNumber(type) ?? '';
+      return StepData(
+        step: step,
+        frontCaptured: front,
+        backCaptured: back,
+        documentNumber: number,
+      );
+    }).toList();
+
+    return DocumentUploadState(
+      currentStepIndex: initialStepIndex,
+      steps: steps,
+      bankData: const BankAccountData(),
+    );
+  }
+
+  static DocumentType _mapStepToDocTypeStatic(DocumentStep step) {
+    switch (step) {
+      case DocumentStep.drivingLicense:
+        return DocumentType.drivingLicense;
+      case DocumentStep.vehicleRC:
+        return DocumentType.vehicleRC;
+      case DocumentStep.identityAadhaar:
+        return DocumentType.aadhaarCard;
+      case DocumentStep.identityPan:
+        return DocumentType.panCard;
+      case DocumentStep.bankAccount:
+        return DocumentType.bankDetails;
+    }
+  }
 
   DocumentType _mapStepToDocType(DocumentStep step) {
     switch (step) {
@@ -48,16 +96,20 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
     _isPicking = true;
     try {
-      final picked = await _picker.pickImage(source: source);
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
       if (picked == null) return;
 
-      final sizeBytes = await picked.length();
-      const maxBytes = 1024 * 1024;
-      if (sizeBytes > maxBytes) {
+      final sizeBytes = await _readFileSize(picked);
+      const maxBytes = 5 * 1024 * 1024;
+      if (sizeBytes <= 0 || sizeBytes > maxBytes) {
         emit(
           state.copyWithDocStep(
             state.currentDocStep.copyWith(
-              imageError: 'Image must be less than 1 MB',
+              imageError:
+                  'Image size should not exceed 5MB. Please select an image under 5MB.',
             ),
           ),
         );
@@ -90,16 +142,20 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
     _isPicking = true;
     try {
-      final picked = await _picker.pickImage(source: source);
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
       if (picked == null) return;
 
-      final sizeBytes = await picked.length();
-      const maxBytes = 1024 * 1024;
-      if (sizeBytes > maxBytes) {
+      final sizeBytes = await _readFileSize(picked);
+      const maxBytes = 5 * 1024 * 1024;
+      if (sizeBytes <= 0 || sizeBytes > maxBytes) {
         emit(
           state.copyWithDocStep(
             state.currentDocStep.copyWith(
-              imageError: 'Image must be less than 1 MB',
+              imageError:
+                  'Image size should not exceed 5MB. Please select an image under 5MB.',
             ),
           ),
         );
@@ -155,11 +211,28 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     return result.isGranted;
   }
 
+  Future<int> _readFileSize(XFile file) async {
+    try {
+      final len = await file.length();
+      if (len > 0) return len;
+    } catch (_) {}
+    try {
+      final stat = await File(file.path).stat();
+      return stat.size;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   void updateDocumentNumber(String value) {
     if (state.isCurrentStepBank) return;
     final updated = state.currentDocStep.copyWith(
       documentNumber: value,
       clearError: value.trim().isNotEmpty,
+    );
+    DocumentProgressStore.setDocumentNumber(
+      _mapStepToDocType(updated.step),
+      value,
     );
     DocumentProgressStore.setCompleted(
       _mapStepToDocType(updated.step),
@@ -175,7 +248,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
-      updated.isComplete,
+      updated.isComplete && !updated.hasErrors,
     );
     emit(state.copyWith(bankData: updated));
   }
@@ -187,7 +260,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
-      updated.isComplete,
+      updated.isComplete && !updated.hasErrors,
     );
     emit(state.copyWith(bankData: updated));
   }
@@ -199,7 +272,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
-      updated.isComplete,
+      updated.isComplete && !updated.hasErrors,
     );
     emit(state.copyWith(bankData: updated));
   }
@@ -211,10 +284,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
-      updated.isComplete,
+      updated.isComplete && !updated.hasErrors,
     );
     emit(state.copyWith(bankData: updated));
   }
+
 
   bool _validateDocStep() {
     final step = state.currentDocStep;
@@ -256,13 +330,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     switch (step) {
       case DocumentStep.drivingLicense:
       case DocumentStep.vehicleRC:
-        return value
-            .toUpperCase()
-            .replaceAll(RegExp(r'[^A-Z0-9]'), '');
+        return value.toUpperCase().trim();
       case DocumentStep.identityAadhaar:
-        return value.replaceAll(RegExp(r'[^0-9]'), '');
+        return value.trim();
       case DocumentStep.identityPan:
-        return value.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+        return value.toUpperCase().trim();
       case DocumentStep.bankAccount:
         return value.trim();
     }
@@ -271,22 +343,28 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   String? _validateDocumentNumber(DocumentStep step, String value) {
     switch (step) {
       case DocumentStep.drivingLicense:
-        if (!RegExp(r'^[A-Z]{2}\d{2}\d{4}\d{7}$').hasMatch(value)) {
+        if (value.length != 15 ||
+            !RegExp(r'^[A-Z]{2}\d{2}\d{4}\d{7}$').hasMatch(value)) {
           return 'Enter valid license number (e.g. MH1220180012345)';
         }
         return null;
       case DocumentStep.vehicleRC:
-        if (!RegExp(r'^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{4}$').hasMatch(value)) {
+        if (value.length < 6 ||
+            value.length > 13 ||
+            !RegExp(r'^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{4}$').hasMatch(
+              value.replaceAll(' ', ''),
+            )) {
           return 'Enter valid vehicle number (e.g. TN01AB1234)';
         }
         return null;
       case DocumentStep.identityAadhaar:
         if (!RegExp(r'^\d{12}$').hasMatch(value)) {
-          return 'Aadhaar number must be 12 digits';
+          return 'Aadhaar Number must be 12 digits.';
         }
         return null;
       case DocumentStep.identityPan:
-        if (!RegExp(r'^[A-Z]{5}\d{4}[A-Z]$').hasMatch(value)) {
+        if (value.length != 10 ||
+            !RegExp(r'^[A-Z]{5}\d{4}[A-Z]$').hasMatch(value)) {
           return 'Enter valid PAN (e.g. ABCDE1234F)';
         }
         return null;
@@ -330,6 +408,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   Future<void> saveAndNext() async {
+    if (state.isSubmitting) return;
     if (state.isCurrentStepBank) {
       if (!_validateBankStep()) return;
       DocumentProgressStore.setCompleted(
@@ -339,25 +418,51 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       emit(state.copyWith(isSubmitting: true));
       await Future.delayed(const Duration(seconds: 2));
       emit(state.copyWith(isSubmitting: false, isAllDone: true));
+      unawaited(
+        RegistrationProgressStore.setStep(
+          RegistrationStep.verificationSubmitted,
+          clearDocumentStep: true,
+        ),
+      );
     } else {
       if (!_validateDocStep()) return;
       DocumentProgressStore.setCompleted(
         _mapStepToDocType(state.currentDocStep.step),
         state.currentDocStep.isNumberValid,
       );
-      emit(state.copyWith(currentStepIndex: state.currentStepIndex + 1));
+      final nextIndex = state.currentStepIndex + 1;
+      emit(state.copyWith(currentStepIndex: nextIndex));
+      unawaited(
+        RegistrationProgressStore.setStep(
+          RegistrationStep.documentUpload,
+          documentStepIndex: nextIndex,
+        ),
+      );
     }
   }
 
   void goBack() {
     if (state.canGoBack) {
-      emit(state.copyWith(currentStepIndex: state.currentStepIndex - 1));
+      final nextIndex = state.currentStepIndex - 1;
+      emit(state.copyWith(currentStepIndex: nextIndex));
+      unawaited(
+        RegistrationProgressStore.setStep(
+          RegistrationStep.documentUpload,
+          documentStepIndex: nextIndex,
+        ),
+      );
     }
   }
 
   void jumpToStep(int index) {
     if (index >= 0 && index < state.totalSteps) {
       emit(state.copyWith(currentStepIndex: index));
+      unawaited(
+        RegistrationProgressStore.setStep(
+          RegistrationStep.documentUpload,
+          documentStepIndex: index,
+        ),
+      );
     }
   }
 

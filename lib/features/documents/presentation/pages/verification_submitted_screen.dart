@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 
 class VerificationSubmittedScreen extends StatefulWidget {
   final VoidCallback? onGoHome;
@@ -28,6 +32,9 @@ class _VerificationSubmittedScreenState extends State<VerificationSubmittedScree
   @override
   void initState() {
     super.initState();
+    unawaited(
+      RegistrationProgressStore.setStep(RegistrationStep.verificationSubmitted),
+    );
 
     _fadeCtrl = AnimationController(
       vsync: this,
@@ -87,6 +94,7 @@ class _VerificationSubmittedScreenState extends State<VerificationSubmittedScree
       if (widget.onGoHome != null) {
         widget.onGoHome!();
       }
+      unawaited(RegistrationProgressStore.clear());
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => BlocProvider<DriverCubit>(
@@ -193,7 +201,11 @@ class _GoHomeButton extends StatelessWidget {
         24,
         12,
         24,
-        MediaQuery.of(context).padding.bottom + 20,
+        math.max(
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
+            20,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,

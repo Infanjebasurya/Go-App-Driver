@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/error/failures.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
@@ -32,6 +34,7 @@ class ProfileSetupPage extends StatefulWidget {
 
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _referController = TextEditingController();
   final _emergencyController = TextEditingController();
 
@@ -44,6 +47,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   @override
   void initState() {
     super.initState();
+    unawaited(
+      RegistrationProgressStore.setStep(
+        RegistrationStep.profileSetup,
+        clearCity: true,
+        clearVehicle: true,
+        clearDocumentStep: true,
+      ),
+    );
     _cubit = ProfileSetupCubit(
       validationService: ProfileValidationService(),
     );
@@ -84,6 +95,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       _profileBloc.close();
     }
     _nameController.dispose();
+    _emailController.dispose();
     _referController.dispose();
     _emergencyController.dispose();
     super.dispose();
@@ -92,11 +104,11 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   void _prefillFromProfile(Profile profile) {
     if (_prefilled) return;
     _prefilled = true;
-    _nameController.text = profile.name;
     _referController.text = profile.refer;
     _emergencyController.text = profile.emergencyContact;
     _cubit.setInitial(
-      name: profile.name,
+      name: '',
+      email: '',
       gender: profile.gender,
       refer: profile.refer,
       emergencyContact: profile.emergencyContact,
@@ -517,6 +529,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                 : null,
                             child: AppTextField(
                               controller: _nameController,
+                              textCapitalization: TextCapitalization.words,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                   RegExp(r'[A-Za-z ]'),
@@ -540,6 +553,35 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                               onChanged: context
                                   .read<ProfileSetupCubit>()
                                   .updateName,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          _lineField(
+                            label: 'Email Address',
+                            errorText: formState.showValidation
+                                ? formState.emailError
+                                : null,
+                            child: AppTextField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              label: '',
+                              hint: 'e.g., yogeshs00@gmail.com',
+                              borderless: true,
+                              isCollapsed: true,
+                              contentPadding: EdgeInsets.zero,
+                              hintStyle: const TextStyle(
+                                color: AppColors.inputHint,
+                                fontSize: 30 / 2,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textStyle: const TextStyle(
+                                color: AppColors.black,
+                                fontSize: 30 / 2,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              onChanged: context
+                                  .read<ProfileSetupCubit>()
+                                  .updateEmail,
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -646,7 +688,16 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             bottomNavigationBar: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 14),
+                padding: EdgeInsets.fromLTRB(
+                  18,
+                  0,
+                  18,
+                  14 +
+                      math.max(
+                        MediaQuery.viewInsetsOf(context).bottom,
+                        MediaQuery.of(context).padding.bottom,
+                      ),
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
