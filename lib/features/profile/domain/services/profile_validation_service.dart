@@ -1,8 +1,9 @@
 class ProfileValidationService {
-  static final RegExp _namePattern = RegExp(r"^[A-Za-z]+(?:[ '\-][A-Za-z]+)*$");
   static final RegExp _dobPattern = RegExp(
     r'^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$',
   );
+  static final RegExp _emailPattern =
+      RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
   static final RegExp _allSameDigitPattern = RegExp(r'^(\d)\1{9}$');
 
   static const Set<String> _allowedGenders = {
@@ -28,11 +29,14 @@ class ProfileValidationService {
   };
 
   String? validateName(String name) {
-    final value = name.trim();
-    if (value.isEmpty) return 'Please enter your full name';
-    if (value.length < 2) return 'Name must be at least 2 characters';
-    if (value.length > 60) return 'Name must be 60 characters or fewer';
-    if (!_namePattern.hasMatch(value)) return 'Enter a valid full name';
+    if (name.isEmpty) return 'Please enter your full name';
+    if (name.trim().isEmpty) return 'Please enter your full name';
+    if (!RegExp(r'^[A-Za-z ]+$').hasMatch(name)) {
+      return 'Full Name should contain only alphabets and spaces.';
+    }
+    final trimmed = name.trim();
+    if (trimmed.length < 2) return 'Full Name must be at least 2 characters.';
+    if (trimmed.length > 50) return 'Full Name must be 50 characters or fewer.';
     return null;
   }
 
@@ -89,6 +93,15 @@ class ProfileValidationService {
     }
     if (!digits.startsWith(RegExp(r'[6-9]'))) {
       return 'Enter a valid emergency contact number';
+    }
+    return null;
+  }
+
+  String? validateEmail(String email) {
+    final value = email.trim();
+    if (value.isEmpty) return 'Please enter your email address';
+    if (!_emailPattern.hasMatch(value)) {
+      return 'Please enter a valid email address';
     }
     return null;
   }

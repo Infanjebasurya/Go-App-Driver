@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -76,6 +78,13 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
   Future<void> _handleSuccess({required bool syncSession, User? user}) async {
     if (_successHandled) return;
     _successHandled = true;
+    await RegistrationProgressStore.markOtpVerified();
+    await RegistrationProgressStore.setStep(
+      RegistrationStep.profileSetup,
+      clearCity: true,
+      clearVehicle: true,
+      clearDocumentStep: true,
+    );
     final navigator = Navigator.of(context, rootNavigator: true);
     if (!mounted) return;
     navigator.pushReplacement(
@@ -93,6 +102,9 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
         : received;
     _otpCubit.updateCode(trimmed);
     _syncBoxesFromCode(trimmed);
+    if (trimmed.length == _maxOtpLength) {
+      FocusScope.of(context).unfocus();
+    }
   }
 
   void _syncBoxesFromCode(String otp) {
@@ -118,6 +130,9 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
       _focusNodes[index - 1].requestFocus();
     }
     _otpCubit.updateCode(_controllers.map((c) => c.text).join());
+    if (_otpCubit.state.code.length == _maxOtpLength) {
+      FocusScope.of(context).unfocus();
+    }
   }
 
   @override
@@ -331,10 +346,13 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
         ),
         bottomNavigationBar: BlocBuilder<OtpCubit, OtpState>(
           builder: (context, otpState) {
+            final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+            final safeBottom = MediaQuery.of(context).padding.bottom;
+            final bottomInset = math.max(keyboardInset, safeBottom);
             return SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
+                padding: EdgeInsets.fromLTRB(20, 12, 20, 18 + bottomInset),
                 child: SizedBox(
                   width: double.infinity,
                   height: 46,

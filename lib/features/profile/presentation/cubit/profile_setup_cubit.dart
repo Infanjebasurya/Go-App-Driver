@@ -11,6 +11,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
   void setInitial({
     required String name,
+    String email = '',
     required String gender,
     required String refer,
     required String emergencyContact,
@@ -18,6 +19,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
     emit(
       state.copyWith(
         name: name,
+        email: email,
         gender: gender,
         refer: refer,
         emergencyContact: emergencyContact,
@@ -29,10 +31,24 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateName(String value) {
+    final nameError = _validationService.validateName(value);
     emit(
       state.copyWith(
         name: value,
-        showValidation: false,
+        nameError: nameError,
+        showValidation: state.showValidation || nameError != null,
+        submitRequested: false,
+      ),
+    );
+  }
+
+  void updateEmail(String value) {
+    final emailError = _validationService.validateEmail(value);
+    emit(
+      state.copyWith(
+        email: value,
+        emailError: emailError,
+        showValidation: state.showValidation || emailError != null,
         submitRequested: false,
       ),
     );
@@ -76,6 +92,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
   void submit() {
     final nameError = _validationService.validateName(state.name);
+    final emailError = _validationService.validateEmail(state.email);
     final genderError = _validationService.validateGender(state.gender);
     final dobError = _validationService.validateDob(state.dob);
     final emergencyError = _validationService.validateEmergencyContact(
@@ -84,6 +101,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
     final hasError =
         nameError != null ||
+        emailError != null ||
         genderError != null ||
         dobError != null ||
         emergencyError != null;
@@ -92,6 +110,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
       emit(
         state.copyWith(
           nameError: nameError,
+          emailError: emailError,
           genderError: genderError,
           dobError: dobError,
           emergencyContactError: emergencyError,
@@ -106,6 +125,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
     emit(
       state.copyWith(
         nameError: null,
+        emailError: null,
         genderError: null,
         dobError: null,
         emergencyContactError: null,
@@ -113,6 +133,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
         submitRequested: true,
         submission: ProfileSubmission(
           name: state.name.trim(),
+          email: state.email.trim(),
           gender: state.gender.trim(),
           refer: state.refer.trim(),
           emergencyContact: state.emergencyContact.trim(),

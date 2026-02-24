@@ -11,10 +11,14 @@ class LoginFormCubit extends Cubit<LoginFormState> {
 
   void onInputChanged(String input) {
     final digits = _phoneNumberService.normalizeDigits(input);
-    final error = _phoneNumberService.validateIndiaMobile(digits);
+    final error = _phoneNumberService.validateIndiaMobile(
+      rawInput: input,
+      digits: digits,
+    );
     emit(
       state.copyWith(
         digits: digits,
+        rawInput: input,
         phoneE164: _phoneNumberService.toE164India(digits),
         error: error,
         submitRequested: false,
@@ -24,7 +28,10 @@ class LoginFormCubit extends Cubit<LoginFormState> {
   }
 
   void submit() {
-    final error = _phoneNumberService.validateIndiaMobile(state.digits);
+    final error = _phoneNumberService.validateIndiaMobile(
+      rawInput: state.rawInput,
+      digits: state.digits,
+    );
     if (error != null) {
       emit(state.copyWith(submitError: error, submitRequested: false));
       return;

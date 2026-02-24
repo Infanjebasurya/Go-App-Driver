@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/earnings/presentation/pages/earnings_screen.dart';
+import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
+import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/features/ride_complete/data/repositories/ride_complete_repository_impl.dart';
 import 'package:goapp/features/ride_complete/domain/usecases/get_feedback_tags.dart';
 import 'package:goapp/features/ride_complete/domain/usecases/submit_ride_feedback.dart';
@@ -30,7 +31,7 @@ class _RateExperienceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: BlocBuilder<RateExperienceCubit, RateExperienceState>(
           builder: (BuildContext context, RateExperienceState state) {
@@ -253,11 +254,14 @@ class _RateExperienceView extends StatelessWidget {
                             .read<RateExperienceCubit>()
                             .submitFeedback();
                         if (!context.mounted) return;
-                        Navigator.push(
-                          context,
+                        Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                            builder: (_) => const EarningsScreen(),
+                            builder: (_) => BlocProvider<DriverCubit>(
+                              create: (_) => DriverCubit(),
+                              child: const HomeScreen(),
+                            ),
                           ),
+                          (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(

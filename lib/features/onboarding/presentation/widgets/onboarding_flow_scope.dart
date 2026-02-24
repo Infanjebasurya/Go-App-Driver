@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/cubit/auth_onboarding_cubit.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 import '../navigation/onboarding_route_transitions.dart';
 
 class OnboardingFlowScope extends StatelessWidget {
@@ -29,6 +30,7 @@ class OnboardingFlowScope extends StatelessWidget {
     try {
       await context.read<AuthOnboardingCubit>().markSeen();
     } catch (_) {}
+    await RegistrationProgressStore.markOnboardingSeen();
     navigator.pushAndRemoveUntil(loginFormRoute(), (_) => false);
   }
 

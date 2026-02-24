@@ -27,6 +27,14 @@ class DocumentProgressStore {
     DocumentType.bankDetails: null,
   };
 
+  static final Map<DocumentType, String?> _documentNumber = {
+    DocumentType.drivingLicense: null,
+    DocumentType.vehicleRC: null,
+    DocumentType.aadhaarCard: null,
+    DocumentType.panCard: null,
+    DocumentType.bankDetails: null,
+  };
+
   static bool isCompleted(DocumentType type) => _completed[type] ?? false;
 
   static void setCompleted(DocumentType type, bool completed) {
@@ -45,9 +53,16 @@ class DocumentProgressStore {
     _backImagePath[type] = path;
   }
 
+  static String? documentNumber(DocumentType type) => _documentNumber[type];
+
+  static void setDocumentNumber(DocumentType type, String? number) {
+    _documentNumber[type] = number;
+  }
+
   static void reset() {
     _completed.updateAll((_, _) => false);
     _frontImagePath.updateAll((_, _) => null);
     _backImagePath.updateAll((_, _) => null);
+    _documentNumber.updateAll((_, _) => null);
   }
 }

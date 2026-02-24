@@ -15,6 +15,8 @@ class StepConfig {
   final String numberLabel;
   final String numberHint;
   final String numberExample;
+  final String allowedPattern;
+  final bool forceUppercase;
   final bool isBankStep;
   final String frontLabel;
   final String backLabel;
@@ -25,6 +27,8 @@ class StepConfig {
     required this.subtitle,
     required this.numberLabel,
     required this.numberHint,
+    required this.allowedPattern,
+    this.forceUppercase = false,
     this.numberExample = '',
     this.isBankStep = false,
     this.frontLabel = 'Front Side',
@@ -40,6 +44,8 @@ const List<StepConfig> kStepConfigs = [
     numberLabel: 'Driving License Number',
     numberHint: 'Tn02 2354851253',
     numberExample: 'Example: MH12 20180012345',
+    allowedPattern: r'[A-Za-z0-9]',
+    forceUppercase: true,
   ),
   StepConfig(
     step: DocumentStep.vehicleRC,
@@ -47,6 +53,8 @@ const List<StepConfig> kStepConfigs = [
     subtitle: 'Registration Certificate',
     numberLabel: 'Vehicle Number',
     numberHint: 'Tn02 2354851253',
+    allowedPattern: r'[A-Za-z0-9 ]',
+    forceUppercase: true,
   ),
   StepConfig(
     step: DocumentStep.identityAadhaar,
@@ -54,6 +62,7 @@ const List<StepConfig> kStepConfigs = [
     subtitle: 'Upload your Aadhaar for quick approval',
     numberLabel: 'Document Number',
     numberHint: 'EG : 1234562378945',
+    allowedPattern: r'[0-9]',
   ),
   StepConfig(
     step: DocumentStep.identityPan,
@@ -61,6 +70,8 @@ const List<StepConfig> kStepConfigs = [
     subtitle: 'Upload your Pan for quick approval',
     numberLabel: 'Document Number',
     numberHint: 'EG : ABCDE1231',
+    allowedPattern: r'[A-Za-z0-9]',
+    forceUppercase: true,
   ),
   StepConfig(
     step: DocumentStep.bankAccount,
@@ -68,6 +79,7 @@ const List<StepConfig> kStepConfigs = [
     subtitle: 'Securely link your account for direct payouts',
     numberLabel: '',
     numberHint: '',
+    allowedPattern: r'[A-Za-z0-9]',
     isBankStep: true,
   ),
 ];

@@ -9,6 +9,7 @@ class AppTextField extends StatelessWidget {
     this.focusNode,
     this.autofocus = false,
     this.keyboardType,
+    this.textCapitalization = TextCapitalization.none,
     this.textAlign = TextAlign.start,
     this.maxLength,
     this.textStyle,
@@ -30,6 +31,7 @@ class AppTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final bool autofocus;
   final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
   final TextAlign textAlign;
   final int? maxLength;
   final TextStyle? textStyle;
@@ -57,6 +59,7 @@ class AppTextField extends StatelessWidget {
       focusNode: focusNode,
       autofocus: autofocus,
       keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
       textAlign: textAlign,
       maxLength: maxLength,
       style: textStyle,
