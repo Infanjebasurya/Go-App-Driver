@@ -252,13 +252,13 @@ class _WeekView extends StatelessWidget {
           ),
           _SummaryItem(
             title: 'Friday, 12 Feb',
-            subtitle: '4 Rides â€¢ Premium Class',
-            amount: 'â‚¹2,450',
+            subtitle: '4 Rides • Premium Class',
+            amount: '₹2,450',
           ),
           _SummaryItem(
             title: 'Thursday, 11 Feb',
-            subtitle: '4 Rides â€¢ Premium Class',
-            amount: 'â‚¹2,450',
+            subtitle: '4 Rides • Premium Class',
+            amount: '₹2,450',
           ),
           const SizedBox(height: 16),
         ],
@@ -296,7 +296,7 @@ class _MonthView extends StatelessWidget {
           _SummaryItem(
             title: 'Week 2',
             subtitle: '28 Completed Rides',
-            amount: 'â‚¹5,450',
+            amount: '₹5,450',
             onTap: () {
               Navigator.push(
                 context,
@@ -304,7 +304,7 @@ class _MonthView extends StatelessWidget {
                   builder: (_) => const SummaryDetailsPage(
                     title: 'Month',
                     dateTitle: 'Week 2',
-                    summaryPillText: 'â‚¹5,450 â€¢ 28 Rides',
+                    summaryPillText: '₹5,450 • 28 Rides',
                   ),
                 ),
               );
@@ -313,7 +313,7 @@ class _MonthView extends StatelessWidget {
           _SummaryItem(
             title: 'Week 1',
             subtitle: '28 Completed Rides',
-            amount: 'â‚¹4,450',
+            amount: '₹4,450',
           ),
           const SizedBox(height: 16),
         ],
@@ -358,7 +358,7 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'â‚¹${state.snapshot.totalEarned.toStringAsFixed(0)}',
+                  '₹${state.snapshot.totalEarned.toStringAsFixed(0)}',
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -439,7 +439,7 @@ class _CompletedList extends StatelessWidget {
         TripCard(
           date: 'Today',
           timeRange: '05:30pm to 06:10pm',
-          price: 'â‚¹850',
+          price: '₹850',
           pickupLocation: 'Arumbakkam',
           pickupAddress: '42 i-block, arumbakkam',
           dropLocation: 'VR Mall',
@@ -449,7 +449,7 @@ class _CompletedList extends StatelessWidget {
         TripCard(
           date: 'Today',
           timeRange: '06:30pm to 07:00pm',
-          price: 'â‚¹780',
+          price: '₹780',
           pickupLocation: 'Anna Nagar',
           pickupAddress: '12th Main Road',
           dropLocation: 'Express Avenue',
@@ -469,7 +469,7 @@ class _CancelledList extends StatelessWidget {
         TripCard(
           date: 'Today',
           timeRange: '06:30pm',
-          price: 'â‚¹0',
+          price: '₹0',
           pickupLocation: 'Anna Nagar',
           pickupAddress: '12th Main Road, Anna Nagar',
           dropLocation: 'VR Mall',

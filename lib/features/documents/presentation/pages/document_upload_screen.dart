@@ -501,7 +501,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
           const SizedBox(height: 24),
           _BankField(
             label: 'Account Number',
-            hint: 'â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢',
+            hint: '•••• •••• •••• ••••',
             controller: _accCtrl,
             errorText: data.accountNumberError,
             onChanged: cubit.updateAccountNumber,

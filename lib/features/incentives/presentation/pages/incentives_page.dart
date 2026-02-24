@@ -82,7 +82,7 @@ class _IncentivesView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'MORNING SESSION â€¢ 08:00 AM - 12:00 PM',
+                        'MORNING SESSION • 08:00 AM - 12:00 PM',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events_outlined,
                         title: 'Silver Milestone',
                         subtitle: 'Complete 3 rides today',
-                        reward: '?50',
+                        reward: '₹50',
                         isActive: true,
                       ),
                       _buildMilestoneItem(
@@ -108,7 +108,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events,
                         title: 'Gold Milestone',
                         subtitle: 'Complete 5 rides today',
-                        reward: '?100',
+                        reward: '₹100',
                         isActive: false,
                       ),
                       _buildMilestoneItem(
@@ -117,12 +117,12 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.diamond_outlined,
                         title: 'Platinum Milestone',
                         subtitle: 'Complete 7 rides today',
-                        reward: '?150',
+                        reward: '₹150',
                         isActive: false,
                       ),
                       const SizedBox(height: 30),
                       const Text(
-                        'MORNING SESSION â€¢ 12:00 PM - 4:00 PM',
+                        'MORNING SESSION • 12:00 PM - 4:00 PM',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -137,7 +137,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events_outlined,
                         title: 'Silver Milestone',
                         subtitle: 'Complete 3 rides today',
-                        reward: '?50',
+                        reward: '₹50',
                         isActive: false,
                       ),
                       _buildMilestoneItem(
@@ -146,7 +146,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events,
                         title: 'Gold Milestone',
                         subtitle: 'Complete 5 rides today',
-                        reward: '?100',
+                        reward: '₹100',
                         isActive: false,
                       ),
                       _buildMilestoneItem(
@@ -155,7 +155,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.diamond_outlined,
                         title: 'Platinum Milestone',
                         subtitle: 'Complete 7 rides today',
-                        reward: '?150',
+                        reward: '₹150',
                         isActive: false,
                       ),
                       const SizedBox(height: 40),
@@ -255,7 +255,7 @@ class _IncentivesView extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
-                '?150',
+                '₹150',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
