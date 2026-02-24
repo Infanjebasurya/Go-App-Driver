@@ -231,7 +231,7 @@ class _DocumentThumbnail extends StatelessWidget {
         width: 44,
         height: 44,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Icon(
+        errorBuilder: (_, _, _) => Icon(
           _iconData(document.iconAsset),
           color: const Color(0xFF444444),
           size: 22,

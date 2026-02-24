@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
@@ -10,6 +11,7 @@ import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/app_assets.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/pages/enter_ride_code_page.dart';
 
 class RideArrivedPage extends StatefulWidget {
@@ -26,12 +28,15 @@ class RideArrivedPage extends StatefulWidget {
   State<RideArrivedPage> createState() => _RideArrivedPageState();
 }
 
-class _RideArrivedPageState extends State<RideArrivedPage> {
+class _RideArrivedPageState extends State<RideArrivedPage>
+    with WidgetsBindingObserver {
   static const LatLng _fallbackDriverPoint = LatLng(13.0624, 80.2098);
   static const Duration _routeTravelDuration = Duration(seconds: 10);
   static const Duration _movementTick = Duration(milliseconds: 100);
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
+  final LocationPermissionGuard _locationGuard =
+      const LocationPermissionGuard();
   final DirectionsRouteService _directionsRouteService =
       DirectionsRouteService();
 
@@ -47,13 +52,31 @@ class _RideArrivedPageState extends State<RideArrivedPage> {
   int _movementTickCount = 0;
   int _totalMovementTicks = 1;
   Timer? _movementTimer;
+  LocationIssue? _locationIssue;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
     _loadDriverMarkerIcon();
+    unawaited(_refreshLocationState(requestPermission: true));
     _initializeTracking();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshLocationState());
+    }
+  }
+
+  Future<void> _refreshLocationState({bool requestPermission = false}) async {
+    final result = await _locationGuard.ensureReady(
+      requestPermission: requestPermission,
+    );
+    if (!mounted) return;
+    setState(() => _locationIssue = result.issue);
   }
 
   Future<void> _loadMapStyle() async {
@@ -104,15 +127,10 @@ class _RideArrivedPageState extends State<RideArrivedPage> {
 
   Future<LatLng> _loadCurrentDriverLocation() async {
     try {
-      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return _fallbackDriverPoint;
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+      final result = await _locationGuard.ensureReady(requestPermission: true);
+      if (!mounted) return _fallbackDriverPoint;
+      setState(() => _locationIssue = result.issue);
+      if (!result.isReady) {
         return _fallbackDriverPoint;
       }
 
@@ -387,9 +405,22 @@ class _RideArrivedPageState extends State<RideArrivedPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _movementTimer?.cancel();
     _mapFrameTick.dispose();
     super.dispose();
+  }
+
+  Future<void> _onLocationBannerActionTap() async {
+    final issue = _locationIssue;
+    if (issue == null) return;
+    if (issue == LocationIssue.serviceDisabled) {
+      await _locationGuard.openLocationSettings();
+    } else {
+      await _locationGuard.openAppSettings();
+    }
+    if (!mounted) return;
+    unawaited(_refreshLocationState());
   }
 
   Future<void> _showCancellationReasonSheet() {
@@ -465,6 +496,16 @@ class _RideArrivedPageState extends State<RideArrivedPage> {
               ),
             ),
           ),
+          if (_locationIssue != null)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 12,
+              left: 0,
+              right: 0,
+              child: LocationDisabledBanner(
+                issue: _locationIssue!,
+                onActionTap: _onLocationBannerActionTap,
+              ),
+            ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

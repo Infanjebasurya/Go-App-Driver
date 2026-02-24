@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/features/notifications/presentation/pages/notifications_screen.dart';
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
-
 
 class DriverAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DriverAppBar({super.key});
@@ -31,8 +31,17 @@ class DriverAppBar extends StatelessWidget implements PreferredSizeWidget {
           centerTitle: true,
           actions: [
             IconButton(
-              icon: const Icon(Icons.notifications_outlined, color: Colors.black54),
-              onPressed: () {},
+              icon: const Icon(
+                Icons.notifications_outlined,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const NotificationsScreen(),
+                  ),
+                );
+              },
             ),
           ],
         );

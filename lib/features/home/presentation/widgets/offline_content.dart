@@ -23,22 +23,23 @@ class OfflineContent extends StatelessWidget {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    16 + MediaQuery.of(context).padding.bottom,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       _OfflineStatusBanner(),
                       const SizedBox(height: 16),
-
 
                       _EarningsCard(state: state),
                       const SizedBox(height: 16),
 
-
                       _WalletCard(state: state),
                       const SizedBox(height: 16),
-
 
                       _RewardCard(state: state),
                     ],
@@ -78,7 +79,11 @@ class _OfflineStatusBanner extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(Icons.cloud_off, color: AuthUiColors.brandGreen, size: 20),
+            child: const Icon(
+              Icons.cloud_off,
+              color: AuthUiColors.brandGreen,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Column(
@@ -95,9 +100,11 @@ class _OfflineStatusBanner extends StatelessWidget {
               SizedBox(height: 2),
               Text(
                 'Tap the slider to start receiving rides.',
-                style: TextStyle(fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black54),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black54,
+                ),
               ),
             ],
           ),
@@ -143,7 +150,11 @@ class _EarningsCard extends StatelessWidget {
                   letterSpacing: 0.5,
                 ),
               ),
-              const Icon(Icons.calendar_today_outlined, size: 18, color: Colors.black45),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 18,
+                color: Colors.black45,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -160,13 +171,15 @@ class _EarningsCard extends StatelessWidget {
           Center(
             child: const Text(
               'Total Earnings',
-              style: TextStyle(fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black54),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
             ),
           ),
           const SizedBox(height: 24),
-          const Divider(height: 1,color: AppColors.warmGray,),
+          const Divider(height: 1, color: AppColors.warmGray),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -194,7 +207,20 @@ class _EarningsCard extends StatelessWidget {
 
   String _todayDate() {
     final now = DateTime.now();
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const months = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
     return '${now.day} ${months[now.month - 1]}';
   }
 }
@@ -233,12 +259,14 @@ class _StatItem extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 14,
-              fontWeight: FontWeight.w500, color: Colors.black45),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black45,
+          ),
         ),
       ],
     );
-
   }
 }
 
@@ -271,9 +299,11 @@ class _WalletCard extends StatelessWidget {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.account_balance_wallet_outlined,
-                size: 20,
-                color: Colors.black87),
+            child: const Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 20,
+              color: Colors.black87,
+            ),
           ),
           const SizedBox(width: 12),
           Column(
@@ -282,9 +312,10 @@ class _WalletCard extends StatelessWidget {
               const Text(
                 'Wallet Balance',
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black45),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black45,
+                ),
               ),
               Text(
                 '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
@@ -299,18 +330,23 @@ class _WalletCard extends StatelessWidget {
           const Spacer(),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const WalletPage()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const WalletPage()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
-            child: const Text('Add Money', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+            child: const Text(
+              'Add Money',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
           ),
         ],
       ),
@@ -346,7 +382,9 @@ class _WalletCard extends StatelessWidget {
               context.read<DriverCubit>().addMoneyFromInput(controller.text);
               Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AuthUiColors.brandGreen,),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AuthUiColors.brandGreen,
+            ),
             child: const Text('Add', style: TextStyle(color: Colors.white)),
           ),
         ],
@@ -382,12 +420,17 @@ class _RewardCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0FDF4),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.emoji_events_outlined, color: AuthUiColors.brandGreen, size: 20)),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.emoji_events_outlined,
+                  color: AuthUiColors.brandGreen,
+                  size: 20,
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -404,9 +447,11 @@ class _RewardCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Current: ${state.completedRides} of ${state.targetRides} completed',
-                      style: const TextStyle(fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black45),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black45,
+                      ),
                     ),
                   ],
                 ),
@@ -419,7 +464,9 @@ class _RewardCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: state.progressPercentage,
               backgroundColor: Colors.grey.shade200,
-              valueColor: const AlwaysStoppedAnimation<Color>(AuthUiColors.brandGreen,),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                AuthUiColors.brandGreen,
+              ),
               minHeight: 6,
             ),
           ),

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/pages/trip_navigation_page.dart';
 
 class PassengerOnboardPage extends StatefulWidget {
@@ -16,22 +18,43 @@ class PassengerOnboardPage extends StatefulWidget {
   State<PassengerOnboardPage> createState() => _PassengerOnboardPageState();
 }
 
-class _PassengerOnboardPageState extends State<PassengerOnboardPage> {
+class _PassengerOnboardPageState extends State<PassengerOnboardPage>
+    with WidgetsBindingObserver {
   static const LatLng _centerPoint = LatLng(13.0696, 80.2154);
   static const LatLng _pickupPoint = LatLng(13.0696, 80.2154);
   static const LatLng _dropPoint = LatLng(13.0744, 80.2241);
   final MapStyleLoader _styleLoader = const MapStyleLoader();
+  final LocationPermissionGuard _locationGuard =
+      const LocationPermissionGuard();
   final DirectionsRouteService _directionsRouteService =
       DirectionsRouteService();
   String? _mapStyle;
   List<LatLng> _routePoints = const <LatLng>[];
   AppMapController? _mapController;
+  LocationIssue? _locationIssue;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
     _loadRoute();
+    unawaited(_refreshLocationState(requestPermission: true));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshLocationState());
+    }
+  }
+
+  Future<void> _refreshLocationState({bool requestPermission = false}) async {
+    final result = await _locationGuard.ensureReady(
+      requestPermission: requestPermission,
+    );
+    if (!mounted) return;
+    setState(() => _locationIssue = result.issue);
   }
 
   Future<void> _loadMapStyle() async {
@@ -81,6 +104,24 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage> {
       ),
       padding: 64,
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _onLocationBannerActionTap() async {
+    final issue = _locationIssue;
+    if (issue == null) return;
+    if (issue == LocationIssue.serviceDisabled) {
+      await _locationGuard.openLocationSettings();
+    } else {
+      await _locationGuard.openAppSettings();
+    }
+    if (!mounted) return;
+    unawaited(_refreshLocationState());
   }
 
   @override
@@ -158,6 +199,16 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage> {
               child: const Icon(Icons.my_location, color: AppColors.neutral666),
             ),
           ),
+          if (_locationIssue != null)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 12,
+              left: 0,
+              right: 0,
+              child: LocationDisabledBanner(
+                issue: _locationIssue!,
+                onActionTap: _onLocationBannerActionTap,
+              ),
+            ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
