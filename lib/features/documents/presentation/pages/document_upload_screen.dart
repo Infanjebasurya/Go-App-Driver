@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/documents/presentation/widgets/doc_number_field.dart';
 import 'package:goapp/features/documents/presentation/widgets/document_capture_card.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
+import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
 
 import '../cubit/document_upload_cubit.dart';
 import '../model/document_upload_model.dart';
@@ -91,17 +94,25 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppAppBar(
-            title: 'GoApp',
-            onBack: () {
-              if (state.canGoBack) {
-                _animateTransition(forward: false);
-                context.read<DocumentUploadCubit>().goBack();
-              } else {
-                Navigator.of(context).pop();
-              }
-            },
-          ),
+            appBar: AppAppBar(
+              title: 'GoApp',
+              onBack: () {
+                if (state.canGoBack) {
+                  _animateTransition(forward: false);
+                  context.read<DocumentUploadCubit>().goBack();
+                } else {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => const VerificationScreen(),
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
           body: SafeArea(
             child: Column(
               children: [
@@ -133,6 +144,8 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
                             config: state.currentConfig,
                             stepData: state.currentDocStep,
                             numberController: _docControllers[state.currentStepIndex],
+                            allowedPattern: state.currentConfig.allowedPattern,
+                            forceUppercase: state.currentConfig.forceUppercase,
                           ),
                   ),
                 ),
@@ -141,7 +154,10 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
                   isCurrentStepBank: state.isCurrentStepBank,
                   isSubmitting: state.isSubmitting,
                   onTap: () {
-                    _animateTransition(forward: true);
+                    FocusScope.of(context).unfocus();
+                    if (!state.isCurrentStepBank) {
+                      _animateTransition(forward: true);
+                    }
                     context.read<DocumentUploadCubit>().saveAndNext();
                   },
                 ),
@@ -219,12 +235,16 @@ class _DocStepContent extends StatelessWidget {
   final StepConfig config;
   final StepData stepData;
   final TextEditingController numberController;
+  final String? allowedPattern;
+  final bool forceUppercase;
 
   const _DocStepContent({
     super.key,
     required this.config,
     required this.stepData,
     required this.numberController,
+    this.allowedPattern,
+    this.forceUppercase = false,
   });
 
   void _showImageSourceSheet(
@@ -354,6 +374,8 @@ class _DocStepContent extends StatelessWidget {
             controller: numberController,
             errorText: stepData.numberError,
             onChanged: (v) => context.read<DocumentUploadCubit>().updateDocumentNumber(v),
+            allowedPattern: allowedPattern,
+            forceUppercase: forceUppercase,
           ),
           const SizedBox(height: 30),
         ],
@@ -388,7 +410,11 @@ class _ActionButton extends StatelessWidget {
         22,
         12,
         22,
-        MediaQuery.of(context).padding.bottom + 20,
+        math.max(
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
+            20,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -504,6 +530,9 @@ class _BankAccountFormState extends State<BankAccountForm> {
             onChanged: cubit.updateAccountHolderName,
             keyboardType: TextInputType.name,
             textCapitalization: TextCapitalization.words,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+            ],
           ),
           const SizedBox(height: 24),
           _BankField(
@@ -514,7 +543,9 @@ class _BankAccountFormState extends State<BankAccountForm> {
             onChanged: cubit.updateAccountNumber,
             keyboardType: TextInputType.number,
             obscureText: _obscureAccount,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             suffixIcon: GestureDetector(
               onTap: () => setState(() => _obscureAccount = !_obscureAccount),
               child: Icon(
@@ -532,7 +563,9 @@ class _BankAccountFormState extends State<BankAccountForm> {
             errorText: data.confirmAccountNumberError,
             onChanged: cubit.updateConfirmAccountNumber,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
           ),
           const SizedBox(height: 24),
           _BankField(

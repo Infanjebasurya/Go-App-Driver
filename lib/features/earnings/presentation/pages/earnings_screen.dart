@@ -115,7 +115,7 @@ class _EarningsScreenState extends State<EarningsScreen>
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    '?1,450.50',
+                    '₹1,450.50',
                     style: TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.w500,
@@ -215,7 +215,7 @@ class _EarningsScreenState extends State<EarningsScreen>
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    '?1,450.50',
+                    '₹1,450.50',
                     style: TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.w500,

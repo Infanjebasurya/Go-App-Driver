@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 
 class DocNumberField extends StatelessWidget {
@@ -8,6 +9,8 @@ class DocNumberField extends StatelessWidget {
   final String? errorText;
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
+  final String? allowedPattern;
+  final bool forceUppercase;
 
   const DocNumberField({
     super.key,
@@ -15,6 +18,8 @@ class DocNumberField extends StatelessWidget {
     required this.hint,
     required this.controller,
     required this.onChanged,
+    this.allowedPattern,
+    this.forceUppercase = false,
     this.example,
     this.errorText,
   });
@@ -39,6 +44,15 @@ class DocNumberField extends StatelessWidget {
         TextField(
           controller: controller,
           onChanged: onChanged,
+          textCapitalization:
+              forceUppercase ? TextCapitalization.characters : TextCapitalization.none,
+          inputFormatters: [
+            if (allowedPattern != null)
+              FilteringTextInputFormatter.allow(
+                RegExp(allowedPattern!),
+              ),
+            if (forceUppercase) _UpperCaseTextFormatter(),
+          ],
           style: const TextStyle(
             fontSize: 18,
             color: Color(0xFF1A2236),
@@ -94,5 +108,15 @@ class DocNumberField extends StatelessWidget {
         ],
       ],
     );
+  }
+}
+
+class _UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }

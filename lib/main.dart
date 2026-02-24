@@ -9,9 +9,7 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/request_otp_usecase.dart';
 import 'features/auth/presentation/theme/app_theme.dart';
-import 'features/onboarding/presentation/navigation/onboarding_route_transitions.dart';
-import 'features/onboarding/presentation/pages/get_started_page.dart';
-import 'features/onboarding/presentation/pages/register_start_onboarding_page.dart';
+import 'app_entry_gate.dart';
 
 void main() {
   runApp(
@@ -40,20 +38,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
-        home: Builder(
-          builder: (context) {
-            return GetStartedPage(
-              onGetStarted: () {
-                Navigator.of(
-                  context,
-                ).push(onboardingSlideRoute(const BikeTaxiOnboardingPage()));
-              },
-              onSignIn: () {
-                Navigator.of(context).push(loginFormRoute());
-              },
-            );
-          },
-        ),
+        home: const AppEntryGate(),
       ),
     );
   }

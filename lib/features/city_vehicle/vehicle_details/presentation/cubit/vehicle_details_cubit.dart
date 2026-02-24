@@ -58,17 +58,21 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       return;
     }
 
-    final picked = await _picker.pickImage(source: source);
+    final picked = await _picker.pickImage(
+      source: source,
+      imageQuality: 100,
+    );
     if (picked == null) return;
 
-    final sizeBytes = await picked.length();
-    const maxBytes = 1024 * 1024;
-    if (sizeBytes > maxBytes) {
+    final sizeBytes = await _readFileSize(picked);
+    const maxBytes = 5 * 1024 * 1024;
+    if (sizeBytes <= 0 || sizeBytes > maxBytes) {
       emit(
         state.copyWith(
           hasPhoto: false,
           errors: state.errors.copyWith(
-            photo: 'Image must be less than 1 MB',
+            photo:
+                'Image size should not exceed 5MB. Please choose a smaller image.',
           ),
         ),
       );
@@ -109,9 +113,28 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     return result.isGranted;
   }
 
+  Future<int> _readFileSize(XFile file) async {
+    try {
+      final len = await file.length();
+      if (len > 0) return len;
+    } catch (_) {}
+    try {
+      final stat = await File(file.path).stat();
+      return stat.size;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   bool _validate() {
     FieldError err = const FieldError();
 
+    if (!state.hasPhoto) {
+      err = err.copyWith(
+        photo:
+            'Vehicle photo is required. Please upload a photo under 5MB.',
+      );
+    }
     if (state.vehicleType != VehicleType.auto && state.modelName.trim().isEmpty) {
       err = err.copyWith(modelName: 'Model name is required');
     }

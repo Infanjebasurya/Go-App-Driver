@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/model/city_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/pages/vehicle_details_screen.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/cubit/vehicle_selection_cubit.dart';
@@ -22,10 +26,28 @@ class VehicleSelectionScreen extends StatelessWidget {
   }
 }
 
-class _VehicleSelectionView extends StatelessWidget {
+class _VehicleSelectionView extends StatefulWidget {
   final City selectedCity;
 
   const _VehicleSelectionView({required this.selectedCity});
+
+  @override
+  State<_VehicleSelectionView> createState() => _VehicleSelectionViewState();
+}
+
+class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      RegistrationProgressStore.setStep(
+        RegistrationStep.vehicleSelection,
+        cityId: widget.selectedCity.id,
+        clearVehicle: true,
+        clearDocumentStep: true,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +112,14 @@ class _VehicleSelectionView extends StatelessWidget {
                 vehicleLabel: state.selectedVehicle?.label,
                 onTap: () {
                   if (state.hasSelection) {
+                    unawaited(
+                      RegistrationProgressStore.setStep(
+                        RegistrationStep.vehicleDetails,
+                        cityId: widget.selectedCity.id,
+                        vehicleType: state.selectedVehicle!.type.name,
+                        clearDocumentStep: true,
+                      ),
+                    );
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => VehicleDetailsScreen(
@@ -126,7 +156,11 @@ class _ConfirmButton extends StatelessWidget {
         20,
         12,
         20,
-        MediaQuery.of(context).padding.bottom + 20,
+        math.max(
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
+            20,
       ),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),

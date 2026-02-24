@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/cubit/vehicle_details_cubit.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/model/vehicle_details_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/widget/selection_bottom_sheet.dart';
@@ -24,13 +28,15 @@ class VehicleDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => VehicleDetailsCubit(vehicleType: vehicleType),
-      child: const _VehicleDetailsView(),
+      child: _VehicleDetailsView(vehicleType: vehicleType),
     );
   }
 }
 
 class _VehicleDetailsView extends StatefulWidget {
-  const _VehicleDetailsView();
+  const _VehicleDetailsView({required this.vehicleType});
+
+  final VehicleType vehicleType;
 
   @override
   State<_VehicleDetailsView> createState() => _VehicleDetailsViewState();
@@ -42,6 +48,18 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
   final _seatController = TextEditingController();
   final _fuelTypeController = TextEditingController();
   final _yearController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      RegistrationProgressStore.setStep(
+        RegistrationStep.vehicleDetails,
+        vehicleType: widget.vehicleType.name,
+        clearDocumentStep: true,
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -70,6 +88,9 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
           _seatController.text = state.seatDisplay;
           _fuelTypeController.text = state.fuelTypeDisplay;
           if (state.isSubmitted) {
+            unawaited(
+              RegistrationProgressStore.setStep(RegistrationStep.verification),
+            );
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => const VerificationScreen(),
@@ -294,7 +315,11 @@ class _ContinueButton extends StatelessWidget {
         20,
         12,
         20,
-        MediaQuery.of(context).padding.bottom + 20,
+        math.max(
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
+            20,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,

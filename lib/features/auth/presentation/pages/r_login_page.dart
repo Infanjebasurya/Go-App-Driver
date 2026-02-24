@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -163,11 +165,10 @@ class _RLoginPageState extends State<RLoginPage> {
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: AppTextField(
+                              child: AppTextField(
                                         controller: _controller,
                                         keyboardType: TextInputType.phone,
                                         inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly,
                                           LengthLimitingTextInputFormatter(10),
                                         ],
                                         isCollapsed: true,
@@ -185,7 +186,13 @@ class _RLoginPageState extends State<RLoginPage> {
                                           color: AuthUiColors.textDarkAlt,
                                           letterSpacing: 1.1,
                                         ),
-                                        onChanged: context.read<LoginFormCubit>().onInputChanged,
+                                        onChanged: (value) {
+                                          context.read<LoginFormCubit>().onInputChanged(value);
+                                          final digits = context.read<LoginFormCubit>().state.digits;
+                                          if (digits.length == 10) {
+                                            FocusScope.of(context).unfocus();
+                                          }
+                                        },
                                       ),
                                     ),
                                   ],
@@ -197,7 +204,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                     alpha: 0.5,
                                   ),
                                 ),
-                                if (formState.error != null && formState.digits.isNotEmpty) ...[
+                                if (formState.error != null && formState.rawInput.isNotEmpty) ...[
                                   const SizedBox(height: 8),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 14),
@@ -241,22 +248,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                     ),
                                   ),
                                 ),
-                                const Spacer(),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 46,
-                                  child: BlocBuilder<AuthBloc, AuthState>(
-                                    builder: (context, state) {
-                                      final bool loading = state is AuthLoading;
-                                      return AuthPrimaryButton(
-                                        label: 'Get Verification Code',
-                                        loading: loading,
-                                        onPressed: context.read<LoginFormCubit>().submit,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 34),
+                                const SizedBox(height: 24),
                               ],
                             ),
                           ),
@@ -264,6 +256,35 @@ class _RLoginPageState extends State<RLoginPage> {
                       ),
                     );
                   },
+                ),
+              ),
+              bottomNavigationBar: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    12,
+                    20,
+                    math.max(
+                      MediaQuery.viewInsetsOf(context).bottom,
+                      MediaQuery.of(context).padding.bottom,
+                    ) +
+                        12,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 46,
+                    child: BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        final bool loading = state is AuthLoading;
+                        return AuthPrimaryButton(
+                          label: 'Get Verification Code',
+                          loading: loading,
+                          onPressed: context.read<LoginFormCubit>().submit,
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             );
