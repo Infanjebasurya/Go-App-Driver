@@ -237,7 +237,7 @@ class _SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'â‚¹${amount.toStringAsFixed(2)}',
+            '₹${amount.toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 48,
               fontWeight: FontWeight.w500,

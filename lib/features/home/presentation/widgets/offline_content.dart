@@ -160,7 +160,7 @@ class _EarningsCard extends StatelessWidget {
           const SizedBox(height: 12),
           Center(
             child: Text(
-              'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹ ${state.totalEarnings.toStringAsFixed(2)}',
+              '₹ ${state.totalEarnings.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w400,
@@ -306,28 +306,32 @@ class _WalletCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Wallet Balance',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black45,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Wallet Balance',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45,
+                  ),
                 ),
-              ),
-              Text(
-                '${isNegative ? '-' : ''}ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹ ${state.walletBalance.abs().toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: isNegative ? Colors.red : Colors.black87,
+                Text(
+                  '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: isNegative ? Colors.red : Colors.black87,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () {
               Navigator.of(
@@ -398,7 +402,7 @@ class _RewardCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Complete ${state.targetRides} rides & earn ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${state.rewardAmount.toInt()}',
+                      'Complete ${state.targetRides} rides & earn ₹${state.rewardAmount.toInt()}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -448,3 +452,4 @@ class _RewardCard extends StatelessWidget {
     );
   }
 }
+

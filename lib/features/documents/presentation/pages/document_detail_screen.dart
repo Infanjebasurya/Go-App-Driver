@@ -105,7 +105,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SubHeader(text: 'Government of India â€¢ Digital Copy'),
+        const _SubHeader(text: 'Government of India • Digital Copy'),
         const SizedBox(height: 16),
         Row(
           children: [

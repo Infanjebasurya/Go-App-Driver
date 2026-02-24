@@ -159,7 +159,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const Text(
-                          'Earn ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹2,000',
+                          'Earn ₹2,000',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
@@ -299,7 +299,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     number: '3',
                     title: 'Friend completes 10 rides',
                     subtitle:
-                        'Once they hit the milestone, the ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹3,000 reward\nis credited to your wallet.',
+                        'Once they hit the milestone, the ₹3,000 reward\nis credited to your wallet.',
                     isLast: true,
                   ),
                   const SizedBox(height: 26),
@@ -532,7 +532,7 @@ class _HeroCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${totalEarnings.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}',
+                    '₹${totalEarnings.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}',
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w600,
@@ -608,7 +608,7 @@ class _CampaignRow extends StatelessWidget {
               ),
             ),
             Text(
-              '= ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${campaign.reward}',
+              '= ₹${campaign.reward}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
@@ -779,7 +779,7 @@ class _EarningsCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹$earnings',
+                '₹$earnings',
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
@@ -960,7 +960,7 @@ class _ReferralPersonCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${person.estimatedReward}',
+                    '₹${person.estimatedReward}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -1199,3 +1199,4 @@ class _StatCol extends StatelessWidget {
     );
   }
 }
+

@@ -239,7 +239,7 @@ class _EarningsCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹ ${state.totalEarnings.toStringAsFixed(0)}',
+                      '₹ ${state.totalEarnings.toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -362,28 +362,32 @@ class _BottomWalletCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Wallet Balance',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black45,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Wallet Balance',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45,
+                  ),
                 ),
-              ),
-              Text(
-                '${isNegative ? '-' : ''}ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹ ${state.walletBalance.abs().toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: isNegative ? Colors.red : Colors.black87,
+                Text(
+                  '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: isNegative ? Colors.red : Colors.black87,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () {
               Navigator.of(
@@ -426,3 +430,4 @@ class _GpsButton extends StatelessWidget {
     );
   }
 }
+

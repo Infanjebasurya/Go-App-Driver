@@ -613,7 +613,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             child: AppTextField(
                               controller: _referController,
                               label: '',
-                              hint: 'Enter code if appilcable',
+                              hint: 'Enter code if applicable',
                               borderless: true,
                               isCollapsed: true,
                               contentPadding: EdgeInsets.zero,

@@ -94,7 +94,7 @@ class _WalletView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'â‚¹${state.snapshot.walletBalance.toStringAsFixed(2)}',
+                        '₹${state.snapshot.walletBalance.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.bold,
