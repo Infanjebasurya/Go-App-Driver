@@ -61,9 +61,9 @@ class _OfflineStatusBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9),
+        color: AppColors.earningsAccentSoft,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFA5D6A7), width: 1),
+        border: Border.all(color: AppColors.earningsAccentLine, width: 1),
       ),
       child: Row(
         children: [
@@ -160,7 +160,7 @@ class _EarningsCard extends StatelessWidget {
           const SizedBox(height: 12),
           Center(
             child: Text(
-              '₹ ${state.totalEarnings.toStringAsFixed(2)}',
+              'Ã¢â€šÂ¹ ${state.totalEarnings.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w400,
@@ -296,7 +296,7 @@ class _WalletCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: AppColors.surfaceF5,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -318,7 +318,7 @@ class _WalletCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                '${isNegative ? '-' : ''}Ã¢â€šÂ¹ ${state.walletBalance.abs().toStringAsFixed(2)}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
@@ -365,8 +365,8 @@ class _WalletCard extends StatelessWidget {
           decoration: const InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            labelText: 'Amount (₹)',
-            prefixText: '₹ ',
+            labelText: 'Amount (Ã¢â€šÂ¹)',
+            prefixText: 'Ã¢â€šÂ¹ ',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
@@ -437,7 +437,7 @@ class _RewardCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Complete ${state.targetRides} rides & earn ₹${state.rewardAmount.toInt()}',
+                      'Complete ${state.targetRides} rides & earn Ã¢â€šÂ¹${state.rewardAmount.toInt()}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,

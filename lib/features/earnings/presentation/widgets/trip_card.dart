@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 
 class TripCard extends StatelessWidget {
@@ -10,6 +10,8 @@ class TripCard extends StatelessWidget {
   final String dropLocation;
   final String dropAddress;
 
+  final bool isCancelled;
+
   const TripCard({
     super.key,
     required this.date,
@@ -19,17 +21,23 @@ class TripCard extends StatelessWidget {
     required this.pickupAddress,
     required this.dropLocation,
     required this.dropAddress,
+    this.isCancelled = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color accentColor = isCancelled
+        ? AppColors.validationRed
+        : AppColors.emerald;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.2),
+          color: isCancelled
+              ? AppColors.validationRed.withValues(alpha: 0.3)
+              : AppColors.neutralCCC.withValues(alpha: 0.6),
         ),
         boxShadow: [
           BoxShadow(
@@ -45,9 +53,9 @@ class TripCard extends StatelessWidget {
           children: [
             Container(
               width: 8,
-              decoration: const BoxDecoration(
-                color: AppColors.emerald,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: accentColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   bottomLeft: Radius.circular(16),
                 ),
@@ -67,16 +75,13 @@ class TripCard extends StatelessWidget {
                           height: 12,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: AppColors.emerald,
-                              width: 2,
-                            ),
+                            border: Border.all(color: accentColor, width: 2),
                           ),
                         ),
                         Container(
                           width: 2,
                           height: 30,
-                          color: AppColors.earningsAccentLine,
+                          color: accentColor.withValues(alpha: 0.4),
                         ),
                         const Icon(
                           Icons.location_on,
@@ -166,5 +171,3 @@ class TripCard extends StatelessWidget {
     );
   }
 }
-
-

@@ -8,8 +8,11 @@ class CitySelectionCubit extends Cubit<CitySelectionState> {
     final q = query.trim().toLowerCase();
     final filtered = q.isEmpty
         ? kAllCities
-        : kAllCities.where((city) => city.name.toLowerCase().contains(q)).toList();
-    final stillSelected = state.selectedCity != null &&
+        : kAllCities
+              .where((city) => city.name.toLowerCase().contains(q))
+              .toList();
+    final stillSelected =
+        state.selectedCity != null &&
         filtered.any((city) => city.id == state.selectedCity!.id);
 
     emit(
@@ -22,12 +25,7 @@ class CitySelectionCubit extends Cubit<CitySelectionState> {
   }
 
   void clearSearch() {
-    emit(
-      state.copyWith(
-        searchQuery: '',
-        filteredAllCities: kAllCities,
-      ),
-    );
+    emit(state.copyWith(searchQuery: '', filteredAllCities: kAllCities));
   }
 
   void selectCity(City city) {

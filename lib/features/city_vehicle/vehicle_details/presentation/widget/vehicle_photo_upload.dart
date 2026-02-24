@@ -70,14 +70,8 @@ class _EmptyState extends StatelessWidget {
         Container(
           width: 52,
           height: 52,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            _icon,
-            size: 50,
-            color: const Color(0xFF8FA0B0),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+          child: Icon(_icon, size: 50, color: const Color(0xFF8FA0B0)),
         ),
         const SizedBox(height: 10),
         const Text(
@@ -85,7 +79,7 @@ class _EmptyState extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1A2236),
+            color: AppColors.headingNavy,
             letterSpacing: 0.1,
           ),
         ),

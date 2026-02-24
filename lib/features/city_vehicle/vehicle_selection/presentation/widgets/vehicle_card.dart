@@ -47,7 +47,7 @@ class VehicleCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.emerald.withValues(alpha: 0.1)
-                    : const Color(0xFFF0F4F8),
+                    : AppColors.coolwhite,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -66,7 +66,7 @@ class VehicleCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A2236),
+                      color: AppColors.headingNavy,
                       letterSpacing: -0.2,
                     ),
                   ),

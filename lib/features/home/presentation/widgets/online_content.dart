@@ -139,11 +139,11 @@ class _OnlineStatusBanner extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [Color(0xFF008051), Color(0xFF00A86B)],
+          colors: [Color(0xFF008051), AppColors.emerald],
         ),
-        color: const Color(0xFFE8F5E9),
+        color: AppColors.earningsAccentSoft,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFA5D6A7), width: 1),
+        border: Border.all(color: AppColors.earningsAccentLine, width: 1),
       ),
       child: Row(
         children: [
@@ -239,7 +239,7 @@ class _EarningsCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '₹ ${state.totalEarnings.toStringAsFixed(0)}',
+                      'Ã¢â€šÂ¹ ${state.totalEarnings.toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -352,7 +352,7 @@ class _BottomWalletCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: AppColors.surfaceF5,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -374,7 +374,7 @@ class _BottomWalletCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                '${isNegative ? '-' : ''}Ã¢â€šÂ¹ ${state.walletBalance.abs().toStringAsFixed(2)}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
@@ -421,8 +421,8 @@ class _BottomWalletCard extends StatelessWidget {
           decoration: const InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            labelText: 'Amount (₹)',
-            prefixText: '₹ ',
+            labelText: 'Amount (Ã¢â€šÂ¹)',
+            prefixText: 'Ã¢â€šÂ¹ ',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),

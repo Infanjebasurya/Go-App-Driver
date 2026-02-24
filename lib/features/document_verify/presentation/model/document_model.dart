@@ -2,18 +2,20 @@ import 'package:equatable/equatable.dart';
 
 enum DocumentStatus { completed, required, pending, uploading }
 
-enum DocumentType { drivingLicense, vehicleRC, aadhaarCard, panCard, bankDetails }
+enum DocumentType {
+  drivingLicense,
+  vehicleRC,
+  aadhaarCard,
+  panCard,
+  bankDetails,
+}
 
 class Document extends Equatable {
   final DocumentType type;
   final DocumentStatus status;
   final String? filePath;
 
-  const Document({
-    required this.type,
-    required this.status,
-    this.filePath,
-  });
+  const Document({required this.type, required this.status, this.filePath});
 
   String get title {
     switch (type) {
@@ -66,18 +68,28 @@ class VerificationState extends Equatable {
   factory VerificationState.initial() {
     return const VerificationState(
       documents: [
-        Document(type: DocumentType.drivingLicense, status: DocumentStatus.required),
+        Document(
+          type: DocumentType.drivingLicense,
+          status: DocumentStatus.required,
+        ),
         Document(type: DocumentType.vehicleRC, status: DocumentStatus.required),
-        Document(type: DocumentType.aadhaarCard, status: DocumentStatus.required),
+        Document(
+          type: DocumentType.aadhaarCard,
+          status: DocumentStatus.required,
+        ),
         Document(type: DocumentType.panCard, status: DocumentStatus.required),
-        Document(type: DocumentType.bankDetails, status: DocumentStatus.required),
+        Document(
+          type: DocumentType.bankDetails,
+          status: DocumentStatus.required,
+        ),
       ],
     );
   }
 
   int get completedCount => documents.where((d) => d.isCompleted).length;
 
-  double get progressPercentage => documents.isEmpty ? 0 : completedCount / documents.length;
+  double get progressPercentage =>
+      documents.isEmpty ? 0 : completedCount / documents.length;
 
   int get progressPercent => (progressPercentage * 100).round();
 
@@ -99,5 +111,10 @@ class VerificationState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [documents, isSubmitting, isSubmitted, errorMessage];
+  List<Object?> get props => [
+    documents,
+    isSubmitting,
+    isSubmitted,
+    errorMessage,
+  ];
 }

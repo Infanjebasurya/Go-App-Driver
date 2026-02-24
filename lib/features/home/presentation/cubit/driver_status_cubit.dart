@@ -1,10 +1,7 @@
-
-
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'driver_status_state.dart';
-
 
 class DriverCubit extends Cubit<DriverState> {
   Timer? _onlineTimer;
@@ -52,9 +49,7 @@ class DriverCubit extends Cubit<DriverState> {
     _ordersNavigationTimer = Timer(const Duration(seconds: 10), () {
       if (!state.isOnline) return;
       emit(
-        state.copyWith(
-          navigateToOrdersToken: state.navigateToOrdersToken + 1,
-        ),
+        state.copyWith(navigateToOrdersToken: state.navigateToOrdersToken + 1),
       );
     });
   }
@@ -81,13 +76,15 @@ class DriverCubit extends Cubit<DriverState> {
   }
 
   void completeRide(double fare) {
-    emit(state.copyWith(
-      totalEarnings: state.totalEarnings + fare,
-      tripsCompleted: state.tripsCompleted + 1,
-      completedRides: (state.completedRides < state.targetRides)
-          ? state.completedRides + 1
-          : state.completedRides,
-    ));
+    emit(
+      state.copyWith(
+        totalEarnings: state.totalEarnings + fare,
+        tripsCompleted: state.tripsCompleted + 1,
+        completedRides: (state.completedRides < state.targetRides)
+            ? state.completedRides + 1
+            : state.completedRides,
+      ),
+    );
   }
 
   @override

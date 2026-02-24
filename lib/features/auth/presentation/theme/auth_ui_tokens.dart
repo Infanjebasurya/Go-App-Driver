@@ -26,8 +26,5 @@ abstract final class AuthUiTextStyles {
     color: AuthUiColors.textMuted,
   );
 
-  static const button = TextStyle(
-    fontSize: 15,
-    fontWeight: FontWeight.w700,
-  );
+  static const button = TextStyle(fontSize: 15, fontWeight: FontWeight.w700);
 }

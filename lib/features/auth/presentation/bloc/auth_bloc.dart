@@ -5,10 +5,8 @@ import 'package:goapp/features/auth/presentation/bloc/auth_event.dart';
 import 'package:goapp/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(
-    this._loginUseCase,
-    this._requestOtpUseCase,
-  ) : super(const AuthInitial()) {
+  AuthBloc(this._loginUseCase, this._requestOtpUseCase)
+    : super(const AuthInitial()) {
     on<RequestOtpRequested>(_onRequestOtpRequested);
     on<LoginRequested>(_onLoginRequested);
   }

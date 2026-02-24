@@ -1,38 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const List<_NotificationItem> notifications = <_NotificationItem>[
-      _NotificationItem(
-        title: 'New ride request nearby',
-        message: 'A new order is available within 1.2 km of your location.',
-        timeLabel: '2 min ago',
-        icon: Icons.local_taxi_outlined,
-      ),
-      _NotificationItem(
-        title: 'Trip completed successfully',
-        message: 'Your last trip earnings have been added to your wallet.',
-        timeLabel: '18 min ago',
-        icon: Icons.check_circle_outline,
-      ),
-      _NotificationItem(
-        title: 'Wallet low balance',
-        message: 'Top up your wallet to continue receiving priority trips.',
-        timeLabel: '1 hr ago',
-        icon: Icons.account_balance_wallet_outlined,
-      ),
-      _NotificationItem(
-        title: 'Document reminder',
-        message: 'Please verify your pending document to avoid interruptions.',
-        timeLabel: 'Yesterday',
-        icon: Icons.description_outlined,
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: AppColors.surfaceF5,
       appBar: AppBar(
@@ -50,21 +24,26 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         top: false,
-        child: notifications.isEmpty
-            ? const _EmptyNotifications()
-            : ListView.separated(
-                padding: EdgeInsets.fromLTRB(
-                  14,
-                  14,
-                  14,
-                  14 + MediaQuery.of(context).padding.bottom,
-                ),
-                itemCount: notifications.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 10),
-                itemBuilder: (_, index) =>
-                    _NotificationCard(item: notifications[index]),
+        child: ValueListenableBuilder<List<AppNotificationEntry>>(
+          valueListenable: NotificationsFeed.notifier,
+          builder: (context, notifications, _) {
+            if (notifications.isEmpty) {
+              return const _EmptyNotifications();
+            }
+            return ListView.separated(
+              padding: EdgeInsets.fromLTRB(
+                14,
+                14,
+                14,
+                14 + MediaQuery.of(context).padding.bottom,
               ),
+              itemCount: notifications.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              itemBuilder: (_, index) =>
+                  _NotificationCard(item: notifications[index]),
+            );
+          },
+        ),
       ),
     );
   }
@@ -73,7 +52,7 @@ class NotificationsScreen extends StatelessWidget {
 class _NotificationCard extends StatelessWidget {
   const _NotificationCard({required this.item});
 
-  final _NotificationItem item;
+  final AppNotificationEntry item;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +79,11 @@ class _NotificationCard extends StatelessWidget {
               color: AppColors.surfaceF0,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(item.icon, color: AppColors.emerald, size: 21),
+            child: const Icon(
+              Icons.notifications_active_outlined,
+              color: AppColors.emerald,
+              size: 21,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -127,7 +110,7 @@ class _NotificationCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  item.timeLabel,
+                  _formatTime(item.createdAt),
                   style: const TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w600,
@@ -140,6 +123,14 @@ class _NotificationCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatTime(DateTime createdAt) {
+    final Duration diff = DateTime.now().difference(createdAt);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return '${diff.inHours} hr ago';
+    return '${diff.inDays} day ago';
   }
 }
 
@@ -183,18 +174,4 @@ class _EmptyNotifications extends StatelessWidget {
       ),
     );
   }
-}
-
-class _NotificationItem {
-  const _NotificationItem({
-    required this.title,
-    required this.message,
-    required this.timeLabel,
-    required this.icon,
-  });
-
-  final String title;
-  final String message;
-  final String timeLabel;
-  final IconData icon;
 }

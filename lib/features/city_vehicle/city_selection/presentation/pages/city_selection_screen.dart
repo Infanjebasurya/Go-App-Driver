@@ -1,14 +1,8 @@
-import 'dart:async';
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
-import 'package:goapp/core/storage/registration_progress_store.dart';
-import 'package:goapp/features/profile/presentation/pages/profile_setup_page.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/cubit/city_selection_cubit.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/model/city_model.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/widget/city_list.dart';
@@ -44,46 +38,16 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    unawaited(
-      RegistrationProgressStore.setStep(
-        RegistrationStep.citySelection,
-        clearVehicle: true,
-        clearDocumentStep: true,
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppAppBar(
-        title: 'GoApp',
-        backEnabled: true,
-        onBack: () {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => const ProfileSetupPage(allowBack: true),
-            ),
-          );
-        },
-      ),
+      appBar: const AppAppBar(title: 'GoApp', backEnabled: false),
       bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
         builder: (context, state) {
           return _ContinueButton(
             enabled: state.hasSelection,
             onTap: () {
               if (state.hasSelection) {
-                unawaited(
-                  RegistrationProgressStore.setStep(
-                    RegistrationStep.vehicleSelection,
-                    cityId: state.selectedCity!.id,
-                    clearVehicle: true,
-                    clearDocumentStep: true,
-                  ),
-                );
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -101,102 +65,100 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Where will you be\ndriving?',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF1A2236),
-                              height: 1.2,
-                              letterSpacing: -0.5,
-                            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Where will you be\ndriving?',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.headingNavy,
+                            height: 1.2,
+                            letterSpacing: -0.5,
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'SELECT YOUR PRIMARY OPERATIONAL CITY',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.emerald,
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _SearchBar(
-                        controller: _searchController,
-                        onChanged: (q) =>
-                            context.read<CitySelectionCubit>().search(q),
-                        onClear: () {
-                          _searchController.clear();
-                          context.read<CitySelectionCubit>().clearSearch();
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      if (state.filteredFeaturedCities.isNotEmpty) ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: state.filteredFeaturedCities.map((city) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: FeaturedCityChip(
-                                city: city,
-                                isSelected: state.isSelected(city),
-                                onTap: () =>
-                                    context.read<CitySelectionCubit>().selectCity(city),
-                              ),
-                            );
-                          }).toList(),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'SELECT YOUR PRIMARY OPERATIONAL CITY',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.emerald,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
                       ],
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 24, bottom: 6),
-                    child: Text(
-                      'ALL CITIES',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade400,
-                        letterSpacing: 1.1,
-                      ),
                     ),
-                  ),
-                  if (state.filteredAllCities.isEmpty)
-                    _EmptyState(query: state.searchQuery)
-                  else
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: state.filteredAllCities.length,
-                      itemBuilder: (context, i) {
-                        final city = state.filteredAllCities[i];
-                        return CityListTile(
-                          key: ValueKey(city.id),
-                          city: city,
-                          isSelected: state.isSelected(city),
-                          onTap: () =>
-                              context.read<CitySelectionCubit>().selectCity(city),
-                        );
+                    const SizedBox(height: 16),
+                    _SearchBar(
+                      controller: _searchController,
+                      onChanged: (q) =>
+                          context.read<CitySelectionCubit>().search(q),
+                      onClear: () {
+                        _searchController.clear();
+                        context.read<CitySelectionCubit>().clearSearch();
                       },
                     ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                    const SizedBox(height: 20),
+                    if (state.filteredFeaturedCities.isNotEmpty) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: state.filteredFeaturedCities.map((city) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: FeaturedCityChip(
+                              city: city,
+                              isSelected: state.isSelected(city),
+                              onTap: () => context
+                                  .read<CitySelectionCubit>()
+                                  .selectCity(city),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24, bottom: 6),
+                  child: Text(
+                    'ALL CITIES',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade400,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: state.filteredAllCities.isEmpty
+                      ? _EmptyState(query: state.searchQuery)
+                      : ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: state.filteredAllCities.length,
+                          itemBuilder: (context, i) {
+                            final city = state.filteredAllCities[i];
+                            return CityListTile(
+                              key: ValueKey(city.id),
+                              city: city,
+                              isSelected: state.isSelected(city),
+                              onTap: () => context
+                                  .read<CitySelectionCubit>()
+                                  .selectCity(city),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
           );
         },
@@ -223,18 +185,12 @@ class _SearchBar extends StatelessWidget {
       child: AppTextField(
         controller: controller,
         onChanged: onChanged,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
-        ],
         textStyle: const TextStyle(
           fontSize: 14.5,
-          color: Color(0xFF1A2236),
+          color: AppColors.headingNavy,
         ),
         hint: 'Search for your city...',
-        hintStyle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey.shade400,
-        ),
+        hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade400),
         leading: Icon(
           Icons.search_rounded,
           color: Colors.grey.shade400,
@@ -251,7 +207,10 @@ class _SearchBar extends StatelessWidget {
               )
             : null,
         borderColor: Colors.grey.shade400,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 14,
+        ),
       ),
     );
   }
@@ -267,14 +226,15 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.location_off_rounded, size: 44, color: Colors.grey.shade300),
+          Icon(
+            Icons.location_off_rounded,
+            size: 44,
+            color: Colors.grey.shade300,
+          ),
           const SizedBox(height: 12),
           Text(
             'No cities found for "$query"',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade400,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
           ),
         ],
       ),
@@ -295,11 +255,7 @@ class _ContinueButton extends StatelessWidget {
         20,
         12,
         20,
-        math.max(
-              MediaQuery.viewInsetsOf(context).bottom,
-              MediaQuery.of(context).padding.bottom,
-            ) +
-            20,
+        MediaQuery.of(context).padding.bottom + 20,
       ),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),

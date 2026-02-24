@@ -140,8 +140,8 @@ class _DocumentCard extends StatelessWidget {
                   color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(10),
                 ),
-            child: _DocumentThumbnail(document: document),
-          ),
+                child: _DocumentThumbnail(document: document),
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

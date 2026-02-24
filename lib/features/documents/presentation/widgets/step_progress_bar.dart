@@ -26,7 +26,7 @@ class StepProgressBar extends StatelessWidget {
                 child: const Icon(
                   Icons.chevron_left_rounded,
                   size: 28,
-                  color: Color(0xFF1A2236),
+                  color: AppColors.headingNavy,
                 ),
               ),
               Expanded(
@@ -60,7 +60,9 @@ class StepProgressBar extends StatelessWidget {
                   height: 3.5,
                   margin: const EdgeInsets.symmetric(horizontal: 2.5),
                   decoration: BoxDecoration(
-                    color: isCompleted || isCurrent ? AppColors.emerald : const Color(0xFFE2E8F0),
+                    color: isCompleted || isCurrent
+                        ? AppColors.emerald
+                        : const Color(0xFFE2E8F0),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

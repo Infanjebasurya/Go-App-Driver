@@ -7,6 +7,6 @@ void main() {
 
   runFeatureStructureTests(
     featureName: 'earnings',
-    expectedTopLevelDirs: <String>['presentation'],
+    expectedTopLevelDirs: <String>['data', 'domain', 'presentation'],
   );
 }

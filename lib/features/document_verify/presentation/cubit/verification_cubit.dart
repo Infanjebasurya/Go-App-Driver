@@ -34,7 +34,8 @@ class VerificationCubit extends Cubit<VerificationState> {
       if (doc.type == type) {
         return doc.copyWith(
           status: DocumentStatus.completed,
-          filePath: 'uploaded/${type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+          filePath:
+              'uploaded/${type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
         );
       }
       return doc;
@@ -57,7 +58,8 @@ class VerificationCubit extends Cubit<VerificationState> {
     if (!state.canSubmit) {
       emit(
         state.copyWith(
-          errorMessage: 'Please complete all required documents before submitting.',
+          errorMessage:
+              'Please complete all required documents before submitting.',
         ),
       );
       return;

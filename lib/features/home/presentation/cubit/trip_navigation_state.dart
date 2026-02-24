@@ -1,10 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class TripNavigationState extends Equatable {
-  const TripNavigationState({
-    this.progress = 0,
-    this.showArrivalSheet = false,
-  });
+  const TripNavigationState({this.progress = 0, this.showArrivalSheet = false});
 
   final double progress;
   final bool showArrivalSheet;
@@ -14,10 +11,7 @@ class TripNavigationState extends Equatable {
     return meters < 0 ? 0 : meters;
   }
 
-  TripNavigationState copyWith({
-    double? progress,
-    bool? showArrivalSheet,
-  }) {
+  TripNavigationState copyWith({double? progress, bool? showArrivalSheet}) {
     return TripNavigationState(
       progress: progress ?? this.progress,
       showArrivalSheet: showArrivalSheet ?? this.showArrivalSheet,

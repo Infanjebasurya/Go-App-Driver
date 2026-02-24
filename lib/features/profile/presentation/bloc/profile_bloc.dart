@@ -25,16 +25,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     emit(const ProfileLoading());
     final result = await _getCachedProfileUseCase.call();
-    result.fold(
-      (failure) => emit(ProfileFailure(failure.message)),
-      (profile) {
-        if (profile == null) {
-          emit(const ProfileInitial());
-        } else {
-          emit(ProfileSuccess(profile));
-        }
-      },
-    );
+    result.fold((failure) => emit(ProfileFailure(failure.message)), (profile) {
+      if (profile == null) {
+        emit(const ProfileInitial());
+      } else {
+        emit(ProfileSuccess(profile));
+      }
+    });
   }
 
   Future<void> _onProfileSubmitted(
