@@ -819,7 +819,7 @@ class _ReferralSummaryBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
+          SizedBox(
             width: 40,
             height: 40,
             child: Icon(icon, color: AppColors.black, size: 20),

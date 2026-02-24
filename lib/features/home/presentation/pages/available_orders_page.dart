@@ -1,13 +1,26 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_state.dart';
 import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
+import 'package:vibration/vibration.dart';
 
-class AvailableOrdersPage extends StatelessWidget {
+class AvailableOrdersPage extends StatefulWidget {
   const AvailableOrdersPage({super.key});
+
+  @override
+  State<AvailableOrdersPage> createState() => _AvailableOrdersPageState();
+}
+
+class _AvailableOrdersPageState extends State<AvailableOrdersPage> {
+  bool _playedInitialAlert = false;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   void _goToRideScreen(
     BuildContext context, {
@@ -16,70 +29,122 @@ class AvailableOrdersPage extends StatelessWidget {
   }) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => RideArrivedPage(
-          pickupPoint: pickupPoint,
-          dropPoint: dropPoint,
-        ),
+        builder: (_) =>
+            RideArrivedPage(pickupPoint: pickupPoint, dropPoint: dropPoint),
       ),
     );
+  }
+
+  Future<void> _playIncomingOrderAlert() async {
+    await Future.wait<void>(<Future<void>>[
+      _playOrderSound(),
+      _vibrateDevice(),
+    ]);
+  }
+
+  Future<void> _vibrateDevice() async {
+    try {
+      final bool hasVibrator = await Vibration.hasVibrator();
+      if (hasVibrator) {
+        await Vibration.vibrate(duration: 450, amplitude: 255);
+        return;
+      }
+      await HapticFeedback.heavyImpact();
+      await HapticFeedback.vibrate();
+    } catch (_) {}
+  }
+
+  Future<void> _playOrderSound() async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(
+        AssetSource('Audio/order-sound.mp3'),
+        volume: 1.0,
+      );
+    } catch (_) {
+      await SystemSound.play(SystemSoundType.alert);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || _playedInitialAlert) return;
+      _playedInitialAlert = true;
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+      if (!mounted) return;
+      await _playIncomingOrderAlert();
+    });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_audioPlayer.dispose());
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AvailableOrdersCubit>(
       create: (_) => AvailableOrdersCubit()..start(),
-      child: Scaffold(
-        backgroundColor: AppColors.surfaceF5,
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          surfaceTintColor: AppColors.white,
-          elevation: 0.8,
-          toolbarHeight: 86,
-          centerTitle: false,
-          titleSpacing: 16,
-          title: const _OrdersAppBarTitle(),
-        ),
-        body: BlocBuilder<AvailableOrdersCubit, AvailableOrdersState>(
-          builder: (BuildContext context, AvailableOrdersState state) {
-            final cubit = context.read<AvailableOrdersCubit>();
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
-              children: <Widget>[
-                _OrderCard(
-                  fare: '\u20B990',
-                  pickupTitle: 'Arumbakkam',
-                  pickupAddress: '42, MMDA Colony, Arumbakkam,\nch-106',
-                  dropTitle: 'Amjikarai',
-                  dropAddress:
-                      '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
-                  progress: cubit.progressForOrder(0),
-                  onAccept: () => _goToRideScreen(
-                    context,
-                    pickupPoint: const LatLng(13.0696, 80.2154),
-                    dropPoint: const LatLng(13.0744, 80.2241),
-                  ),
-                ),
-                if (state.showSecondOrder) ...<Widget>[
-                  const SizedBox(height: 14),
+      child: BlocListener<AvailableOrdersCubit, AvailableOrdersState>(
+        listenWhen: (previous, current) =>
+            !previous.showSecondOrder && current.showSecondOrder,
+        listener: (context, state) => _playIncomingOrderAlert(),
+        child: Scaffold(
+          backgroundColor: AppColors.surfaceF5,
+          appBar: AppBar(
+            backgroundColor: AppColors.white,
+            surfaceTintColor: AppColors.white,
+            elevation: 0.8,
+            toolbarHeight: 86,
+            centerTitle: false,
+            titleSpacing: 16,
+            title: const _OrdersAppBarTitle(),
+          ),
+          body: BlocBuilder<AvailableOrdersCubit, AvailableOrdersState>(
+            builder: (BuildContext context, AvailableOrdersState state) {
+              final cubit = context.read<AvailableOrdersCubit>();
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
+                children: <Widget>[
                   _OrderCard(
-                    fare: '\u20B9100',
-                    pickupTitle: 'Amjikarai',
-                    pickupAddress:
-                        '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
+                    fare: '\u20B990',
+                    pickupTitle: 'Arumbakkam',
+                    pickupAddress: '42, MMDA Colony, Arumbakkam,\nch-106',
                     dropTitle: 'Amjikarai',
-                  dropAddress:
-                      '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
-                  progress: cubit.progressForOrder(1),
-                  onAccept: () => _goToRideScreen(
-                    context,
-                    pickupPoint: const LatLng(13.0721, 80.2186),
-                    dropPoint: const LatLng(13.0662, 80.2103),
+                    dropAddress:
+                        '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
+                    progress: cubit.progressForOrder(0),
+                    onAccept: () => _goToRideScreen(
+                      context,
+                      pickupPoint: const LatLng(13.0696, 80.2154),
+                      dropPoint: const LatLng(13.0744, 80.2241),
+                    ),
                   ),
-                ),
+                  if (state.showSecondOrder) ...<Widget>[
+                    const SizedBox(height: 14),
+                    _OrderCard(
+                      fare: '\u20B9100',
+                      pickupTitle: 'Amjikarai',
+                      pickupAddress:
+                          '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
+                      dropTitle: 'Amjikarai',
+                      dropAddress:
+                          '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
+                      progress: cubit.progressForOrder(1),
+                      onAccept: () => _goToRideScreen(
+                        context,
+                        pickupPoint: const LatLng(13.0721, 80.2186),
+                        dropPoint: const LatLng(13.0662, 80.2103),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -192,7 +257,9 @@ class _OrderCard extends StatelessWidget {
                 minHeight: 4,
                 value: progress,
                 backgroundColor: AppColors.surfaceF0,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.emerald),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.emerald,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -216,7 +283,11 @@ class _OrderCard extends StatelessWidget {
             const SizedBox(height: 10),
             const Row(
               children: <Widget>[
-                Icon(Icons.navigation_outlined, size: 15, color: AppColors.neutral666),
+                Icon(
+                  Icons.navigation_outlined,
+                  size: 15,
+                  color: AppColors.neutral666,
+                ),
                 SizedBox(width: 4),
                 Text(
                   '2.5 km',
@@ -229,7 +300,11 @@ class _OrderCard extends StatelessWidget {
                 SizedBox(width: 8),
                 Text('|', style: TextStyle(color: AppColors.neutral888)),
                 SizedBox(width: 8),
-                Icon(Icons.access_time_rounded, size: 15, color: AppColors.neutral666),
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 15,
+                  color: AppColors.neutral666,
+                ),
                 SizedBox(width: 4),
                 Text(
                   '~12 mins',
@@ -339,7 +414,11 @@ class _LocationPoint extends StatelessWidget {
             children: <Widget>[
               const Padding(
                 padding: EdgeInsets.only(top: 3),
-                child: Icon(Icons.radio_button_unchecked, size: 13, color: AppColors.neutral666),
+                child: Icon(
+                  Icons.radio_button_unchecked,
+                  size: 13,
+                  color: AppColors.neutral666,
+                ),
               ),
               if (showConnector)
                 Container(width: 1.2, height: 40, color: AppColors.neutralCCC),

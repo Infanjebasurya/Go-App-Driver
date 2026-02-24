@@ -1,7 +1,8 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
+import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
@@ -10,23 +11,66 @@ import '../cubit/driver_status_state.dart';
 import 'map_widget.dart';
 import 'status_header.dart';
 
-class OnlineContent extends StatelessWidget {
+class OnlineContent extends StatefulWidget {
   const OnlineContent({super.key});
 
   @override
+  State<OnlineContent> createState() => _OnlineContentState();
+}
+
+class _OnlineContentState extends State<OnlineContent> {
+  late final MapWidgetController _mapController;
+  LocationIssue? _locationIssue;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapWidgetController();
+    _mapController.bindLocationIssueListener((issue) {
+      if (!mounted) return;
+      if (_locationIssue == issue) return;
+
+      final phase = SchedulerBinding.instance.schedulerPhase;
+      final shouldDefer =
+          phase == SchedulerPhase.transientCallbacks ||
+          phase == SchedulerPhase.midFrameMicrotasks ||
+          phase == SchedulerPhase.persistentCallbacks;
+
+      if (shouldDefer) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || _locationIssue == issue) return;
+          setState(() => _locationIssue = issue);
+        });
+        return;
+      }
+
+      setState(() => _locationIssue = issue);
+    });
+  }
+
+  @override
+  void dispose() {
+    _mapController.bindLocationIssueListener(null);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final MapWidgetController mapController = MapWidgetController();
     return BlocBuilder<DriverCubit, DriverState>(
       builder: (context, state) {
         return Stack(
           children: [
-            MapWidget(controller: mapController),
+            MapWidget(controller: _mapController),
             SafeArea(
+              bottom: false,
               child: Column(
                 children: [
                   Container(
                     color: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     child: const DriverAppBar(),
                   ),
 
@@ -39,7 +83,6 @@ class OnlineContent extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
                     child: _EarningsCard(state: state),
                   ),
-
                 ],
               ),
             ),
@@ -47,20 +90,38 @@ class OnlineContent extends StatelessWidget {
             Positioned(
               left: 16,
               right: 16,
-              bottom: 20,
+              bottom: MediaQuery.of(context).padding.bottom + 20,
               child: _BottomWalletCard(state: state),
             ),
 
             Positioned(
-              bottom: 100,
+              bottom: MediaQuery.of(context).padding.bottom + 100,
               right: 16,
               child: _GpsButton(
                 onTap: () {
-                  mapController.recenterToCurrentLocation();
+                  _mapController.recenterToCurrentLocation();
                 },
               ),
             ),
-
+            if (_locationIssue != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 62,
+                child: SafeArea(
+                  bottom: false,
+                  child: LocationDisabledBanner(
+                    issue: _locationIssue!,
+                    onActionTap: () {
+                      if (_locationIssue == LocationIssue.serviceDisabled) {
+                        const LocationPermissionGuard().openLocationSettings();
+                      } else {
+                        const LocationPermissionGuard().openAppSettings();
+                      }
+                    },
+                  ),
+                ),
+              ),
           ],
         );
       },
@@ -98,7 +159,11 @@ class _OnlineStatusBanner extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+            child: const Icon(
+              Icons.check_circle_outline,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Column(
@@ -114,8 +179,11 @@ class _OnlineStatusBanner extends StatelessWidget {
               ),
               Text(
                 'Ready to receive orders',
-                style: TextStyle(fontSize: 14,
-                    fontWeight: FontWeight.w400, color: Colors.white70),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white70,
+                ),
               ),
             ],
           ),
@@ -152,15 +220,23 @@ class _EarningsCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.payments_outlined, size: 18, color: Colors.black45),
+                const Icon(
+                  Icons.payments_outlined,
+                  size: 18,
+                  color: Colors.black45,
+                ),
                 const SizedBox(width: 8),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       "TODAY'S EARNINGS",
-                      style: TextStyle(fontSize: 14,
-                          fontWeight: FontWeight.w600, color: Colors.black45, letterSpacing: 0.5),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black45,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                     Text(
                       '₹ ${state.totalEarnings.toStringAsFixed(0)}',
@@ -174,14 +250,16 @@ class _EarningsCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 Icon(
-                  state.isEarningsExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  state.isEarningsExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: Colors.black45,
                 ),
               ],
             ),
             if (state.isEarningsExpanded) ...[
               const SizedBox(height: 12),
-              const Divider(height: 1,color: AppColors.warmGray,),
+              const Divider(height: 1, color: AppColors.warmGray),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -211,7 +289,11 @@ class _MiniStat extends StatelessWidget {
   final IconData icon;
   final String value;
   final String label;
-  const _MiniStat({required this.icon, required this.value, required this.label});
+  const _MiniStat({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -222,16 +304,26 @@ class _MiniStat extends StatelessWidget {
           children: [
             Icon(icon, color: AuthUiColors.brandGreen, size: 24),
             const SizedBox(width: 6),
-            Text(value,
-                style: const TextStyle(fontSize: 16,
-                    fontWeight: FontWeight.w600, color: Colors.black87)),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
           ],
         ),
-        Text(label, style: const TextStyle(fontSize: 14,
-            fontWeight: FontWeight.w500, color: Colors.black45)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black45,
+          ),
+        ),
       ],
     );
-
   }
 }
 
@@ -263,9 +355,11 @@ class _BottomWalletCard extends StatelessWidget {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.account_balance_wallet_outlined,
-                size: 20,
-                color: Colors.black87),
+            child: const Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 20,
+              color: Colors.black87,
+            ),
           ),
           const SizedBox(width: 12),
           Column(
@@ -274,9 +368,10 @@ class _BottomWalletCard extends StatelessWidget {
               const Text(
                 'Wallet Balance',
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black45),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black45,
+                ),
               ),
               Text(
                 '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
@@ -291,18 +386,23 @@ class _BottomWalletCard extends StatelessWidget {
           const Spacer(),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const WalletPage()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const WalletPage()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
-            child: const Text('Add Money', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+            child: const Text(
+              'Add Money',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
           ),
         ],
       ),
@@ -329,13 +429,18 @@ class _BottomWalletCard extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               context.read<DriverCubit>().addMoneyFromInput(controller.text);
               Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AuthUiColors.brandGreen,),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AuthUiColors.brandGreen,
+            ),
             child: const Text('Add', style: TextStyle(color: Colors.white)),
           ),
         ],

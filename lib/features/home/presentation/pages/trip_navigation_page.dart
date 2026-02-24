@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
@@ -7,6 +10,7 @@ import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/app_assets.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/cubit/trip_navigation_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/trip_navigation_state.dart';
 import 'package:goapp/features/ride_complete/presentation/pages/ride_completed_screen.dart';
@@ -35,11 +39,14 @@ class _TripNavigationView extends StatefulWidget {
   State<_TripNavigationView> createState() => _TripNavigationViewState();
 }
 
-class _TripNavigationViewState extends State<_TripNavigationView> {
+class _TripNavigationViewState extends State<_TripNavigationView>
+    with WidgetsBindingObserver {
   static const LatLng _driverPoint = LatLng(13.0565, 80.2138);
   static const LatLng _destinationPoint = LatLng(13.0699, 80.2218);
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
+  final LocationPermissionGuard _locationGuard =
+      const LocationPermissionGuard();
   final DirectionsRouteService _directionsRouteService =
       DirectionsRouteService();
   late List<LatLng> _mapRoutePath = _buildCurvedRoutePath(
@@ -49,18 +56,37 @@ class _TripNavigationViewState extends State<_TripNavigationView> {
   bool _tripStarted = false;
   String? _mapStyle;
   BitmapDescriptor? _bikeMarkerIcon;
+  LocationIssue? _locationIssue;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
     _loadBikeIcon();
-    if (widget.initialRoutePath != null && widget.initialRoutePath!.length > 1) {
+    unawaited(_refreshLocationState(requestPermission: true));
+    if (widget.initialRoutePath != null &&
+        widget.initialRoutePath!.length > 1) {
       _mapRoutePath = _optimizeRoutePoints(widget.initialRoutePath!);
       _startTripIfReady();
     } else {
       _loadRoadRoutePath();
     }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshLocationState());
+    }
+  }
+
+  Future<void> _refreshLocationState({bool requestPermission = false}) async {
+    final result = await _locationGuard.ensureReady(
+      requestPermission: requestPermission,
+    );
+    if (!mounted) return;
+    setState(() => _locationIssue = result.issue);
   }
 
   Future<void> _loadMapStyle() async {
@@ -162,6 +188,24 @@ class _TripNavigationViewState extends State<_TripNavigationView> {
     }
     optimized.add(points.last);
     return optimized;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _onLocationBannerActionTap() async {
+    final issue = _locationIssue;
+    if (issue == null) return;
+    if (issue == LocationIssue.serviceDisabled) {
+      await _locationGuard.openLocationSettings();
+    } else {
+      await _locationGuard.openAppSettings();
+    }
+    if (!mounted) return;
+    unawaited(_refreshLocationState());
   }
 
   @override
@@ -282,6 +326,16 @@ class _TripNavigationViewState extends State<_TripNavigationView> {
                         ),
                       ),
                     ),
+                  if (_locationIssue != null)
+                    Positioned(
+                      top: MediaQuery.of(context).padding.top + 12,
+                      left: 0,
+                      right: 0,
+                      child: LocationDisabledBanner(
+                        issue: _locationIssue!,
+                        onActionTap: _onLocationBannerActionTap,
+                      ),
+                    ),
                 ],
               );
             },
@@ -296,7 +350,9 @@ class _TripNavigationViewState extends State<_TripNavigationView> {
                     curve: Curves.easeOutCubic,
                     right: 14,
                     bottom: showArrivalSheet ? 470 : 122,
-                    child: _SosButton(onTap: () => SOSBottomSheet.show(context)),
+                    child: _SosButton(
+                      onTap: () => SOSBottomSheet.show(context),
+                    ),
                   ),
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 420),

@@ -2,16 +2,29 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/location_disabled_banner.dart';
 
 class MapWidgetController {
   Future<void> Function()? _recenterAction;
+  void Function(LocationIssue? issue)? _locationIssueListener;
 
   Future<void> recenterToCurrentLocation() async {
     await _recenterAction?.call();
+  }
+
+  void bindLocationIssueListener(
+    void Function(LocationIssue? issue)? listener,
+  ) {
+    _locationIssueListener = listener;
+  }
+
+  void _notifyLocationIssue(LocationIssue? issue) {
+    _locationIssueListener?.call(issue);
   }
 }
 
@@ -24,19 +37,24 @@ class MapWidget extends StatefulWidget {
   State<MapWidget> createState() => _MapWidgetState();
 }
 
-class _MapWidgetState extends State<MapWidget> {
+class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   static const LatLng _fallbackPoint = LatLng(12.9716, 77.5946);
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
+  final LocationPermissionGuard _locationGuard =
+      const LocationPermissionGuard();
   AppMapController? _mapController;
   String? _mapStyle;
   LatLng _currentPoint = _fallbackPoint;
   bool _showCaptainArrow = false;
+  LocationIssue? _locationIssue;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     widget.controller?._recenterAction = _recenter;
+    widget.controller?._notifyLocationIssue(_locationIssue);
     _loadMapStyle();
     _loadCurrentLocation();
   }
@@ -46,7 +64,26 @@ class _MapWidgetState extends State<MapWidget> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller?._recenterAction = null;
+      oldWidget.controller?.bindLocationIssueListener(null);
       widget.controller?._recenterAction = _recenter;
+      widget.controller?._notifyLocationIssue(_locationIssue);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshLocationState());
+    }
+  }
+
+  Future<void> _refreshLocationState() async {
+    final result = await _locationGuard.ensureReady(requestPermission: false);
+    if (!mounted) return;
+    setState(() => _locationIssue = result.issue);
+    widget.controller?._notifyLocationIssue(_locationIssue);
+    if (result.isReady) {
+      unawaited(_loadCurrentLocation(requestPermission: false));
     }
   }
 
@@ -58,18 +95,15 @@ class _MapWidgetState extends State<MapWidget> {
     } catch (_) {}
   }
 
-  Future<void> _loadCurrentLocation() async {
+  Future<void> _loadCurrentLocation({bool requestPermission = true}) async {
     try {
-      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+      final result = await _locationGuard.ensureReady(
+        requestPermission: requestPermission,
+      );
+      if (!mounted) return;
+      setState(() => _locationIssue = result.issue);
+      widget.controller?._notifyLocationIssue(_locationIssue);
+      if (!result.isReady) {
         return;
       }
 
@@ -110,9 +144,23 @@ class _MapWidgetState extends State<MapWidget> {
     await _mapController?.animateTo(_currentPoint, zoom: 16);
   }
 
+  Future<void> _onLocationBannerActionTap() async {
+    final issue = _locationIssue;
+    if (issue == null) return;
+    if (issue == LocationIssue.serviceDisabled) {
+      await _locationGuard.openLocationSettings();
+    } else {
+      await _locationGuard.openAppSettings();
+    }
+    if (!mounted) return;
+    unawaited(_refreshLocationState());
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     widget.controller?._recenterAction = null;
+    widget.controller?.bindLocationIssueListener(null);
     super.dispose();
   }
 
@@ -147,6 +195,16 @@ class _MapWidgetState extends State<MapWidget> {
                 color: AppColors.greenStrong,
                 size: 34,
               ),
+            ),
+          ),
+        if (_locationIssue != null)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 12,
+            left: 0,
+            right: 0,
+            child: LocationDisabledBanner(
+              issue: _locationIssue!,
+              onActionTap: _onLocationBannerActionTap,
             ),
           ),
       ],
