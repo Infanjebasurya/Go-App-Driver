@@ -9,12 +9,7 @@ class RateAppCubit extends Cubit<RateAppState> {
         state.status == RateAppStatus.submitted) {
       return;
     }
-    emit(
-      state.copyWith(
-        selectedRating: rating,
-        status: RateAppStatus.idle,
-      ),
-    );
+    emit(state.copyWith(selectedRating: rating, status: RateAppStatus.idle));
   }
 
   void updateFeedback(String text) {

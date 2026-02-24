@@ -4,8 +4,8 @@ import 'package:goapp/features/auth/presentation/cubit/login_form_state.dart';
 
 class LoginFormCubit extends Cubit<LoginFormState> {
   LoginFormCubit({required PhoneNumberService phoneNumberService})
-      : _phoneNumberService = phoneNumberService,
-        super(const LoginFormState());
+    : _phoneNumberService = phoneNumberService,
+      super(const LoginFormState());
 
   final PhoneNumberService _phoneNumberService;
 
@@ -26,20 +26,10 @@ class LoginFormCubit extends Cubit<LoginFormState> {
   void submit() {
     final error = _phoneNumberService.validateIndiaMobile(state.digits);
     if (error != null) {
-      emit(
-        state.copyWith(
-          submitError: error,
-          submitRequested: false,
-        ),
-      );
+      emit(state.copyWith(submitError: error, submitRequested: false));
       return;
     }
-    emit(
-      state.copyWith(
-        submitRequested: true,
-        clearSubmitError: true,
-      ),
-    );
+    emit(state.copyWith(submitRequested: true, clearSubmitError: true));
   }
 
   void consumeSubmit() {

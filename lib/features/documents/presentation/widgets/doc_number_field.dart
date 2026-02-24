@@ -41,7 +41,7 @@ class DocNumberField extends StatelessWidget {
           onChanged: onChanged,
           style: const TextStyle(
             fontSize: 18,
-            color: Color(0xFF1A2236),
+            color: AppColors.headingNavy,
             fontWeight: FontWeight.w400,
             letterSpacing: 0.3,
           ),
@@ -55,7 +55,9 @@ class DocNumberField extends StatelessWidget {
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError ? const Color(0xFFE53935) : const Color(0xFFD5DDE5),
+                color: hasError
+                    ? const Color(0xFFE53935)
+                    : const Color(0xFFD5DDE5),
                 width: 1.2,
               ),
             ),
@@ -76,10 +78,7 @@ class DocNumberField extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             errorText!,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFFE53935),
-            ),
+            style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
           ),
         ] else if (example != null && example!.isNotEmpty) ...[
           const SizedBox(height: 5),

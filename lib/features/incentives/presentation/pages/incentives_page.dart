@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 import '../cubit/incentives_cubit.dart';
 import '../cubit/incentives_state.dart';
@@ -34,14 +35,20 @@ class _IncentivesView extends StatelessWidget {
             ),
             title: const Text(
               'Incentives',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             centerTitle: true,
           ),
           body: Column(
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(25),
@@ -75,7 +82,7 @@ class _IncentivesView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'MORNING SESSION • 08:00 AM - 12:00 PM',
+                        'MORNING SESSION â€¢ 08:00 AM - 12:00 PM',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -92,7 +99,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events_outlined,
                         title: 'Silver Milestone',
                         subtitle: 'Complete 3 rides today',
-                        reward: '₹50',
+                        reward: '?50',
                         isActive: true,
                       ),
                       _buildMilestoneItem(
@@ -101,7 +108,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events,
                         title: 'Gold Milestone',
                         subtitle: 'Complete 5 rides today',
-                        reward: '₹100',
+                        reward: '?100',
                         isActive: false,
                       ),
                       _buildMilestoneItem(
@@ -110,12 +117,12 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.diamond_outlined,
                         title: 'Platinum Milestone',
                         subtitle: 'Complete 7 rides today',
-                        reward: '₹150',
+                        reward: '?150',
                         isActive: false,
                       ),
                       const SizedBox(height: 30),
                       const Text(
-                        'MORNING SESSION • 12:00 PM - 4:00 PM',
+                        'MORNING SESSION â€¢ 12:00 PM - 4:00 PM',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -130,7 +137,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events_outlined,
                         title: 'Silver Milestone',
                         subtitle: 'Complete 3 rides today',
-                        reward: '₹50',
+                        reward: '?50',
                         isActive: false,
                       ),
                       _buildMilestoneItem(
@@ -139,7 +146,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.emoji_events,
                         title: 'Gold Milestone',
                         subtitle: 'Complete 5 rides today',
-                        reward: '₹100',
+                        reward: '?100',
                         isActive: false,
                       ),
                       _buildMilestoneItem(
@@ -148,7 +155,7 @@ class _IncentivesView extends StatelessWidget {
                         icon: Icons.diamond_outlined,
                         title: 'Platinum Milestone',
                         subtitle: 'Complete 7 rides today',
-                        reward: '₹150',
+                        reward: '?150',
                         isActive: false,
                       ),
                       const SizedBox(height: 40),
@@ -178,10 +185,10 @@ class _IncentivesView extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 8),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE8F5E9) : Colors.white,
+          color: isSelected ? AppColors.earningsAccentSoft : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: isSelected
-              ? Border.all(color: const Color(0xFF00C853).withValues(alpha: 0.3))
+              ? Border.all(color: AppColors.emerald.withValues(alpha: 0.3))
               : null,
         ),
         child: Column(
@@ -191,7 +198,7 @@ class _IncentivesView extends StatelessWidget {
               day,
               style: TextStyle(
                 fontSize: 12,
-                color: isSelected ? const Color(0xFF00C853) : Colors.grey[600],
+                color: isSelected ? AppColors.emerald : Colors.grey[600],
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -200,7 +207,7 @@ class _IncentivesView extends StatelessWidget {
               date,
               style: TextStyle(
                 fontSize: 16,
-                color: isSelected ? const Color(0xFF00C853) : Colors.black,
+                color: isSelected ? AppColors.emerald : Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -215,17 +222,14 @@ class _IncentivesView extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF00A844),
-            Color(0xFF007F33),
-          ],
+          colors: [Color(0xFF00A844), Color(0xFF007F33)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00C853).withValues(alpha: 0.3),
+            color: AppColors.emerald.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -251,7 +255,7 @@ class _IncentivesView extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
-                '₹150',
+                '?150',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -340,7 +344,10 @@ class _IncentivesView extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 10),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7),
+            fontSize: 10,
+          ),
         ),
       ],
     );
@@ -367,7 +374,7 @@ class _IncentivesView extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: isActive ? const Color(0xFF00C853) : Colors.grey[300],
+                    color: isActive ? AppColors.emerald : Colors.grey[300],
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -396,12 +403,14 @@ class _IncentivesView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isUnlocked ? const Color(0xFFFFF8E1) : Colors.grey[50],
+                      color: isUnlocked
+                          ? const Color(0xFFFFF8E1)
+                          : Colors.grey[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       icon,
-                      color: isUnlocked ? const Color(0xFFD4AF37) : Colors.grey[300],
+                      color: isUnlocked ? AppColors.gold : Colors.grey[300],
                       size: 20,
                     ),
                   ),
@@ -437,7 +446,9 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: isUnlocked ? const Color(0xFF00C853) : Colors.grey[300],
+                          color: isUnlocked
+                              ? AppColors.emerald
+                              : Colors.grey[300],
                         ),
                       ),
                       Text(
@@ -445,7 +456,7 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isUnlocked ? const Color(0xFFD4AF37) : Colors.grey[300],
+                          color: isUnlocked ? AppColors.gold : Colors.grey[300],
                         ),
                       ),
                     ],
@@ -468,7 +479,7 @@ class _IncentivesView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: isSelected
               ? BoxDecoration(
-                  color: const Color(0xFF00C853),
+                  color: AppColors.emerald,
                   borderRadius: BorderRadius.circular(25),
                 )
               : null,

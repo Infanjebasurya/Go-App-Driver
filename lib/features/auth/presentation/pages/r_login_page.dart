@@ -50,7 +50,9 @@ class _RLoginPageState extends State<RLoginPage> {
                   MaterialPageRoute(
                     builder: (_) => MultiBlocProvider(
                       providers: [
-                        BlocProvider<AuthBloc>.value(value: context.read<AuthBloc>()),
+                        BlocProvider<AuthBloc>.value(
+                          value: context.read<AuthBloc>(),
+                        ),
                         BlocProvider<OtpCubit>(
                           create: (_) => OtpCubit(
                             resendOtpUseCase: ResendOtpUseCase(
@@ -80,8 +82,8 @@ class _RLoginPageState extends State<RLoginPage> {
               }
               if (state.submitRequested && state.phoneE164 != null) {
                 context.read<AuthBloc>().add(
-                      RequestOtpRequested(phone: state.phoneE164!),
-                    );
+                  RequestOtpRequested(phone: state.phoneE164!),
+                );
                 context.read<LoginFormCubit>().consumeSubmit();
               }
             },
@@ -167,7 +169,8 @@ class _RLoginPageState extends State<RLoginPage> {
                                         controller: _controller,
                                         keyboardType: TextInputType.phone,
                                         inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly,
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
                                           LengthLimitingTextInputFormatter(10),
                                         ],
                                         isCollapsed: true,
@@ -185,7 +188,9 @@ class _RLoginPageState extends State<RLoginPage> {
                                           color: AuthUiColors.textDarkAlt,
                                           letterSpacing: 1.1,
                                         ),
-                                        onChanged: context.read<LoginFormCubit>().onInputChanged,
+                                        onChanged: context
+                                            .read<LoginFormCubit>()
+                                            .onInputChanged,
                                       ),
                                     ),
                                   ],
@@ -197,7 +202,8 @@ class _RLoginPageState extends State<RLoginPage> {
                                     alpha: 0.5,
                                   ),
                                 ),
-                                if (formState.error != null && formState.digits.isNotEmpty) ...[
+                                if (formState.error != null &&
+                                    formState.digits.isNotEmpty) ...[
                                   const SizedBox(height: 8),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 14),
@@ -223,18 +229,21 @@ class _RLoginPageState extends State<RLoginPage> {
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: 'By continuing, you agree to receive SMS for verification.  ',
+                                          text:
+                                              'By continuing, you agree to receive SMS for verification.  ',
                                         ),
                                         TextSpan(text: ' and\n'),
                                         TextSpan(
-                                          text: 'Message and data rates may apply. View our ',
+                                          text:
+                                              'Message and data rates may apply. View our ',
                                         ),
                                         TextSpan(
                                           text: 'Privacy \nPolicy.',
                                           style: TextStyle(
                                             color: AppColors.black,
                                             fontSize: 14,
-                                            decoration: TextDecoration.underline,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
                                         ),
                                       ],
@@ -251,7 +260,9 @@ class _RLoginPageState extends State<RLoginPage> {
                                       return AuthPrimaryButton(
                                         label: 'Get Verification Code',
                                         loading: loading,
-                                        onPressed: context.read<LoginFormCubit>().submit,
+                                        onPressed: context
+                                            .read<LoginFormCubit>()
+                                            .submit,
                                       );
                                     },
                                   ),

@@ -138,15 +138,15 @@ class BankAccountData extends Equatable {
 
   @override
   List<Object?> get props => [
-        accountHolderName,
-        accountNumber,
-        confirmAccountNumber,
-        ifscCode,
-        nameError,
-        accountNumberError,
-        confirmAccountNumberError,
-        ifscError,
-      ];
+    accountHolderName,
+    accountNumber,
+    confirmAccountNumber,
+    ifscCode,
+    nameError,
+    accountNumberError,
+    confirmAccountNumberError,
+    ifscError,
+  ];
 }
 
 class StepData extends Equatable {
@@ -190,13 +190,13 @@ class StepData extends Equatable {
 
   @override
   List<Object?> get props => [
-        step,
-        frontCaptured,
-        backCaptured,
-        documentNumber,
-        numberError,
-        imageError,
-      ];
+    step,
+    frontCaptured,
+    backCaptured,
+    documentNumber,
+    numberError,
+    imageError,
+  ];
 }
 
 class DocumentUploadState extends Equatable {
@@ -215,15 +215,15 @@ class DocumentUploadState extends Equatable {
   });
 
   factory DocumentUploadState.initial() => DocumentUploadState(
-        currentStepIndex: 0,
-        steps: [
-          DocumentStep.drivingLicense,
-          DocumentStep.vehicleRC,
-          DocumentStep.identityAadhaar,
-          DocumentStep.identityPan,
-        ].map((s) => StepData(step: s)).toList(),
-        bankData: const BankAccountData(),
-      );
+    currentStepIndex: 0,
+    steps: [
+      DocumentStep.drivingLicense,
+      DocumentStep.vehicleRC,
+      DocumentStep.identityAadhaar,
+      DocumentStep.identityPan,
+    ].map((s) => StepData(step: s)).toList(),
+    bankData: const BankAccountData(),
+  );
 
   int get totalSteps => steps.length + 1;
 
@@ -266,5 +266,11 @@ class DocumentUploadState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [currentStepIndex, steps, bankData, isSubmitting, isAllDone];
+  List<Object?> get props => [
+    currentStepIndex,
+    steps,
+    bankData,
+    isSubmitting,
+    isAllDone,
+  ];
 }

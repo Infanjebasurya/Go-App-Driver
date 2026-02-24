@@ -10,9 +10,11 @@ import '../../../document_verify/presentation/model/document_progress_store.dart
 
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   DocumentUploadCubit({int initialStepIndex = 0})
-      : super(DocumentUploadState.initial().copyWith(
+    : super(
+        DocumentUploadState.initial().copyWith(
           currentStepIndex: initialStepIndex,
-        ));
+        ),
+      );
 
   final ImagePicker _picker = ImagePicker();
   final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
@@ -37,7 +39,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (state.isCurrentStepBank) return;
     if (_isPicking) return;
     if (state.currentDocStep.imageError != null) {
-      emit(state.copyWithDocStep(state.currentDocStep.copyWith(clearImageError: true)));
+      emit(
+        state.copyWithDocStep(
+          state.currentDocStep.copyWith(clearImageError: true),
+        ),
+      );
     }
     if (_isTest) {
       final updated = state.currentDocStep.copyWith(frontCaptured: true);
@@ -79,7 +85,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (state.isCurrentStepBank) return;
     if (_isPicking) return;
     if (state.currentDocStep.imageError != null) {
-      emit(state.copyWithDocStep(state.currentDocStep.copyWith(clearImageError: true)));
+      emit(
+        state.copyWithDocStep(
+          state.currentDocStep.copyWith(clearImageError: true),
+        ),
+      );
     }
     if (_isTest) {
       final updated = state.currentDocStep.copyWith(backCaptured: true);
@@ -123,8 +133,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       _mapStepToDocType(state.currentDocStep.step),
       null,
     );
-    final updated =
-        state.currentDocStep.copyWith(frontCaptured: false, clearImageError: true);
+    final updated = state.currentDocStep.copyWith(
+      frontCaptured: false,
+      clearImageError: true,
+    );
     emit(state.copyWithDocStep(updated));
   }
 
@@ -134,8 +146,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       _mapStepToDocType(state.currentDocStep.step),
       null,
     );
-    final updated =
-        state.currentDocStep.copyWith(backCaptured: false, clearImageError: true);
+    final updated = state.currentDocStep.copyWith(
+      backCaptured: false,
+      clearImageError: true,
+    );
     emit(state.copyWithDocStep(updated));
   }
 
@@ -256,9 +270,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     switch (step) {
       case DocumentStep.drivingLicense:
       case DocumentStep.vehicleRC:
-        return value
-            .toUpperCase()
-            .replaceAll(RegExp(r'[^A-Z0-9]'), '');
+        return value.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
       case DocumentStep.identityAadhaar:
         return value.replaceAll(RegExp(r'[^0-9]'), '');
       case DocumentStep.identityPan:
@@ -305,20 +317,28 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       valid = false;
     }
     if (b.accountNumber.trim().isEmpty) {
-      updated = updated.copyWith(accountNumberError: 'Account number is required');
+      updated = updated.copyWith(
+        accountNumberError: 'Account number is required',
+      );
       valid = false;
     }
     if (b.confirmAccountNumber.trim().isEmpty) {
-      updated = updated.copyWith(confirmAccountNumberError: 'Please confirm account number');
+      updated = updated.copyWith(
+        confirmAccountNumberError: 'Please confirm account number',
+      );
       valid = false;
     } else if (b.confirmAccountNumber != b.accountNumber) {
-      updated = updated.copyWith(confirmAccountNumberError: 'Account numbers do not match');
+      updated = updated.copyWith(
+        confirmAccountNumberError: 'Account numbers do not match',
+      );
       valid = false;
     }
     if (b.ifscCode.trim().isEmpty) {
       updated = updated.copyWith(ifscError: 'IFSC code is required');
       valid = false;
-    } else if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$').hasMatch(b.ifscCode.trim().toUpperCase())) {
+    } else if (!RegExp(
+      r'^[A-Z]{4}0[A-Z0-9]{6}$',
+    ).hasMatch(b.ifscCode.trim().toUpperCase())) {
       updated = updated.copyWith(ifscError: 'Enter a valid IFSC code');
       valid = false;
     }

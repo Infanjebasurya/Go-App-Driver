@@ -60,15 +60,18 @@ Widget _lightSlide({
   required Offset begin,
 }) {
   const curve = Curves.easeOutCubic;
-  final offsetTween = Tween<Offset>(begin: begin, end: Offset.zero).chain(
-    CurveTween(curve: curve),
-  );
-  final fadeTween = Tween<double>(begin: 0.0, end: 1.0).chain(
-    CurveTween(curve: curve),
-  );
-  final scaleTween = Tween<double>(begin: 0.985, end: 1.0).chain(
-    CurveTween(curve: curve),
-  );
+  final offsetTween = Tween<Offset>(
+    begin: begin,
+    end: Offset.zero,
+  ).chain(CurveTween(curve: curve));
+  final fadeTween = Tween<double>(
+    begin: 0.0,
+    end: 1.0,
+  ).chain(CurveTween(curve: curve));
+  final scaleTween = Tween<double>(
+    begin: 0.985,
+    end: 1.0,
+  ).chain(CurveTween(curve: curve));
 
   return FadeTransition(
     opacity: animation.drive(fadeTween),

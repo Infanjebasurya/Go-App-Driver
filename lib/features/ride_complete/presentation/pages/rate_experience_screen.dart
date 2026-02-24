@@ -236,7 +236,7 @@ class _RateExperienceView extends StatelessWidget {
                         fontSize: 14,
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF5F5F5),
+                      fillColor: AppColors.surfaceF5,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,

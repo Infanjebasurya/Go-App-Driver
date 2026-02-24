@@ -62,7 +62,7 @@ class _VerificationView extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1A2236),
+                            color: AppColors.headingNavy,
                             letterSpacing: -0.6,
                             height: 1.1,
                           ),
@@ -117,16 +117,14 @@ class _VerificationView extends StatelessWidget {
     if (stepIndex != null) {
       Navigator.of(context)
           .push(
-        MaterialPageRoute(
-          builder: (_) => DocumentUploadScreen(
-            initialStepIndex: stepIndex,
-          ),
-        ),
-      )
+            MaterialPageRoute(
+              builder: (_) => DocumentUploadScreen(initialStepIndex: stepIndex),
+            ),
+          )
           .then((_) {
-        if (!context.mounted) return;
-        context.read<VerificationCubit>().syncFromStore();
-      });
+            if (!context.mounted) return;
+            context.read<VerificationCubit>().syncFromStore();
+          });
       return;
     }
   }
@@ -175,7 +173,7 @@ class _VerificationView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A2236),
+                color: AppColors.headingNavy,
               ),
             ),
             const SizedBox(height: 10),
@@ -207,10 +205,7 @@ class _VerificationView extends StatelessWidget {
                 },
                 child: const Text(
                   'Done',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),

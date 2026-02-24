@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../document_verify/presentation/model/document_progress_store.dart';
-import '../../../document_verify/presentation/model/document_model.dart' show DocumentType;
+import '../../../document_verify/presentation/model/document_model.dart'
+    show DocumentType;
 import '../model/document_model.dart';
 import 'documents_state.dart';
 
@@ -100,10 +101,12 @@ class DocumentsCubit extends Cubit<DocumentsState> {
           DocumentProgressStore.backImagePath(DocumentType.panCard),
         );
       case _bankAccountId:
-        final completed =
-            DocumentProgressStore.isCompleted(DocumentType.bankDetails);
-        final status =
-            completed ? DocumentStatus.verified : DocumentStatus.notUploaded;
+        final completed = DocumentProgressStore.isCompleted(
+          DocumentType.bankDetails,
+        );
+        final status = completed
+            ? DocumentStatus.verified
+            : DocumentStatus.notUploaded;
         return doc.copyWith(status: status);
       default:
         return doc;
@@ -115,10 +118,11 @@ class DocumentsCubit extends Cubit<DocumentsState> {
     String? frontPath,
     String? backPath,
   ) {
-    final hasImages = (frontPath?.isNotEmpty ?? false) &&
-        (backPath?.isNotEmpty ?? false);
-    final status =
-        hasImages ? DocumentStatus.verified : DocumentStatus.notUploaded;
+    final hasImages =
+        (frontPath?.isNotEmpty ?? false) && (backPath?.isNotEmpty ?? false);
+    final status = hasImages
+        ? DocumentStatus.verified
+        : DocumentStatus.notUploaded;
     return doc.copyWith(
       status: status,
       frontImagePath: frontPath,

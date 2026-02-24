@@ -2,6 +2,8 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/background/trip_background_service.dart';
+import 'package:goapp/core/notifications/local_notification_service.dart';
 
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -13,7 +15,11 @@ import 'features/onboarding/presentation/navigation/onboarding_route_transitions
 import 'features/onboarding/presentation/pages/get_started_page.dart';
 import 'features/onboarding/presentation/pages/register_start_onboarding_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalNotificationService.initialize();
+  await TripBackgroundService.initialize();
+
   runApp(
     DevicePreview(
       enabled: kDebugMode && _devicePreviewEnabled,

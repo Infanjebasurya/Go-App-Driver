@@ -13,10 +13,7 @@ import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model
 import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
 
 class VehicleDetailsScreen extends StatelessWidget {
-  const VehicleDetailsScreen({
-    super.key,
-    required this.vehicleType,
-  });
+  const VehicleDetailsScreen({super.key, required this.vehicleType});
 
   final VehicleType vehicleType;
 
@@ -61,7 +58,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
         title: 'GoApp',
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: Color(0xFFF0F4F8)),
+          child: Divider(height: 1, color: AppColors.coolwhite),
         ),
       ),
       body: BlocConsumer<VehicleDetailsCubit, VehicleDetailsState>(
@@ -71,9 +68,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
           _fuelTypeController.text = state.fuelTypeDisplay;
           if (state.isSubmitted) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const VerificationScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const VerificationScreen()),
             );
             context.read<VehicleDetailsCubit>().clearSuccess();
           }
@@ -93,7 +88,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1A2236),
+                          color: AppColors.headingNavy,
                           letterSpacing: -0.6,
                           height: 1.1,
                         ),
@@ -112,7 +107,8 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                         hasPhoto: state.hasPhoto,
                         vehicleType: state.vehicleType,
                         onTap: () => _showPhotoSourceSheet(context),
-                        onRemove: () => context.read<VehicleDetailsCubit>().removePhoto(),
+                        onRemove: () =>
+                            context.read<VehicleDetailsCubit>().removePhoto(),
                       ),
                       if (state.errors.photo != null) ...[
                         const SizedBox(height: 8),
@@ -237,7 +233,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A2236),
+                  color: AppColors.headingNavy,
                 ),
               ),
               const SizedBox(height: 6),
@@ -247,8 +243,8 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                 onTap: () {
                   Navigator.of(ctx).pop();
                   context.read<VehicleDetailsCubit>().pickPhoto(
-                        source: ImageSource.camera,
-                      );
+                    source: ImageSource.camera,
+                  );
                 },
               ),
               ListTile(
@@ -257,8 +253,8 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                 onTap: () {
                   Navigator.of(ctx).pop();
                   context.read<VehicleDetailsCubit>().pickPhoto(
-                        source: ImageSource.gallery,
-                      );
+                    source: ImageSource.gallery,
+                  );
                 },
               ),
               const SizedBox(height: 8),
@@ -298,7 +294,7 @@ class _ContinueButton extends StatelessWidget {
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFF0F4F8))),
+        border: Border(top: BorderSide(color: AppColors.coolwhite)),
       ),
       child: SizedBox(
         width: double.infinity,

@@ -1,19 +1,41 @@
-﻿import 'package:flutter/material.dart';
-import 'earnings_details_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'wallet_page.dart';
+import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
+import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
+import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
+import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
+import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
+import 'package:goapp/features/earnings/presentation/pages/earnings_details_page.dart';
+import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
 import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
 
-class EarningsScreen extends StatefulWidget {
+class EarningsScreen extends StatelessWidget {
   const EarningsScreen({super.key});
 
   @override
-  State<EarningsScreen> createState() => _EarningsScreenState();
+  Widget build(BuildContext context) {
+    final repository = const EarningsRepositoryImpl();
+    return BlocProvider<EarningsCubit>(
+      create: (_) => EarningsCubit(
+        getEarningsSnapshot: GetEarningsSnapshotUseCase(repository),
+        getWalletTransactions: GetWalletTransactionsUseCase(repository),
+      )..load(),
+      child: const _EarningsView(),
+    );
+  }
 }
 
-class _EarningsScreenState extends State<EarningsScreen>
+class _EarningsView extends StatefulWidget {
+  const _EarningsView();
+
+  @override
+  State<_EarningsView> createState() => _EarningsViewState();
+}
+
+class _EarningsViewState extends State<_EarningsView>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  late final TabController _tabController;
 
   @override
   void initState() {
@@ -30,144 +52,98 @@ class _EarningsScreenState extends State<EarningsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.surfaceF5,
       appBar: AppBar(
         title: const Text(
           'Earnings',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.black),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Column(
-        children: [
+        children: <Widget>[
           Container(
-            color: Colors.white,
+            color: AppColors.white,
             child: TabBar(
               controller: _tabController,
-              labelColor: Colors.black87,
-              unselectedLabelColor: Colors.grey,
+              labelColor: AppColors.black,
+              unselectedLabelColor: AppColors.neutral888,
               indicatorColor: AppColors.emerald,
               indicatorWeight: 3,
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
-              tabs: const [
+              tabs: const <Tab>[
                 Tab(text: 'All Earnings'),
                 Tab(text: 'Wallet'),
               ],
             ),
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [_buildAllEarningsView(), _buildWalletView()],
+            child: BlocBuilder<EarningsCubit, EarningsState>(
+              builder: (context, state) {
+                if (state.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return TabBarView(
+                  controller: _tabController,
+                  children: <Widget>[
+                    _AllEarningsView(state: state),
+                    _WalletMenuView(state: state),
+                  ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildAllEarningsView() {
+class _AllEarningsView extends StatelessWidget {
+  const _AllEarningsView({required this.state});
+
+  final EarningsState state;
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(20),
       child: Column(
-        children: [
+        children: <Widget>[
           GestureDetector(
             onTap: () {
+              final cubit = context.read<EarningsCubit>();
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const EarningsDetailsPage(),
+                MaterialPageRoute<void>(
+                  builder: (_) => BlocProvider<EarningsCubit>.value(
+                    value: cubit,
+                    child: const EarningsDetailsPage(),
+                  ),
                 ),
               );
             },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    'Today\'s Earnings',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    '?1,450.50',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.emerald.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.trending_up, color: AppColors.emerald, size: 16),
-                        SizedBox(width: 4),
-                        Text(
-                          '+12% vs yesterday',
-                          style: TextStyle(
-                            color: AppColors.emerald,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            child: _SummaryCard(amount: state.snapshot.todaysEarnings),
           ),
           const SizedBox(height: 24),
-          _buildMenuItem(
+          _MenuItem(
             icon: Icons.receipt_long_outlined,
-            iconBackgroundColor: AppColors.earningsAccentSoft,
-            iconColor: AppColors.emerald,
             title: 'All Orders',
             subtitle: 'View history and daily breakdowns',
-            onTap: () {
-              SOSBottomSheet.show(context);
-            },
+            onTap: () => SOSBottomSheet.show(context),
           ),
           const SizedBox(height: 16),
-          _buildMenuItem(
+          _MenuItem(
             icon: Icons.payments_outlined,
-            iconBackgroundColor: AppColors.earningsAccentSoft,
-            iconColor: AppColors.emerald,
             title: 'View Rate Card',
             subtitle: 'Standard rates and surge pricing',
             onTap: () {},
@@ -176,124 +152,151 @@ class _EarningsScreenState extends State<EarningsScreen>
       ),
     );
   }
+}
 
-  Widget _buildWalletView() {
+class _WalletMenuView extends StatelessWidget {
+  const _WalletMenuView({required this.state});
+
+  final EarningsState state;
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(20),
       child: Column(
-        children: [
+        children: <Widget>[
           GestureDetector(
             onTap: () {
+              final cubit = context.read<EarningsCubit>();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const WalletPage()),
+                MaterialPageRoute<void>(
+                  builder: (_) => BlocProvider<EarningsCubit>.value(
+                    value: cubit,
+                    child: const WalletPage(),
+                  ),
+                ),
               );
             },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    'Today\'s Earnings',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    '?1,450.50',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.emerald.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.trending_up, color: AppColors.emerald, size: 16),
-                        SizedBox(width: 4),
-                        Text(
-                          '+12% vs yesterday',
-                          style: TextStyle(
-                            color: AppColors.emerald,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            child: _SummaryCard(amount: state.snapshot.walletBalance),
           ),
           const SizedBox(height: 24),
-          _buildMenuItem(
-            icon: Icons.receipt_long_outlined,
-            iconBackgroundColor: AppColors.earningsAccentSoft,
-            iconColor: AppColors.emerald,
-            title: 'All Orders',
-            subtitle: 'View history and daily breakdowns',
+          _MenuItem(
+            icon: Icons.account_balance_wallet_outlined,
+            title: 'Wallet',
+            subtitle: 'Recharge and withdraw balance',
             onTap: () {
-              SOSBottomSheet.show(context);
+              final cubit = context.read<EarningsCubit>();
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => BlocProvider<EarningsCubit>.value(
+                    value: cubit,
+                    child: const WalletPage(),
+                  ),
+                ),
+              );
             },
-          ),
-          const SizedBox(height: 16),
-          _buildMenuItem(
-            icon: Icons.payments_outlined,
-            iconBackgroundColor: AppColors.earningsAccentSoft,
-            iconColor: AppColors.emerald,
-            title: 'View Rate Card',
-            subtitle: 'Standard rates and surge pricing',
-            onTap: () {},
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildMenuItem({
-    required IconData icon,
-    required Color iconBackgroundColor,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({required this.amount});
+
+  final double amount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: <Widget>[
+          const Text(
+            'Today\'s Earnings',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.neutral666,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'â‚¹${amount.toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.emerald.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.trending_up, color: AppColors.emerald, size: 16),
+                SizedBox(width: 4),
+                Text(
+                  '+12% vs yesterday',
+                  style: TextStyle(
+                    color: AppColors.emerald,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
+  const _MenuItem({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
+        boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Color(0x0D000000),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -305,32 +308,35 @@ class _EarningsScreenState extends State<EarningsScreen>
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             child: Row(
-              children: [
+              children: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: iconBackgroundColor,
+                  decoration: const BoxDecoration(
+                    color: AppColors.earningsAccentSoft,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: iconColor, size: 24),
+                  child: Icon(icon, color: AppColors.emerald, size: 24),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         title,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: AppColors.black,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.neutral666,
+                        ),
                       ),
                     ],
                   ),
@@ -338,7 +344,7 @@ class _EarningsScreenState extends State<EarningsScreen>
                 const Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
-                  color: Colors.grey,
+                  color: AppColors.neutral888,
                 ),
               ],
             ),
@@ -348,5 +354,3 @@ class _EarningsScreenState extends State<EarningsScreen>
     );
   }
 }
-
-

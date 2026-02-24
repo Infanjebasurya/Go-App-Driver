@@ -8,14 +8,12 @@ import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model
 
 class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   VehicleDetailsCubit({required VehicleType vehicleType})
-      : super(VehicleDetailsState.initial(vehicleType: vehicleType));
+    : super(VehicleDetailsState.initial(vehicleType: vehicleType));
 
   final ImagePicker _picker = ImagePicker();
 
   void updateModelName(String value) {
-    final err = state.errors.copyWith(
-      clearModel: value.trim().isNotEmpty,
-    );
+    final err = state.errors.copyWith(clearModel: value.trim().isNotEmpty);
     emit(state.copyWith(modelName: value, errors: err));
   }
 
@@ -67,9 +65,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       emit(
         state.copyWith(
           hasPhoto: false,
-          errors: state.errors.copyWith(
-            photo: 'Image must be less than 1 MB',
-          ),
+          errors: state.errors.copyWith(photo: 'Image must be less than 1 MB'),
         ),
       );
       return;
@@ -112,13 +108,16 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   bool _validate() {
     FieldError err = const FieldError();
 
-    if (state.vehicleType != VehicleType.auto && state.modelName.trim().isEmpty) {
+    if (state.vehicleType != VehicleType.auto &&
+        state.modelName.trim().isEmpty) {
       err = err.copyWith(modelName: 'Model name is required');
     }
-    if (state.vehicleType == VehicleType.bike && state.selectedBikeType == null) {
+    if (state.vehicleType == VehicleType.bike &&
+        state.selectedBikeType == null) {
       err = err.copyWith(bikeType: 'Please select a bike type');
     }
-    if (state.vehicleType == VehicleType.cab && state.selectedSeatOption == null) {
+    if (state.vehicleType == VehicleType.cab &&
+        state.selectedSeatOption == null) {
       err = err.copyWith(seatOption: 'Please select seats');
     }
     if (state.selectedFuelType == null) {
@@ -162,11 +161,6 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   }
 
   void clearSuccess() {
-    emit(
-      state.copyWith(
-        isSubmitted: false,
-        clearSuccess: true,
-      ),
-    );
+    emit(state.copyWith(isSubmitted: false, clearSuccess: true));
   }
 }

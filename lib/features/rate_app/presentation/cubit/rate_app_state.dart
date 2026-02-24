@@ -32,6 +32,10 @@ class RateAppState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [selectedRating, feedbackText, status, errorMessage];
+  List<Object?> get props => [
+    selectedRating,
+    feedbackText,
+    status,
+    errorMessage,
+  ];
 }

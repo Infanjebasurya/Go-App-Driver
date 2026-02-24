@@ -11,10 +11,12 @@ class VerificationSubmittedScreen extends StatefulWidget {
   const VerificationSubmittedScreen({super.key, this.onGoHome});
 
   @override
-  State<VerificationSubmittedScreen> createState() => _VerificationSubmittedScreenState();
+  State<VerificationSubmittedScreen> createState() =>
+      _VerificationSubmittedScreenState();
 }
 
-class _VerificationSubmittedScreenState extends State<VerificationSubmittedScreen>
+class _VerificationSubmittedScreenState
+    extends State<VerificationSubmittedScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeCtrl;
   late AnimationController _scaleCtrl;
@@ -53,15 +55,13 @@ class _VerificationSubmittedScreenState extends State<VerificationSubmittedScree
         curve: const Interval(0.4, 1.0, curve: Curves.easeOut),
       ),
     );
-    _textSlideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _fadeCtrl,
-        curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
-      ),
-    );
+    _textSlideAnim =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _fadeCtrl,
+            curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
+          ),
+        );
 
     _scaleCtrl.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -105,7 +105,7 @@ class _VerificationSubmittedScreenState extends State<VerificationSubmittedScree
         onBack: goHome,
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: Color(0xFFF0F4F8)),
+          child: Divider(height: 1, color: AppColors.coolwhite),
         ),
       ),
       body: SafeArea(
@@ -142,7 +142,7 @@ class _VerificationSubmittedScreenState extends State<VerificationSubmittedScree
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1A2236),
+                                  color: AppColors.headingNavy,
                                   letterSpacing: -0.6,
                                   height: 1.15,
                                 ),
@@ -197,7 +197,7 @@ class _GoHomeButton extends StatelessWidget {
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFF0F4F8))),
+        border: Border(top: BorderSide(color: AppColors.coolwhite)),
       ),
       child: SizedBox(
         width: double.infinity,
@@ -212,7 +212,8 @@ class _GoHomeButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(28),
             ),
           ),
-          onPressed: onTap ??
+          onPressed:
+              onTap ??
               () {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(

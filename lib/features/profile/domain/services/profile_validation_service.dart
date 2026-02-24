@@ -66,7 +66,8 @@ class ProfileValidationService {
     final now = DateTime.now();
     if (parsed.isAfter(now)) return 'Date of birth cannot be in the future';
 
-    final age = now.year -
+    final age =
+        now.year -
         parsed.year -
         ((now.month < parsed.month ||
                 (now.month == parsed.month && now.day < parsed.day))

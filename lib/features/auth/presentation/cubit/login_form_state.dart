@@ -34,10 +34,10 @@ class LoginFormState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        digits,
-        phoneE164,
-        error,
-        submitRequested,
-        submitError,
-      ];
+    digits,
+    phoneE164,
+    error,
+    submitRequested,
+    submitError,
+  ];
 }

@@ -6,10 +6,12 @@ import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
+import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/pages/trip_navigation_page.dart';
+import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 
 class PassengerOnboardPage extends StatefulWidget {
   const PassengerOnboardPage({super.key});
@@ -37,6 +39,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
     _loadRoute();
     unawaited(_refreshLocationState(requestPermission: true));
@@ -299,6 +302,11 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                           elevation: 0,
                         ),
                         onPressed: () {
+                          NotificationsFeed.add(
+                            title: 'Navigation to drop started',
+                            message:
+                                'Rider onboard confirmed. Live trip navigation started.',
+                          );
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (_) => TripNavigationPage(

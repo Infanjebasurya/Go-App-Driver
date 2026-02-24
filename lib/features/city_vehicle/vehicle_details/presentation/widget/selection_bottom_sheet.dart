@@ -18,7 +18,8 @@ class SelectionBottomSheet<T> extends StatefulWidget {
   });
 
   @override
-  State<SelectionBottomSheet<T>> createState() => _SelectionBottomSheetState<T>();
+  State<SelectionBottomSheet<T>> createState() =>
+      _SelectionBottomSheetState<T>();
 }
 
 class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
@@ -61,7 +62,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1A2236),
+                      color: AppColors.headingNavy,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -83,7 +84,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
               ],
             ),
           ),
-          const Divider(height: 1, color: Color(0xFFF0F4F8)),
+          const Divider(height: 1, color: AppColors.coolwhite),
           ...widget.options.map((option) {
             final label = widget.labelBuilder(option);
             final isSelected = _localSelected == option;
@@ -129,7 +130,7 @@ class _OptionTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15.5,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? AppColors.emerald : const Color(0xFF1A2236),
+                  color: isSelected ? AppColors.emerald : AppColors.headingNavy,
                 ),
               ),
             ),

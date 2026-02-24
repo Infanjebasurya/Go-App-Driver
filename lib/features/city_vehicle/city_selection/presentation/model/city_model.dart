@@ -5,11 +5,7 @@ class City extends Equatable {
   final String name;
   final bool isFeatured;
 
-  const City({
-    required this.id,
-    required this.name,
-    this.isFeatured = false,
-  });
+  const City({required this.id, required this.name, this.isFeatured = false});
 
   @override
   List<Object?> get props => [id, name, isFeatured];
@@ -47,9 +43,8 @@ class CitySelectionState extends Equatable {
     this.filteredAllCities = kAllCities,
   });
 
-  factory CitySelectionState.initial() => const CitySelectionState(
-        filteredAllCities: kAllCities,
-      );
+  factory CitySelectionState.initial() =>
+      const CitySelectionState(filteredAllCities: kAllCities);
 
   bool get hasSelection => selectedCity != null;
 
@@ -58,7 +53,9 @@ class CitySelectionState extends Equatable {
   List<City> get filteredFeaturedCities {
     if (searchQuery.isEmpty) return kFeaturedCities;
     final q = searchQuery.toLowerCase();
-    return kFeaturedCities.where((c) => c.name.toLowerCase().contains(q)).toList();
+    return kFeaturedCities
+        .where((c) => c.name.toLowerCase().contains(q))
+        .toList();
   }
 
   CitySelectionState copyWith({

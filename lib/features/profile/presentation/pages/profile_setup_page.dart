@@ -44,9 +44,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   @override
   void initState() {
     super.initState();
-    _cubit = ProfileSetupCubit(
-      validationService: ProfileValidationService(),
-    );
+    _cubit = ProfileSetupCubit(validationService: ProfileValidationService());
     try {
       _profileBloc = context.read<ProfileBloc>();
       _ownsProfileBloc = false;
@@ -426,11 +424,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           canPop: widget.allowBack,
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppAppBar(
-              title: 'GoApp',
-              backEnabled: false,
-              onBack: null,
-            ),
+            appBar: AppAppBar(title: 'GoApp', backEnabled: false, onBack: null),
             body: MultiBlocListener(
               listeners: [
                 BlocListener<ProfileBloc, ProfileState>(

@@ -33,9 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           backgroundColor: Colors.white,
           drawer: const AppDrawer(),
-          body: state.isOnline
-              ? const OnlineContent()
-              : const OfflineContent(),
+          body: state.isOnline ? const OnlineContent() : const OfflineContent(),
         );
       },
     );

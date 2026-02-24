@@ -41,10 +41,7 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const AppAppBar(
-        title: 'GoApp',
-        backEnabled: false,
-      ),
+      appBar: const AppAppBar(title: 'GoApp', backEnabled: false),
       bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
         builder: (context, state) {
           return _ContinueButton(
@@ -82,7 +79,7 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1A2236),
+                            color: AppColors.headingNavy,
                             height: 1.2,
                             letterSpacing: -0.5,
                           ),
@@ -102,7 +99,8 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                     const SizedBox(height: 16),
                     _SearchBar(
                       controller: _searchController,
-                      onChanged: (q) => context.read<CitySelectionCubit>().search(q),
+                      onChanged: (q) =>
+                          context.read<CitySelectionCubit>().search(q),
                       onClear: () {
                         _searchController.clear();
                         context.read<CitySelectionCubit>().clearSearch();
@@ -118,7 +116,9 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                             child: FeaturedCityChip(
                               city: city,
                               isSelected: state.isSelected(city),
-                              onTap: () => context.read<CitySelectionCubit>().selectCity(city),
+                              onTap: () => context
+                                  .read<CitySelectionCubit>()
+                                  .selectCity(city),
                             ),
                           );
                         }).toList(),
@@ -151,7 +151,9 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                               key: ValueKey(city.id),
                               city: city,
                               isSelected: state.isSelected(city),
-                              onTap: () => context.read<CitySelectionCubit>().selectCity(city),
+                              onTap: () => context
+                                  .read<CitySelectionCubit>()
+                                  .selectCity(city),
                             );
                           },
                         ),
@@ -185,13 +187,10 @@ class _SearchBar extends StatelessWidget {
         onChanged: onChanged,
         textStyle: const TextStyle(
           fontSize: 14.5,
-          color: Color(0xFF1A2236),
+          color: AppColors.headingNavy,
         ),
         hint: 'Search for your city...',
-        hintStyle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey.shade400,
-        ),
+        hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade400),
         leading: Icon(
           Icons.search_rounded,
           color: Colors.grey.shade400,
@@ -208,7 +207,10 @@ class _SearchBar extends StatelessWidget {
               )
             : null,
         borderColor: Colors.grey.shade400,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 14,
+        ),
       ),
     );
   }
@@ -224,14 +226,15 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.location_off_rounded, size: 44, color: Colors.grey.shade300),
+          Icon(
+            Icons.location_off_rounded,
+            size: 44,
+            color: Colors.grey.shade300,
+          ),
           const SizedBox(height: 12),
           Text(
             'No cities found for "$query"',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade400,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
           ),
         ],
       ),
