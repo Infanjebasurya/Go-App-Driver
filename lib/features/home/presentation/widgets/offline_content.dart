@@ -160,7 +160,7 @@ class _EarningsCard extends StatelessWidget {
           const SizedBox(height: 12),
           Center(
             child: Text(
-              'Ã¢â€šÂ¹ ${state.totalEarnings.toStringAsFixed(2)}',
+              'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹ ${state.totalEarnings.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w400,
@@ -318,7 +318,7 @@ class _WalletCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '${isNegative ? '-' : ''}Ã¢â€šÂ¹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                '${isNegative ? '-' : ''}ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹ ${state.walletBalance.abs().toStringAsFixed(2)}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
@@ -347,45 +347,6 @@ class _WalletCard extends StatelessWidget {
               'Add Money',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAddMoneyDialog(BuildContext context) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Money'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            labelText: 'Amount (Ã¢â€šÂ¹)',
-            prefixText: 'Ã¢â€šÂ¹ ',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<DriverCubit>().addMoneyFromInput(controller.text);
-              Navigator.pop(ctx);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AuthUiColors.brandGreen,
-            ),
-            child: const Text('Add', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -437,7 +398,7 @@ class _RewardCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Complete ${state.targetRides} rides & earn Ã¢â€šÂ¹${state.rewardAmount.toInt()}',
+                      'Complete ${state.targetRides} rides & earn ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${state.rewardAmount.toInt()}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,

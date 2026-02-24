@@ -62,8 +62,9 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
     if (progress >= 1) return path.last;
 
     _ensureRouteCache(path);
-    if (_cachedTotalDistance <= 0 || _cachedCumulative.isEmpty)
+    if (_cachedTotalDistance <= 0 || _cachedCumulative.isEmpty) {
       return path.last;
+    }
     final double targetDistance = _cachedTotalDistance * progress;
     final int segmentIndex = _segmentIndexAtDistance(
       _cachedCumulative,

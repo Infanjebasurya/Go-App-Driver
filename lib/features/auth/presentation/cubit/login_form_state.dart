@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class LoginFormState extends Equatable {
   const LoginFormState({
+    this.rawInput = '',
     this.digits = '',
     this.phoneE164,
     this.error,
@@ -9,6 +10,7 @@ class LoginFormState extends Equatable {
     this.submitError,
   });
 
+  final String rawInput;
   final String digits;
   final String? phoneE164;
   final String? error;
@@ -16,6 +18,7 @@ class LoginFormState extends Equatable {
   final String? submitError;
 
   LoginFormState copyWith({
+    String? rawInput,
     String? digits,
     String? phoneE164,
     String? error,
@@ -24,6 +27,7 @@ class LoginFormState extends Equatable {
     bool clearSubmitError = false,
   }) {
     return LoginFormState(
+      rawInput: rawInput ?? this.rawInput,
       digits: digits ?? this.digits,
       phoneE164: phoneE164 ?? this.phoneE164,
       error: error,
@@ -34,6 +38,7 @@ class LoginFormState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
+    rawInput,
     digits,
     phoneE164,
     error,

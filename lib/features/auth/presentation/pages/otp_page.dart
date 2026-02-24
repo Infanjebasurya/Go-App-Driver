@@ -85,8 +85,8 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
       clearVehicle: true,
       clearDocumentStep: true,
     );
-    final navigator = Navigator.of(context, rootNavigator: true);
     if (!mounted) return;
+    final navigator = Navigator.of(context, rootNavigator: true);
     navigator.pushReplacement(
       MaterialPageRoute(builder: (_) => const ProfileSetupPage()),
     );

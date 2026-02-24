@@ -150,7 +150,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -159,7 +159,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const Text(
-                          'Earn Ã¢â€šÂ¹2,000',
+                          'Earn ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹2,000',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
@@ -212,7 +212,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                       //   border: Border.all(color: AppColors.strokeLight),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -299,7 +299,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     number: '3',
                     title: 'Friend completes 10 rides',
                     subtitle:
-                        'Once they hit the milestone, the Ã¢â€šÂ¹3,000 reward\nis credited to your wallet.',
+                        'Once they hit the milestone, the ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹3,000 reward\nis credited to your wallet.',
                     isLast: true,
                   ),
                   const SizedBox(height: 26),
@@ -494,7 +494,7 @@ class _HeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -532,7 +532,7 @@ class _HeroCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Ã¢â€šÂ¹${totalEarnings.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}',
+                    'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${totalEarnings.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}',
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w600,
@@ -579,7 +579,7 @@ class _CampaignRow extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -608,7 +608,7 @@ class _CampaignRow extends StatelessWidget {
               ),
             ),
             Text(
-              '= Ã¢â€šÂ¹${campaign.reward}',
+              '= ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${campaign.reward}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
@@ -744,7 +744,7 @@ class _EarningsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 6),
           ),
@@ -779,7 +779,7 @@ class _EarningsCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'Ã¢â€šÂ¹$earnings',
+                'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹$earnings',
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
@@ -816,7 +816,7 @@ class _ReferralSummaryBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 1),
           ),
@@ -873,7 +873,7 @@ class _ReferralPersonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -960,7 +960,7 @@ class _ReferralPersonCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Ã¢â€šÂ¹${person.estimatedReward}',
+                    'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹${person.estimatedReward}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
