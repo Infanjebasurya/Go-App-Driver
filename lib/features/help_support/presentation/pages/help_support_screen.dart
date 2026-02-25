@@ -17,7 +17,7 @@ class HelpSupportScreen extends StatelessWidget {
       create: (_) => HelpCubit(),
       child: PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
           if (!didPop) {
             Navigator.of(context).pop(true);
           }

@@ -140,8 +140,8 @@ class _DocumentCard extends StatelessWidget {
                   color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(10),
                 ),
-            child: _DocumentThumbnail(document: document),
-          ),
+                child: _DocumentThumbnail(document: document),
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -186,24 +186,6 @@ class _DocumentCard extends StatelessWidget {
         return const Color(0xFFEF5350);
       case DocumentStatus.notUploaded:
         return const Color(0xFFCCCCCC);
-    }
-  }
-
-  IconData _iconData(String asset) {
-    switch (asset) {
-      case 'driving_license':
-        return Icons.badge_outlined;
-      case 'vehicle_rc':
-        return Icons.directions_car_outlined;
-      case 'aadhaar_card':
-        return Icons.fingerprint;
-      case 'pan_card':
-        return Icons.account_balance_outlined;
-      case 'bank_account':
-      case 'add bank account':
-        return Icons.account_balance_outlined;
-      default:
-        return Icons.description_outlined;
     }
   }
 }

@@ -61,7 +61,7 @@ class DocumentCaptureCard extends StatelessWidget {
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF0F4F8),
+                              color: AppColors.coolwhite,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(
@@ -77,7 +77,9 @@ class DocumentCaptureCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
-                      color: captured ? AppColors.emerald : const Color(0xFF6B7C93),
+                      color: captured
+                          ? AppColors.emerald
+                          : const Color(0xFF6B7C93),
                       letterSpacing: 0.1,
                     ),
                   ),

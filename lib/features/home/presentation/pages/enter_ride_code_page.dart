@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/home/presentation/cubit/enter_ride_code_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/enter_ride_code_state.dart';
 import 'package:goapp/features/home/presentation/pages/passenger_onboard_page.dart';
+import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 
 class EnterRideCodePage extends StatelessWidget {
   const EnterRideCodePage({super.key});
@@ -17,8 +21,19 @@ class EnterRideCodePage extends StatelessWidget {
   }
 }
 
-class _EnterRideCodeView extends StatelessWidget {
+class _EnterRideCodeView extends StatefulWidget {
   const _EnterRideCodeView();
+
+  @override
+  State<_EnterRideCodeView> createState() => _EnterRideCodeViewState();
+}
+
+class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +46,10 @@ class _EnterRideCodeView extends StatelessWidget {
             return Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
@@ -79,7 +97,9 @@ class _EnterRideCodeView extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: hasDigit ? AppColors.neutral333 : AppColors.neutralAAA,
+                            color: hasDigit
+                                ? AppColors.neutral333
+                                : AppColors.neutralAAA,
                           ),
                         ),
                       ),
@@ -112,6 +132,11 @@ class _EnterRideCodeView extends StatelessWidget {
                       ),
                       onPressed: state.canStart
                           ? () {
+                              NotificationsFeed.add(
+                                title: 'Trip started with rider',
+                                message:
+                                    'OTP verified. Rider notified that trip has started.',
+                              );
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const PassengerOnboardPage(),
@@ -121,7 +146,10 @@ class _EnterRideCodeView extends StatelessWidget {
                           : null,
                       child: const Text(
                         'Start Trip',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
@@ -213,10 +241,7 @@ class _KeypadNumberButton extends StatelessWidget {
         onPressed: onTap,
         style: TextButton.styleFrom(
           foregroundColor: AppColors.neutral333,
-          textStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         ),
         child: Text(label),
       ),

@@ -17,8 +17,8 @@ class AppTheme {
     );
 
     final textTheme = ThemeData.light().textTheme.apply(
-          fontFamily: AppFonts.saira,
-        );
+      fontFamily: AppFonts.saira,
+    );
 
     return ThemeData(
       fontFamily: AppFonts.saira,

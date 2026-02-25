@@ -1,9 +1,7 @@
 import 'package:goapp/features/auth/data/models/user_model.dart';
 
 class AuthResponse {
-  const AuthResponse({
-    required this.user,
-  });
+  const AuthResponse({required this.user});
 
   final UserModel user;
 }
@@ -32,10 +30,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Invalid OTP');
     }
     return AuthResponse(
-      user: UserModel(
-        id: 'captain-001',
-        phone: phone,
-      ),
+      user: UserModel(id: 'captain-001', phone: phone),
     );
   }
 

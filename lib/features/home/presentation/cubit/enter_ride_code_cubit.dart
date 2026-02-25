@@ -11,6 +11,8 @@ class EnterRideCodeCubit extends Cubit<EnterRideCodeState> {
 
   void backspace() {
     if (state.digits.isEmpty) return;
-    emit(state.copyWith(digits: state.digits.sublist(0, state.digits.length - 1)));
+    emit(
+      state.copyWith(digits: state.digits.sublist(0, state.digits.length - 1)),
+    );
   }
 }

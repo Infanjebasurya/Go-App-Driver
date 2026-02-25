@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import '../widgets/trip_card.dart';
 
@@ -50,7 +50,10 @@ class SummaryDetailsPage extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.earningsAccentSoft,
                     borderRadius: BorderRadius.circular(20),
@@ -89,5 +92,3 @@ class SummaryDetailsPage extends StatelessWidget {
     );
   }
 }
-
-

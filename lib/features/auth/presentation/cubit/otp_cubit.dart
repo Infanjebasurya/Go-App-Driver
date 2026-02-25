@@ -45,28 +45,32 @@ class OtpState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       submitRequested: submitRequested ?? this.submitRequested,
       submitError: clearSubmitError ? null : (submitError ?? this.submitError),
-      resendMessage: clearResendMessage ? null : (resendMessage ?? this.resendMessage),
-      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      resendMessage: clearResendMessage
+          ? null
+          : (resendMessage ?? this.resendMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
   List<Object?> get props => <Object?>[
-        code,
-        secondsLeft,
-        canResend,
-        isLoading,
-        submitRequested,
-        submitError,
-        resendMessage,
-        errorMessage,
-      ];
+    code,
+    secondsLeft,
+    canResend,
+    isLoading,
+    submitRequested,
+    submitError,
+    resendMessage,
+    errorMessage,
+  ];
 }
 
 class OtpCubit extends Cubit<OtpState> {
   OtpCubit({required ResendOtpUseCase resendOtpUseCase})
-      : _resendOtpUseCase = resendOtpUseCase,
-        super(const OtpState()) {
+    : _resendOtpUseCase = resendOtpUseCase,
+      super(const OtpState()) {
     _startTimer();
   }
 
@@ -90,7 +94,9 @@ class OtpCubit extends Cubit<OtpState> {
 
   void updateCode(String code) {
     final normalized = code.replaceAll(RegExp(r'[^0-9]'), '');
-    final trimmed = normalized.length > otpLength ? normalized.substring(0, otpLength) : normalized;
+    final trimmed = normalized.length > otpLength
+        ? normalized.substring(0, otpLength)
+        : normalized;
     emit(
       state.copyWith(
         code: trimmed,
@@ -127,30 +133,17 @@ class OtpCubit extends Cubit<OtpState> {
     );
     final result = await _resendOtpUseCase.call(phone: phone);
     result.fold(
-      (failure) => emit(
-        state.copyWith(
-          isLoading: false,
-          errorMessage: failure.message,
-        ),
-      ),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (message) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            resendMessage: message,
-          ),
-        );
+        emit(state.copyWith(isLoading: false, resendMessage: message));
         _startTimer();
       },
     );
   }
 
   void consumeActions() {
-    emit(
-      state.copyWith(
-        submitRequested: false,
-      ),
-    );
+    emit(state.copyWith(submitRequested: false));
   }
 
   @override

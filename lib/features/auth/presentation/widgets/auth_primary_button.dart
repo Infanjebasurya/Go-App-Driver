@@ -23,9 +23,7 @@ class AuthPrimaryButton extends StatelessWidget {
         disabledBackgroundColor: AuthUiColors.brandGreen,
         disabledForegroundColor: Colors.white,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         textStyle: AuthUiTextStyles.button,
       ),
       child: loading

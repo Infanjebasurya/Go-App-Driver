@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/foundation.dart';
 
 enum DriverStatus { offline, online }
@@ -57,7 +55,8 @@ class DriverState {
       targetRides: targetRides ?? this.targetRides,
       rewardAmount: rewardAmount ?? this.rewardAmount,
       isEarningsExpanded: isEarningsExpanded ?? this.isEarningsExpanded,
-      navigateToOrdersToken: navigateToOrdersToken ?? this.navigateToOrdersToken,
+      navigateToOrdersToken:
+          navigateToOrdersToken ?? this.navigateToOrdersToken,
     );
   }
 }

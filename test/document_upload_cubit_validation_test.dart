@@ -1,8 +1,58 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goapp/features/documents/presentation/cubit/document_upload_cubit.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const MethodChannel permissionChannel = MethodChannel(
+    'flutter.baseflow.com/permissions/methods',
+  );
+  const MethodChannel imagePickerChannel = MethodChannel(
+    'plugins.flutter.io/image_picker',
+  );
+  late String fakeImagePath;
+
+  setUpAll(() async {
+    final tempDir = await Directory.systemTemp.createTemp('goapp_test_');
+    final fakeFile = File('${tempDir.path}\\fake_doc.jpg');
+    await fakeFile.writeAsBytes(List<int>.filled(1024, 1));
+    fakeImagePath = fakeFile.path;
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(permissionChannel, (MethodCall call) async {
+          switch (call.method) {
+            case 'checkPermissionStatus':
+              return 1; // granted
+            case 'requestPermissions':
+              final permissions =
+                  (call.arguments as List<dynamic>?) ?? <dynamic>[];
+              return <int, int>{
+                for (final p in permissions.whereType<int>()) p: 1,
+              };
+            default:
+              return null;
+          }
+        });
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(imagePickerChannel, (MethodCall call) async {
+          if (call.method == 'pickImage') {
+            return fakeImagePath;
+          }
+          return null;
+        });
+  });
+
+  tearDownAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(permissionChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(imagePickerChannel, null);
+  });
+
   group('DocumentUploadCubit document number validation', () {
     test('does not navigate until front and back are captured', () async {
       final cubit = DocumentUploadCubit(initialStepIndex: 0);

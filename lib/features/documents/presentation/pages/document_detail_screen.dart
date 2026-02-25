@@ -98,10 +98,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
   final String? frontImagePath;
   final String? backImagePath;
 
-  const _DrivingLicenseDetail({
-    this.frontImagePath,
-    this.backImagePath,
-  });
+  const _DrivingLicenseDetail({this.frontImagePath, this.backImagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -179,10 +176,7 @@ class _VehicleRCDetail extends StatelessWidget {
   final String? frontImagePath;
   final String? backImagePath;
 
-  const _VehicleRCDetail({
-    this.frontImagePath,
-    this.backImagePath,
-  });
+  const _VehicleRCDetail({this.frontImagePath, this.backImagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -263,10 +257,7 @@ class _AadhaarCardDetail extends StatefulWidget {
   final String? frontImagePath;
   final String? backImagePath;
 
-  const _AadhaarCardDetail({
-    this.frontImagePath,
-    this.backImagePath,
-  });
+  const _AadhaarCardDetail({this.frontImagePath, this.backImagePath});
 
   @override
   State<_AadhaarCardDetail> createState() => _AadhaarCardDetailState();
@@ -343,10 +334,7 @@ class _PanCardDetail extends StatefulWidget {
   final String? frontImagePath;
   final String? backImagePath;
 
-  const _PanCardDetail({
-    this.frontImagePath,
-    this.backImagePath,
-  });
+  const _PanCardDetail({this.frontImagePath, this.backImagePath});
 
   @override
   State<_PanCardDetail> createState() => _PanCardDetailState();
@@ -471,11 +459,7 @@ class _CardImageBox extends StatelessWidget {
         const SizedBox(height: 8),
         Stack(
           children: [
-            _ImageBox(
-              imagePath: imagePath,
-              color: color,
-              fullWidth: fullWidth,
-            ),
+            _ImageBox(imagePath: imagePath, color: color, fullWidth: fullWidth),
             if (showVerified)
               Positioned(
                 bottom: 10,

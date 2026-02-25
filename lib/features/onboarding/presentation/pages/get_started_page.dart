@@ -27,16 +27,28 @@ class _GetStartedPageState extends State<GetStartedPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await precacheImage(const AssetImage('assets/image/screen1.png'), context);
+      await precacheImage(
+        const AssetImage('assets/image/screen1.png'),
+        context,
+      );
       await Future<void>.delayed(const Duration(milliseconds: 40));
       if (!mounted) return;
-      await precacheImage(const AssetImage('assets/image/screen2.png'), context);
+      await precacheImage(
+        const AssetImage('assets/image/screen2.png'),
+        context,
+      );
       await Future<void>.delayed(const Duration(milliseconds: 40));
       if (!mounted) return;
-      await precacheImage(const AssetImage('assets/image/screen3.png'), context);
+      await precacheImage(
+        const AssetImage('assets/image/screen3.png'),
+        context,
+      );
       await Future<void>.delayed(const Duration(milliseconds: 40));
       if (!mounted) return;
-      await precacheImage(const AssetImage('assets/image/screen4.png'), context);
+      await precacheImage(
+        const AssetImage('assets/image/screen4.png'),
+        context,
+      );
     });
   }
 
@@ -149,9 +161,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
                         ),
                         TextSpan(
                           text: 'begins here. ',
-                          style: TextStyle(
-                            color: OnboardingUiColors.textDark,
-                          ),
+                          style: TextStyle(color: OnboardingUiColors.textDark),
                         ),
                       ],
                     ),

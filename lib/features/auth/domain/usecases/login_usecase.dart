@@ -16,9 +16,7 @@ class LoginUseCase {
     final repository = _repository;
     if (repository == null) {
       return Future<Either<Failure, User>>.value(
-        Right<Failure, User>(
-          User(id: 'captain-001', phone: phone),
-        ),
+        Right<Failure, User>(User(id: 'captain-001', phone: phone)),
       );
     }
     return repository.login(phone: phone, otp: otp, otpId: otpId);

@@ -2,19 +2,25 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/background/trip_background_service.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
+import 'package:goapp/core/notifications/local_notification_service.dart';
+import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/app_assets.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/cubit/trip_navigation_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/trip_navigation_state.dart';
+import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 import 'package:goapp/features/ride_complete/presentation/pages/ride_completed_screen.dart';
 import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
+
+part 'trip_navigation_page_sections.dart';
 
 class TripNavigationPage extends StatelessWidget {
   const TripNavigationPage({super.key, this.initialRoutePath});
@@ -43,6 +49,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     with WidgetsBindingObserver {
   static const LatLng _driverPoint = LatLng(13.0565, 80.2138);
   static const LatLng _destinationPoint = LatLng(13.0699, 80.2218);
+  static const int _dropProgressNotificationId = 3002;
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
   final LocationPermissionGuard _locationGuard =
@@ -57,11 +64,15 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   String? _mapStyle;
   BitmapDescriptor? _bikeMarkerIcon;
   LocationIssue? _locationIssue;
+  bool _arrivalNotified = false;
+  int _lastDropProgressNotified = -1;
+  bool _dropProgressStarted = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
     _loadBikeIcon();
     unawaited(_refreshLocationState(requestPermission: true));
@@ -126,10 +137,32 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   void _startTripIfReady() {
     if (_tripStarted || _mapRoutePath.length < 2) return;
     _tripStarted = true;
+    unawaited(
+      TripBackgroundService.startTrip(
+        title: 'Trip in progress',
+        subtitle: 'Heading to drop location',
+        duration: const Duration(seconds: 10),
+      ),
+    );
+    _startDropProgressNotification();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<TripNavigationCubit>().start();
     });
+  }
+
+  void _startDropProgressNotification() {
+    if (_dropProgressStarted) return;
+    _dropProgressStarted = true;
+    unawaited(
+      LocalNotificationService.showProgress(
+        id: _dropProgressNotificationId,
+        title: 'Trip in progress',
+        body: 'Heading to drop location.',
+        progress: 0,
+        maxProgress: 100,
+      ),
+    );
   }
 
   Future<List<LatLng>?> _fetchRoadRoute({
@@ -193,6 +226,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(TripBackgroundService.stopTrip());
     super.dispose();
   }
 
@@ -208,6 +242,41 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     unawaited(_refreshLocationState());
   }
 
+  void _notifyArrivalIfNeeded(bool showArrivalSheet) {
+    if (!showArrivalSheet || _arrivalNotified) return;
+    _arrivalNotified = true;
+    NotificationsFeed.add(
+      title: 'Reached drop location',
+      message: 'Rider notified that driver reached destination.',
+      pushToDevice: false,
+    );
+    unawaited(
+      LocalNotificationService.show(
+        id: _dropProgressNotificationId,
+        title: 'Reached drop location',
+        body: 'Driver reached destination.',
+      ),
+    );
+    unawaited(TripBackgroundService.stopTrip());
+  }
+
+  void _notifyDropProgress(double progress) {
+    if (_arrivalNotified) return;
+    final int percent = (progress * 100).round().clamp(0, 100);
+    if (percent < 100 && percent % 5 != 0) return;
+    if (percent == _lastDropProgressNotified) return;
+    _lastDropProgressNotified = percent;
+    unawaited(
+      LocalNotificationService.showProgress(
+        id: _dropProgressNotificationId,
+        title: 'Trip in progress',
+        body: 'Progress: $percent%',
+        progress: percent,
+        maxProgress: 100,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -218,6 +287,8 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                 previous.progress != current.progress ||
                 previous.showArrivalSheet != current.showArrivalSheet,
             builder: (BuildContext context, TripNavigationState state) {
+              _notifyDropProgress(state.progress);
+              _notifyArrivalIfNeeded(state.showArrivalSheet);
               final cubit = context.read<TripNavigationCubit>();
               final List<LatLng> routePoints = cubit.currentRoutePoints(
                 _mapRoutePath,
@@ -391,406 +462,6 @@ class _TripNavigationViewState extends State<_TripNavigationView>
           ),
         ],
       ),
-    );
-  }
-}
-
-class _TurnIconBadge extends StatelessWidget {
-  const _TurnIconBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: const Icon(Icons.turn_right_rounded, color: AppColors.white),
-    );
-  }
-}
-
-class _SosButton extends StatelessWidget {
-  const _SosButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 58,
-        height: 58,
-        decoration: const BoxDecoration(
-          color: AppColors.red,
-          shape: BoxShape.circle,
-        ),
-        child: const Center(
-          child: Text(
-            'SOS',
-            style: TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 17,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CurrentLocationButton extends StatelessWidget {
-  const _CurrentLocationButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        shape: BoxShape.circle,
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.12),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: const Icon(Icons.my_location, color: AppColors.neutral666),
-    );
-  }
-}
-
-class _ReachedCustomerSheet extends StatelessWidget {
-  const _ReachedCustomerSheet({required this.onCompleteTap});
-
-  final VoidCallback onCompleteTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              width: 52,
-              height: 5,
-              decoration: BoxDecoration(
-                color: AppColors.neutralCCC,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Reached Customer location',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.emerald,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: <Widget>[
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/image/profile.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Sam Yogi',
-                        style: TextStyle(
-                          fontSize: 15.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.neutral333,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.star,
-                            size: 13,
-                            color: AppColors.starYellow,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            '4.9 Rating',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.neutral888,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      'Distance',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.neutral888,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      '2.1 km',
-                      style: TextStyle(
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.neutral333,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            const _PickupDropInfo(),
-            const SizedBox(height: 16),
-            _SlideToCompleteButton(onCompleted: onCompleteTap),
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-              color: AppColors.surfaceF0,
-              child: const Row(
-                children: <Widget>[
-                  Text(
-                    'Ride in progress',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.neutral666,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Total Fare: ₹1,250',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.neutral555,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SlideToCompleteButton extends StatefulWidget {
-  const _SlideToCompleteButton({required this.onCompleted});
-
-  final VoidCallback onCompleted;
-
-  @override
-  State<_SlideToCompleteButton> createState() => _SlideToCompleteButtonState();
-}
-
-class _SlideToCompleteButtonState extends State<_SlideToCompleteButton> {
-  static const double _thumbSize = 44;
-  static const double _padding = 2;
-  static const double _completeThreshold = 0.92;
-
-  double _dragX = 0;
-  bool _completed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 48,
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final double maxDrag =
-              constraints.maxWidth - _thumbSize - (_padding * 2);
-          final double clampedDrag = _dragX.clamp(0, maxDrag);
-
-          return GestureDetector(
-            onHorizontalDragUpdate: _completed
-                ? null
-                : (DragUpdateDetails details) {
-                    setState(() {
-                      _dragX = (_dragX + details.delta.dx).clamp(0, maxDrag);
-                    });
-                  },
-            onHorizontalDragEnd: _completed
-                ? null
-                : (_) {
-                    final bool didComplete =
-                        maxDrag > 0 &&
-                        (clampedDrag / maxDrag) >= _completeThreshold;
-                    if (didComplete) {
-                      setState(() {
-                        _completed = true;
-                        _dragX = maxDrag;
-                      });
-                      widget.onCompleted();
-                      return;
-                    }
-                    setState(() => _dragX = 0);
-                  },
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.emerald,
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Slide to Complete',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 140),
-                  curve: Curves.easeOut,
-                  left: _padding + clampedDrag,
-                  top: _padding,
-                  child: Container(
-                    width: _thumbSize,
-                    height: _thumbSize,
-                    decoration: const BoxDecoration(
-                      color: AppColors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.chevron_right,
-                      color: AppColors.emerald,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _PickupDropInfo extends StatelessWidget {
-  const _PickupDropInfo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          width: 18,
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 3),
-              Container(
-                width: 9,
-                height: 9,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceFDF8,
-                  border: Border.all(color: AppColors.emerald, width: 1.5),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Container(width: 1.2, height: 34, color: AppColors.neutralAAA),
-              Container(
-                width: 9,
-                height: 9,
-                decoration: const BoxDecoration(
-                  color: AppColors.neutral333,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Pickup',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.neutral666,
-                ),
-              ),
-              SizedBox(height: 3),
-              Text(
-                '42, I-Block, Arumbakkam, Chennai-106',
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.neutral333,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Dropoff',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.neutral666,
-                ),
-              ),
-              SizedBox(height: 3),
-              Text(
-                '13, vinobaji St, KamarajarNagar, NGO....',
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.neutral333,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

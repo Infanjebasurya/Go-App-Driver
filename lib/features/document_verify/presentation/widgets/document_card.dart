@@ -7,11 +7,7 @@ class DocumentCard extends StatelessWidget {
   final Document document;
   final VoidCallback? onTap;
 
-  const DocumentCard({
-    super.key,
-    required this.document,
-    this.onTap,
-  });
+  const DocumentCard({super.key, required this.document, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +46,7 @@ class DocumentCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF1A2236),
+                    color: AppColors.headingNavy,
                     letterSpacing: -0.1,
                   ),
                 ),
@@ -87,7 +83,9 @@ class _DocumentIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = document.isCompleted ? AppColors.emerald : const Color(0xFF8FA0B0);
+    final color = document.isCompleted
+        ? AppColors.emerald
+        : const Color(0xFF8FA0B0);
 
     return SizedBox(
       width: 42,
@@ -110,9 +108,7 @@ class _StatusBadge extends StatelessWidget {
         height: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            AppColors.emerald,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.emerald),
         ),
       );
     }
@@ -127,11 +123,7 @@ class _StatusBadge extends StatelessWidget {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.check_circle,
-              size: 13,
-              color: AppColors.emerald,
-            ),
+            Icon(Icons.check_circle, size: 13, color: AppColors.emerald),
             SizedBox(width: 4),
             Text(
               'COMPLETED',
@@ -150,7 +142,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F4F8),
+        color: AppColors.coolwhite,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFD5DDE5)),
       ),

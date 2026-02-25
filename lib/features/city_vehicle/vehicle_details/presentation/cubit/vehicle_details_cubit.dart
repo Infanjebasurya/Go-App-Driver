@@ -8,14 +8,12 @@ import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model
 
 class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   VehicleDetailsCubit({required VehicleType vehicleType})
-      : super(VehicleDetailsState.initial(vehicleType: vehicleType));
+    : super(VehicleDetailsState.initial(vehicleType: vehicleType));
 
   final ImagePicker _picker = ImagePicker();
 
   void updateModelName(String value) {
-    final err = state.errors.copyWith(
-      clearModel: value.trim().isNotEmpty,
-    );
+    final err = state.errors.copyWith(clearModel: value.trim().isNotEmpty);
     emit(state.copyWith(modelName: value, errors: err));
   }
 
@@ -58,22 +56,16 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       return;
     }
 
-    final picked = await _picker.pickImage(
-      source: source,
-      imageQuality: 100,
-    );
+    final picked = await _picker.pickImage(source: source);
     if (picked == null) return;
 
-    final sizeBytes = await _readFileSize(picked);
-    const maxBytes = 5 * 1024 * 1024;
-    if (sizeBytes <= 0 || sizeBytes > maxBytes) {
+    final sizeBytes = await picked.length();
+    const maxBytes = 1024 * 1024;
+    if (sizeBytes > maxBytes) {
       emit(
         state.copyWith(
           hasPhoto: false,
-          errors: state.errors.copyWith(
-            photo:
-                'Image size should not exceed 5MB. Please choose a smaller image.',
-          ),
+          errors: state.errors.copyWith(photo: 'Image must be less than 1 MB'),
         ),
       );
       return;
@@ -113,35 +105,19 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     return result.isGranted;
   }
 
-  Future<int> _readFileSize(XFile file) async {
-    try {
-      final len = await file.length();
-      if (len > 0) return len;
-    } catch (_) {}
-    try {
-      final stat = await File(file.path).stat();
-      return stat.size;
-    } catch (_) {
-      return 0;
-    }
-  }
-
   bool _validate() {
     FieldError err = const FieldError();
 
-    if (!state.hasPhoto) {
-      err = err.copyWith(
-        photo:
-            'Vehicle photo is required. Please upload a photo under 5MB.',
-      );
-    }
-    if (state.vehicleType != VehicleType.auto && state.modelName.trim().isEmpty) {
+    if (state.vehicleType != VehicleType.auto &&
+        state.modelName.trim().isEmpty) {
       err = err.copyWith(modelName: 'Model name is required');
     }
-    if (state.vehicleType == VehicleType.bike && state.selectedBikeType == null) {
+    if (state.vehicleType == VehicleType.bike &&
+        state.selectedBikeType == null) {
       err = err.copyWith(bikeType: 'Please select a bike type');
     }
-    if (state.vehicleType == VehicleType.cab && state.selectedSeatOption == null) {
+    if (state.vehicleType == VehicleType.cab &&
+        state.selectedSeatOption == null) {
       err = err.copyWith(seatOption: 'Please select seats');
     }
     if (state.selectedFuelType == null) {
@@ -185,11 +161,6 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   }
 
   void clearSuccess() {
-    emit(
-      state.copyWith(
-        isSubmitted: false,
-        clearSuccess: true,
-      ),
-    );
+    emit(state.copyWith(isSubmitted: false, clearSuccess: true));
   }
 }

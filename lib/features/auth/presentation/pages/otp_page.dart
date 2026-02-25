@@ -75,10 +75,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     super.dispose();
   }
 
-  Future<void> _handleSuccess({
-    required bool syncSession,
-    User? user,
-  }) async {
+  Future<void> _handleSuccess({required bool syncSession, User? user}) async {
     if (_successHandled) return;
     _successHandled = true;
     await RegistrationProgressStore.markOtpVerified();
@@ -88,12 +85,10 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
       clearVehicle: true,
       clearDocumentStep: true,
     );
-    final navigator = Navigator.of(context, rootNavigator: true);
     if (!mounted) return;
+    final navigator = Navigator.of(context, rootNavigator: true);
     navigator.pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => const ProfileSetupPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const ProfileSetupPage()),
     );
     _otpCubit.consumeActions();
   }
@@ -196,7 +191,8 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
             ],
             child: BlocBuilder<OtpCubit, OtpState>(
               builder: (context, otpState) {
-                final timer = '00:${otpState.secondsLeft.toString().padLeft(2, '0')}';
+                final timer =
+                    '00:${otpState.secondsLeft.toString().padLeft(2, '0')}';
                 return SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -240,7 +236,9 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                           children: List.generate(
                             OtpCubit.otpLength,
                             (index) => _OtpBox(
-                              fieldKey: index == 0 ? const Key('otp_text_field') : null,
+                              fieldKey: index == 0
+                                  ? const Key('otp_text_field')
+                                  : null,
                               controller: _controllers[index],
                               focusNode: _focusNodes[index],
                               autoFocus: index == 0,
@@ -282,7 +280,9 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                                   fontWeight: FontWeight.w700,
                                   color: otpState.canResend
                                       ? AuthUiColors.danger
-                                      : AuthUiColors.danger.withValues(alpha: 0.5),
+                                      : AuthUiColors.danger.withValues(
+                                          alpha: 0.5,
+                                        ),
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -362,9 +362,9 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                     onPressed: otpState.isLoading
                         ? null
                         : () => _otpCubit.submit(
-                              widget.phoneNumber,
-                              widget.otpId,
-                            ),
+                            widget.phoneNumber,
+                            widget.otpId,
+                          ),
                   ),
                 ),
               ),

@@ -163,38 +163,43 @@ class VehicleDetailsState extends Equatable {
     return VehicleDetailsState(
       vehicleType: vehicleType ?? this.vehicleType,
       modelName: modelName ?? this.modelName,
-      selectedBikeType:
-          clearBikeType ? null : (selectedBikeType ?? this.selectedBikeType),
-      selectedSeatOption:
-          clearSeatOption ? null : (selectedSeatOption ?? this.selectedSeatOption),
-      selectedFuelType:
-          clearFuelType ? null : (selectedFuelType ?? this.selectedFuelType),
+      selectedBikeType: clearBikeType
+          ? null
+          : (selectedBikeType ?? this.selectedBikeType),
+      selectedSeatOption: clearSeatOption
+          ? null
+          : (selectedSeatOption ?? this.selectedSeatOption),
+      selectedFuelType: clearFuelType
+          ? null
+          : (selectedFuelType ?? this.selectedFuelType),
       year: year ?? this.year,
       hasPhoto: hasPhoto ?? this.hasPhoto,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       errors: errors ?? this.errors,
-      successMessage: clearSuccess ? null : (successMessage ?? this.successMessage),
+      successMessage: clearSuccess
+          ? null
+          : (successMessage ?? this.successMessage),
     );
   }
 
   @override
   List<Object?> get props => [
-        vehicleType,
-        modelName,
-        selectedBikeType,
-        selectedSeatOption,
-        selectedFuelType,
-        year,
-        hasPhoto,
-        isSubmitting,
-        isSubmitted,
-        errors.modelName,
-        errors.bikeType,
-        errors.seatOption,
-        errors.fuelType,
-        errors.year,
-        errors.photo,
-        successMessage,
-      ];
+    vehicleType,
+    modelName,
+    selectedBikeType,
+    selectedSeatOption,
+    selectedFuelType,
+    year,
+    hasPhoto,
+    isSubmitting,
+    isSubmitted,
+    errors.modelName,
+    errors.bikeType,
+    errors.seatOption,
+    errors.fuelType,
+    errors.year,
+    errors.photo,
+    successMessage,
+  ];
 }

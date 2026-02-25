@@ -53,7 +53,7 @@ class UnderlineInputField extends StatelessWidget {
           inputFormatters: inputFormatters,
           style: const TextStyle(
             fontSize: 15,
-            color: Color(0xFF1A2236),
+            color: AppColors.headingNavy,
             fontWeight: FontWeight.w400,
           ),
           decoration: InputDecoration(
@@ -74,13 +74,12 @@ class UnderlineInputField extends StatelessWidget {
                 : null,
             suffixText: suffixText,
             errorText: errorText,
-            errorStyle: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFFE53935),
-            ),
+            errorStyle: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError ? const Color(0xFFE53935) : const Color(0xFFE2E8F0),
+                color: hasError
+                    ? const Color(0xFFE53935)
+                    : const Color(0xFFE2E8F0),
                 width: 1.2,
               ),
             ),
