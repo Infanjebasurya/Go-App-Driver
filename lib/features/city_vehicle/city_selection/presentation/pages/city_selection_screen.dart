@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
@@ -185,6 +188,11 @@ class _SearchBar extends StatelessWidget {
       child: AppTextField(
         controller: controller,
         onChanged: onChanged,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+        ],
+
+
         textStyle: const TextStyle(
           fontSize: 14.5,
           color: AppColors.headingNavy,
@@ -207,10 +215,7 @@ class _SearchBar extends StatelessWidget {
               )
             : null,
         borderColor: Colors.grey.shade400,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 14,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       ),
     );
   }
@@ -255,7 +260,11 @@ class _ContinueButton extends StatelessWidget {
         20,
         12,
         20,
-        MediaQuery.of(context).padding.bottom + 20,
+        math.max(
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
+            20,
       ),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),

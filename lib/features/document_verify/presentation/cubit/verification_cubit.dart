@@ -45,13 +45,13 @@ class VerificationCubit extends Cubit<VerificationState> {
     emit(state.copyWith(documents: completedDocs));
   }
 
-  // ✅ Called from BankDetailsStep when account numbers match and form is valid
+
   void completeBankDetails(BankDetails details) {
     final updatedDocs = state.documents.map((doc) {
       if (doc.type == DocumentType.bankDetails) {
         return doc.copyWith(
           status: DocumentStatus.completed,
-          bankDetails: details, // ✅ attach validated bank data
+          bankDetails: details,
         );
       }
       return doc;
@@ -62,7 +62,7 @@ class VerificationCubit extends Cubit<VerificationState> {
   void removeDocument(DocumentType type) {
     final updatedDocs = state.documents.map((doc) {
       if (doc.type == type && doc.isCompleted) {
-        // ✅ also clears bank details if bank doc is removed
+
         return doc.copyWith(
           status: DocumentStatus.required,
           filePath: null,
