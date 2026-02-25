@@ -226,6 +226,8 @@ class _SearchBar extends StatelessWidget {
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
         ],
+
+
         textStyle: const TextStyle(
           fontSize: 14.5,
           color: Color(0xFF1A2236),
