@@ -1,44 +1,56 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 
 class ProfileEditCubit extends Cubit<ProfileEditState> {
   ProfileEditCubit({
-    Duration loadDelay = const Duration(milliseconds: 500),
+    required GetCachedProfileUseCase getCachedProfileUseCase,  // ✅ injected
     Duration saveDelay = const Duration(milliseconds: 700),
     Duration statusResetDelay = const Duration(milliseconds: 400),
     Duration actionDelay = const Duration(milliseconds: 800),
-  }) : _loadDelay = loadDelay,
-       _saveDelay = saveDelay,
-       _statusResetDelay = statusResetDelay,
-       _actionDelay = actionDelay,
-       super(const ProfileEditState()) {
+  }) : _getCachedProfileUseCase = getCachedProfileUseCase,
+        _saveDelay = saveDelay,
+        _statusResetDelay = statusResetDelay,
+        _actionDelay = actionDelay,
+        super(const ProfileEditState()) {
     loadProfile();
   }
 
-  final Duration _loadDelay;
+  final GetCachedProfileUseCase _getCachedProfileUseCase;
   final Duration _saveDelay;
   final Duration _statusResetDelay;
   final Duration _actionDelay;
 
-  static const ProfileEditData _mockProfile = ProfileEditData(
-    fullName: 'Sam Yogesh',
-    email: 'michael.rodriguez@email.com',
-    phone: '+91 99446 63355',
-    gender: 'Male',
-    dateOfBirth: 'March 15, 1990',
-    rating: 4.98,
-    totalTrips: 1240,
-    totalYears: 1.5,
-  );
-
   Future<void> loadProfile() async {
     emit(state.copyWith(status: ProfileEditStatus.loading));
-    await Future<void>.delayed(_loadDelay);
-    emit(
-      const ProfileEditState(
-        status: ProfileEditStatus.loaded,
-        data: _mockProfile,
-      ),
+    final result = await _getCachedProfileUseCase.call();
+    result.fold(
+          (failure) => emit(state.copyWith(
+        status: ProfileEditStatus.error,
+        errorMessage: failure.message,
+      )),
+          (profile) {
+        if (profile == null) {
+          emit(state.copyWith(
+            status: ProfileEditStatus.error,
+            errorMessage: 'Profile not found.',
+          ));
+          return;
+        }
+        emit(state.copyWith(
+          status: ProfileEditStatus.loaded,
+          data: ProfileEditData(
+            fullName: profile.name,
+            email: profile.email ?? '',
+            phone: profile.phone ?? '',
+            gender: profile.gender,
+            dateOfBirth: profile.dob ?? '',
+            rating: profile.rating ?? 0.0,
+            totalTrips: profile.totalTrips ?? 0,
+            totalYears: profile.totalYears ?? 0.0,
+          ),
+        ));
+      },
     );
   }
 
@@ -46,12 +58,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     if (state.data == null || name.trim().isEmpty) return;
     emit(state.copyWith(status: ProfileEditStatus.saving));
     await Future<void>.delayed(_saveDelay);
-    emit(
-      state.copyWith(
-        status: ProfileEditStatus.saved,
-        data: state.data!.copyWith(fullName: name.trim()),
-      ),
-    );
+    emit(state.copyWith(
+      status: ProfileEditStatus.saved,
+      data: state.data!.copyWith(fullName: name.trim()),
+    ));
     await Future<void>.delayed(_statusResetDelay);
     emit(state.copyWith(status: ProfileEditStatus.loaded));
   }
@@ -60,12 +70,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     if (state.data == null || email.trim().isEmpty) return;
     emit(state.copyWith(status: ProfileEditStatus.saving));
     await Future<void>.delayed(_saveDelay);
-    emit(
-      state.copyWith(
-        status: ProfileEditStatus.saved,
-        data: state.data!.copyWith(email: email.trim()),
-      ),
-    );
+    emit(state.copyWith(
+      status: ProfileEditStatus.saved,
+      data: state.data!.copyWith(email: email.trim()),
+    ));
     await Future<void>.delayed(_statusResetDelay);
     emit(state.copyWith(status: ProfileEditStatus.loaded));
   }

@@ -10,12 +10,14 @@ class CreateProfileUseCase {
 
   Future<Either<Failure, Profile>> call({
     required String name,
+    required String email,
     required String gender,
     required String refer,
     required String emergencyContact,
   }) {
     return _repository.createProfile(
       name: name,
+      email : email,
       gender: gender,
       refer: refer,
       emergencyContact: emergencyContact,

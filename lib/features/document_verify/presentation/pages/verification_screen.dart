@@ -11,6 +11,7 @@ import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart'
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 
 import '../cubit/verification_cubit.dart';
+import '../cubit/verification_state.dart';
 import '../model/document_model.dart';
 import '../widgets/document_card.dart';
 import '../widgets/verification_progress_card.dart';
