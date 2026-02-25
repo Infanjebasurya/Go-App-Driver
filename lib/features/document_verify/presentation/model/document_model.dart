@@ -2,18 +2,26 @@ import 'package:equatable/equatable.dart';
 
 enum DocumentStatus { completed, required, pending, uploading }
 
-enum DocumentType { drivingLicense, vehicleRC, aadhaarCard, panCard, bankDetails }
+enum DocumentType {
+  drivingLicense,
+  vehicleRC,
+  aadhaarCard,
+  panCard,
+  bankDetails,
+}
 
 class Document extends Equatable {
-  final DocumentType type;
-  final DocumentStatus status;
-  final String? filePath;
-
   const Document({
     required this.type,
     required this.status,
     this.filePath,
+    this.bankDetails,  // ✅ only populated for bankDetails type
   });
+
+  final DocumentType type;
+  final DocumentStatus status;
+  final String? filePath;
+  final BankDetails? bankDetails; // ✅ stores bank info after user fills form
 
   String get title {
     switch (type) {
@@ -38,66 +46,54 @@ class Document extends Equatable {
     DocumentType? type,
     DocumentStatus? status,
     String? filePath,
+    BankDetails? bankDetails,
+    bool clearBankDetails = false,
   }) {
     return Document(
       type: type ?? this.type,
       status: status ?? this.status,
       filePath: filePath ?? this.filePath,
+      bankDetails: clearBankDetails ? null : (bankDetails ?? this.bankDetails),
     );
   }
 
   @override
-  List<Object?> get props => [type, status, filePath];
+  List<Object?> get props => [type, status, filePath, bankDetails];
 }
 
-class VerificationState extends Equatable {
-  final List<Document> documents;
-  final bool isSubmitting;
-  final bool isSubmitted;
-  final String? errorMessage;
-
-  const VerificationState({
-    required this.documents,
-    this.isSubmitting = false,
-    this.isSubmitted = false,
-    this.errorMessage,
+// ✅ Separate model to hold bank details data
+class BankDetails extends Equatable {
+  const BankDetails({
+    required this.accountHolderName,
+    required this.bankName,
+    required this.accountNumber,
+    required this.ifscCode,
   });
 
-  factory VerificationState.initial() {
-    return const VerificationState(
-      documents: [
-        Document(type: DocumentType.drivingLicense, status: DocumentStatus.required),
-        Document(type: DocumentType.vehicleRC, status: DocumentStatus.required),
-        Document(type: DocumentType.aadhaarCard, status: DocumentStatus.required),
-        Document(type: DocumentType.panCard, status: DocumentStatus.required),
-        Document(type: DocumentType.bankDetails, status: DocumentStatus.required),
-      ],
-    );
-  }
+  final String accountHolderName;
+  final String bankName;
+  final String accountNumber;   // ✅ stored (never store confirm separately)
+  final String ifscCode;
 
-  int get completedCount => documents.where((d) => d.isCompleted).length;
-
-  double get progressPercentage => documents.isEmpty ? 0 : completedCount / documents.length;
-
-  int get progressPercent => (progressPercentage * 100).round();
-
-  bool get canSubmit => completedCount == documents.length;
-
-  VerificationState copyWith({
-    List<Document>? documents,
-    bool? isSubmitting,
-    bool? isSubmitted,
-    String? errorMessage,
-    bool clearError = false,
+  BankDetails copyWith({
+    String? accountHolderName,
+    String? bankName,
+    String? accountNumber,
+    String? ifscCode,
   }) {
-    return VerificationState(
-      documents: documents ?? this.documents,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      isSubmitted: isSubmitted ?? this.isSubmitted,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+    return BankDetails(
+      accountHolderName: accountHolderName ?? this.accountHolderName,
+      bankName: bankName ?? this.bankName,
+      accountNumber: accountNumber ?? this.accountNumber,
+      ifscCode: ifscCode ?? this.ifscCode,
     );
   }
 
   @override
-  List<Object?> get props => [documents, isSubmitting, isSubmitted, errorMessage];
+  List<Object?> get props => [
+    accountHolderName,
+    bankName,
+    accountNumber,
+    ifscCode,
+  ];
 }

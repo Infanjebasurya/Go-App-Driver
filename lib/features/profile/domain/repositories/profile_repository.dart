@@ -7,7 +7,7 @@ abstract class ProfileRepository {
     required String name,
     required String gender,
     required String refer,
-    required String emergencyContact,
+    required String emergencyContact, required String email,
   });
 
   Future<Either<Failure, Profile?>> getCachedProfile();

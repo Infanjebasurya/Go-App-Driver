@@ -4,6 +4,9 @@ import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
+import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
+
+import '../../domain/repositories/profile_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -11,7 +14,11 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProfileEditCubit>(
-      create: (_) => ProfileEditCubit(),
+      create: (context) => ProfileEditCubit(
+        getCachedProfileUseCase: GetCachedProfileUseCase(
+          context.read<ProfileRepository>(),
+        ),
+      ),
       child: const _ProfileView(),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/features/document_verify/presentation/cubit/verification_state.dart';
 
 import '../model/document_model.dart';
 import '../model/document_progress_store.dart';
@@ -34,7 +35,8 @@ class VerificationCubit extends Cubit<VerificationState> {
       if (doc.type == type) {
         return doc.copyWith(
           status: DocumentStatus.completed,
-          filePath: 'uploaded/${type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+          filePath:
+          'uploaded/${type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
         );
       }
       return doc;
@@ -43,10 +45,29 @@ class VerificationCubit extends Cubit<VerificationState> {
     emit(state.copyWith(documents: completedDocs));
   }
 
+  // ✅ Called from BankDetailsStep when account numbers match and form is valid
+  void completeBankDetails(BankDetails details) {
+    final updatedDocs = state.documents.map((doc) {
+      if (doc.type == DocumentType.bankDetails) {
+        return doc.copyWith(
+          status: DocumentStatus.completed,
+          bankDetails: details, // ✅ attach validated bank data
+        );
+      }
+      return doc;
+    }).toList();
+    emit(state.copyWith(documents: updatedDocs, clearError: true));
+  }
+
   void removeDocument(DocumentType type) {
     final updatedDocs = state.documents.map((doc) {
       if (doc.type == type && doc.isCompleted) {
-        return doc.copyWith(status: DocumentStatus.required, filePath: null);
+        // ✅ also clears bank details if bank doc is removed
+        return doc.copyWith(
+          status: DocumentStatus.required,
+          filePath: null,
+          clearBankDetails: type == DocumentType.bankDetails,
+        );
       }
       return doc;
     }).toList();
@@ -57,7 +78,8 @@ class VerificationCubit extends Cubit<VerificationState> {
     if (!state.canSubmit) {
       emit(
         state.copyWith(
-          errorMessage: 'Please complete all required documents before submitting.',
+          errorMessage:
+          'Please complete all required documents before submitting.',
         ),
       );
       return;

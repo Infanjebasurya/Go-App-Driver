@@ -104,11 +104,13 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   void _prefillFromProfile(Profile profile) {
     if (_prefilled) return;
     _prefilled = true;
+    _nameController.text = profile.name;
+    _emailController.text = profile.email ?? '';
     _referController.text = profile.refer;
     _emergencyController.text = profile.emergencyContact;
     _cubit.setInitial(
-      name: '',
-      email: '',
+      name: profile.name,
+      email: profile.email ?? '',
       gender: profile.gender,
       refer: profile.refer,
       emergencyContact: profile.emergencyContact,
@@ -459,7 +461,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                         return;
                       }
                       if (!context.mounted) return;
-                      Navigator.of(context).pushReplacement(
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const CitySelectionScreen(),
                         ),
@@ -477,6 +479,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                     _profileBloc.add(
                       ProfileSubmitted(
                         name: state.submission!.name,
+                        email: state.submission!.email,
                         gender: state.submission!.gender,
                         refer: state.submission!.refer,
                         emergencyContact: state.submission!.emergencyContact,
@@ -797,6 +800,7 @@ class _FakeProfileRepository implements ProfileRepository {
   Future<Either<Failure, Profile>> createProfile({
     required String name,
     required String gender,
+    required String email,
     required String refer,
     required String emergencyContact,
   }) async {
@@ -806,7 +810,7 @@ class _FakeProfileRepository implements ProfileRepository {
       name: name,
       gender: gender,
       refer: refer,
-      emergencyContact: emergencyContact,
+      emergencyContact: emergencyContact, email: email,
     );
     return Right(_cached!);
   }
