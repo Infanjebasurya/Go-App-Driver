@@ -32,6 +32,7 @@ class ProfileSetupPage extends StatefulWidget {
 
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _referController = TextEditingController();
   final _emergencyController = TextEditingController();
 
@@ -82,6 +83,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       _profileBloc.close();
     }
     _nameController.dispose();
+    _emailController.dispose();
     _referController.dispose();
     _emergencyController.dispose();
     super.dispose();
@@ -537,6 +539,35 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                               onChanged: context
                                   .read<ProfileSetupCubit>()
                                   .updateName,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          _lineField(
+                            label: 'Email',
+                            errorText: formState.showValidation
+                                ? formState.emailError
+                                : null,
+                            child: AppTextField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              label: '',
+                              hint: 'e.g., name@email.com',
+                              borderless: true,
+                              isCollapsed: true,
+                              contentPadding: EdgeInsets.zero,
+                              hintStyle: const TextStyle(
+                                color: AppColors.inputHint,
+                                fontSize: 30 / 2,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textStyle: const TextStyle(
+                                color: AppColors.black,
+                                fontSize: 30 / 2,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              onChanged: context
+                                  .read<ProfileSetupCubit>()
+                                  .updateEmail,
                             ),
                           ),
                           const SizedBox(height: 20),
