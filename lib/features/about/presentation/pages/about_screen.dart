@@ -9,10 +9,7 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AboutCubit(),
-      child: const _AboutView(),
-    );
+    return BlocProvider(create: (_) => AboutCubit(), child: const _AboutView());
   }
 }
 
@@ -23,7 +20,7 @@ class _AboutView extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           Navigator.of(context).pop(true);
         }
@@ -75,11 +72,8 @@ class _AboutMenuList extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       itemCount: items.length,
-      separatorBuilder: (_, index) => const Divider(
-        height: 1,
-        color: AppColors.strokeLight,
-        indent: 58,
-      ),
+      separatorBuilder: (_, index) =>
+          const Divider(height: 1, color: AppColors.strokeLight, indent: 58),
       itemBuilder: (_, i) => items[i],
     );
   }
@@ -136,7 +130,11 @@ class _MenuItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.neutralCCC, size: 20),
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.neutralCCC,
+                size: 20,
+              ),
             ],
           ),
         ),
@@ -273,9 +271,10 @@ class _SkeletonListState extends State<_SkeletonList>
       vsync: this,
       duration: const Duration(milliseconds: 1100),
     )..repeat(reverse: true);
-    _anim = Tween<double>(begin: -1.5, end: 1.5).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
+    _anim = Tween<double>(
+      begin: -1.5,
+      end: 1.5,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override

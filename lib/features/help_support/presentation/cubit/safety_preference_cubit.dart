@@ -19,12 +19,7 @@ class SafetyPreferencesState {
 
 class SafetyPreferencesCubit extends Cubit<SafetyPreferencesState> {
   SafetyPreferencesCubit()
-      : super(
-          const SafetyPreferencesState(
-            autoShare: true,
-            shareAtNight: false,
-          ),
-        );
+    : super(const SafetyPreferencesState(autoShare: true, shareAtNight: false));
 
   void setAutoShare(bool enabled) {
     emit(state.copyWith(autoShare: enabled));

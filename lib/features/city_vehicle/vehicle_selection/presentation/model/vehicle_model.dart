@@ -65,8 +65,9 @@ class VehicleSelectionState extends Equatable {
     bool clearSelection = false,
   }) {
     return VehicleSelectionState(
-      selectedVehicle:
-          clearSelection ? null : (selectedVehicle ?? this.selectedVehicle),
+      selectedVehicle: clearSelection
+          ? null
+          : (selectedVehicle ?? this.selectedVehicle),
     );
   }
 

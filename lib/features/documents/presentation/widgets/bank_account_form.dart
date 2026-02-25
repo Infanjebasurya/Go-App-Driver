@@ -56,7 +56,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1A2236),
+              color: AppColors.headingNavy,
               letterSpacing: -0.6,
               height: 1.1,
             ),
@@ -83,7 +83,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
           const SizedBox(height: 24),
           _BankField(
             label: 'Account Number',
-            hint: '•••• •••• •••• ••••',
+            hint: 'â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢',
             controller: _accCtrl,
             errorText: data.accountNumberError,
             onChanged: cubit.updateAccountNumber,
@@ -93,7 +93,9 @@ class _BankAccountFormState extends State<BankAccountForm> {
             suffixIcon: GestureDetector(
               onTap: () => setState(() => _obscureAccount = !_obscureAccount),
               child: Icon(
-                _obscureAccount ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                _obscureAccount
+                    ? Icons.visibility_off_rounded
+                    : Icons.visibility_rounded,
                 color: const Color(0xFF8FA0B0),
                 size: 20,
               ),
@@ -140,7 +142,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A2236),
+                        color: AppColors.headingNavy,
                         letterSpacing: 0.1,
                       ),
                     ),
@@ -217,21 +219,20 @@ class _BankField extends StatelessWidget {
           inputFormatters: inputFormatters,
           style: const TextStyle(
             fontSize: 16,
-            color: Color(0xFF1A2236),
+            color: AppColors.headingNavy,
             fontWeight: FontWeight.w400,
             letterSpacing: 0.3,
           ),
           decoration: InputDecoration(
             fillColor: Colors.white,
             hintText: hint,
-            hintStyle: TextStyle(
-              fontSize: 15,
-              color: Colors.grey.shade400,
-            ),
+            hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade400),
             suffixIcon: suffixIcon,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError ? const Color(0xFFE53935) : const Color(0xFFD5DDE5),
+                color: hasError
+                    ? const Color(0xFFE53935)
+                    : const Color(0xFFD5DDE5),
                 width: 1.2,
               ),
             ),
@@ -252,10 +253,7 @@ class _BankField extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             errorText!,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFFE53935),
-            ),
+            style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
           ),
         ],
       ],
@@ -265,7 +263,10 @@ class _BankField extends StatelessWidget {
 
 class _UpperCaseFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }

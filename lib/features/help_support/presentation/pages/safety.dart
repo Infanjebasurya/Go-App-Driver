@@ -36,7 +36,9 @@ class SafetyPage extends StatelessWidget {
                     subtitle: 'Keep Primary ones informed on every trip',
                     trailing: Switch(
                       value: state.autoShare,
-                      onChanged: context.read<SafetyPreferencesCubit>().setAutoShare,
+                      onChanged: context
+                          .read<SafetyPreferencesCubit>()
+                          .setAutoShare,
                       inactiveThumbColor: AppColors.white,
                       inactiveTrackColor: AppColors.warmGray,
                     ),
@@ -49,8 +51,9 @@ class SafetyPage extends StatelessWidget {
                         'Only active from 10 PM to 6 AM. Driver contact and live location will be shared your primary contact.',
                     trailing: Switch(
                       value: state.shareAtNight,
-                      onChanged:
-                          context.read<SafetyPreferencesCubit>().setShareAtNight,
+                      onChanged: context
+                          .read<SafetyPreferencesCubit>()
+                          .setShareAtNight,
                       inactiveThumbColor: AppColors.white,
                       inactiveTrackColor: AppColors.warmGray,
                     ),
@@ -173,7 +176,11 @@ class AddEmergencyNumberPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Icon(Icons.delete_outline, size: 32, color: AppColors.black),
+                const Icon(
+                  Icons.delete_outline,
+                  size: 32,
+                  color: AppColors.black,
+                ),
                 const SizedBox(height: 12),
                 const Text(
                   'Delete Contact',
@@ -264,18 +271,22 @@ class AddEmergencyNumberPage extends StatelessWidget {
                     child: _AppButton(
                       label: '+ Add contact',
                       onPressed: () async {
-                        final contact = await showModalBottomSheet<EmergencyContact?>(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: AppColors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          builder: (_) => const _AddContactSheet(),
-                        );
+                        final contact =
+                            await showModalBottomSheet<EmergencyContact?>(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: AppColors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (_) => const _AddContactSheet(),
+                            );
                         if (contact == null || !context.mounted) return;
-                        context.read<EmergencyContactsCubit>().addContact(contact);
+                        context.read<EmergencyContactsCubit>().addContact(
+                          contact,
+                        );
                       },
                     ),
                   ),
@@ -290,17 +301,22 @@ class AddEmergencyNumberPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Expanded(
-                    child: BlocBuilder<EmergencyContactsCubit, EmergencyContactsState>(
-                      builder: (context, state) {
-                        return _EmergencyContactsList(
-                          items: state.contacts,
-                          onMakePrimary:
-                              context.read<EmergencyContactsCubit>().makePrimary,
-                          onDelete: (index) =>
-                              _confirmDeleteContact(context, index),
-                        );
-                      },
-                    ),
+                    child:
+                        BlocBuilder<
+                          EmergencyContactsCubit,
+                          EmergencyContactsState
+                        >(
+                          builder: (context, state) {
+                            return _EmergencyContactsList(
+                              items: state.contacts,
+                              onMakePrimary: context
+                                  .read<EmergencyContactsCubit>()
+                                  .makePrimary,
+                              onDelete: (index) =>
+                                  _confirmDeleteContact(context, index),
+                            );
+                          },
+                        ),
                   ),
                 ],
               ),
@@ -392,7 +408,11 @@ class _EmergencyContactsList extends StatelessWidget {
                 ),
               ),
               PopupMenuButton<_ContactMenuAction>(
-                icon: const Icon(Icons.more_vert, size: 20, color: AppColors.gray),
+                icon: const Icon(
+                  Icons.more_vert,
+                  size: 20,
+                  color: AppColors.gray,
+                ),
                 onSelected: (action) {
                   if (action == _ContactMenuAction.primary) {
                     onMakePrimary(index);
@@ -540,10 +560,11 @@ class _AddContactSheetState extends State<_AddContactSheet> {
                     onPressed: () {
                       final name = _nameController.text.trim();
                       final number = _numberController.text.trim();
-                      final isValid = EmergencyContactsCubit.isValidContactInput(
-                        name: name,
-                        number: number,
-                      );
+                      final isValid =
+                          EmergencyContactsCubit.isValidContactInput(
+                            name: name,
+                            number: number,
+                          );
                       if (!isValid) {
                         Navigator.of(context).pop();
                         return;
@@ -626,11 +647,8 @@ class _AppButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
         minimumSize: const Size.fromHeight(48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 }
-

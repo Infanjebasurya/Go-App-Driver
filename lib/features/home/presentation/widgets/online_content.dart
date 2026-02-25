@@ -139,11 +139,11 @@ class _OnlineStatusBanner extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [Color(0xFF008051), Color(0xFF00A86B)],
+          colors: [Color(0xFF008051), AppColors.emerald],
         ),
-        color: const Color(0xFFE8F5E9),
+        color: AppColors.earningsAccentSoft,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFA5D6A7), width: 1),
+        border: Border.all(color: AppColors.earningsAccentLine, width: 1),
       ),
       child: Row(
         children: [
@@ -352,7 +352,7 @@ class _BottomWalletCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: AppColors.surfaceF5,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -362,28 +362,32 @@ class _BottomWalletCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Wallet Balance',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black45,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Wallet Balance',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45,
+                  ),
                 ),
-              ),
-              Text(
-                '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: isNegative ? Colors.red : Colors.black87,
+                Text(
+                  '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: isNegative ? Colors.red : Colors.black87,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () {
               Navigator.of(
@@ -408,45 +412,6 @@ class _BottomWalletCard extends StatelessWidget {
       ),
     );
   }
-
-  void _showAddMoneyDialog(BuildContext context) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Money'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            labelText: 'Amount (₹)',
-            prefixText: '₹ ',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<DriverCubit>().addMoneyFromInput(controller.text);
-              Navigator.pop(ctx);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AuthUiColors.brandGreen,
-            ),
-            child: const Text('Add', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _GpsButton extends StatelessWidget {
@@ -465,3 +430,4 @@ class _GpsButton extends StatelessWidget {
     );
   }
 }
+

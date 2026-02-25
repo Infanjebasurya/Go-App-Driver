@@ -23,21 +23,15 @@ class AboutCubit extends Cubit<AboutState> {
         content: {
           AboutSection.ourStory: const AboutContent(
             title: 'Our Story',
-            paragraphs: [
-              _loremBase,
-            ],
+            paragraphs: [_loremBase],
           ),
           AboutSection.termsOfService: const AboutContent(
             title: 'Terms of Service',
-            paragraphs: [
-              _loremBase,
-            ],
+            paragraphs: [_loremBase],
           ),
           AboutSection.privacyPolicy: const AboutContent(
             title: 'Privacy Policy',
-            paragraphs: [
-              _loremBase,
-            ],
+            paragraphs: [_loremBase],
           ),
         },
       ),

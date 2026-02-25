@@ -24,5 +24,9 @@ class AvailableOrdersState extends Equatable {
   }
 
   @override
-  List<Object> get props => <Object>[activeOrderIndex, progress, showSecondOrder];
+  List<Object> get props => <Object>[
+    activeOrderIndex,
+    progress,
+    showSecondOrder,
+  ];
 }

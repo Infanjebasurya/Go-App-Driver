@@ -4,8 +4,8 @@ import 'package:goapp/features/profile/presentation/cubit/profile_setup_state.da
 
 class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   ProfileSetupCubit({required ProfileValidationService validationService})
-      : _validationService = validationService,
-        super(const ProfileSetupState());
+    : _validationService = validationService,
+      super(const ProfileSetupState());
 
   final ProfileValidationService _validationService;
 
@@ -66,11 +66,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
   void updateDob(String value) {
     emit(
-      state.copyWith(
-        dob: value,
-        showValidation: false,
-        submitRequested: false,
-      ),
+      state.copyWith(dob: value, showValidation: false, submitRequested: false),
     );
   }
 
@@ -147,10 +143,6 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void consumeSubmit() {
-    emit(
-      state.copyWith(
-        submitRequested: false,
-      ),
-    );
+    emit(state.copyWith(submitRequested: false));
   }
 }

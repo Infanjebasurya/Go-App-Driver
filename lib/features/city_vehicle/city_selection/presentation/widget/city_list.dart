@@ -24,7 +24,7 @@ class CityListTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 15),
         decoration: const BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: Color(0xFFF0F4F8), width: 1),
+            bottom: BorderSide(color: AppColors.coolwhite, width: 1),
           ),
         ),
         child: Row(
@@ -35,7 +35,7 @@ class CityListTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15.5,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? AppColors.emerald : const Color(0xFF1A2236),
+                  color: isSelected ? AppColors.emerald : AppColors.headingNavy,
                   letterSpacing: -0.1,
                 ),
               ),

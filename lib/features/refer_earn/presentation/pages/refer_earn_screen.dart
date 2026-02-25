@@ -44,7 +44,6 @@ class _ReferEarnView extends StatelessWidget {
   }
 }
 
-
 class _MainReferScreen extends StatelessWidget {
   final ReferralLoaded state;
   const _MainReferScreen({required this.state});
@@ -69,7 +68,7 @@ class _MainReferScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.headingDark,
                         height: 1.2,
                       ),
                     ),
@@ -82,10 +81,12 @@ class _MainReferScreen extends StatelessWidget {
 
                   const _SectionLabel(text: 'ACTIVE CAMPAIGNS'),
                   const SizedBox(height: 10),
-                  ...state.campaigns.map((c) => _CampaignRow(
-                    campaign: c,
-                    onTap: () => _openCampaignDetail(context, c),
-                  )),
+                  ...state.campaigns.map(
+                    (c) => _CampaignRow(
+                      campaign: c,
+                      onTap: () => _openCampaignDetail(context, c),
+                    ),
+                  ),
 
                   const SizedBox(height: 22),
                   const _SectionLabel(text: 'YOUR REFERRAL CODE IS'),
@@ -93,8 +94,7 @@ class _MainReferScreen extends StatelessWidget {
                   _ReferralCodeBox(
                     code: state.referralCode,
                     copied: state.codeCopied,
-                    onCopy: () =>
-                        context.read<ReferralCubit>().copyCode(),
+                    onCopy: () => context.read<ReferralCubit>().copyCode(),
                   ),
                   const SizedBox(height: 80),
                 ],
@@ -104,14 +104,12 @@ class _MainReferScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: _InviteButton(
-        onTap: () => _openCampaignDetail(
-            context, state.campaigns.first),
+        onTap: () => _openCampaignDetail(context, state.campaigns.first),
       ),
     );
   }
 
-  void _openCampaignDetail(
-      BuildContext context, ReferralCampaign campaign) {
+  void _openCampaignDetail(BuildContext context, ReferralCampaign campaign) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -123,7 +121,6 @@ class _MainReferScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _BikeReferralDetailScreen extends StatelessWidget {
   final ReferralLoaded state;
@@ -145,16 +142,15 @@ class _BikeReferralDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     decoration: BoxDecoration(
-                      color : Colors.white,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -167,7 +163,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1A1A1A),
+                            color: AppColors.headingDark,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -194,7 +190,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1A1A1A),
+                          color: AppColors.headingDark,
                         ),
                       ),
                       const Text(
@@ -202,7 +198,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFFAAAAAA),
+                          color: AppColors.neutralAAA,
                           letterSpacing: 0.8,
                         ),
                       ),
@@ -213,10 +209,10 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(24),
-                      //   border: Border.all(color: const Color(0xFFEEEEEE)),
+                      //   border: Border.all(color: AppColors.strokeLight),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -224,7 +220,6 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-
                         Expanded(
                           child: GestureDetector(
                             onTap: () => Navigator.push(
@@ -248,9 +243,10 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                           ),
                         ),
                         Container(
-                            width: 1,
-                            height: 40,
-                            color: const Color(0xFFEEEEEE)),
+                          width: 1,
+                          height: 40,
+                          color: AppColors.strokeLight,
+                        ),
 
                         Expanded(
                           child: GestureDetector(
@@ -283,7 +279,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.headingDark,
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -291,19 +287,19 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     number: '1',
                     title: 'Share your link',
                     subtitle:
-                    'Send your unique invite link to professional\nbike riders in your network.',
+                        'Send your unique invite link to professional\nbike riders in your network.',
                   ),
                   const _HowItWorksStep(
                     number: '2',
                     title: 'Friend joins GoApp',
                     subtitle:
-                    'Ensure they complete their registration using\nyour referral code.',
+                        'Ensure they complete their registration using\nyour referral code.',
                   ),
                   const _HowItWorksStep(
                     number: '3',
                     title: 'Friend completes 10 rides',
                     subtitle:
-                    'Once they hit the milestone, the ₹3,000 reward\nis credited to your wallet.',
+                        'Once they hit the milestone, the ₹3,000 reward\nis credited to your wallet.',
                     isLast: true,
                   ),
                   const SizedBox(height: 26),
@@ -312,7 +308,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                       'T&C APPLY',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Color(0xFFAAAAAA),
+                        color: AppColors.neutralAAA,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -329,7 +325,6 @@ class _BikeReferralDetailScreen extends StatelessWidget {
   }
 }
 
-
 class ReferralPendingScreen extends StatelessWidget {
   const ReferralPendingScreen({super.key});
 
@@ -343,7 +338,9 @@ class ReferralPendingScreen extends StatelessWidget {
             return const Scaffold(
               backgroundColor: Colors.white,
               body: Center(
-                child: CircularProgressIndicator(color: AuthUiColors.brandGreen,),
+                child: CircularProgressIndicator(
+                  color: AuthUiColors.brandGreen,
+                ),
               ),
             );
           }
@@ -361,7 +358,7 @@ class _PendingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.surfaceF5,
       appBar: _buildAppBar(context, 'Pending'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -369,7 +366,9 @@ class _PendingView extends StatelessWidget {
           children: [
             _EarningsCard(
               earnings: state.pending.fold<int>(
-                  0, (sum, r) => sum + r.estimatedReward),
+                0,
+                (sum, r) => sum + r.estimatedReward,
+              ),
               label: 'TOTAL EARNINGS',
             ),
             const SizedBox(height: 16),
@@ -380,8 +379,7 @@ class _PendingView extends StatelessWidget {
               icon: Icons.pending_actions,
             ),
             const SizedBox(height: 12),
-            ...state.pending
-                .map((p) => _ReferralPersonCard(person: p)),
+            ...state.pending.map((p) => _ReferralPersonCard(person: p)),
           ],
         ),
       ),
@@ -402,7 +400,9 @@ class ReferralCompletedScreen extends StatelessWidget {
             return const Scaffold(
               backgroundColor: Colors.white,
               body: Center(
-                child: CircularProgressIndicator(color: AuthUiColors.brandGreen,),
+                child: CircularProgressIndicator(
+                  color: AuthUiColors.brandGreen,
+                ),
               ),
             );
           }
@@ -428,7 +428,9 @@ class _CompletedView extends StatelessWidget {
           children: [
             _EarningsCard(
               earnings: state.completed.fold<int>(
-                  0, (sum, r) => sum + r.estimatedReward),
+                0,
+                (sum, r) => sum + r.estimatedReward,
+              ),
               label: 'TOTAL EARNINGS',
             ),
             const SizedBox(height: 24),
@@ -439,16 +441,13 @@ class _CompletedView extends StatelessWidget {
               icon: Icons.pending_actions,
             ),
             const SizedBox(height: 12),
-            ...state.completed
-                .map((p) => _ReferralPersonCard(person: p)),
+            ...state.completed.map((p) => _ReferralPersonCard(person: p)),
           ],
         ),
       ),
     );
   }
 }
-
-
 
 PreferredSizeWidget _buildAppBar(BuildContext context, String title) {
   return AppBar(
@@ -459,7 +458,11 @@ PreferredSizeWidget _buildAppBar(BuildContext context, String title) {
       onTap: () => Navigator.of(context).pop(),
       child: const Padding(
         padding: EdgeInsets.all(14),
-        child: Icon(Icons.arrow_back_ios, color: Color(0xFF1A1A1A), size: 14),
+        child: Icon(
+          Icons.arrow_back_ios,
+          color: AppColors.headingDark,
+          size: 14,
+        ),
       ),
     ),
     title: Text(
@@ -467,16 +470,15 @@ PreferredSizeWidget _buildAppBar(BuildContext context, String title) {
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF1A1A1A),
+        color: AppColors.headingDark,
       ),
     ),
     bottom: PreferredSize(
       preferredSize: const Size.fromHeight(1),
-      child: Container(color: const Color(0xFFEEEEEE), height: 1),
+      child: Container(color: AppColors.strokeLight, height: 1),
     ),
   );
 }
-
 
 class _HeroCard extends StatelessWidget {
   final int totalEarnings;
@@ -492,7 +494,7 @@ class _HeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -507,11 +509,14 @@ class _HeroCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF8),
+                  color: AppColors.surfaceFDF8,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Icon(Icons.payments_sharp,
-                    color: AuthUiColors.brandGreen, size: 18),
+                child: const Icon(
+                  Icons.payments_sharp,
+                  color: AuthUiColors.brandGreen,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 10),
               Column(
@@ -521,7 +526,7 @@ class _HeroCard extends StatelessWidget {
                     'TOTAL EARNINGS',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFFAAAAAA),
+                      color: AppColors.neutralAAA,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.6,
                     ),
@@ -531,7 +536,7 @@ class _HeroCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.headingDark,
                     ),
                   ),
                 ],
@@ -545,7 +550,6 @@ class _HeroCard extends StatelessWidget {
     );
   }
 }
-
 
 class _CampaignRow extends StatelessWidget {
   final ReferralCampaign campaign;
@@ -575,7 +579,7 @@ class _CampaignRow extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -587,10 +591,10 @@ class _CampaignRow extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
+                color: AppColors.surfaceF5,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(_icon, color: const Color(0xFF444444), size: 20),
+              child: Icon(_icon, color: AppColors.neutral444, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -599,7 +603,7 @@ class _CampaignRow extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.headingDark,
                 ),
               ),
             ),
@@ -608,7 +612,7 @@ class _CampaignRow extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.headingDark,
               ),
             ),
             const SizedBox(width: 8),
@@ -620,13 +624,15 @@ class _CampaignRow extends StatelessWidget {
   }
 }
 
-
 class _ReferralCodeBox extends StatelessWidget {
   final String code;
   final bool copied;
   final VoidCallback onCopy;
-  const _ReferralCodeBox(
-      {required this.code, required this.copied, required this.onCopy});
+  const _ReferralCodeBox({
+    required this.code,
+    required this.copied,
+    required this.onCopy,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -635,7 +641,7 @@ class _ReferralCodeBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
+        border: Border.all(color: AppColors.strokeLight),
       ),
       child: Row(
         children: [
@@ -644,7 +650,7 @@ class _ReferralCodeBox extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.headingDark,
               letterSpacing: 1,
             ),
           ),
@@ -673,7 +679,6 @@ class _ReferralCodeBox extends StatelessWidget {
   }
 }
 
-
 class _SectionLabel extends StatelessWidget {
   final String text;
   const _SectionLabel({required this.text});
@@ -685,13 +690,12 @@ class _SectionLabel extends StatelessWidget {
       style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF888888),
+        color: AppColors.neutral888,
         letterSpacing: 1.2,
       ),
     );
   }
 }
-
 
 class _InviteButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -725,7 +729,6 @@ class _InviteButton extends StatelessWidget {
   }
 }
 
-
 class _EarningsCard extends StatelessWidget {
   final int earnings;
   final String label;
@@ -741,7 +744,7 @@ class _EarningsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 6),
           ),
@@ -753,11 +756,14 @@ class _EarningsCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FDF8),
+              color: AppColors.surfaceFDF8,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: const Icon(Icons.payments_sharp,
-                color: AuthUiColors.brandGreen, size: 20),
+            child: const Icon(
+              Icons.payments_sharp,
+              color: AuthUiColors.brandGreen,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 14),
           Column(
@@ -768,7 +774,7 @@ class _EarningsCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFFAAAAAA),
+                  color: AppColors.neutralAAA,
                   letterSpacing: 0.6,
                 ),
               ),
@@ -777,7 +783,7 @@ class _EarningsCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.headingDark,
                 ),
               ),
             ],
@@ -787,7 +793,6 @@ class _EarningsCard extends StatelessWidget {
     );
   }
 }
-
 
 class _ReferralSummaryBanner extends StatelessWidget {
   final int count;
@@ -811,7 +816,7 @@ class _ReferralSummaryBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 1),
           ),
@@ -833,7 +838,7 @@ class _ReferralSummaryBanner extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.headingDark,
                 ),
               ),
               const SizedBox(height: 2),
@@ -841,7 +846,7 @@ class _ReferralSummaryBanner extends StatelessWidget {
                 subLabel,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFAAAAAA),
+                  color: AppColors.neutralAAA,
                   letterSpacing: 0.6,
                   fontWeight: FontWeight.w500,
                 ),
@@ -853,7 +858,6 @@ class _ReferralSummaryBanner extends StatelessWidget {
     );
   }
 }
-
 
 class _ReferralPersonCard extends StatelessWidget {
   final ReferralPerson person;
@@ -869,7 +873,7 @@ class _ReferralPersonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -879,7 +883,6 @@ class _ReferralPersonCard extends StatelessWidget {
         children: [
           Row(
             children: [
-
               Container(
                 width: 44,
                 height: 44,
@@ -908,7 +911,7 @@ class _ReferralPersonCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.headingDark,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -916,8 +919,11 @@ class _ReferralPersonCard extends StatelessWidget {
                     if (person.rewardCredited == true)
                       Row(
                         children: const [
-                          Icon(Icons.check_circle_outline,
-                              color: AppColors.gold, size: 13),
+                          Icon(
+                            Icons.check_circle_outline,
+                            color: AppColors.gold,
+                            size: 13,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             'Reward Credited',
@@ -943,7 +949,7 @@ class _ReferralPersonCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFFAAAAAA),
+                          color: AppColors.neutralAAA,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -960,7 +966,7 @@ class _ReferralPersonCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: person.status == ReferralStatus.completed
                           ? AuthUiColors.brandGreen
-                          : const Color(0xFF1A1A1A),
+                          : AppColors.headingDark,
                     ),
                   ),
                   Text(
@@ -969,7 +975,7 @@ class _ReferralPersonCard extends StatelessWidget {
                         : 'EST. REWARD',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xFFAAAAAA),
+                      color: AppColors.neutralAAA,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.5,
                     ),
@@ -978,7 +984,6 @@ class _ReferralPersonCard extends StatelessWidget {
               ),
             ],
           ),
-
 
           if (person.status == ReferralStatus.pending &&
               person.ridesCompleted != null) ...[
@@ -996,7 +1001,7 @@ class _ReferralPersonCard extends StatelessWidget {
                             '${person.ridesCompleted}/${person.totalRidesRequired} rides completed',
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF555555),
+                              color: AppColors.neutral555,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1004,7 +1009,7 @@ class _ReferralPersonCard extends StatelessWidget {
                             '${(person.progressPercent * 100).toInt()}%',
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF555555),
+                              color: AppColors.neutral555,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1016,9 +1021,10 @@ class _ReferralPersonCard extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: person.progressPercent,
                           minHeight: 6,
-                          backgroundColor: const Color(0xFFF0F0F0),
+                          backgroundColor: AppColors.surfaceF0,
                           valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.gold),
+                            AppColors.gold,
+                          ),
                         ),
                       ),
                     ],
@@ -1027,7 +1033,6 @@ class _ReferralPersonCard extends StatelessWidget {
               ],
             ),
           ],
-
 
           if (person.status == ReferralStatus.pending &&
               (person.ridesCompleted == null ||
@@ -1041,8 +1046,11 @@ class _ReferralPersonCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.shield_moon_outlined,
-                      color: Color(0xFF3B82F6), size: 24),
+                  const Icon(
+                    Icons.shield_moon_outlined,
+                    color: Color(0xFF3B82F6),
+                    size: 24,
+                  ),
                   const SizedBox(width: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1052,13 +1060,15 @@ class _ReferralPersonCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1A1A),
+                          color: AppColors.headingDark,
                         ),
                       ),
                       Text(
                         'Documents under review',
-                        style:
-                        TextStyle(fontSize: 12, color: Color(0xFFAAAAAA)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.neutralAAA,
+                        ),
                       ),
                     ],
                   ),
@@ -1071,7 +1081,6 @@ class _ReferralPersonCard extends StatelessWidget {
     );
   }
 }
-
 
 class _HowItWorksStep extends StatelessWidget {
   final String number;
@@ -1096,7 +1105,7 @@ class _HowItWorksStep extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFFDDDDDD), width: 1.5),
+                border: Border.all(color: AppColors.neutralDDD, width: 1.5),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -1105,14 +1114,13 @@ class _HowItWorksStep extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF888888),
+                    color: AppColors.neutral888,
                   ),
                 ),
               ),
             ),
             if (!isLast)
-              Container(
-                  width: 1.5, height: 44, color: const Color(0xFFEEEEEE)),
+              Container(width: 1.5, height: 44, color: AppColors.strokeLight),
           ],
         ),
         const SizedBox(width: 14),
@@ -1127,7 +1135,7 @@ class _HowItWorksStep extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.headingDark,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -1135,7 +1143,7 @@ class _HowItWorksStep extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF888888),
+                    color: AppColors.neutral888,
                     fontWeight: FontWeight.w400,
                     height: 1.4,
                   ),
@@ -1149,7 +1157,6 @@ class _HowItWorksStep extends StatelessWidget {
     );
   }
 }
-
 
 class _StatCol extends StatelessWidget {
   final String value;
@@ -1170,9 +1177,7 @@ class _StatCol extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: highlighted
-                ? const Color(0xFF1A1A1A)
-                : const Color(0xFF1A1A1A),
+            color: highlighted ? AppColors.headingDark : AppColors.headingDark,
           ),
         ),
         const SizedBox(height: 2),
@@ -1184,7 +1189,7 @@ class _StatCol extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFFAAAAAA),
+                color: AppColors.neutralAAA,
                 letterSpacing: 0.8,
               ),
             ),
@@ -1194,3 +1199,4 @@ class _StatCol extends StatelessWidget {
     );
   }
 }
+

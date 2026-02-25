@@ -62,7 +62,9 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
     if (progress >= 1) return path.last;
 
     _ensureRouteCache(path);
-    if (_cachedTotalDistance <= 0 || _cachedCumulative.isEmpty) return path.last;
+    if (_cachedTotalDistance <= 0 || _cachedCumulative.isEmpty) {
+      return path.last;
+    }
     final double targetDistance = _cachedTotalDistance * progress;
     final int segmentIndex = _segmentIndexAtDistance(
       _cachedCumulative,
@@ -108,7 +110,9 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
     }
     _cachedRouteHash = hash;
     _cachedCumulative = _cumulativeDistances(path);
-    _cachedTotalDistance = _cachedCumulative.isEmpty ? 0 : _cachedCumulative.last;
+    _cachedTotalDistance = _cachedCumulative.isEmpty
+        ? 0
+        : _cachedCumulative.last;
   }
 
   List<double> _cumulativeDistances(List<LatLng> path) {
@@ -137,7 +141,10 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
     final double lat2 = to.latitude * math.pi / 180;
     final double a =
         math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(lat1) * math.cos(lat2) * math.sin(dLng / 2) * math.sin(dLng / 2);
+        math.cos(lat1) *
+            math.cos(lat2) *
+            math.sin(dLng / 2) *
+            math.sin(dLng / 2);
     final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return earthRadius * c;
   }

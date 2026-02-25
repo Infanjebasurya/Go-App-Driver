@@ -32,22 +32,22 @@ class EmergencyContactsState {
 
 class EmergencyContactsCubit extends Cubit<EmergencyContactsState> {
   EmergencyContactsCubit()
-      : super(
-          EmergencyContactsState(
-            contacts: _sorted(const [
-              EmergencyContact(
-                name: 'Alex Johnson',
-                number: '+91 9552489931',
-                isPrimary: true,
-              ),
-              EmergencyContact(
-                name: 'Priya Singh',
-                number: '+91 9809337200',
-                isPrimary: false,
-              ),
-            ]),
-          ),
-        );
+    : super(
+        EmergencyContactsState(
+          contacts: _sorted(const [
+            EmergencyContact(
+              name: 'Alex Johnson',
+              number: '+91 9552489931',
+              isPrimary: true,
+            ),
+            EmergencyContact(
+              name: 'Priya Singh',
+              number: '+91 9809337200',
+              isPrimary: false,
+            ),
+          ]),
+        ),
+      );
 
   static bool isValidContactInput({
     required String name,

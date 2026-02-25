@@ -70,7 +70,8 @@ class ProfileValidationService {
     final now = DateTime.now();
     if (parsed.isAfter(now)) return 'Date of birth cannot be in the future';
 
-    final age = now.year -
+    final age =
+        now.year -
         parsed.year -
         ((now.month < parsed.month ||
                 (now.month == parsed.month && now.day < parsed.day))
@@ -98,7 +99,7 @@ class ProfileValidationService {
 
   String? validateEmail(String email) {
     final value = email.trim();
-    if (value.isEmpty) return 'Please enter your email address';
+    if (value.isEmpty) return null;
     if (!_emailPattern.hasMatch(value)) {
       return 'Please enter a valid email address';
     }

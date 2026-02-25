@@ -57,7 +57,7 @@ class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
         title: 'GoApp',
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: Color(0xFFF0F4F8)),
+          child: Divider(height: 1, color: AppColors.coolwhite),
         ),
       ),
       body: BlocBuilder<VehicleSelectionCubit, VehicleSelectionState>(
@@ -75,7 +75,7 @@ class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A2236),
+                        color: AppColors.headingNavy,
                         letterSpacing: -0.6,
                         height: 1.1,
                       ),
@@ -102,7 +102,9 @@ class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
                       key: ValueKey(vehicle.type),
                       vehicle: vehicle,
                       isSelected: state.isSelected(vehicle),
-                      onTap: () => context.read<VehicleSelectionCubit>().selectVehicle(vehicle),
+                      onTap: () => context
+                          .read<VehicleSelectionCubit>()
+                          .selectVehicle(vehicle),
                     );
                   }).toList(),
                 ),
