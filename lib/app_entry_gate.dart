@@ -23,7 +23,7 @@ class AppEntryGate extends StatefulWidget {
 
 class _AppEntryGateState extends State<AppEntryGate> {
   late final Future<RegistrationProgress> _progressFuture =
-      RegistrationProgressStore.load();
+  RegistrationProgressStore.load();
 
   @override
   Widget build(BuildContext context) {

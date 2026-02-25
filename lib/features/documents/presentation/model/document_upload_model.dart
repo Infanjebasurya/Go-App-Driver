@@ -53,7 +53,7 @@ const List<StepConfig> kStepConfigs = [
     subtitle: 'Registration Certificate',
     numberLabel: 'Vehicle Number',
     numberHint: 'Tn02 2354851253',
-    allowedPattern: r'[A-Za-z0-9 ]',
+    allowedPattern: r'[A-Za-z0-9]',
     forceUppercase: true,
   ),
   StepConfig(
@@ -107,16 +107,16 @@ class BankAccountData extends Equatable {
 
   bool get hasErrors =>
       nameError != null ||
-      accountNumberError != null ||
-      confirmAccountNumberError != null ||
-      ifscError != null;
+          accountNumberError != null ||
+          confirmAccountNumberError != null ||
+          ifscError != null;
 
   bool get isComplete =>
       accountHolderName.trim().isNotEmpty &&
-      accountNumber.trim().isNotEmpty &&
-      confirmAccountNumber.trim().isNotEmpty &&
-      confirmAccountNumber == accountNumber &&
-      ifscCode.trim().isNotEmpty;
+          accountNumber.trim().isNotEmpty &&
+          confirmAccountNumber.trim().isNotEmpty &&
+          confirmAccountNumber == accountNumber &&
+          ifscCode.trim().isNotEmpty;
 
   BankAccountData copyWith({
     String? accountHolderName,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 import '../cubit/document_upload_cubit.dart';
 import '../model/document_upload_model.dart';
@@ -16,19 +17,41 @@ class BankAccountForm extends StatefulWidget {
 }
 
 class _BankAccountFormState extends State<BankAccountForm> {
-  final _nameCtrl = TextEditingController();
-  final _accCtrl = TextEditingController();
-  final _confirmCtrl = TextEditingController();
-  final _ifscCtrl = TextEditingController();
+  late final PersistentTextController _nameCtrl;
+  late final PersistentTextController _accCtrl;
+  late final PersistentTextController _confirmCtrl;
+  late final PersistentTextController _ifscCtrl;
   bool _obscureAccount = true;
 
   @override
   void initState() {
     super.initState();
-    _nameCtrl.text = widget.bankData.accountHolderName;
-    _accCtrl.text = widget.bankData.accountNumber;
-    _confirmCtrl.text = widget.bankData.confirmAccountNumber;
-    _ifscCtrl.text = widget.bankData.ifscCode;
+    _nameCtrl = PersistentTextController(
+      storageKey: 'bank_details.account_holder',
+    );
+    _accCtrl = PersistentTextController(
+      storageKey: 'bank_details.account_number',
+    );
+    _confirmCtrl = PersistentTextController(
+      storageKey: 'bank_details.confirm_account_number',
+    );
+    _ifscCtrl = PersistentTextController(storageKey: 'bank_details.ifsc');
+    _nameCtrl.attach();
+    _accCtrl.attach();
+    _confirmCtrl.attach();
+    _ifscCtrl.attach();
+    if (widget.bankData.accountHolderName.isNotEmpty) {
+      _nameCtrl.text = widget.bankData.accountHolderName;
+    }
+    if (widget.bankData.accountNumber.isNotEmpty) {
+      _accCtrl.text = widget.bankData.accountNumber;
+    }
+    if (widget.bankData.confirmAccountNumber.isNotEmpty) {
+      _confirmCtrl.text = widget.bankData.confirmAccountNumber;
+    }
+    if (widget.bankData.ifscCode.isNotEmpty) {
+      _ifscCtrl.text = widget.bankData.ifscCode;
+    }
   }
 
   @override
@@ -76,9 +99,14 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: 'Enter full name as per bank records',
             controller: _nameCtrl,
             errorText: data.nameError,
-            onChanged: cubit.updateAccountHolderName,
+            onChanged: (value) =>
+                cubit.updateAccountHolderName(value.toUpperCase()),
             keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+              _UpperCaseFormatter(),
+            ],
           ),
           const SizedBox(height: 24),
           _BankField(
@@ -86,10 +114,13 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: '•••• •••• •••• ••••',
             controller: _accCtrl,
             errorText: data.accountNumberError,
-            onChanged: cubit.updateAccountNumber,
+            onChanged: (value) => cubit.updateAccountNumber(value.toUpperCase()),
             keyboardType: TextInputType.number,
             obscureText: _obscureAccount,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+              _UpperCaseFormatter(),
+            ],
             suffixIcon: GestureDetector(
               onTap: () => setState(() => _obscureAccount = !_obscureAccount),
               child: Icon(
@@ -107,9 +138,13 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: 'Re-enter account number',
             controller: _confirmCtrl,
             errorText: data.confirmAccountNumberError,
-            onChanged: cubit.updateConfirmAccountNumber,
+            onChanged: (value) =>
+                cubit.updateConfirmAccountNumber(value.toUpperCase()),
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+              _UpperCaseFormatter(),
+            ],
           ),
           const SizedBox(height: 24),
           _BankField(

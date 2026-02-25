@@ -15,6 +15,7 @@ import 'package:goapp/features/city_vehicle/vehicle_details/presentation/widget/
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/widget/vehicle_photo_upload.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 class VehicleDetailsScreen extends StatelessWidget {
   const VehicleDetailsScreen({super.key, required this.vehicleType});
@@ -40,15 +41,30 @@ class _VehicleDetailsView extends StatefulWidget {
 }
 
 class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
-  final _modelController = TextEditingController();
-  final _bikeTypeController = TextEditingController();
-  final _seatController = TextEditingController();
-  final _fuelTypeController = TextEditingController();
-  final _yearController = TextEditingController();
+  late final PersistentTextController _modelController;
+  late final PersistentTextController _bikeTypeController;
+  late final PersistentTextController _seatController;
+  late final PersistentTextController _fuelTypeController;
+  late final PersistentTextController _yearController;
 
   @override
   void initState() {
     super.initState();
+    final prefix = 'vehicle_details.${widget.vehicleType.name}';
+    _modelController =
+        PersistentTextController(storageKey: '$prefix.model_name');
+    _bikeTypeController =
+        PersistentTextController(storageKey: '$prefix.bike_type');
+    _seatController =
+        PersistentTextController(storageKey: '$prefix.seat_option');
+    _fuelTypeController =
+        PersistentTextController(storageKey: '$prefix.fuel_type');
+    _yearController = PersistentTextController(storageKey: '$prefix.year');
+    _modelController.attach();
+    _bikeTypeController.attach();
+    _seatController.attach();
+    _fuelTypeController.attach();
+    _yearController.attach();
     unawaited(
       RegistrationProgressStore.setStep(
         RegistrationStep.vehicleDetails,
@@ -56,6 +72,42 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
         clearDocumentStep: true,
       ),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final cubit = context.read<VehicleDetailsCubit>();
+      final model = _modelController.text;
+      final year = _yearController.text;
+      if (model.isNotEmpty) {
+        cubit.updateModelName(model);
+      }
+      if (year.isNotEmpty) {
+        cubit.updateYear(year);
+      }
+      final bike = _bikeTypeController.text.trim();
+      if (bike.isNotEmpty) {
+        final selected = BikeType.values.firstWhere(
+          (t) => t.label.toLowerCase() == bike.toLowerCase(),
+          orElse: () => BikeType.bike,
+        );
+        cubit.selectBikeType(selected);
+      }
+      final seat = _seatController.text.trim();
+      if (seat.isNotEmpty) {
+        final selected = SeatOption.values.firstWhere(
+          (t) => t.label.toLowerCase() == seat.toLowerCase(),
+          orElse: () => SeatOption.four,
+        );
+        cubit.selectSeatOption(selected);
+      }
+      final fuel = _fuelTypeController.text.trim();
+      if (fuel.isNotEmpty) {
+        final selected = FuelType.values.firstWhere(
+          (t) => t.label.toLowerCase() == fuel.toLowerCase(),
+          orElse: () => FuelType.petrol,
+        );
+        cubit.selectFuelType(selected);
+      }
+    });
   }
 
   @override
@@ -149,6 +201,9 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                           controller: _modelController,
                           errorText: state.errors.modelName,
                           keyboardType: TextInputType.text,
+                          onChanged: context
+                              .read<VehicleDetailsCubit>()
+                              .updateModelName,
                         ),
                         const SizedBox(height: 22),
                       ],
@@ -189,6 +244,8 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                         controller: _yearController,
                         errorText: state.errors.year,
                         keyboardType: TextInputType.number,
+                        onChanged:
+                            context.read<VehicleDetailsCubit>().updateYear,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(4),
@@ -201,6 +258,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
               ),
               _ContinueButton(
                 isSubmitting: state.isSubmitting,
+                enabled: state.isFormValid,
                 onTap: () {
                   final cubit = context.read<VehicleDetailsCubit>();
                   cubit.updateModelName(_modelController.text);
@@ -300,9 +358,14 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
 
 class _ContinueButton extends StatelessWidget {
   final bool isSubmitting;
+  final bool enabled;
   final VoidCallback onTap;
 
-  const _ContinueButton({required this.isSubmitting, required this.onTap});
+  const _ContinueButton({
+    required this.isSubmitting,
+    required this.enabled,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -312,9 +375,9 @@ class _ContinueButton extends StatelessWidget {
         12,
         20,
         math.max(
-              MediaQuery.viewInsetsOf(context).bottom,
-              MediaQuery.of(context).padding.bottom,
-            ) +
+          MediaQuery.viewInsetsOf(context).bottom,
+          MediaQuery.of(context).padding.bottom,
+        ) +
             20,
       ),
       decoration: const BoxDecoration(
@@ -334,24 +397,24 @@ class _ContinueButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(28),
             ),
           ),
-          onPressed: isSubmitting ? null : onTap,
+          onPressed: (isSubmitting || !enabled) ? null : onTap,
           child: isSubmitting
               ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          )
               : const Text(
-                  'Continue',
-                  style: TextStyle(
-                    fontSize: 15.5,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
-                  ),
-                ),
+            'Continue',
+            style: TextStyle(
+              fontSize: 15.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
+            ),
+          ),
         ),
       ),
     );

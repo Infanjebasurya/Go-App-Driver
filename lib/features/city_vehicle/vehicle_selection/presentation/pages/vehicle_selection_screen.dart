@@ -159,9 +159,9 @@ class _ConfirmButton extends StatelessWidget {
         12,
         20,
         math.max(
-              MediaQuery.viewInsetsOf(context).bottom,
-              MediaQuery.of(context).padding.bottom,
-            ) +
+          MediaQuery.viewInsetsOf(context).bottom,
+          MediaQuery.of(context).padding.bottom,
+        ) +
             20,
       ),
       child: AnimatedOpacity(

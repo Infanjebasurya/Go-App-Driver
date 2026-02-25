@@ -1,15 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/domain/services/phone_number_service.dart';
 import 'package:goapp/features/auth/presentation/cubit/login_form_state.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 
 class LoginFormCubit extends Cubit<LoginFormState> {
   LoginFormCubit({required PhoneNumberService phoneNumberService})
-    : _phoneNumberService = phoneNumberService,
-      super(const LoginFormState());
+      : _phoneNumberService = phoneNumberService,
+        super(const LoginFormState()) {
+    final stored = TextFieldStore.read('auth.login.phone') ?? '';
+    if (stored.isNotEmpty) {
+      onInputChanged(stored);
+    }
+  }
 
   final PhoneNumberService _phoneNumberService;
 
   void onInputChanged(String input) {
+    unawaited(TextFieldStore.write('auth.login.phone', input));
     final digits = _phoneNumberService.normalizeDigits(input);
     final error = _phoneNumberService.validateIndiaMobile(
       rawInput: input,

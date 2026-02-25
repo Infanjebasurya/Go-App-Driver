@@ -20,6 +20,7 @@ import 'package:goapp/features/profile/presentation/bloc/profile_state.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_state.dart';
 import 'package:goapp/features/profile/presentation/widgets/either.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 class ProfileSetupPage extends StatefulWidget {
   const ProfileSetupPage({super.key, this.allowBack = false});
@@ -31,10 +32,10 @@ class ProfileSetupPage extends StatefulWidget {
 }
 
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _referController = TextEditingController();
-  final _emergencyController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _referController;
+  late final TextEditingController _emergencyController;
 
   bool _prefilled = false;
   late final ProfileSetupCubit _cubit;
@@ -45,6 +46,22 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   @override
   void initState() {
     super.initState();
+    final nameController =
+        PersistentTextController(storageKey: 'profile_setup.name');
+    final emailController =
+        PersistentTextController(storageKey: 'profile_setup.email');
+    final referController =
+        PersistentTextController(storageKey: 'profile_setup.refer');
+    final emergencyController =
+        PersistentTextController(storageKey: 'profile_setup.emergency');
+    nameController.attach();
+    emailController.attach();
+    referController.attach();
+    emergencyController.attach();
+    _nameController = nameController;
+    _emailController = emailController;
+    _referController = referController;
+    _emergencyController = emergencyController;
     _cubit = ProfileSetupCubit(validationService: ProfileValidationService());
     try {
       _profileBloc = context.read<ProfileBloc>();
@@ -58,6 +75,13 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       );
       _ownsProfileBloc = true;
     }
+    _cubit.setInitial(
+      name: _nameController.text,
+      email: _emailController.text,
+      gender: _cubit.state.gender,
+      refer: _referController.text,
+      emergencyContact: _emergencyController.text,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final state = _profileBloc.state;
@@ -92,16 +116,27 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   void _prefillFromProfile(Profile profile) {
     if (_prefilled) return;
     _prefilled = true;
-    _nameController.text = profile.name;
-    _emailController.text = profile.email ?? '';
-    _referController.text = profile.refer;
-    _emergencyController.text = profile.emergencyContact;
+    final name =
+        _nameController.text.isNotEmpty ? _nameController.text : profile.name;
+    final email = _emailController.text.isNotEmpty
+        ? _emailController.text
+        : (profile.email ?? '');
+    final refer = _referController.text.isNotEmpty
+        ? _referController.text
+        : profile.refer;
+    final emergency = _emergencyController.text.isNotEmpty
+        ? _emergencyController.text
+        : profile.emergencyContact;
+    _nameController.text = name;
+    _emailController.text = email;
+    _referController.text = refer;
+    _emergencyController.text = emergency;
     _cubit.setInitial(
-      name: profile.name,
-      email: profile.email ?? '',
+      name: name,
+      email: email,
       gender: profile.gender,
-      refer: profile.refer,
-      emergencyContact: profile.emergencyContact,
+      refer: refer,
+      emergencyContact: emergency,
     );
   }
 
@@ -455,7 +490,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                 ),
                 BlocListener<ProfileSetupCubit, ProfileSetupState>(
                   listenWhen: (previous, current) =>
-                      previous.submitRequested != current.submitRequested,
+                  previous.submitRequested != current.submitRequested,
                   listener: (context, state) {
                     if (!state.submitRequested || state.submission == null) {
                       return;
@@ -516,6 +551,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                 : null,
                             child: AppTextField(
                               controller: _nameController,
+                              textCapitalization: TextCapitalization.words,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                   RegExp(r'[A-Za-z ]'),
@@ -551,7 +587,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               label: '',
-                              hint: 'e.g., name@email.com',
+                              hint: 'e.g., name@example.com',
                               borderless: true,
                               isCollapsed: true,
                               contentPadding: EdgeInsets.zero,
@@ -661,6 +697,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                 fontSize: 30 / 2,
                                 fontWeight: FontWeight.w500,
                               ),
+                              onChanged: context
+                                  .read<ProfileSetupCubit>()
+                                  .updateRefer,
                             ),
                           ),
                           const SizedBox(height: 40),
@@ -742,7 +781,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                           children: [
                             TextSpan(
                               text:
-                                  'By tapping Save & Continue, you agree to our ',
+                              'By tapping Save & Continue, you agree to our ',
                             ),
                             TextSpan(
                               text: 'Terms of Service',

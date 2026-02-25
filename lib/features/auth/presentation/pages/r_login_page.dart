@@ -74,7 +74,7 @@ class _RLoginPageState extends State<RLoginPage> {
           ),
           BlocListener<LoginFormCubit, LoginFormState>(
             listenWhen: (previous, current) =>
-                previous.submitRequested != current.submitRequested ||
+            previous.submitRequested != current.submitRequested ||
                 previous.submitError != current.submitError,
             listener: (context, state) {
               if (state.submitError != null) {
@@ -230,12 +230,12 @@ class _RLoginPageState extends State<RLoginPage> {
                                       children: [
                                         TextSpan(
                                           text:
-                                              'By continuing, you agree to receive SMS for verification.  ',
+                                          'By continuing, you agree to receive SMS for verification.  ',
                                         ),
                                         TextSpan(text: ' and\n'),
                                         TextSpan(
                                           text:
-                                              'Message and data rates may apply. View our ',
+                                          'Message and data rates may apply. View our ',
                                         ),
                                         TextSpan(
                                           text: 'Privacy \nPolicy.',
@@ -243,7 +243,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                             color: AppColors.black,
                                             fontSize: 14,
                                             decoration:
-                                                TextDecoration.underline,
+                                            TextDecoration.underline,
                                           ),
                                         ),
                                       ],

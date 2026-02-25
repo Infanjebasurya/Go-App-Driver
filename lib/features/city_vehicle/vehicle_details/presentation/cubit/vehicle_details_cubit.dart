@@ -8,7 +8,7 @@ import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model
 
 class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   VehicleDetailsCubit({required VehicleType vehicleType})
-    : super(VehicleDetailsState.initial(vehicleType: vehicleType));
+      : super(VehicleDetailsState.initial(vehicleType: vehicleType));
 
   final ImagePicker _picker = ImagePicker();
 
@@ -60,12 +60,12 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     if (picked == null) return;
 
     final sizeBytes = await picked.length();
-    const maxBytes = 1024 * 1024;
+    const maxBytes = 5 * 1024 * 1024;
     if (sizeBytes > maxBytes) {
       emit(
         state.copyWith(
           hasPhoto: false,
-          errors: state.errors.copyWith(photo: 'Image must be less than 1 MB'),
+          errors: state.errors.copyWith(photo: 'Image must be 5 MB or less'),
         ),
       );
       return;
@@ -131,6 +131,9 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       if (n == null || n < 1980 || n > current) {
         err = err.copyWith(year: 'Enter a valid year (1980-$current)');
       }
+    }
+    if (!state.hasPhoto) {
+      err = err.copyWith(photo: 'Vehicle photo is required');
     }
 
     if (err.hasErrors) {

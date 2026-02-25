@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.dart';
 import 'package:goapp/features/help_support/domain/entities/help_entities.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 class ComplaintScreen extends StatelessWidget {
   const ComplaintScreen({super.key});
@@ -52,12 +53,26 @@ class _FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<_FormScreen> {
-  late final TextEditingController _descController;
+  late final PersistentTextController _descController;
 
   @override
   void initState() {
     super.initState();
-    _descController = TextEditingController(text: widget.state.description);
+    _descController = PersistentTextController(
+      storageKey: 'help_support.complaint.description',
+    );
+    _descController.attach();
+    if (_descController.text.isEmpty && widget.state.description.isNotEmpty) {
+      _descController.text = widget.state.description;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_descController.text.isNotEmpty) {
+        context.read<ComplaintCubit>().updateDescription(
+              _descController.text,
+            );
+      }
+    });
   }
 
   @override

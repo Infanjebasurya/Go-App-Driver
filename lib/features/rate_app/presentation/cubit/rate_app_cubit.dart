@@ -1,8 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/features/rate_app/presentation/cubit/rate_app_state.dart';
 
 class RateAppCubit extends Cubit<RateAppState> {
-  RateAppCubit() : super(const RateAppState());
+  RateAppCubit() : super(const RateAppState()) {
+    final stored = TextFieldStore.read('rate_app.feedback') ?? '';
+    if (stored.isNotEmpty) {
+      updateFeedback(stored);
+    }
+  }
 
   void selectRating(int rating) {
     if (state.status == RateAppStatus.submitting ||
@@ -17,6 +25,7 @@ class RateAppCubit extends Cubit<RateAppState> {
         state.status == RateAppStatus.submitted) {
       return;
     }
+    unawaited(TextFieldStore.write('rate_app.feedback', text));
     emit(state.copyWith(feedbackText: text));
   }
 

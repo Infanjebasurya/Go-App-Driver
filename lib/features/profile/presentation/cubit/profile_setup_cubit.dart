@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/profile/domain/services/profile_validation_service.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_state.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 
 class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   ProfileSetupCubit({required ProfileValidationService validationService})
@@ -31,6 +34,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateName(String value) {
+    unawaited(TextFieldStore.write('profile_setup.name', value));
     final nameError = _validationService.validateName(value);
     emit(
       state.copyWith(
@@ -43,6 +47,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateEmail(String value) {
+    unawaited(TextFieldStore.write('profile_setup.email', value));
     final emailError = _validationService.validateEmail(value);
     emit(
       state.copyWith(
@@ -71,6 +76,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateRefer(String value) {
+    unawaited(TextFieldStore.write('profile_setup.refer', value));
     emit(
       state.copyWith(
         refer: value,
@@ -81,6 +87,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateEmergencyContact(String value) {
+    unawaited(TextFieldStore.write('profile_setup.emergency', value));
     emit(
       state.copyWith(
         emergencyContact: value,
@@ -101,10 +108,10 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
     final hasError =
         nameError != null ||
-        emailError != null ||
-        genderError != null ||
-        dobError != null ||
-        emergencyError != null;
+            emailError != null ||
+            genderError != null ||
+            dobError != null ||
+            emergencyError != null;
 
     if (hasError) {
       emit(

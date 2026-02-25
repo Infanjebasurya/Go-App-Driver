@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
@@ -9,7 +12,12 @@ class EarningsCubit extends Cubit<EarningsState> {
     required GetWalletTransactionsUseCase getWalletTransactions,
   }) : _getEarningsSnapshot = getEarningsSnapshot,
        _getWalletTransactions = getWalletTransactions,
-       super(const EarningsState());
+       super(
+         EarningsState(
+           rechargeAmount:
+               TextFieldStore.read('earnings.recharge_amount') ?? '2000',
+         ),
+       );
 
   final GetEarningsSnapshotUseCase _getEarningsSnapshot;
   final GetWalletTransactionsUseCase _getWalletTransactions;
@@ -39,11 +47,14 @@ class EarningsCubit extends Cubit<EarningsState> {
   }
 
   void setRechargeAmount(String amount) {
+    unawaited(TextFieldStore.write('earnings.recharge_amount', amount));
     emit(state.copyWith(rechargeAmount: amount));
   }
 
   void addRechargeAmount(int amount) {
     final current = int.tryParse(state.rechargeAmount.replaceAll(',', '')) ?? 0;
-    emit(state.copyWith(rechargeAmount: (current + amount).toString()));
+    final next = (current + amount).toString();
+    unawaited(TextFieldStore.write('earnings.recharge_amount', next));
+    emit(state.copyWith(rechargeAmount: next));
   }
 }
