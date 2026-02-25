@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -10,15 +12,54 @@ import '../../../document_verify/presentation/model/document_progress_store.dart
 
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   DocumentUploadCubit({int initialStepIndex = 0})
-    : super(
-        DocumentUploadState.initial().copyWith(
-          currentStepIndex: initialStepIndex,
-        ),
-      );
+      : super(
+    DocumentUploadState.initial().copyWith(
+      currentStepIndex: initialStepIndex,
+    ),
+  ) {
+    _restoreDraft();
+  }
 
   final ImagePicker _picker = ImagePicker();
   final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
   bool _isPicking = false;
+
+  static const String _docPrefix = 'documents';
+  static const String _bankPrefix = 'bank_details';
+
+  String _docNumberKey(DocumentStep step) {
+    switch (step) {
+      case DocumentStep.drivingLicense:
+        return '$_docPrefix.driving_license.number';
+      case DocumentStep.vehicleRC:
+        return '$_docPrefix.vehicle_rc.number';
+      case DocumentStep.identityAadhaar:
+        return '$_docPrefix.aadhaar.number';
+      case DocumentStep.identityPan:
+        return '$_docPrefix.pan.number';
+      case DocumentStep.bankAccount:
+        return '$_docPrefix.bank.number';
+    }
+  }
+
+  String _bankKey(String field) => '$_bankPrefix.$field';
+
+  void _restoreDraft() {
+    final updatedSteps = state.steps.map((step) {
+      final stored = TextFieldStore.read(_docNumberKey(step.step)) ?? '';
+      if (stored.isEmpty) return step;
+      return step.copyWith(documentNumber: stored, clearError: true);
+    }).toList();
+    final bankData = state.bankData.copyWith(
+      accountHolderName:
+          TextFieldStore.read(_bankKey('account_holder')) ?? '',
+      accountNumber: TextFieldStore.read(_bankKey('account_number')) ?? '',
+      confirmAccountNumber:
+          TextFieldStore.read(_bankKey('confirm_account_number')) ?? '',
+      ifscCode: TextFieldStore.read(_bankKey('ifsc')) ?? '',
+    );
+    emit(state.copyWith(steps: updatedSteps, bankData: bankData));
+  }
 
   DocumentType _mapStepToDocType(DocumentStep step) {
     switch (step) {
@@ -171,9 +212,19 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   void updateDocumentNumber(String value) {
     if (state.isCurrentStepBank) return;
+    unawaited(
+      TextFieldStore.write(
+        _docNumberKey(state.currentDocStep.step),
+        value,
+      ),
+    );
     final updated = state.currentDocStep.copyWith(
       documentNumber: value,
       clearError: value.trim().isNotEmpty,
+    );
+    DocumentProgressStore.setDocumentNumber(
+      _mapStepToDocType(updated.step),
+      updated.documentNumber,
     );
     DocumentProgressStore.setCompleted(
       _mapStepToDocType(updated.step),
@@ -183,9 +234,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void updateAccountHolderName(String value) {
+    final normalized = value.toUpperCase();
+    unawaited(TextFieldStore.write(_bankKey('account_holder'), normalized));
     final updated = state.bankData.copyWith(
-      accountHolderName: value,
-      clearNameError: value.trim().isNotEmpty,
+      accountHolderName: normalized,
+      clearNameError: normalized.trim().isNotEmpty,
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
@@ -195,9 +248,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void updateAccountNumber(String value) {
+    final normalized = value.toUpperCase();
+    unawaited(TextFieldStore.write(_bankKey('account_number'), normalized));
     final updated = state.bankData.copyWith(
-      accountNumber: value,
-      clearAccountNumberError: value.trim().isNotEmpty,
+      accountNumber: normalized,
+      clearAccountNumberError: normalized.trim().isNotEmpty,
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
@@ -207,9 +262,13 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void updateConfirmAccountNumber(String value) {
+    final normalized = value.toUpperCase();
+    unawaited(
+      TextFieldStore.write(_bankKey('confirm_account_number'), normalized),
+    );
     final updated = state.bankData.copyWith(
-      confirmAccountNumber: value,
-      clearConfirmError: value.trim().isNotEmpty,
+      confirmAccountNumber: normalized,
+      clearConfirmError: normalized.trim().isNotEmpty,
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
@@ -219,9 +278,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void updateIfscCode(String value) {
+    final normalized = value.toUpperCase();
+    unawaited(TextFieldStore.write(_bankKey('ifsc'), normalized));
     final updated = state.bankData.copyWith(
-      ifscCode: value,
-      clearIfscError: value.trim().isNotEmpty,
+      ifscCode: normalized,
+      clearIfscError: normalized.trim().isNotEmpty,
     );
     DocumentProgressStore.setCompleted(
       DocumentType.bankDetails,
@@ -256,6 +317,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     }
 
     if (normalized != step.documentNumber) {
+      unawaited(TextFieldStore.write(_docNumberKey(step.step), normalized));
       final updated = step.copyWith(
         documentNumber: normalized,
         clearError: true,
@@ -315,16 +377,34 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (b.accountHolderName.trim().isEmpty) {
       updated = updated.copyWith(nameError: 'Account holder name is required');
       valid = false;
+    } else if (!RegExp(r'^[A-Z ]+$')
+        .hasMatch(b.accountHolderName.trim().toUpperCase())) {
+      updated = updated.copyWith(
+        nameError: 'Only alphabets are allowed',
+      );
+      valid = false;
     }
     if (b.accountNumber.trim().isEmpty) {
       updated = updated.copyWith(
         accountNumberError: 'Account number is required',
       );
       valid = false;
+    } else if (!RegExp(r'^[A-Z0-9]+$')
+        .hasMatch(b.accountNumber.trim().toUpperCase())) {
+      updated = updated.copyWith(
+        accountNumberError: 'Only alphabets and numbers are allowed',
+      );
+      valid = false;
     }
     if (b.confirmAccountNumber.trim().isEmpty) {
       updated = updated.copyWith(
         confirmAccountNumberError: 'Please confirm account number',
+      );
+      valid = false;
+    } else if (!RegExp(r'^[A-Z0-9]+$')
+        .hasMatch(b.confirmAccountNumber.trim().toUpperCase())) {
+      updated = updated.copyWith(
+        confirmAccountNumberError: 'Only alphabets and numbers are allowed',
       );
       valid = false;
     } else if (b.confirmAccountNumber != b.accountNumber) {

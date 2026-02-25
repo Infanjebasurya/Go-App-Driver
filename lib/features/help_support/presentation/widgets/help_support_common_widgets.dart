@@ -1,10 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
-class HelpSearchBar extends StatelessWidget {
+class HelpSearchBar extends StatefulWidget {
   final ValueChanged<String> onChanged;
 
   const HelpSearchBar({super.key, required this.onChanged});
+
+  @override
+  State<HelpSearchBar> createState() => _HelpSearchBarState();
+}
+
+class _HelpSearchBarState extends State<HelpSearchBar> {
+  late final PersistentTextController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        PersistentTextController(storageKey: 'help_support.search');
+    _controller.attach();
+    if (_controller.text.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        widget.onChanged(_controller.text);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +40,8 @@ class HelpSearchBar extends StatelessWidget {
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: TextField(
-        onChanged: onChanged,
+        controller: _controller,
+        onChanged: widget.onChanged,
         decoration: InputDecoration(
           hintText: 'Search for help topics...',
           hintStyle: const TextStyle(

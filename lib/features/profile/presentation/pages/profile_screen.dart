@@ -5,6 +5,7 @@ import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 import '../../domain/repositories/profile_repository.dart';
 
@@ -319,6 +320,7 @@ class _ProfileBody extends StatelessWidget {
           title: 'Enter Your Full Name',
           icon: Icons.person_outline,
           initialValue: current,
+          storageKey: 'profile_edit.full_name',
           keyboardType: TextInputType.name,
           onSave: (String val) =>
               context.read<ProfileEditCubit>().updateFullName(val),
@@ -338,6 +340,7 @@ class _ProfileBody extends StatelessWidget {
           title: 'Enter Your Email Address',
           icon: Icons.mail_outline,
           initialValue: current,
+          storageKey: 'profile_edit.email',
           keyboardType: TextInputType.emailAddress,
           onSave: (String val) =>
               context.read<ProfileEditCubit>().updateEmail(val),
@@ -562,6 +565,7 @@ class _EditFieldSheet extends StatefulWidget {
     required this.title,
     required this.icon,
     required this.initialValue,
+    required this.storageKey,
     required this.keyboardType,
     required this.onSave,
   });
@@ -569,6 +573,7 @@ class _EditFieldSheet extends StatefulWidget {
   final String title;
   final IconData icon;
   final String initialValue;
+  final String storageKey;
   final TextInputType keyboardType;
   final Future<void> Function(String) onSave;
 
@@ -577,13 +582,17 @@ class _EditFieldSheet extends StatefulWidget {
 }
 
 class _EditFieldSheetState extends State<_EditFieldSheet> {
-  late TextEditingController _ctrl;
+  late PersistentTextController _ctrl;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = TextEditingController(text: widget.initialValue);
+    _ctrl = PersistentTextController(storageKey: widget.storageKey);
+    _ctrl.attach();
+    if (_ctrl.text.isEmpty && widget.initialValue.isNotEmpty) {
+      _ctrl.text = widget.initialValue;
+    }
   }
 
   @override

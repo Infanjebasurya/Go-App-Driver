@@ -54,9 +54,9 @@ class VerificationState extends Equatable {
 
   @override
   List<Object?> get props => [
-        documents,
-        isSubmitting,
-        isSubmitted,
-        errorMessage,
-      ];
+    documents,
+    isSubmitting,
+    isSubmitted,
+    errorMessage,
+  ];
 }

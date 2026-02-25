@@ -15,13 +15,13 @@ class Document extends Equatable {
     required this.type,
     required this.status,
     this.filePath,
-    this.bankDetails,  // ✅ only populated for bankDetails type
+    this.bankDetails,
   });
 
   final DocumentType type;
   final DocumentStatus status;
   final String? filePath;
-  final BankDetails? bankDetails; // ✅ stores bank info after user fills form
+  final BankDetails? bankDetails;
 
   String get title {
     switch (type) {
@@ -61,7 +61,7 @@ class Document extends Equatable {
   List<Object?> get props => [type, status, filePath, bankDetails];
 }
 
-// ✅ Separate model to hold bank details data
+
 class BankDetails extends Equatable {
   const BankDetails({
     required this.accountHolderName,
@@ -72,7 +72,7 @@ class BankDetails extends Equatable {
 
   final String accountHolderName;
   final String bankName;
-  final String accountNumber;   // ✅ stored (never store confirm separately)
+  final String accountNumber;
   final String ifscCode;
 
   BankDetails copyWith({

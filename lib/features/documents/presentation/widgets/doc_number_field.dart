@@ -45,7 +45,7 @@ class DocNumberField extends StatelessWidget {
           controller: controller,
           onChanged: onChanged,
           textCapitalization:
-              forceUppercase ? TextCapitalization.characters : TextCapitalization.none,
+          forceUppercase ? TextCapitalization.characters : TextCapitalization.none,
           inputFormatters: [
             if (allowedPattern != null)
               FilteringTextInputFormatter.allow(
@@ -113,9 +113,9 @@ class DocNumberField extends StatelessWidget {
 class _UpperCaseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }

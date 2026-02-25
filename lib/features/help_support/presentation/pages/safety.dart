@@ -4,6 +4,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/help_support/presentation/cubit/emergency_contacts_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 class SafetyPage extends StatelessWidget {
   const SafetyPage({super.key});
@@ -451,12 +452,31 @@ class _AddContactSheet extends StatefulWidget {
 }
 
 class _AddContactSheetState extends State<_AddContactSheet> {
-  final _nameController = TextEditingController();
-  final _numberController = TextEditingController();
+  late final PersistentTextController _nameController;
+  late final PersistentTextController _relationController;
+  late final PersistentTextController _numberController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = PersistentTextController(
+      storageKey: 'safety.contact.name',
+    );
+    _relationController = PersistentTextController(
+      storageKey: 'safety.contact.relation',
+    );
+    _numberController = PersistentTextController(
+      storageKey: 'safety.contact.number',
+    );
+    _nameController.attach();
+    _relationController.attach();
+    _numberController.attach();
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _relationController.dispose();
     _numberController.dispose();
     super.dispose();
   }
@@ -523,7 +543,11 @@ class _AddContactSheetState extends State<_AddContactSheet> {
               ),
             ),
             const SizedBox(height: 8),
-            const _InputField(hint: 'Who', leading: Icons.person_outline),
+            _InputField(
+              controller: _relationController,
+              hint: 'Who',
+              leading: Icons.person_outline,
+            ),
             const SizedBox(height: 14),
             const Text(
               'Enter Number',

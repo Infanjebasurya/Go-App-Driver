@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -17,6 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalNotificationService.initialize();
   await TripBackgroundService.initialize();
+  await TextFieldStore.init();
 
   runApp(
     DevicePreview(

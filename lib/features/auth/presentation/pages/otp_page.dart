@@ -37,11 +37,11 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
   late final bool _ownsCubit;
   late final List<TextEditingController> _controllers = List.generate(
     OtpCubit.otpLength,
-    (_) => TextEditingController(),
+        (_) => TextEditingController(),
   );
   late final List<FocusNode> _focusNodes = List.generate(
     OtpCubit.otpLength,
-    (_) => FocusNode(),
+        (_) => FocusNode(),
   );
 
   @override
@@ -53,6 +53,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     } else {
       _otpCubit = context.read<OtpCubit>();
     }
+    _syncBoxesFromCode(_otpCubit.state.code);
     if (!const bool.fromEnvironment('FLUTTER_TEST')) {
       listenForCode();
     }
@@ -162,7 +163,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                 ),
               BlocListener<OtpCubit, OtpState>(
                 listenWhen: (previous, current) =>
-                    previous.code != current.code ||
+                previous.code != current.code ||
                     previous.submitRequested != current.submitRequested ||
                     previous.submitError != current.submitError ||
                     previous.resendMessage != current.resendMessage ||
@@ -235,7 +236,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                           runSpacing: 8,
                           children: List.generate(
                             OtpCubit.otpLength,
-                            (index) => _OtpBox(
+                                (index) => _OtpBox(
                               fieldKey: index == 0
                                   ? const Key('otp_text_field')
                                   : null,
@@ -281,8 +282,8 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                                   color: otpState.canResend
                                       ? AuthUiColors.danger
                                       : AuthUiColors.danger.withValues(
-                                          alpha: 0.5,
-                                        ),
+                                    alpha: 0.5,
+                                  ),
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -362,9 +363,9 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                     onPressed: otpState.isLoading
                         ? null
                         : () => _otpCubit.submit(
-                            widget.phoneNumber,
-                            widget.otpId,
-                          ),
+                      widget.phoneNumber,
+                      widget.otpId,
+                    ),
                   ),
                 ),
               ),

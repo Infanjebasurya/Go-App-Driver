@@ -27,7 +27,7 @@ class PhoneNumberService {
       return 'Please enter a valid Indian Mobile Number.';
     }
     if (digits.length != 10) {
-      return 'Mobile Number should be 10 digits';
+      return 'Please enter valid mobile number';
     }
     return null;
   }

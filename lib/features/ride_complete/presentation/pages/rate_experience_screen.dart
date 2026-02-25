@@ -8,6 +8,7 @@ import 'package:goapp/features/ride_complete/domain/usecases/get_feedback_tags.d
 import 'package:goapp/features/ride_complete/domain/usecases/submit_ride_feedback.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_cubit.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_state.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 class RateExperienceScreen extends StatelessWidget {
   const RateExperienceScreen({super.key});
@@ -25,8 +26,38 @@ class RateExperienceScreen extends StatelessWidget {
   }
 }
 
-class _RateExperienceView extends StatelessWidget {
+class _RateExperienceView extends StatefulWidget {
   const _RateExperienceView();
+
+  @override
+  State<_RateExperienceView> createState() => _RateExperienceViewState();
+}
+
+class _RateExperienceViewState extends State<_RateExperienceView> {
+  late final PersistentTextController _commentController;
+
+  @override
+  void initState() {
+    super.initState();
+    _commentController = PersistentTextController(
+      storageKey: 'ride_complete.feedback.comment',
+    );
+    _commentController.attach();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_commentController.text.isNotEmpty) {
+        context.read<RateExperienceCubit>().updateComment(
+              _commentController.text,
+            );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,6 +257,7 @@ class _RateExperienceView extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   TextField(
+                    controller: _commentController,
                     onChanged: context
                         .read<RateExperienceCubit>()
                         .updateComment,
@@ -261,7 +293,7 @@ class _RateExperienceView extends StatelessWidget {
                               child: const HomeScreen(),
                             ),
                           ),
-                          (route) => false,
+                              (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
