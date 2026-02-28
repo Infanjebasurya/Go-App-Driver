@@ -10,6 +10,7 @@ import '../../../incentives/presentation/pages/incentives_page.dart';
 import '../../../profile/presentation/pages/profile_screen.dart';
 import '../../../rate_app/presentation/pages/rate_app_screen.dart';
 import '../../../refer_earn/presentation/pages/refer_earn_screen.dart';
+import '../../../ride_history/presentation/pages/ride_history_screen.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -89,6 +90,17 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ReferEarnScreen()),
+                );
+              },
+            ),
+            _DrawerItem(
+              icon: Icons.history,
+              label: 'Ride History',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RideHistoryScreen()),
                 );
               },
             ),

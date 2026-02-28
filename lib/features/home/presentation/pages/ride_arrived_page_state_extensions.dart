@@ -1,6 +1,14 @@
 part of 'ride_arrived_page.dart';
 
 extension _RideArrivedPageStateExtensions on _RideArrivedPageState {
+  double _metersToPickup() {
+    return _distanceMeters(_driverPoint, widget.pickupPoint);
+  }
+
+  bool _canProceedToRideCode() {
+    return _locationIssue == null && _metersToPickup() <= 100;
+  }
+
   LatLng _interpolate(LatLng from, LatLng to, double t) {
     return LatLng(
       from.latitude + (to.latitude - from.latitude) * t,

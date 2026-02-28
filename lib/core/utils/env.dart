@@ -21,18 +21,28 @@ class Env {
     defaultValue: false,
   );
 
+  static const bool resumeRideFromSavedStage = bool.fromEnvironment(
+    'RESUME_RIDE_FROM_SAVED_STAGE',
+    defaultValue: false,
+  );
+
+  static const bool enableDevicePreview = bool.fromEnvironment(
+    'ENABLE_DEVICE_PREVIEW',
+    defaultValue: false,
+  );
+
+  // B-07 FIX: Keys supplied via --dart-define at build time only.
+  // No default value so a missing key fails fast rather than leaking a
+  // committed key into the binary.
   static const String googleMapsApiKey = String.fromEnvironment(
     'GOOGLE_MAPS_API_KEY',
-    defaultValue: 'AIzaSyA_EShs05GD76mc2Mjy1l2ByyO2FMHn3yA',
   );
 
   static const String googlePlacesApiKey = String.fromEnvironment(
     'GOOGLE_PLACES_API_KEY',
-    defaultValue: 'AIzaSyA_EShs05GD76mc2Mjy1l2ByyO2FMHn3yA',
   );
 
   static const String googleGeocodingApiKey = String.fromEnvironment(
     'GOOGLE_GEOCODING_API_KEY',
-    defaultValue: 'AIzaSyA_EShs05GD76mc2Mjy1l2ByyO2FMHn3yA',
   );
 }

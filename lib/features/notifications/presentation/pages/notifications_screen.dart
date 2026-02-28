@@ -1,9 +1,26 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (Env.mockApi) {
+      unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,33 +1,73 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 
 import 'driver_status_state.dart';
 
 class DriverCubit extends Cubit<DriverState> {
+  DriverCubit({LocationPermissionGuard? locationGuard})
+    : _locationGuard = locationGuard ?? const LocationPermissionGuard(),
+      super(const DriverState());
+
+  final LocationPermissionGuard _locationGuard;
   Timer? _onlineTimer;
   Timer? _ordersNavigationTimer;
+  Timer? _locationWatchTimer;
   int _onlineMinutes = 0;
+  bool _isCheckingLocation = false;
 
-  DriverCubit() : super(const DriverState());
-
-  void toggleStatus() {
+  Future<void> toggleStatus() async {
     if (state.isOnline) {
       goOffline();
     } else {
-      goOnline();
+      await goOnline();
     }
   }
 
-  void goOnline() {
+  Future<void> goOnline() async {
+    if (state.isOnline) return;
+
+    final access = await _locationGuard.ensureReady(requestPermission: true);
+    if (!access.isReady) {
+      emit(
+        state.copyWith(
+          status: DriverStatus.offline,
+          offlineBlockIssue: access.issue,
+          offlineBlockEventId: state.offlineBlockEventId + 1,
+        ),
+      );
+      return;
+    }
+
+    _onlineMinutes = 0;
     _startTimer();
     _startOrdersNavigationDelay();
-    emit(state.copyWith(status: DriverStatus.online));
+    emit(
+      state.copyWith(
+        status: DriverStatus.online,
+        onlineHours: '0h 0m',
+        clearOfflineBlockIssue: true,
+      ),
+    );
+    _startLocationWatch();
   }
 
-  void goOffline() {
+  void goOffline({LocationIssue? reason}) {
+    if (state.isOffline && reason == null && state.offlineBlockIssue == null) {
+      return;
+    }
     _stopTimer();
     _stopOrdersNavigationDelay();
-    emit(state.copyWith(status: DriverStatus.offline));
+    _stopLocationWatch();
+    emit(
+      state.copyWith(
+        status: DriverStatus.offline,
+        offlineBlockIssue: reason,
+        offlineBlockEventId: reason == null
+            ? state.offlineBlockEventId
+            : state.offlineBlockEventId + 1,
+      ),
+    );
   }
 
   void _startTimer() {
@@ -59,6 +99,32 @@ class DriverCubit extends Cubit<DriverState> {
     _ordersNavigationTimer = null;
   }
 
+  void _startLocationWatch() {
+    _locationWatchTimer?.cancel();
+    _locationWatchTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      unawaited(_validateLocationAvailability());
+    });
+    unawaited(_validateLocationAvailability());
+  }
+
+  void _stopLocationWatch() {
+    _locationWatchTimer?.cancel();
+    _locationWatchTimer = null;
+  }
+
+  Future<void> _validateLocationAvailability() async {
+    if (_isCheckingLocation || state.isOffline) return;
+    _isCheckingLocation = true;
+    try {
+      final result = await _locationGuard.ensureReady(requestPermission: false);
+      if (!result.isReady && state.isOnline) {
+        goOffline(reason: result.issue);
+      }
+    } finally {
+      _isCheckingLocation = false;
+    }
+  }
+
   void addMoney(double amount) {
     emit(state.copyWith(walletBalance: state.walletBalance + amount));
   }
@@ -87,13 +153,21 @@ class DriverCubit extends Cubit<DriverState> {
     );
   }
 
+  void clearOfflineLocationBlock() {
+    if (state.offlineBlockIssue == null) return;
+    emit(state.copyWith(clearOfflineBlockIssue: true));
+  }
+
   @override
   Future<void> close() {
     _stopTimer();
     _stopOrdersNavigationDelay();
+    _stopLocationWatch();
     return super.close();
   }
 }
 
 // Backwards-compatible alias for older imports.
-class DriverStatusCubit extends DriverCubit {}
+class DriverStatusCubit extends DriverCubit {
+  DriverStatusCubit({super.locationGuard});
+}

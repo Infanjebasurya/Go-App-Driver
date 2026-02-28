@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 
 enum DriverStatus { offline, online }
 
@@ -14,6 +15,8 @@ class DriverState {
   final double rewardAmount;
   final bool isEarningsExpanded;
   final int navigateToOrdersToken;
+  final LocationIssue? offlineBlockIssue;
+  final int offlineBlockEventId;
 
   const DriverState({
     this.status = DriverStatus.offline,
@@ -26,6 +29,8 @@ class DriverState {
     this.rewardAmount = 80.0,
     this.isEarningsExpanded = false,
     this.navigateToOrdersToken = 0,
+    this.offlineBlockIssue,
+    this.offlineBlockEventId = 0,
   });
 
   bool get isOnline => status == DriverStatus.online;
@@ -44,6 +49,9 @@ class DriverState {
     double? rewardAmount,
     bool? isEarningsExpanded,
     int? navigateToOrdersToken,
+    LocationIssue? offlineBlockIssue,
+    int? offlineBlockEventId,
+    bool clearOfflineBlockIssue = false,
   }) {
     return DriverState(
       status: status ?? this.status,
@@ -57,6 +65,10 @@ class DriverState {
       isEarningsExpanded: isEarningsExpanded ?? this.isEarningsExpanded,
       navigateToOrdersToken:
           navigateToOrdersToken ?? this.navigateToOrdersToken,
+      offlineBlockIssue: clearOfflineBlockIssue
+          ? null
+          : (offlineBlockIssue ?? this.offlineBlockIssue),
+      offlineBlockEventId: offlineBlockEventId ?? this.offlineBlockEventId,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
@@ -10,12 +11,20 @@ import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
+import 'package:goapp/core/storage/home_trip_resume_store.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
+import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/app_assets.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
+import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/enter_ride_code_page.dart';
+import 'package:goapp/features/home/presentation/pages/home_page.dart';
+import 'package:goapp/features/home/presentation/pages/contact/ride_call_page.dart';
+import 'package:goapp/features/home/presentation/pages/contact/ride_chat_page.dart';
+import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 
 part 'ride_arrived_page_sections.dart';
@@ -68,6 +77,10 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   @override
   void initState() {
     super.initState();
+    unawaited(HomeTripResumeStore.setStage(HomeTripResumeStage.rideArrived));
+    if (Env.mockApi) {
+      unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
+    }
     WidgetsBinding.instance.addObserver(this);
     unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
@@ -84,11 +97,13 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   }
 
   Future<void> _refreshLocationState({bool requestPermission = false}) async {
+    final previousIssue = _locationIssue;
     final result = await _locationGuard.ensureReady(
       requestPermission: requestPermission,
     );
     if (!mounted) return;
     setState(() => _locationIssue = result.issue);
+    _handleTrackingLocationState(previousIssue, result.issue);
   }
 
   Future<void> _loadMapStyle() async {
@@ -197,14 +212,22 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     return _directionsRouteService.fetchDrivingRoute(
       origin: origin,
       destination: destination,
-      apiKey: Env.googleMapsApiKey,
+      apiKey: _resolveDirectionsApiKey(),
     );
+  }
+
+  String _resolveDirectionsApiKey() {
+    if (Env.googleMapsApiKey.isNotEmpty) return Env.googleMapsApiKey;
+    if (Env.googlePlacesApiKey.isNotEmpty) return Env.googlePlacesApiKey;
+    if (Env.googleGeocodingApiKey.isNotEmpty) return Env.googleGeocodingApiKey;
+    return '';
   }
 
   void _startDriverMovement() {
     _movementTimer?.cancel();
     _movementTimer = Timer.periodic(_movementTick, (_) async {
       if (!mounted) return;
+      if (_locationIssue != null) return;
       if (_driverProgress >= 1 || _movementTickCount >= _totalMovementTicks) {
         _driverProgress = 1;
         _driverPoint = widget.pickupPoint;
@@ -260,6 +283,29 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     unawaited(TripBackgroundService.stopTrip());
   }
 
+  void _handleTrackingLocationState(
+    LocationIssue? previousIssue,
+    LocationIssue? nextIssue,
+  ) {
+    if (nextIssue != null) {
+      unawaited(TripBackgroundService.stopTrip());
+      return;
+    }
+
+    if (previousIssue == null) return;
+    final int remainingSeconds = ((1 - _driverProgress) * 10).clamp(1, 10).round();
+    unawaited(
+      TripBackgroundService.startTrip(
+        title: 'Heading to pickup location',
+        subtitle: 'Driver is moving to pickup',
+        duration: Duration(seconds: remainingSeconds),
+      ),
+    );
+    if (_driverProgress <= 0.02) {
+      unawaited(_initializeTracking());
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -286,164 +332,258 @@ class _RideArrivedPageState extends State<RideArrivedPage>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const _CancellationReasonSheet(),
+      builder: (_) => _CancellationReasonSheet(
+        onConfirm: (
+          String canceledBy,
+          String reason,
+        ) async {
+          await RideHistoryStore.markCanceledNowOrCreate(
+            canceledBy: canceledBy,
+            cancelReason: reason,
+            pickupLocation: '42, I-Block, Arumbakkam, Chennai-106',
+            dropLocation: '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
+          );
+          await HomeTripResumeStore.clear();
+          if (!mounted) return;
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => BlocProvider<DriverCubit>(
+                create: (_) => DriverCubit(),
+                child: const HomeScreen(),
+              ),
+            ),
+            (route) => false,
+          );
+        },
+      ),
     );
+  }
+
+  void _openChatScreen() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const RideChatPage()));
+  }
+
+  void _openCallScreen() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const RideCallPage()));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: ValueListenableBuilder<int>(
-              valueListenable: _mapFrameTick,
-              builder: (context, value, child) => AppGoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: _driverPoint,
-                  zoom: 15,
-                ),
-                style: _mapStyle,
-                markers: _buildMarkers(),
-                polylines: <Polyline>{
-                  Polyline(
-                    polylineId: const PolylineId('driver_to_pickup_done'),
-                    points: _passedRoutePoints(),
-                    color: AppColors.neutralAAA,
-                    width: 4,
+    return HomeNoDeviceBack(
+      child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: ValueListenableBuilder<int>(
+                valueListenable: _mapFrameTick,
+                builder: (context, value, child) => AppGoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: _driverPoint,
+                    zoom: 15,
                   ),
-                  Polyline(
-                    polylineId: const PolylineId('driver_to_pickup'),
-                    points: _remainingRoutePoints(),
-                    color: AppColors.emerald,
-                    width: 5,
-                  ),
-                },
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                onMapCreated: (controller) {
-                  _mapController = controller;
-                  unawaited(_focusRouteInView());
-                },
-              ),
-            ),
-          ),
-          Positioned(
-            right: 16,
-            top: MediaQuery.of(context).padding.top + 235,
-            child: GestureDetector(
-              onTap: _recenterToDriver,
-              child: Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: AppColors.black.withValues(alpha: 0.12),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                  style: _mapStyle,
+                  markers: _buildMarkers(),
+                  polylines: <Polyline>{
+                    Polyline(
+                      polylineId: const PolylineId('driver_to_pickup_done'),
+                      points: _passedRoutePoints(),
+                      color: AppColors.neutralAAA,
+                      width: 4,
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.my_location,
-                  color: AppColors.neutral666,
+                    Polyline(
+                      polylineId: const PolylineId('driver_to_pickup'),
+                      points: _remainingRoutePoints(),
+                      color: AppColors.emerald,
+                      width: 5,
+                    ),
+                  },
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                    unawaited(_focusRouteInView());
+                  },
                 ),
               ),
             ),
-          ),
-          if (_locationIssue != null)
             Positioned(
-              top: MediaQuery.of(context).padding.top + 12,
-              left: 0,
-              right: 0,
-              child: LocationDisabledBanner(
-                issue: _locationIssue!,
-                onActionTap: _onLocationBannerActionTap,
+              right: 16,
+              top: MediaQuery.of(context).padding.top + 235,
+              child: GestureDetector(
+                onTap: _recenterToDriver,
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: AppColors.black.withValues(alpha: 0.12),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.my_location,
+                    color: AppColors.neutral666,
+                  ),
+                ),
               ),
             ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
-              decoration: const BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            if (_locationIssue != null)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 12,
+                left: 0,
+                right: 0,
+                child: LocationDisabledBanner(
+                  issue: _locationIssue!,
+                  onActionTap: _onLocationBannerActionTap,
+                ),
               ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Container(
-                      width: 52,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: AppColors.neutralCCC,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const _DriverCard(),
-                    const SizedBox(height: 14),
-                    const _TripMetrics(),
-                    const SizedBox(height: 12),
-                    const _PickupDropSection(),
-                    const SizedBox(height: 18),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 46,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.emerald,
-                          foregroundColor: AppColors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          elevation: 2,
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+                decoration: const BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                        width: 52,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: AppColors.neutralCCC,
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        onPressed: () {
-                          NotificationsFeed.add(
-                            title: 'OTP verification started',
-                            message:
-                                'Driver arrived. Ask rider for OTP to start trip.',
-                          );
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const EnterRideCodePage(),
-                            ),
+                      ),
+                      const SizedBox(height: 14),
+                      _DriverCard(
+                        onChatTap: _openChatScreen,
+                        onCallTap: _openCallScreen,
+                      ),
+                      const SizedBox(height: 14),
+                      const _TripMetrics(),
+                      const SizedBox(height: 12),
+                      const _PickupDropSection(),
+                      const SizedBox(height: 18),
+                      ValueListenableBuilder<int>(
+                        valueListenable: _mapFrameTick,
+                        builder: (context, value, child) {
+                          final bool canProceed = _canProceedToRideCode();
+                          final int metersLeft = _metersToPickup()
+                              .round()
+                              .clamp(0, 99999);
+                          final bool hasLocationIssue = _locationIssue != null;
+                          return Column(
+                            children: <Widget>[
+                              SizedBox(
+                                width: double.infinity,
+                                height: 46,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.emerald,
+                                    foregroundColor: AppColors.white,
+                                    disabledBackgroundColor:
+                                        AppColors.neutralCCC,
+                                    disabledForegroundColor:
+                                        AppColors.neutral666,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(28),
+                                    ),
+                                    elevation: 2,
+                                  ),
+                                  onPressed: canProceed
+                                      ? () async {
+                                          await RideHistoryStore
+                                              .markPickedUpNow();
+                                          // TripSessionStore: captain arrived at pickup.
+                                          unawaited(TripSessionStore.markArrivedAtPickup());
+                                          if (!context.mounted) return;
+                                          NotificationsFeed.add(
+                                            title: 'OTP verification started',
+                                            message:
+                                                'Driver arrived. Ask rider for OTP to start trip.',
+                                          );
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute<void>(
+                                              builder: (_) =>
+                                                  const EnterRideCodePage(),
+                                            ),
+                                          );
+                                        }
+                                      : null,
+                                  child: const Text(
+                                    'I Have Arrived',
+                                    style: TextStyle(
+                                      fontSize: 24 / 2,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                hasLocationIssue
+                                    ? _locationBlockedMessage(_locationIssue!)
+                                    : canProceed
+                                    ? 'You are within 100m of pickup.'
+                                    : 'Move closer to pickup ($metersLeft m left).',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: hasLocationIssue
+                                      ? AppColors.validationRed
+                                      : canProceed
+                                      ? AppColors.emerald
+                                      : AppColors.neutral666,
+                                ),
+                              ),
+                            ],
                           );
                         },
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: _showCancellationReasonSheet,
                         child: const Text(
-                          'I Have Arrived',
+                          'Cancel Ride',
                           style: TextStyle(
-                            fontSize: 24 / 2,
-                            fontWeight: FontWeight.w700,
+                            color: AppColors.validationRed,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: _showCancellationReasonSheet,
-                      child: const Text(
-                        'Cancel Ride',
-                        style: TextStyle(
-                          color: AppColors.validationRed,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  String _locationBlockedMessage(LocationIssue issue) {
+    switch (issue) {
+      case LocationIssue.serviceDisabled:
+        return 'Enable GPS to continue route simulation.';
+      case LocationIssue.permissionDenied:
+        return 'Allow location permission to continue route simulation.';
+      case LocationIssue.permissionDeniedForever:
+        return 'Enable location permission from settings to continue.';
+    }
   }
 }

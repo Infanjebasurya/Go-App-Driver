@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:goapp/core/maps/map_types.dart';
+import 'package:goapp/core/network/google_endpoints.dart';
 
 class DirectionsRouteService {
   DirectionsRouteService({Dio? dio}) : _dio = dio ?? Dio();
 
   final Dio _dio;
+  static String? _cachedAssetDirectionsKey;
+  static bool _assetKeyAttempted = false;
 
   Future<List<LatLng>?> fetchDrivingRoute({
     required LatLng origin,
@@ -12,8 +18,91 @@ class DirectionsRouteService {
     required String apiKey,
     bool preferDetailedSteps = true,
   }) async {
-    if (apiKey.isEmpty) return null;
+    final String resolvedApiKey = await _resolveApiKey(apiKey);
 
+    if (resolvedApiKey.isNotEmpty) {
+      final List<LatLng>? legacyRoute = await _fetchLegacyDirectionsRoute(
+        origin: origin,
+        destination: destination,
+        apiKey: resolvedApiKey,
+        preferDetailedSteps: preferDetailedSteps,
+      );
+      if (_isUsableRoute(legacyRoute)) return legacyRoute;
+
+      final List<LatLng>? routesApiRoute = await _fetchRoutesApiRoute(
+        origin: origin,
+        destination: destination,
+        apiKey: resolvedApiKey,
+        preferDetailedSteps: preferDetailedSteps,
+      );
+      if (_isUsableRoute(routesApiRoute)) return routesApiRoute;
+    }
+
+    final List<LatLng>? osrmRoute = await _fetchOsrmRoute(
+      origin: origin,
+      destination: destination,
+    );
+    if (_isUsableRoute(osrmRoute)) return osrmRoute;
+
+    return null;
+  }
+
+  Future<String> _resolveApiKey(String apiKey) async {
+    if (apiKey.isNotEmpty) return apiKey;
+    final String? fromAsset = await _loadApiKeyFromAssetEnv();
+    return fromAsset ?? '';
+  }
+
+  Future<String?> _loadApiKeyFromAssetEnv() async {
+    if (_cachedAssetDirectionsKey != null) return _cachedAssetDirectionsKey;
+    if (_assetKeyAttempted) return null;
+    _assetKeyAttempted = true;
+
+    try {
+      const String envName = String.fromEnvironment('ENV', defaultValue: 'dev');
+      final String raw = await rootBundle.loadString('assets/env/.env.$envName');
+      final String? mapsKey = _readEnvValue(
+        raw: raw,
+        key: 'GOOGLE_MAPS_API_KEY',
+      );
+      final String? placesKey = _readEnvValue(
+        raw: raw,
+        key: 'GOOGLE_PLACES_API_KEY',
+      );
+      final String? geocodingKey = _readEnvValue(
+        raw: raw,
+        key: 'GOOGLE_GEOCODING_API_KEY',
+      );
+      _cachedAssetDirectionsKey = mapsKey ?? placesKey ?? geocodingKey;
+      return _cachedAssetDirectionsKey;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? _readEnvValue({required String raw, required String key}) {
+    final List<String> lines = raw.split('\n');
+    for (final String line in lines) {
+      final String trimmed = line.trim();
+      if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
+      if (!trimmed.startsWith('$key=')) continue;
+      final String value = trimmed.substring(key.length + 1).trim();
+      if (value.isEmpty) return null;
+      return value;
+    }
+    return null;
+  }
+
+  bool _isUsableRoute(List<LatLng>? route) {
+    return route != null && route.length >= 3;
+  }
+
+  Future<List<LatLng>?> _fetchLegacyDirectionsRoute({
+    required LatLng origin,
+    required LatLng destination,
+    required String apiKey,
+    required bool preferDetailedSteps,
+  }) async {
     try {
       final Response<dynamic> response = await _dio.get(
         'https://maps.googleapis.com/maps/api/directions/json',
@@ -45,6 +134,131 @@ class DirectionsRouteService {
       final points = overview['points'];
       if (points is! String || points.isEmpty) return null;
       return decodePolyline(points);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<List<LatLng>?> _fetchRoutesApiRoute({
+    required LatLng origin,
+    required LatLng destination,
+    required String apiKey,
+    required bool preferDetailedSteps,
+  }) async {
+    try {
+      final Response<dynamic> response = await _dio.post(
+        '${GoogleEndpoints.routesBaseUrl}${GoogleEndpoints.routesCompute}',
+        data: <String, dynamic>{
+          'origin': <String, dynamic>{
+            'location': <String, dynamic>{
+              'latLng': <String, double>{
+                'latitude': origin.latitude,
+                'longitude': origin.longitude,
+              },
+            },
+          },
+          'destination': <String, dynamic>{
+            'location': <String, dynamic>{
+              'latLng': <String, double>{
+                'latitude': destination.latitude,
+                'longitude': destination.longitude,
+              },
+            },
+          },
+          'travelMode': 'DRIVE',
+          'routingPreference': 'TRAFFIC_UNAWARE',
+          'computeAlternativeRoutes': false,
+          'polylineQuality': 'HIGH_QUALITY',
+          'polylineEncoding': 'GEO_JSON_LINESTRING',
+        },
+        options: Options(
+          headers: <String, String>{
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask':
+                'routes.polyline.geoJsonLinestring,'
+                'routes.polyline.encodedPolyline',
+          },
+        ),
+      );
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) return null;
+      final routes = data['routes'];
+      if (routes is! List || routes.isEmpty) return null;
+      final firstRouteRaw = routes.first;
+      if (firstRouteRaw is! Map) return null;
+      final Map<String, dynamic> firstRoute =
+          Map<String, dynamic>.from(firstRouteRaw);
+
+      final polyline = firstRoute['polyline'];
+      if (polyline is! Map) return null;
+      final geoJsonLineString = polyline['geoJsonLinestring'];
+      if (geoJsonLineString is String && geoJsonLineString.isNotEmpty) {
+        final List<LatLng> geoJsonPoints = _decodeGeoJsonLineString(
+          geoJsonLineString,
+        );
+        if (geoJsonPoints.length >= 3) {
+          return dedupeSequential(geoJsonPoints);
+        }
+      }
+      final encoded = polyline['encodedPolyline'];
+      if (encoded is! String || encoded.isEmpty) return null;
+      return decodePolyline(encoded);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<LatLng> _decodeGeoJsonLineString(String geoJson) {
+    try {
+      final dynamic parsed = jsonDecode(geoJson);
+      if (parsed is! Map) return const <LatLng>[];
+      final type = parsed['type'];
+      if (type != 'LineString') return const <LatLng>[];
+      final dynamic coordsRaw = parsed['coordinates'];
+      if (coordsRaw is! List) return const <LatLng>[];
+      final List<LatLng> points = <LatLng>[];
+      for (final dynamic pair in coordsRaw) {
+        if (pair is! List || pair.length < 2) continue;
+        final dynamic lngRaw = pair[0];
+        final dynamic latRaw = pair[1];
+        if (lngRaw is! num || latRaw is! num) continue;
+        points.add(LatLng(latRaw.toDouble(), lngRaw.toDouble()));
+      }
+      return points;
+    } catch (_) {
+      return const <LatLng>[];
+    }
+  }
+
+  Future<List<LatLng>?> _fetchOsrmRoute({
+    required LatLng origin,
+    required LatLng destination,
+  }) async {
+    try {
+      final String path =
+          'https://router.project-osrm.org/route/v1/driving/'
+          '${origin.longitude},${origin.latitude};'
+          '${destination.longitude},${destination.latitude}';
+      final Response<dynamic> response = await _dio.get(
+        path,
+        queryParameters: <String, dynamic>{
+          'overview': 'full',
+          'geometries': 'polyline',
+          'alternatives': 'false',
+          'steps': 'false',
+        },
+      );
+      final data = response.data;
+      if (data is! Map<String, dynamic>) return null;
+      if (data['code'] != 'Ok') return null;
+      final routes = data['routes'];
+      if (routes is! List || routes.isEmpty) return null;
+      final firstRoute = routes.first;
+      if (firstRoute is! Map<String, dynamic>) return null;
+      final geometry = firstRoute['geometry'];
+      if (geometry is! String || geometry.isEmpty) return null;
+      return decodePolyline(geometry);
     } catch (_) {
       return null;
     }
