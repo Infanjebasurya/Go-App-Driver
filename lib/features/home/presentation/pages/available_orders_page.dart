@@ -4,8 +4,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/map_types.dart';
+import 'package:goapp/core/storage/home_trip_resume_store.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
+import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_state.dart';
 import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
@@ -18,16 +23,49 @@ class AvailableOrdersPage extends StatefulWidget {
   State<AvailableOrdersPage> createState() => _AvailableOrdersPageState();
 }
 
-class _AvailableOrdersPageState extends State<AvailableOrdersPage> {
+class _AvailableOrdersPageState extends State<AvailableOrdersPage>
+    with WidgetsBindingObserver {
   bool _playedInitialAlert = false;
+  bool _acceptedOrder = false;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final LocationPermissionGuard _locationGuard =
+      const LocationPermissionGuard();
+  final AvailableOrdersCubit _ordersCubit = AvailableOrdersCubit();
+  LocationIssue? _locationIssue;
+  bool _ordersStarted = false;
 
-  void _goToRideScreen(
-    BuildContext context, {
+  bool get _canReceiveOrders => _locationIssue == null;
+
+  Future<void> _goToRideScreen({
     required LatLng pickupPoint,
     required LatLng dropPoint,
-  }) {
-    Navigator.of(context).push(
+    required String pickupAddress,
+    required String dropAddress,
+    required String fareLabel,
+    required String distanceLabel,
+  }) async {
+    if (_acceptedOrder) return;
+    _acceptedOrder = true;
+    _ordersCubit.stop();
+    unawaited(_audioPlayer.stop());
+    await RideHistoryStore.startTrip(
+      pickupLocation: pickupAddress,
+      dropLocation: dropAddress,
+      fareLabel: fareLabel,
+      distanceLabel: distanceLabel,
+    );
+    // TripSessionStore: record the full order details at the moment of acceptance.
+    await TripSessionStore.startSession(
+      pickupLatLng: TripLatLng(pickupPoint.latitude, pickupPoint.longitude),
+      dropLatLng: TripLatLng(dropPoint.latitude, dropPoint.longitude),
+      pickupAddress: pickupAddress,
+      dropAddress: dropAddress,
+      fareLabel: fareLabel,
+      distanceLabel: distanceLabel,
+    );
+
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) =>
             RideArrivedPage(pickupPoint: pickupPoint, dropPoint: dropPoint),
@@ -69,29 +107,111 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || _playedInitialAlert) return;
-      _playedInitialAlert = true;
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      if (!mounted) return;
-      await _playIncomingOrderAlert();
-    });
+    unawaited(
+      HomeTripResumeStore.setStage(HomeTripResumeStage.availableOrders),
+    );
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_refreshLocationState(requestPermission: true));
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _ordersCubit.close();
     unawaited(_audioPlayer.dispose());
     super.dispose();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshLocationState());
+    }
+  }
+
+  Future<void> _refreshLocationState({bool requestPermission = false}) async {
+    final result = await _locationGuard.ensureReady(
+      requestPermission: requestPermission,
+    );
+    if (!mounted) return;
+    final LocationIssue? previousIssue = _locationIssue;
+    setState(() => _locationIssue = result.issue);
+    await _handleOrderFlowByLocation(
+      previousIssue: previousIssue,
+      nextIssue: result.issue,
+    );
+  }
+
+  Future<void> _handleOrderFlowByLocation({
+    required LocationIssue? previousIssue,
+    required LocationIssue? nextIssue,
+  }) async {
+    if (nextIssue != null) {
+      _ordersCubit.stop();
+      _ordersStarted = false;
+      await _audioPlayer.stop();
+      if (previousIssue == null && mounted) {
+        _showLocationPauseSnack();
+      }
+      return;
+    }
+
+    if (!_ordersStarted) {
+      _ordersCubit.start();
+      _ordersStarted = true;
+    }
+
+    if (!_playedInitialAlert && !_acceptedOrder) {
+      _playedInitialAlert = true;
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+      if (!mounted || _acceptedOrder || !_canReceiveOrders) return;
+      await _playIncomingOrderAlert();
+    }
+
+    // Keep UI quiet on restore; just resume order flow.
+  }
+
+  void _showLocationPauseSnack() {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      const SnackBar(
+        duration: Duration(seconds: 5),
+        content: Text(
+          'Orders are paused. Enable GPS and Location permission to continue receiving orders.',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onLocationBannerActionTap() async {
+    final issue = _locationIssue;
+    if (issue == null) return;
+    if (issue == LocationIssue.serviceDisabled) {
+      await _locationGuard.openLocationSettings();
+    } else {
+      await _locationGuard.openAppSettings();
+    }
+    if (!mounted) return;
+    unawaited(_refreshLocationState());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider<AvailableOrdersCubit>(
-      create: (_) => AvailableOrdersCubit()..start(),
+    return BlocProvider<AvailableOrdersCubit>.value(
+      value: _ordersCubit,
       child: BlocListener<AvailableOrdersCubit, AvailableOrdersState>(
         listenWhen: (previous, current) =>
-            !previous.showSecondOrder && current.showSecondOrder,
-        listener: (context, state) => _playIncomingOrderAlert(),
+            _canReceiveOrders &&
+            !_acceptedOrder &&
+            !previous.showSecondOrder &&
+            current.showSecondOrder,
+        listener: (context, state) {
+          if (_acceptedOrder) return;
+          // B-09 FIX: explicitly mark Future as unawaited.
+          unawaited(_playIncomingOrderAlert());
+        },
         child: Scaffold(
           backgroundColor: AppColors.surfaceF5,
           appBar: AppBar(
@@ -105,10 +225,17 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage> {
           ),
           body: BlocBuilder<AvailableOrdersCubit, AvailableOrdersState>(
             builder: (BuildContext context, AvailableOrdersState state) {
-              final cubit = context.read<AvailableOrdersCubit>();
+              final cubit = _ordersCubit;
               return ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
                 children: <Widget>[
+                  if (_locationIssue != null) ...<Widget>[
+                    LocationDisabledBanner(
+                      issue: _locationIssue!,
+                      onActionTap: _onLocationBannerActionTap,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   _OrderCard(
                     fare: '\u20B990',
                     pickupTitle: 'Arumbakkam',
@@ -116,28 +243,53 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage> {
                     dropTitle: 'Amjikarai',
                     dropAddress:
                         '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
-                    progress: cubit.progressForOrder(0),
-                    onAccept: () => _goToRideScreen(
-                      context,
+                    progress: _canReceiveOrders ? cubit.progressForOrder(0) : 0,
+                    isEnabled: _canReceiveOrders,
+                    distanceLabel: '2.5 km',
+                    onDecline: _canReceiveOrders ? () {
+                      _ordersCubit.stop();
+                      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                        const SnackBar(content: Text('Order declined')),
+                      );
+                    } : null,
+                    onAccept: () async => _goToRideScreen(
                       pickupPoint: const LatLng(13.0696, 80.2154),
                       dropPoint: const LatLng(13.0744, 80.2241),
+                      pickupAddress: '42, MMDA Colony, Arumbakkam, ch-106',
+                      dropAddress:
+                          '13, vinobaji St, Kamarajar Nagar, NGO ColonyCholaimedu, Ch-94',
+                      fareLabel: '\u20B990',
+                      distanceLabel: '2.5 km',
                     ),
                   ),
                   if (state.showSecondOrder) ...<Widget>[
                     const SizedBox(height: 14),
                     _OrderCard(
                       fare: '\u20B9100',
-                      pickupTitle: 'Amjikarai',
-                      pickupAddress:
-                          '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
+                      // B-10 FIX: Corrected pickup address (was same as drop).
+                      pickupTitle: 'Arumbakkam',
+                      pickupAddress: '42, MMDA Colony, Arumbakkam,\nch-106',
                       dropTitle: 'Amjikarai',
                       dropAddress:
                           '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
-                      progress: cubit.progressForOrder(1),
-                      onAccept: () => _goToRideScreen(
-                        context,
+                      progress: _canReceiveOrders ? cubit.progressForOrder(1) : 0,
+                      isEnabled: _canReceiveOrders,
+                      distanceLabel: '3.2 km',
+                      onDecline: _canReceiveOrders ? () {
+                        _ordersCubit.stop();
+                        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                          const SnackBar(content: Text('Order declined')),
+                        );
+                      } : null,
+                      onAccept: () async => _goToRideScreen(
                         pickupPoint: const LatLng(13.0721, 80.2186),
                         dropPoint: const LatLng(13.0662, 80.2103),
+                        // B-10 FIX: Corrected pickup in stored record.
+                        pickupAddress: '42, MMDA Colony, Arumbakkam, ch-106',
+                        dropAddress:
+                            '13, vinobaji St, Kamarajar Nagar, NGO ColonyCholaimedu, Ch-94',
+                        fareLabel: '\u20B9100',
+                        distanceLabel: '2.5 km',
                       ),
                     ),
                   ],
@@ -222,6 +374,11 @@ class _OrderCard extends StatelessWidget {
     required this.dropAddress,
     required this.progress,
     required this.onAccept,
+    required this.isEnabled,
+    // B-11 FIX: distanceLabel is now a required parameter used in the widget.
+    required this.distanceLabel,
+    // B-06 FIX: onDecline is wired so the button actually does something.
+    this.onDecline,
   });
 
   final String fare;
@@ -230,7 +387,10 @@ class _OrderCard extends StatelessWidget {
   final String dropTitle;
   final String dropAddress;
   final double progress;
-  final VoidCallback onAccept;
+  final VoidCallback? onAccept;
+  final bool isEnabled;
+  final String distanceLabel;
+  final VoidCallback? onDecline;
 
   @override
   Widget build(BuildContext context) {
@@ -281,32 +441,33 @@ class _OrderCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const Row(
+            Row(
               children: <Widget>[
-                Icon(
+                const Icon(
                   Icons.navigation_outlined,
                   size: 15,
                   color: AppColors.neutral666,
                 ),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
+                // B-11 FIX: Use distanceLabel parameter instead of hardcoded string.
                 Text(
-                  '2.5 km',
-                  style: TextStyle(
+                  distanceLabel,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.neutral555,
                   ),
                 ),
-                SizedBox(width: 8),
-                Text('|', style: TextStyle(color: AppColors.neutral888)),
-                SizedBox(width: 8),
-                Icon(
+                const SizedBox(width: 8),
+                const Text('|', style: TextStyle(color: AppColors.neutral888)),
+                const SizedBox(width: 8),
+                const Icon(
                   Icons.access_time_rounded,
                   size: 15,
                   color: AppColors.neutral666,
                 ),
-                SizedBox(width: 4),
-                Text(
+                const SizedBox(width: 4),
+                const Text(
                   '~12 mins',
                   style: TextStyle(
                     fontSize: 14,
@@ -344,7 +505,8 @@ class _OrderCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(24),
                         ),
                       ),
-                      onPressed: () {},
+                      // B-06 FIX: Decline button now calls onDecline callback.
+                      onPressed: isEnabled ? onDecline : null,
                       child: const Text(
                         'Decline',
                         style: TextStyle(
@@ -389,7 +551,6 @@ class _OrderCard extends StatelessWidget {
     );
   }
 }
-
 class _LocationPoint extends StatelessWidget {
   const _LocationPoint({
     required this.title,

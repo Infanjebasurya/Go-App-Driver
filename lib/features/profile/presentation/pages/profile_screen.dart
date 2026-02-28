@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/error/failures.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
+import 'package:goapp/features/profile/domain/entities/profile.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
+import 'package:goapp/features/profile/presentation/widgets/either.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 import '../../domain/repositories/profile_repository.dart';
@@ -14,13 +17,61 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProfileRepository repository;
+    try {
+      repository = context.read<ProfileRepository>();
+    } catch (_) {
+      repository = _FallbackProfileRepository();
+    }
+
     return BlocProvider<ProfileEditCubit>(
       create: (context) => ProfileEditCubit(
         getCachedProfileUseCase: GetCachedProfileUseCase(
-          context.read<ProfileRepository>(),
+          repository,
         ),
       ),
       child: const _ProfileView(),
+    );
+  }
+}
+
+class _FallbackProfileRepository implements ProfileRepository {
+  @override
+  Future<Either<Failure, Profile>> createProfile({
+    required String name,
+    required String gender,
+    required String refer,
+    required String emergencyContact,
+    required String email,
+  }) async {
+    return Right(
+      Profile(
+        id: 'profile-local',
+        name: name,
+        gender: gender,
+        refer: refer,
+        emergencyContact: emergencyContact,
+        email: email,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Profile?>> getCachedProfile() async {
+    return Right(
+      const Profile(
+        id: 'profile-local',
+        name: 'Sam Yogesh',
+        email: 'michael.rodriguez@email.com',
+        phone: '+91 99446 63355',
+        gender: 'Male',
+        dob: 'March 15, 1990',
+        refer: '',
+        emergencyContact: '',
+        rating: 4.98,
+        totalTrips: 1240,
+        totalYears: 1.5,
+      ),
     );
   }
 }

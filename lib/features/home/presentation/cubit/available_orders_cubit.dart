@@ -44,6 +44,10 @@ class AvailableOrdersCubit extends Cubit<AvailableOrdersState> {
     return 0;
   }
 
+  void stop() {
+    _timer?.cancel();
+  }
+
   @override
   Future<void> close() async {
     _timer?.cancel();

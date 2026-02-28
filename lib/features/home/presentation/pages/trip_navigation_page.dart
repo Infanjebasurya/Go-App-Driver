@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,12 +11,16 @@ import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/permissions/notification_permission_helper.dart';
+import 'package:goapp/core/storage/home_trip_resume_store.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
+import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/app_assets.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/cubit/trip_navigation_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/trip_navigation_state.dart';
+import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 import 'package:goapp/features/ride_complete/presentation/pages/ride_completed_screen.dart';
 import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
@@ -23,23 +28,37 @@ import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
 part 'trip_navigation_page_sections.dart';
 
 class TripNavigationPage extends StatelessWidget {
-  const TripNavigationPage({super.key, this.initialRoutePath});
+  // B-05 FIX: dropPoint is now required so the real destination is used.
+  const TripNavigationPage({
+    super.key,
+    this.initialRoutePath,
+    required this.dropPoint,
+  });
 
   final List<LatLng>? initialRoutePath;
+  final LatLng dropPoint;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TripNavigationCubit>(
       create: (_) => TripNavigationCubit(),
-      child: _TripNavigationView(initialRoutePath: initialRoutePath),
+      child: _TripNavigationView(
+        initialRoutePath: initialRoutePath,
+        dropPoint: dropPoint,
+      ),
     );
   }
 }
 
 class _TripNavigationView extends StatefulWidget {
-  const _TripNavigationView({this.initialRoutePath});
+  // B-05 FIX: dropPoint propagated from TripNavigationPage.
+  const _TripNavigationView({
+    this.initialRoutePath,
+    required this.dropPoint,
+  });
 
   final List<LatLng>? initialRoutePath;
+  final LatLng dropPoint;
 
   @override
   State<_TripNavigationView> createState() => _TripNavigationViewState();
@@ -48,7 +67,7 @@ class _TripNavigationView extends StatefulWidget {
 class _TripNavigationViewState extends State<_TripNavigationView>
     with WidgetsBindingObserver {
   static const LatLng _driverPoint = LatLng(13.0565, 80.2138);
-  static const LatLng _destinationPoint = LatLng(13.0699, 80.2218);
+  // B-05 FIX: widget.dropPoint removed; use widget.dropPoint everywhere.
   static const int _dropProgressNotificationId = 3002;
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
@@ -58,19 +77,26 @@ class _TripNavigationViewState extends State<_TripNavigationView>
       DirectionsRouteService();
   late List<LatLng> _mapRoutePath = _buildCurvedRoutePath(
     _driverPoint,
-    _destinationPoint,
+    widget.dropPoint,
   );
   bool _tripStarted = false;
+  bool _routePrepared = false;
   String? _mapStyle;
   BitmapDescriptor? _bikeMarkerIcon;
   LocationIssue? _locationIssue;
   bool _arrivalNotified = false;
   int _lastDropProgressNotified = -1;
   bool _dropProgressStarted = false;
+  Timer? _dropProgressTimer;
+  int? _tripStartEpochMs;
 
   @override
   void initState() {
     super.initState();
+    unawaited(HomeTripResumeStore.setStage(HomeTripResumeStage.tripNavigation));
+    if (Env.mockApi) {
+      unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
+    }
     WidgetsBinding.instance.addObserver(this);
     unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
@@ -79,7 +105,8 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     if (widget.initialRoutePath != null &&
         widget.initialRoutePath!.length > 1) {
       _mapRoutePath = _optimizeRoutePoints(widget.initialRoutePath!);
-      _startTripIfReady();
+      _routePrepared = true;
+      unawaited(_startTripIfReady());
     } else {
       _loadRoadRoutePath();
     }
@@ -89,15 +116,19 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       unawaited(_refreshLocationState());
+      context.read<TripNavigationCubit>().syncWithNow();
+      _updateDropProgressNotificationFromClock();
     }
   }
 
   Future<void> _refreshLocationState({bool requestPermission = false}) async {
+    final previousIssue = _locationIssue;
     final result = await _locationGuard.ensureReady(
       requestPermission: requestPermission,
     );
     if (!mounted) return;
     setState(() => _locationIssue = result.issue);
+    _applyLocationState(previousIssue: previousIssue, nextIssue: result.issue);
   }
 
   Future<void> _loadMapStyle() async {
@@ -122,21 +153,33 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   Future<void> _loadRoadRoutePath() async {
     final List<LatLng>? roadRoute = await _fetchRoadRoute(
       origin: _driverPoint,
-      destination: _destinationPoint,
+      destination: widget.dropPoint,
     );
     if (!mounted) return;
     if (roadRoute == null || roadRoute.length < 2) {
-      _mapRoutePath = _buildCurvedRoutePath(_driverPoint, _destinationPoint);
+      _mapRoutePath = _buildCurvedRoutePath(_driverPoint, widget.dropPoint);
     } else {
       _mapRoutePath = _optimizeRoutePoints(roadRoute);
     }
+    _routePrepared = true;
     setState(() {});
-    _startTripIfReady();
+    unawaited(_startTripIfReady());
   }
 
-  void _startTripIfReady() {
-    if (_tripStarted || _mapRoutePath.length < 2) return;
+  Future<void> _startTripIfReady() async {
+    if (_tripStarted ||
+        !_routePrepared ||
+        _mapRoutePath.length < 2 ||
+        _locationIssue != null) {
+      return;
+    }
     _tripStarted = true;
+    final int startEpochMs =
+        await HomeTripResumeStore.loadTripNavigationStartEpochMs() ??
+        DateTime.now().millisecondsSinceEpoch;
+    _tripStartEpochMs = startEpochMs;
+    await HomeTripResumeStore.setTripNavigationStartEpochMs(startEpochMs);
+    if (!mounted) return;
     unawaited(
       TripBackgroundService.startTrip(
         title: 'Trip in progress',
@@ -145,21 +188,90 @@ class _TripNavigationViewState extends State<_TripNavigationView>
       ),
     );
     _startDropProgressNotification();
+    _startDropProgressNotificationTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<TripNavigationCubit>().start();
+      context.read<TripNavigationCubit>().start(startedAtEpochMs: startEpochMs);
     });
   }
 
   void _startDropProgressNotification() {
     if (_dropProgressStarted) return;
     _dropProgressStarted = true;
+    final int initialPercent = _progressPercentFromClock();
+    _lastDropProgressNotified = initialPercent;
     unawaited(
       LocalNotificationService.showProgress(
         id: _dropProgressNotificationId,
         title: 'Trip in progress',
         body: 'Heading to drop location.',
-        progress: 0,
+        progress: initialPercent,
+        maxProgress: 100,
+      ),
+    );
+  }
+
+  void _startDropProgressNotificationTimer() {
+    _dropProgressTimer?.cancel();
+    _dropProgressTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updateDropProgressNotificationFromClock();
+    });
+  }
+
+  void _applyLocationState({
+    required LocationIssue? previousIssue,
+    required LocationIssue? nextIssue,
+  }) {
+    final cubit = context.read<TripNavigationCubit>();
+    if (nextIssue != null) {
+      // B-12 FIX: Pause the trip timer when GPS/permission drops.
+      // Previously both branches called setPaused(false) so the trip could
+      // never be paused.
+      cubit.setPaused(true);
+      return;
+    }
+
+    // GPS restored — resume.
+    cubit.setPaused(false);
+
+    if (!_tripStarted) {
+      unawaited(_startTripIfReady());
+      return;
+    }
+    if (_arrivalNotified) return;
+
+    _startDropProgressNotificationTimer();
+    final int remainingSeconds = ((1 - cubit.state.progress) * 10)
+        .clamp(1, 10)
+        .round();
+    unawaited(
+      TripBackgroundService.startTrip(
+        title: 'Trip in progress',
+        subtitle: 'Heading to drop location',
+        duration: Duration(seconds: remainingSeconds),
+      ),
+    );
+  }
+
+  int _progressPercentFromClock() {
+    final int? started = _tripStartEpochMs;
+    if (started == null) return 0;
+    final int elapsedMs = DateTime.now().millisecondsSinceEpoch - started;
+    final double progress = (elapsedMs / 10000).clamp(0, 1);
+    return (progress * 100).round().clamp(0, 100);
+  }
+
+  void _updateDropProgressNotificationFromClock() {
+    if (_arrivalNotified) return;
+    final int percent = _progressPercentFromClock();
+    if (percent == _lastDropProgressNotified) return;
+    _lastDropProgressNotified = percent;
+    unawaited(
+      LocalNotificationService.showProgress(
+        id: _dropProgressNotificationId,
+        title: 'Trip in progress',
+        body: 'Progress: $percent%',
+        progress: percent,
         maxProgress: 100,
       ),
     );
@@ -169,12 +281,21 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     required LatLng origin,
     required LatLng destination,
   }) async {
+    final String apiKey = _resolveDirectionsApiKey();
+    if (apiKey.isEmpty) return null;
     return _directionsRouteService.fetchDrivingRoute(
       origin: origin,
       destination: destination,
-      apiKey: Env.googleMapsApiKey,
+      apiKey: apiKey,
       preferDetailedSteps: true,
     );
+  }
+
+  String _resolveDirectionsApiKey() {
+    if (Env.googleMapsApiKey.isNotEmpty) return Env.googleMapsApiKey;
+    if (Env.googlePlacesApiKey.isNotEmpty) return Env.googlePlacesApiKey;
+    if (Env.googleGeocodingApiKey.isNotEmpty) return Env.googleGeocodingApiKey;
+    return '';
   }
 
   List<LatLng> _buildCurvedRoutePath(LatLng from, LatLng to) {
@@ -226,6 +347,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _dropProgressTimer?.cancel();
     unawaited(TripBackgroundService.stopTrip());
     super.dispose();
   }
@@ -245,6 +367,8 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   void _notifyArrivalIfNeeded(bool showArrivalSheet) {
     if (!showArrivalSheet || _arrivalNotified) return;
     _arrivalNotified = true;
+    _dropProgressTimer?.cancel();
+    unawaited(HomeTripResumeStore.clearTripNavigationStartEpochMs());
     NotificationsFeed.add(
       title: 'Reached drop location',
       message: 'Rider notified that driver reached destination.',
@@ -277,190 +401,243 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     );
   }
 
+  double _distanceMeters(LatLng from, LatLng to) {
+    const double earthRadius = 6371000;
+    final double dLat = (to.latitude - from.latitude) * math.pi / 180;
+    final double dLng = (to.longitude - from.longitude) * math.pi / 180;
+    final double lat1 = from.latitude * math.pi / 180;
+    final double lat2 = to.latitude * math.pi / 180;
+    final double a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(lat1) *
+            math.cos(lat2) *
+            math.sin(dLng / 2) *
+            math.sin(dLng / 2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return earthRadius * c;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          BlocBuilder<TripNavigationCubit, TripNavigationState>(
-            buildWhen: (previous, current) =>
-                previous.progress != current.progress ||
-                previous.showArrivalSheet != current.showArrivalSheet,
-            builder: (BuildContext context, TripNavigationState state) {
-              _notifyDropProgress(state.progress);
-              _notifyArrivalIfNeeded(state.showArrivalSheet);
-              final cubit = context.read<TripNavigationCubit>();
-              final List<LatLng> routePoints = cubit.currentRoutePoints(
-                _mapRoutePath,
-              );
-              final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
+    return HomeNoDeviceBack(
+      child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            // B-01 + B-02 FIX: All side effects live here in BlocListener,
+            // never inside the BlocBuilder's builder().
+            BlocListener<TripNavigationCubit, TripNavigationState>(
+              listener: (context, state) {
+                _notifyDropProgress(state.progress);
+                _notifyArrivalIfNeeded(state.showArrivalSheet);
+                // Arrival detection: measure distance and call markArrived()
+                // safely outside the build phase.
+                if (!state.showArrivalSheet && !state.isPaused) {
+                  final cubit = context.read<TripNavigationCubit>();
+                  final LatLng bikePoint =
+                      cubit.pointAlongRoute(_mapRoutePath);
+                  final double metersToDrop =
+                      _distanceMeters(bikePoint, widget.dropPoint);
+                  if (metersToDrop <= 100) {
+                    cubit.markArrived();
+                  }
+                }
+              },
+              child: BlocBuilder<TripNavigationCubit, TripNavigationState>(
+                buildWhen: (previous, current) =>
+                    previous.progress != current.progress ||
+                    previous.showArrivalSheet != current.showArrivalSheet ||
+                    previous.isPaused != current.isPaused,
+              builder: (BuildContext context, TripNavigationState state) {
+                // B-01 + B-02 FIX: No side effects here. Notifications,
+                // timer cancellations and cubit mutations have been moved
+                // to the BlocListener above.
+                final cubit = context.read<TripNavigationCubit>();
+                final List<LatLng> routePoints = cubit.currentRoutePoints(
+                  _mapRoutePath,
+                );
+                final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
 
-              return Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: AppGoogleMap(
-                      initialCameraPosition: const CameraPosition(
-                        target: LatLng(13.0638, 80.2181),
-                        zoom: 14.6,
+                return Stack(
+                  children: <Widget>[
+                    Positioned.fill(
+                      child: AppGoogleMap(
+                        initialCameraPosition: const CameraPosition(
+                          target: LatLng(13.0638, 80.2181),
+                          zoom: 14.6,
+                        ),
+                        style: _mapStyle,
+                        polylines: <Polyline>{
+                          Polyline(
+                            polylineId: const PolylineId('route'),
+                            points: routePoints,
+                            color: AppColors.emerald,
+                            width: 5,
+                          ),
+                        },
+                        markers: <Marker>{
+                          Marker(
+                            markerId: const MarkerId('destination_marker'),
+                            position: widget.dropPoint,
+                            infoWindow: const InfoWindow(title: 'Drop'),
+                          ),
+                          Marker(
+                            markerId: const MarkerId('bike_marker'),
+                            position: bikePoint,
+                            icon: _bikeMarkerIcon,
+                            infoWindow: const InfoWindow(title: 'Driver'),
+                          ),
+                        },
                       ),
-                      style: _mapStyle,
-                      polylines: <Polyline>{
-                        Polyline(
-                          polylineId: const PolylineId('route'),
-                          points: routePoints,
-                          color: AppColors.emerald,
-                          width: 5,
-                        ),
-                      },
-                      markers: <Marker>{
-                        Marker(
-                          markerId: const MarkerId('destination_marker'),
-                          position: _destinationPoint,
-                          infoWindow: const InfoWindow(title: 'Drop'),
-                        ),
-                        Marker(
-                          markerId: const MarkerId('bike_marker'),
-                          position: bikePoint,
-                          icon: _bikeMarkerIcon,
-                          infoWindow: const InfoWindow(title: 'Driver'),
-                        ),
-                      },
                     ),
-                  ),
-                  if (!state.showArrivalSheet)
-                    Positioned(
-                      top: MediaQuery.of(context).padding.top + 18,
-                      left: 14,
-                      right: 14,
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 14, 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          gradient: const LinearGradient(
-                            begin: Alignment(-1, 0.05),
-                            end: Alignment(1, 0),
-                            colors: <Color>[
-                              AppColors.homeStatusDark,
-                              AppColors.emerald,
+                    if (!state.showArrivalSheet)
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 18,
+                        left: 14,
+                        right: 14,
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 14, 12),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            gradient: const LinearGradient(
+                              begin: Alignment(-1, 0.05),
+                              end: Alignment(1, 0),
+                              colors: <Color>[
+                                AppColors.homeStatusDark,
+                                AppColors.emerald,
+                              ],
+                            ),
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              const _TurnIconBadge(),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      'Next Turn',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white.withValues(
+                                          alpha: 0.75,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text.rich(
+                                      TextSpan(
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: '${state.remainingMeters}m ',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w800,
+                                              color: AppColors.white,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: 'onto Dr.NSK Street Rd',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.white.withValues(
+                                                alpha: 0.85,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        child: Row(
-                          children: <Widget>[
-                            const _TurnIconBadge(),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    'Next Turn',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.white.withValues(
-                                        alpha: 0.75,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text.rich(
-                                    TextSpan(
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text: '${state.remainingMeters}m ',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                            color: AppColors.white,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: 'onto Dr.NSK Street Rd',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w500,
-                                            color: AppColors.white.withValues(
-                                              alpha: 0.85,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      ),
+                    if (_locationIssue != null)
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 12,
+                        left: 0,
+                        right: 0,
+                        child: LocationDisabledBanner(
+                          issue: _locationIssue!,
+                          onActionTap: _onLocationBannerActionTap,
                         ),
                       ),
-                    ),
-                  if (_locationIssue != null)
-                    Positioned(
-                      top: MediaQuery.of(context).padding.top + 12,
-                      left: 0,
-                      right: 0,
-                      child: LocationDisabledBanner(
-                        issue: _locationIssue!,
-                        onActionTap: _onLocationBannerActionTap,
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          BlocSelector<TripNavigationCubit, TripNavigationState, bool>(
-            selector: (state) => state.showArrivalSheet,
-            builder: (context, showArrivalSheet) {
-              return Stack(
-                children: <Widget>[
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 420),
-                    curve: Curves.easeOutCubic,
-                    right: 14,
-                    bottom: showArrivalSheet ? 470 : 122,
-                    child: _SosButton(
-                      onTap: () => SOSBottomSheet.show(context),
-                    ),
-                  ),
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 420),
-                    curve: Curves.easeOutCubic,
-                    right: 16,
-                    bottom: showArrivalSheet ? 392 : 58,
-                    child: const _CurrentLocationButton(),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: AnimatedSlide(
+                  ],
+                );
+              },
+            ),
+            ), // closes BlocListener (B-01/B-02 fix)
+            BlocSelector<TripNavigationCubit, TripNavigationState, bool>(
+              selector: (state) => state.showArrivalSheet,
+              builder: (context, showArrivalSheet) {
+                return Stack(
+                  children: <Widget>[
+                    AnimatedPositioned(
                       duration: const Duration(milliseconds: 420),
                       curve: Curves.easeOutCubic,
-                      offset: showArrivalSheet
-                          ? Offset.zero
-                          : const Offset(0, 1.05),
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 280),
-                        opacity: showArrivalSheet ? 1 : 0,
+                      right: 14,
+                      bottom: showArrivalSheet ? 470 : 122,
+                      child: _SosButton(
+                        onTap: () => SOSBottomSheet.show(context),
+                      ),
+                    ),
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 420),
+                      curve: Curves.easeOutCubic,
+                      right: 16,
+                      bottom: showArrivalSheet ? 392 : 58,
+                      child: const _CurrentLocationButton(),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: AnimatedSlide(
+                        duration: const Duration(milliseconds: 420),
+                        curve: Curves.easeOutCubic,
+                        offset: showArrivalSheet
+                            ? Offset.zero
+                            : const Offset(0, 1.05),
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 280),
+                          opacity: showArrivalSheet ? 1 : 0,
                         child: _ReachedCustomerSheet(
-                          onCompleteTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RideCompletedScreen(),
-                              ),
-                            );
-                          },
+                            onCompleteTap: () async {
+                              // TripSessionStore: drop reached, trip completed.
+                              unawaited(TripSessionStore.markTripCompleted());
+                              // B-04 FIX: fareLabel is now included so the trip history
+                              // record stores a valid fare amount.
+                              await RideHistoryStore.markCompletedNowOrCreate(
+                                pickupLocation:
+                                    '42, I-Block, Arumbakkam, Chennai-106',
+                                dropLocation:
+                                    '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
+                                fareLabel: '₹90',
+                                distanceLabel: '2.1 km',
+                              );
+                              if (!context.mounted) return;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const RideCompletedScreen(),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

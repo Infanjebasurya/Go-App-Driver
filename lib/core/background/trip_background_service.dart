@@ -4,8 +4,14 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
+@pragma('vm:entry-point')
 class TripBackgroundService {
   TripBackgroundService._();
+
+  static const bool _enabled = bool.fromEnvironment(
+    'ENABLE_TRIP_BG_SERVICE',
+    defaultValue: false,
+  );
 
   static const String _startTripEvent = 'start_trip';
   static const String _stopTripEvent = 'stop_trip';
@@ -16,6 +22,7 @@ class TripBackgroundService {
   static bool _observerAttached = false;
 
   static Future<void> initialize() async {
+    if (!_enabled) return;
     if (_configured) return;
 
     await _service.configure(
@@ -43,6 +50,7 @@ class TripBackgroundService {
     required String subtitle,
     required Duration duration,
   }) async {
+    if (!_enabled) return;
     await initialize();
     if (!await _service.isRunning()) {
       await _service.startService();
@@ -55,6 +63,7 @@ class TripBackgroundService {
   }
 
   static Future<void> stopTrip() async {
+    if (!_enabled) return;
     if (!_configured) return;
     if (!await _service.isRunning()) return;
     _service.invoke(_stopTripEvent);

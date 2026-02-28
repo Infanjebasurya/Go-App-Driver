@@ -11,7 +11,9 @@ class _RouteDistanceMeta {
 }
 
 class _CancellationReasonSheet extends StatefulWidget {
-  const _CancellationReasonSheet();
+  const _CancellationReasonSheet({required this.onConfirm});
+
+  final Future<void> Function(String canceledBy, String reason) onConfirm;
 
   @override
   State<_CancellationReasonSheet> createState() =>
@@ -19,14 +21,22 @@ class _CancellationReasonSheet extends StatefulWidget {
 }
 
 class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
-  static const List<String> _reasons = <String>[
+  static const List<String> _driverReasons = <String>[
     'Passenger no-show',
     'Wrong pickup location',
     'Emergency / Safety concern',
     'Vehicle issue',
   ];
+  static const List<String> _customerReasons = <String>[
+    'Customer canceled from app',
+    'Customer not reachable',
+    'Customer changed plan',
+    'Customer booked by mistake',
+  ];
 
-  String _selectedReason = _reasons.first;
+  String _cancelType = 'Driver';
+  String _selectedReason = _driverReasons.first;
+  bool _submitting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +80,36 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
               ),
             ),
             const SizedBox(height: 22),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: _CancelTypeChip(
+                    label: 'Driver',
+                    selected: _cancelType == 'Driver',
+                    onTap: () {
+                      setState(() {
+                        _cancelType = 'Driver';
+                        _selectedReason = _driverReasons.first;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _CancelTypeChip(
+                    label: 'Customer',
+                    selected: _cancelType == 'Customer',
+                    onTap: () {
+                      setState(() {
+                        _cancelType = 'Customer';
+                        _selectedReason = _customerReasons.first;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
             RadioGroup<String>(
               groupValue: _selectedReason,
               onChanged: (String? value) {
@@ -77,7 +117,9 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
                 setState(() => _selectedReason = value);
               },
               child: Column(
-                children: _reasons
+                children: (_cancelType == 'Driver'
+                        ? _driverReasons
+                        : _customerReasons)
                     .map(_buildReasonTile)
                     .toList(growable: false),
               ),
@@ -96,7 +138,15 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: _submitting
+                    ? null
+                    : () async {
+                        setState(() => _submitting = true);
+                        await widget.onConfirm(
+                          _cancelType.toLowerCase(),
+                          _selectedReason,
+                        );
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.darkRed,
                   foregroundColor: AppColors.white,
@@ -146,8 +196,50 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
   }
 }
 
+class _CancelTypeChip extends StatelessWidget {
+  const _CancelTypeChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.emerald : AppColors.white,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: selected ? AppColors.emerald : AppColors.neutralCCC,
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: selected ? AppColors.white : AppColors.neutral666,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DriverCard extends StatelessWidget {
-  const _DriverCard();
+  const _DriverCard({required this.onChatTap, required this.onCallTap});
+
+  final VoidCallback onChatTap;
+  final VoidCallback onCallTap;
 
   @override
   Widget build(BuildContext context) {
@@ -198,9 +290,9 @@ class _DriverCard extends StatelessWidget {
               ],
             ),
           ),
-          _CircleIconButton(icon: Icons.chat_bubble_outline),
+          _CircleIconButton(icon: Icons.chat_bubble_outline, onTap: onChatTap),
           const SizedBox(width: 8),
-          _CircleIconButton(icon: Icons.call),
+          _CircleIconButton(icon: Icons.call, onTap: onCallTap),
         ],
       ),
     );
@@ -208,20 +300,29 @@ class _DriverCard extends StatelessWidget {
 }
 
 class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({required this.icon});
+  const _CircleIconButton({required this.icon, required this.onTap});
 
   final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        shape: BoxShape.circle,
+    return Material(
+      color: AppColors.white,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          width: 38,
+          height: 38,
+          decoration: const BoxDecoration(
+            color: AppColors.white,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 20, color: AppColors.neutral555),
+        ),
       ),
-      child: Icon(icon, size: 20, color: AppColors.neutral555),
     );
   }
 }

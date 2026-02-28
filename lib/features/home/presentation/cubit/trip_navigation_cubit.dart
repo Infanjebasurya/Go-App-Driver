@@ -12,28 +12,77 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
   static const Duration _tickDuration = Duration(milliseconds: 100);
   static const Duration _travelDuration = Duration(seconds: 10);
   Timer? _timer;
-  Stopwatch? _stopwatch;
+  int? _tripStartEpochMs;
+  int _pausedAccumulatedMs = 0;
+  int? _pausedAtEpochMs;
   int _cachedRouteHash = 0;
   List<double> _cachedCumulative = const <double>[];
   double _cachedTotalDistance = 0;
 
-  void start() {
+  void start({int? startedAtEpochMs}) {
     _timer?.cancel();
-    _stopwatch?.stop();
-    _stopwatch = Stopwatch()..start();
+    _tripStartEpochMs =
+        startedAtEpochMs ?? DateTime.now().millisecondsSinceEpoch;
+    _pausedAccumulatedMs = 0;
+    _pausedAtEpochMs = null;
+    _emitProgressFromClock();
 
     _timer = Timer.periodic(_tickDuration, (_) {
-      final double nextProgress =
-          (_stopwatch!.elapsedMilliseconds / _travelDuration.inMilliseconds)
-              .clamp(0, 1);
-      if (nextProgress < 1) {
-        emit(state.copyWith(progress: nextProgress));
-        return;
-      }
-      emit(const TripNavigationState(progress: 1, showArrivalSheet: true));
-      _stopwatch?.stop();
-      _timer?.cancel();
+      _emitProgressFromClock();
     });
+  }
+
+  void syncWithNow() {
+    _emitProgressFromClock();
+  }
+
+  void setPaused(bool paused) {
+    if (state.showArrivalSheet) return;
+    if (paused == state.isPaused) return;
+
+    if (paused) {
+      _pausedAtEpochMs = DateTime.now().millisecondsSinceEpoch;
+      emit(state.copyWith(isPaused: true));
+      return;
+    }
+
+    final int pausedAt = _pausedAtEpochMs ?? DateTime.now().millisecondsSinceEpoch;
+    _pausedAccumulatedMs += DateTime.now().millisecondsSinceEpoch - pausedAt;
+    _pausedAtEpochMs = null;
+    emit(state.copyWith(isPaused: false));
+    _emitProgressFromClock();
+  }
+
+  void markArrived() {
+    if (state.showArrivalSheet) return;
+    _timer?.cancel();
+    emit(state.copyWith(showArrivalSheet: true, isPaused: false));
+  }
+
+  void _emitProgressFromClock() {
+    final int? startedMs = _tripStartEpochMs;
+    if (startedMs == null) return;
+    final int nowMs = DateTime.now().millisecondsSinceEpoch;
+    final int activePauseMs = state.isPaused && _pausedAtEpochMs != null
+        ? (nowMs - _pausedAtEpochMs!)
+        : 0;
+    final int elapsedMs =
+        nowMs - startedMs - _pausedAccumulatedMs - activePauseMs;
+    final double nextProgress = (elapsedMs / _travelDuration.inMilliseconds)
+        .clamp(0, 1);
+
+    if (nextProgress < 1) {
+      emit(state.copyWith(progress: nextProgress));
+      return;
+    }
+    emit(
+      const TripNavigationState(
+        progress: 1,
+        showArrivalSheet: true,
+        isPaused: false,
+      ),
+    );
+    _timer?.cancel();
   }
 
   Alignment bikeAlignment(List<Alignment> path) {
@@ -152,7 +201,6 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
   @override
   Future<void> close() async {
     _timer?.cancel();
-    _stopwatch?.stop();
     await super.close();
   }
 }

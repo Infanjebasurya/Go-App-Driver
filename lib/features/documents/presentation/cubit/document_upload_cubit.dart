@@ -99,12 +99,12 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       if (picked == null) return;
 
       final sizeBytes = await picked.length();
-      const maxBytes = 1024 * 1024;
+      const maxBytes = 5 * 1024 * 1024;
       if (sizeBytes > maxBytes) {
         emit(
           state.copyWithDocStep(
             state.currentDocStep.copyWith(
-              imageError: 'Image must be less than 1 MB',
+              imageError: 'Image must be less than 5 MB',
             ),
           ),
         );
