@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class HelpSearchBar extends StatefulWidget {
   final ValueChanged<String> onChanged;
@@ -85,7 +86,7 @@ class HelpLiveChatBar extends StatelessWidget {
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-      child: ElevatedButton.icon(
+      child: ShadowButton(
         onPressed: () {},
         icon: const Icon(Icons.chat_bubble_outline, size: 18),
         label: const Text('START LIVE CHAT'),
@@ -102,3 +103,4 @@ class HelpLiveChatBar extends StatelessWidget {
     );
   }
 }
+

@@ -6,6 +6,7 @@ enum FuelType { petrol, electric }
 enum BikeType { bike, scooter }
 
 enum SeatOption { four, six, eight }
+enum VehicleUploadType { image, document }
 
 extension FuelTypeExt on FuelType {
   String get label {
@@ -100,6 +101,9 @@ class VehicleDetailsState extends Equatable {
   final FuelType? selectedFuelType;
   final String year;
   final bool hasPhoto;
+  final String? uploadPath;
+  final String? uploadName;
+  final VehicleUploadType? uploadType;
   final bool isSubmitting;
   final bool isSubmitted;
   final FieldError errors;
@@ -113,6 +117,9 @@ class VehicleDetailsState extends Equatable {
     this.selectedFuelType,
     this.year = '',
     this.hasPhoto = false,
+    this.uploadPath,
+    this.uploadName,
+    this.uploadType,
     this.isSubmitting = false,
     this.isSubmitted = false,
     this.errors = const FieldError(),
@@ -152,6 +159,9 @@ class VehicleDetailsState extends Equatable {
     FuelType? selectedFuelType,
     String? year,
     bool? hasPhoto,
+    String? uploadPath,
+    String? uploadName,
+    VehicleUploadType? uploadType,
     bool? isSubmitting,
     bool? isSubmitted,
     FieldError? errors,
@@ -160,6 +170,7 @@ class VehicleDetailsState extends Equatable {
     bool clearSeatOption = false,
     bool clearFuelType = false,
     bool clearSuccess = false,
+    bool clearUpload = false,
   }) {
     return VehicleDetailsState(
       vehicleType: vehicleType ?? this.vehicleType,
@@ -175,6 +186,9 @@ class VehicleDetailsState extends Equatable {
           : (selectedFuelType ?? this.selectedFuelType),
       year: year ?? this.year,
       hasPhoto: hasPhoto ?? this.hasPhoto,
+      uploadPath: clearUpload ? null : (uploadPath ?? this.uploadPath),
+      uploadName: clearUpload ? null : (uploadName ?? this.uploadName),
+      uploadType: clearUpload ? null : (uploadType ?? this.uploadType),
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       errors: errors ?? this.errors,
@@ -193,6 +207,9 @@ class VehicleDetailsState extends Equatable {
     selectedFuelType,
     year,
     hasPhoto,
+    uploadPath,
+    uploadName,
+    uploadType,
     isSubmitting,
     isSubmitted,
     errors.modelName,

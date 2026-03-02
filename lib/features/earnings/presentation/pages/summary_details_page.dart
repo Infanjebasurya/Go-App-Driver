@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import '../widgets/trip_card.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class SummaryDetailsPage extends StatelessWidget {
   final String title;
@@ -18,7 +19,7 @@ class SummaryDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -92,3 +93,4 @@ class SummaryDetailsPage extends StatelessWidget {
     );
   }
 }
+

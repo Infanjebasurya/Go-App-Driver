@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/domain/usecases/resend_otp_usecase.dart';
-import 'package:goapp/core/storage/text_field_store.dart';
 
 class OtpState extends Equatable {
   const OtpState({
@@ -72,10 +71,6 @@ class OtpCubit extends Cubit<OtpState> {
   OtpCubit({required ResendOtpUseCase resendOtpUseCase})
     : _resendOtpUseCase = resendOtpUseCase,
       super(const OtpState()) {
-    final stored = TextFieldStore.read('auth.otp.code') ?? '';
-    if (stored.isNotEmpty) {
-      updateCode(stored);
-    }
     _startTimer();
   }
 
@@ -102,7 +97,6 @@ class OtpCubit extends Cubit<OtpState> {
     final trimmed = normalized.length > otpLength
         ? normalized.substring(0, otpLength)
         : normalized;
-    unawaited(TextFieldStore.write('auth.otp.code', trimmed));
     emit(
       state.copyWith(
         code: trimmed,

@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -12,6 +11,7 @@ import '../theme/auth_ui_tokens.dart';
 import '../widgets/app_text_field.dart';
 import '../widgets/auth_primary_button.dart';
 import '../../../profile/presentation/pages/profile_setup_page.dart';
+import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
 
 class OtpPage extends StatefulWidget {
   const OtpPage({
@@ -53,7 +53,8 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     } else {
       _otpCubit = context.read<OtpCubit>();
     }
-    _syncBoxesFromCode(_otpCubit.state.code);
+    _otpCubit.updateCode('');
+    _syncBoxesFromCode('');
     if (!const bool.fromEnvironment('FLUTTER_TEST')) {
       listenForCode();
     }
@@ -347,26 +348,20 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
         ),
         bottomNavigationBar: BlocBuilder<OtpCubit, OtpState>(
           builder: (context, otpState) {
-            final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
-            final safeBottom = MediaQuery.of(context).padding.bottom;
-            final bottomInset = math.max(keyboardInset, safeBottom);
-            return SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 12, 20, 18 + bottomInset),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 46,
-                  child: AuthPrimaryButton(
-                    label: 'Verify Now',
-                    loading: otpState.isLoading,
-                    onPressed: otpState.isLoading
-                        ? null
-                        : () => _otpCubit.submit(
-                      widget.phoneNumber,
-                      widget.otpId,
-                    ),
-                  ),
+            return KeyboardAwareBottom(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
+              child: SizedBox(
+                width: double.infinity,
+                height: 46,
+                child: AuthPrimaryButton(
+                  label: 'Verify Now',
+                  loading: otpState.isLoading,
+                  onPressed: otpState.isLoading
+                      ? null
+                      : () => _otpCubit.submit(
+                            widget.phoneNumber,
+                            widget.otpId,
+                          ),
                 ),
               ),
             );

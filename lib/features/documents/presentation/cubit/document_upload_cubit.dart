@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:goapp/core/storage/text_field_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -24,41 +23,43 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
   bool _isPicking = false;
 
-  static const String _docPrefix = 'documents';
-  static const String _bankPrefix = 'bank_details';
-
-  String _docNumberKey(DocumentStep step) {
-    switch (step) {
-      case DocumentStep.drivingLicense:
-        return '$_docPrefix.driving_license.number';
-      case DocumentStep.vehicleRC:
-        return '$_docPrefix.vehicle_rc.number';
-      case DocumentStep.identityAadhaar:
-        return '$_docPrefix.aadhaar.number';
-      case DocumentStep.identityPan:
-        return '$_docPrefix.pan.number';
-      case DocumentStep.bankAccount:
-        return '$_docPrefix.bank.number';
-    }
-  }
-
-  String _bankKey(String field) => '$_bankPrefix.$field';
-
   void _restoreDraft() {
     final updatedSteps = state.steps.map((step) {
-      final stored = TextFieldStore.read(_docNumberKey(step.step)) ?? '';
-      if (stored.isEmpty) return step;
-      return step.copyWith(documentNumber: stored, clearError: true);
+      final docType = _mapStepToDocType(step.step);
+      final frontPath = DocumentProgressStore.frontImagePath(docType);
+      final backPath = DocumentProgressStore.backImagePath(docType);
+      final storedNumber = DocumentProgressStore.documentNumber(docType);
+      final frontType = _inferUploadType(frontPath);
+      final backType = _inferUploadType(backPath);
+      return step.copyWith(
+        frontCaptured: frontPath != null,
+        backCaptured: backPath != null,
+        frontPath: frontPath,
+        backPath: backPath,
+        frontType: frontType,
+        backType: backType,
+        documentNumber: storedNumber ?? step.documentNumber,
+        clearError: true,
+        clearImageError: true,
+      );
     }).toList();
-    final bankData = state.bankData.copyWith(
-      accountHolderName:
-          TextFieldStore.read(_bankKey('account_holder')) ?? '',
-      accountNumber: TextFieldStore.read(_bankKey('account_number')) ?? '',
-      confirmAccountNumber:
-          TextFieldStore.read(_bankKey('confirm_account_number')) ?? '',
-      ifscCode: TextFieldStore.read(_bankKey('ifsc')) ?? '',
+    final restoredBankData = state.bankData.copyWith(
+      accountHolderName: DocumentProgressStore.bankDraftValue(
+        'accountHolderName',
+      ),
+      bankName: DocumentProgressStore.bankDraftValue('bankName'),
+      accountNumber: DocumentProgressStore.bankDraftValue('accountNumber'),
+      confirmAccountNumber: DocumentProgressStore.bankDraftValue(
+        'confirmAccountNumber',
+      ),
+      ifscCode: DocumentProgressStore.bankDraftValue('ifscCode'),
+      clearNameError: true,
+      clearBankNameError: true,
+      clearAccountNumberError: true,
+      clearConfirmError: true,
+      clearIfscError: true,
     );
-    emit(state.copyWith(steps: updatedSteps, bankData: bankData));
+    emit(state.copyWith(steps: updatedSteps, bankData: restoredBankData));
   }
 
   DocumentType _mapStepToDocType(DocumentStep step) {
@@ -74,6 +75,23 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       case DocumentStep.bankAccount:
         return DocumentType.bankDetails;
     }
+  }
+
+  static const int _maxBytes = 5 * 1024 * 1024;
+
+  DocumentUploadType? _inferUploadType(String? path) {
+    if (path == null || path.isEmpty) return null;
+    final lower = path.toLowerCase();
+    if (lower.endsWith('.pdf') ||
+        lower.endsWith('.doc') ||
+        lower.endsWith('.docx')) {
+      return DocumentUploadType.document;
+    }
+    return DocumentUploadType.image;
+  }
+
+  bool _validateFileSize(int sizeBytes) {
+    return sizeBytes > 0 && sizeBytes <= _maxBytes;
   }
 
   Future<void> captureFront({required ImageSource source}) async {
@@ -95,16 +113,25 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
     _isPicking = true;
     try {
-      final picked = await _picker.pickImage(source: source);
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
       if (picked == null) return;
 
-      final sizeBytes = await picked.length();
-      const maxBytes = 5 * 1024 * 1024;
-      if (sizeBytes > maxBytes) {
+      final fileSize = await File(picked.path).length();
+      final pickedSize = await picked.length();
+      final bytes = await picked.readAsBytes();
+      final sizeBytes = [
+        fileSize,
+        pickedSize,
+        bytes.length,
+      ].reduce((a, b) => a > b ? a : b);
+      if (!_validateFileSize(sizeBytes)) {
         emit(
           state.copyWithDocStep(
             state.currentDocStep.copyWith(
-              imageError: 'Image must be less than 5 MB',
+              imageError: 'File size must be under 5 MB',
             ),
           ),
         );
@@ -115,7 +142,65 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         _mapStepToDocType(state.currentDocStep.step),
         picked.path,
       );
-      final updated = state.currentDocStep.copyWith(frontCaptured: true);
+      final updated = state.currentDocStep.copyWith(
+        frontCaptured: true,
+        frontPath: picked.path,
+        frontType: DocumentUploadType.image,
+      );
+      emit(state.copyWithDocStep(updated));
+    } finally {
+      _isPicking = false;
+    }
+  }
+
+  Future<void> captureFrontDocument() async {
+    if (state.isCurrentStepBank) return;
+    if (_isPicking) return;
+    if (state.currentDocStep.imageError != null) {
+      emit(
+        state.copyWithDocStep(
+          state.currentDocStep.copyWith(clearImageError: true),
+        ),
+      );
+    }
+    if (_isTest) {
+      final updated = state.currentDocStep.copyWith(
+        frontCaptured: true,
+        frontType: DocumentUploadType.document,
+      );
+      emit(state.copyWithDocStep(updated));
+      return;
+    }
+
+    _isPicking = true;
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['pdf', 'doc', 'docx'],
+        withData: false,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.single;
+      if (!_validateFileSize(file.size)) {
+        emit(
+          state.copyWithDocStep(
+            state.currentDocStep.copyWith(
+              imageError: 'File size must be under 5 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setFrontImagePath(
+        _mapStepToDocType(state.currentDocStep.step),
+        file.path,
+      );
+      final updated = state.currentDocStep.copyWith(
+        frontCaptured: true,
+        frontPath: file.path,
+        frontType: DocumentUploadType.document,
+      );
       emit(state.copyWithDocStep(updated));
     } finally {
       _isPicking = false;
@@ -144,13 +229,19 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       final picked = await _picker.pickImage(source: source);
       if (picked == null) return;
 
-      final sizeBytes = await picked.length();
-      const maxBytes = 1024 * 1024;
-      if (sizeBytes > maxBytes) {
+      final fileSize = await File(picked.path).length();
+      final pickedSize = await picked.length();
+      final bytes = await picked.readAsBytes();
+      final sizeBytes = [
+        fileSize,
+        pickedSize,
+        bytes.length,
+      ].reduce((a, b) => a > b ? a : b);
+      if (!_validateFileSize(sizeBytes)) {
         emit(
           state.copyWithDocStep(
             state.currentDocStep.copyWith(
-              imageError: 'Image must be less than 1 MB',
+              imageError: 'File size must be under 5 MB',
             ),
           ),
         );
@@ -161,7 +252,65 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         _mapStepToDocType(state.currentDocStep.step),
         picked.path,
       );
-      final updated = state.currentDocStep.copyWith(backCaptured: true);
+      final updated = state.currentDocStep.copyWith(
+        backCaptured: true,
+        backPath: picked.path,
+        backType: DocumentUploadType.image,
+      );
+      emit(state.copyWithDocStep(updated));
+    } finally {
+      _isPicking = false;
+    }
+  }
+
+  Future<void> captureBackDocument() async {
+    if (state.isCurrentStepBank) return;
+    if (_isPicking) return;
+    if (state.currentDocStep.imageError != null) {
+      emit(
+        state.copyWithDocStep(
+          state.currentDocStep.copyWith(clearImageError: true),
+        ),
+      );
+    }
+    if (_isTest) {
+      final updated = state.currentDocStep.copyWith(
+        backCaptured: true,
+        backType: DocumentUploadType.document,
+      );
+      emit(state.copyWithDocStep(updated));
+      return;
+    }
+
+    _isPicking = true;
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['pdf', 'doc', 'docx'],
+        withData: false,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.single;
+      if (!_validateFileSize(file.size)) {
+        emit(
+          state.copyWithDocStep(
+            state.currentDocStep.copyWith(
+              imageError: 'File size must be under 5 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setBackImagePath(
+        _mapStepToDocType(state.currentDocStep.step),
+        file.path,
+      );
+      final updated = state.currentDocStep.copyWith(
+        backCaptured: true,
+        backPath: file.path,
+        backType: DocumentUploadType.document,
+      );
       emit(state.copyWithDocStep(updated));
     } finally {
       _isPicking = false;
@@ -176,6 +325,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     );
     final updated = state.currentDocStep.copyWith(
       frontCaptured: false,
+      clearFrontUpload: true,
       clearImageError: true,
     );
     emit(state.copyWithDocStep(updated));
@@ -189,6 +339,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     );
     final updated = state.currentDocStep.copyWith(
       backCaptured: false,
+      clearBackUpload: true,
       clearImageError: true,
     );
     emit(state.copyWithDocStep(updated));
@@ -212,81 +363,70 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   void updateDocumentNumber(String value) {
     if (state.isCurrentStepBank) return;
-    unawaited(
-      TextFieldStore.write(
-        _docNumberKey(state.currentDocStep.step),
-        value,
-      ),
-    );
+    final raw = value.trim();
+    final normalized = _normalizeDocumentNumber(state.currentDocStep.step, raw);
+    final hasValue = raw.isNotEmpty;
+    final error = hasValue
+        ? _validateDocumentNumber(state.currentDocStep.step, normalized)
+        : null;
     final updated = state.currentDocStep.copyWith(
-      documentNumber: value,
-      clearError: value.trim().isNotEmpty,
+      documentNumber: raw,
+      numberError: error,
+      clearError: error == null,
     );
     DocumentProgressStore.setDocumentNumber(
       _mapStepToDocType(updated.step),
-      updated.documentNumber,
-    );
-    DocumentProgressStore.setCompleted(
-      _mapStepToDocType(updated.step),
-      updated.isNumberValid,
+      normalized,
     );
     emit(state.copyWithDocStep(updated));
   }
 
   void updateAccountHolderName(String value) {
     final normalized = value.toUpperCase();
-    unawaited(TextFieldStore.write(_bankKey('account_holder'), normalized));
+    DocumentProgressStore.setBankDraftValue('accountHolderName', normalized);
     final updated = state.bankData.copyWith(
       accountHolderName: normalized,
       clearNameError: normalized.trim().isNotEmpty,
     );
-    DocumentProgressStore.setCompleted(
-      DocumentType.bankDetails,
-      updated.isComplete,
+    emit(state.copyWith(bankData: updated));
+  }
+
+  void updateBankName(String value) {
+    final normalized = value.toUpperCase();
+    DocumentProgressStore.setBankDraftValue('bankName', normalized);
+    final updated = state.bankData.copyWith(
+      bankName: normalized,
+      clearBankNameError: normalized.trim().isNotEmpty,
     );
     emit(state.copyWith(bankData: updated));
   }
 
   void updateAccountNumber(String value) {
     final normalized = value.toUpperCase();
-    unawaited(TextFieldStore.write(_bankKey('account_number'), normalized));
+    DocumentProgressStore.setBankDraftValue('accountNumber', normalized);
     final updated = state.bankData.copyWith(
       accountNumber: normalized,
       clearAccountNumberError: normalized.trim().isNotEmpty,
-    );
-    DocumentProgressStore.setCompleted(
-      DocumentType.bankDetails,
-      updated.isComplete,
     );
     emit(state.copyWith(bankData: updated));
   }
 
   void updateConfirmAccountNumber(String value) {
     final normalized = value.toUpperCase();
-    unawaited(
-      TextFieldStore.write(_bankKey('confirm_account_number'), normalized),
-    );
+    DocumentProgressStore.setBankDraftValue('confirmAccountNumber', normalized);
     final updated = state.bankData.copyWith(
       confirmAccountNumber: normalized,
       clearConfirmError: normalized.trim().isNotEmpty,
-    );
-    DocumentProgressStore.setCompleted(
-      DocumentType.bankDetails,
-      updated.isComplete,
     );
     emit(state.copyWith(bankData: updated));
   }
 
   void updateIfscCode(String value) {
     final normalized = value.toUpperCase();
-    unawaited(TextFieldStore.write(_bankKey('ifsc'), normalized));
+    DocumentProgressStore.setBankDraftValue('ifscCode', normalized);
     final updated = state.bankData.copyWith(
       ifscCode: normalized,
       clearIfscError: normalized.trim().isNotEmpty,
-    );
-    DocumentProgressStore.setCompleted(
-      DocumentType.bankDetails,
-      updated.isComplete,
     );
     emit(state.copyWith(bankData: updated));
   }
@@ -295,9 +435,14 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     final step = state.currentDocStep;
     if (!step.frontCaptured || !step.backCaptured) {
       final updated = step.copyWith(
-        numberError: 'Please upload both front and back document images',
+        imageError: 'Please upload both front and back documents',
+        clearError: true,
       );
       emit(state.copyWithDocStep(updated));
+      DocumentProgressStore.setCompleted(
+        _mapStepToDocType(step.step),
+        false,
+      );
       return false;
     }
 
@@ -305,6 +450,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (rawValue.isEmpty) {
       final updated = step.copyWith(numberError: 'Document number is required');
       emit(state.copyWithDocStep(updated));
+      DocumentProgressStore.setCompleted(
+        _mapStepToDocType(step.step),
+        false,
+      );
       return false;
     }
 
@@ -313,17 +462,30 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (error != null) {
       final updated = step.copyWith(numberError: error);
       emit(state.copyWithDocStep(updated));
+      DocumentProgressStore.setCompleted(
+        _mapStepToDocType(step.step),
+        false,
+      );
       return false;
     }
 
     if (normalized != step.documentNumber) {
-      unawaited(TextFieldStore.write(_docNumberKey(step.step), normalized));
       final updated = step.copyWith(
         documentNumber: normalized,
         clearError: true,
+        clearImageError: true,
       );
       emit(state.copyWithDocStep(updated));
     }
+    if (step.imageError != null) {
+      emit(
+        state.copyWithDocStep(
+          step.copyWith(clearImageError: true),
+        ),
+      );
+    }
+    // Step validity is fully verified above, so persist completion directly.
+    DocumentProgressStore.setCompleted(_mapStepToDocType(step.step), true);
 
     return true;
   }
@@ -384,6 +546,16 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       );
       valid = false;
     }
+    if (b.bankName.trim().isEmpty) {
+      updated = updated.copyWith(bankNameError: 'Bank name is required');
+      valid = false;
+    } else if (!RegExp(r'^[A-Z ]+$')
+        .hasMatch(b.bankName.trim().toUpperCase())) {
+      updated = updated.copyWith(
+        bankNameError: 'Only alphabets are allowed',
+      );
+      valid = false;
+    }
     if (b.accountNumber.trim().isEmpty) {
       updated = updated.copyWith(
         accountNumberError: 'Account number is required',
@@ -430,6 +602,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   Future<void> saveAndNext() async {
+    if (state.isSubmitting || _isPicking) return;
     if (state.isCurrentStepBank) {
       if (!_validateBankStep()) return;
       DocumentProgressStore.setCompleted(
@@ -440,12 +613,17 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       await Future.delayed(const Duration(seconds: 2));
       emit(state.copyWith(isSubmitting: false, isAllDone: true));
     } else {
-      if (!_validateDocStep()) return;
-      DocumentProgressStore.setCompleted(
-        _mapStepToDocType(state.currentDocStep.step),
-        state.currentDocStep.isNumberValid,
+      emit(state.copyWith(isSubmitting: true));
+      if (!_validateDocStep()) {
+        emit(state.copyWith(isSubmitting: false));
+        return;
+      }
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          currentStepIndex: state.currentStepIndex + 1,
+        ),
       );
-      emit(state.copyWith(currentStepIndex: state.currentStepIndex + 1));
     }
   }
 

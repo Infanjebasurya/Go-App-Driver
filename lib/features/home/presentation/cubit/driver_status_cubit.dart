@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
 
 import 'driver_status_state.dart';
 
@@ -15,6 +17,56 @@ class DriverCubit extends Cubit<DriverState> {
   Timer? _locationWatchTimer;
   int _onlineMinutes = 0;
   bool _isCheckingLocation = false;
+
+  Future<void> refreshDashboardMetrics() async {
+    final List<RideHistoryTrip> history = await RideHistoryStore.loadTrips();
+    final Iterable<RideHistoryTrip> completed = history.where((trip) {
+      return trip.completedAtEpochMs != null && trip.canceledAtEpochMs == null;
+    });
+
+    final DateTime now = DateTime.now();
+    final DateTime startOfDay = DateTime(now.year, now.month, now.day);
+    final DateTime endOfDay = startOfDay.add(const Duration(days: 1));
+    final int dayStartMs = startOfDay.millisecondsSinceEpoch;
+    final int dayEndMs = endOfDay.millisecondsSinceEpoch;
+
+    final List<RideHistoryTrip> completedToday = completed
+        .where((trip) {
+          final int? completedAt = trip.completedAtEpochMs;
+          return completedAt != null &&
+              completedAt >= dayStartMs &&
+              completedAt < dayEndMs;
+        })
+        .toList(growable: false);
+
+    double totalFare = 0;
+    for (final RideHistoryTrip trip in completedToday) {
+      totalFare += _parseCurrency(trip.fareLabel);
+    }
+
+    final double walletBalance = await DriverWalletStore.loadBalance();
+    final int ridesToday = completedToday.length;
+    final int rewardProgress = ridesToday > state.targetRides
+        ? state.targetRides
+        : ridesToday;
+
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        tripsCompleted: ridesToday,
+        totalEarnings: totalFare,
+        walletBalance: walletBalance,
+        completedRides: rewardProgress,
+      ),
+    );
+  }
+
+  double _parseCurrency(String? raw) {
+    if (raw == null || raw.isEmpty) return 0;
+    final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
+    if (cleaned.isEmpty) return 0;
+    return double.tryParse(cleaned) ?? 0;
+  }
 
   Future<void> toggleStatus() async {
     if (state.isOnline) {
@@ -125,15 +177,19 @@ class DriverCubit extends Cubit<DriverState> {
     }
   }
 
-  void addMoney(double amount) {
-    emit(state.copyWith(walletBalance: state.walletBalance + amount));
+  Future<void> addMoney(double amount) async {
+    final double next = await DriverWalletStore.addAmount(amount);
+    if (isClosed) return;
+    emit(state.copyWith(walletBalance: next));
   }
 
   bool addMoneyFromInput(String input) {
     final String normalized = input.replaceAll(RegExp(r'[^0-9.]'), '').trim();
     final double? amount = double.tryParse(normalized);
     if (amount == null || amount <= 0) return false;
-    addMoney(amount);
+    final double next = state.walletBalance + amount;
+    emit(state.copyWith(walletBalance: next));
+    unawaited(DriverWalletStore.saveBalance(next));
     return true;
   }
 

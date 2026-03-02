@@ -8,6 +8,7 @@ import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/summary_details_page.dart';
 import 'package:goapp/features/earnings/presentation/widgets/trip_card.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class EarningsDetailsPage extends StatefulWidget {
   const EarningsDetailsPage({super.key});
@@ -67,7 +68,7 @@ class _EarningsDetailsBody extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: AppBar(
+          appBar: AppAppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
             leading: IconButton(
@@ -546,3 +547,4 @@ class _SummaryItem extends StatelessWidget {
     );
   }
 }
+

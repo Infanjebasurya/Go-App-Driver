@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/auth_ui_tokens.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class AuthPrimaryButton extends StatelessWidget {
   const AuthPrimaryButton({
@@ -15,7 +16,7 @@ class AuthPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return ShadowButton(
       onPressed: loading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: AuthUiColors.brandGreen,
@@ -39,3 +40,4 @@ class AuthPrimaryButton extends StatelessWidget {
     );
   }
 }
+

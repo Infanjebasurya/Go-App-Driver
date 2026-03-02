@@ -6,7 +6,6 @@ import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
-import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
@@ -48,7 +47,6 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
     WidgetsBinding.instance.addObserver(this);
-    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
     _loadRoute();
     unawaited(_refreshLocationState(requestPermission: true));
@@ -357,19 +355,23 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                                         'Rider onboard confirmed. Live trip navigation started.',
                                   );
                                   // TripSessionStore: navigation to drop began.
-                                  unawaited(TripSessionStore.markNavigationBegan(
-                                    routePoints: _routePoints
-                                        .map((p) => TripLatLng(
+                                  unawaited(
+                                    TripSessionStore.markNavigationBegan(
+                                      routePoints: _routePoints
+                                          .map(
+                                            (p) => TripLatLng(
                                               p.latitude,
                                               p.longitude,
-                                            ))
-                                        .toList(),
-                                  ));
+                                            ),
+                                          )
+                                          .toList(),
+                                    ),
+                                  );
                                   Navigator.of(context).push(
                                     MaterialPageRoute<void>(
                                       builder: (_) => TripNavigationPage(
-                                        initialRoutePath: _routePoints.length >
-                                                1
+                                        initialRoutePath:
+                                            _routePoints.length > 1
                                             ? List<LatLng>.from(_routePoints)
                                             : null,
                                         // B-05 FIX: Pass the real drop
@@ -496,3 +498,4 @@ class _MapCenterMarker extends StatelessWidget {
     );
   }
 }
+

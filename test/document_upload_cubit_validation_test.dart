@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:goapp/features/document_verify/presentation/cubit/verification_cubit.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_model.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/documents/presentation/cubit/document_upload_cubit.dart';
 
 void main() {
@@ -54,6 +57,10 @@ void main() {
   });
 
   group('DocumentUploadCubit document number validation', () {
+    setUp(() {
+      DocumentProgressStore.reset();
+    });
+
     test('does not navigate until front and back are captured', () async {
       final cubit = DocumentUploadCubit(initialStepIndex: 0);
       addTearDown(cubit.close);
@@ -156,5 +163,32 @@ void main() {
       await rcCubit.saveAndNext();
       expect(rcCubit.state.steps[1].documentNumber, 'TN01AB1234');
     });
+
+    test(
+      'marks driving license completed and shows completed in verification',
+      () async {
+        final uploadCubit = DocumentUploadCubit(initialStepIndex: 0);
+        addTearDown(uploadCubit.close);
+
+        await uploadCubit.captureFront(source: ImageSource.gallery);
+        await uploadCubit.captureBack(source: ImageSource.gallery);
+        uploadCubit.updateDocumentNumber('MH1220180012345');
+        await uploadCubit.saveAndNext();
+
+        expect(uploadCubit.state.currentStepIndex, 1);
+        expect(
+          DocumentProgressStore.isCompleted(DocumentType.drivingLicense),
+          isTrue,
+        );
+
+        final verificationCubit = VerificationCubit();
+        addTearDown(verificationCubit.close);
+
+        final drivingLicenseDoc = verificationCubit.state.documents.firstWhere(
+          (doc) => doc.type == DocumentType.drivingLicense,
+        );
+        expect(drivingLicenseDoc.status, DocumentStatus.completed);
+      },
+    );
   });
 }

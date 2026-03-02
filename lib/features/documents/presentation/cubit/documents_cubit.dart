@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../document_verify/presentation/model/document_progress_store.dart';
 import '../../../document_verify/presentation/model/document_model.dart'
     show DocumentType;
+import 'package:goapp/core/storage/text_field_store.dart';
 import '../model/document_model.dart';
 import 'documents_state.dart';
 
@@ -44,7 +45,7 @@ class DocumentsCubit extends Cubit<DocumentsState> {
     ),
     DocumentModel(
       id: _bankAccountId,
-      title: 'Add Bank Account',
+      title: 'Linked Bank Account',
       subtitle: 'BANK TRANSFER',
       iconAsset: _bankAccountId,
       status: DocumentStatus.verified,
@@ -81,33 +82,44 @@ class DocumentsCubit extends Cubit<DocumentsState> {
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.drivingLicense),
           DocumentProgressStore.backImagePath(DocumentType.drivingLicense),
+          DocumentProgressStore.documentNumber(DocumentType.drivingLicense),
         );
       case 'vehicle_rc':
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.vehicleRC),
           DocumentProgressStore.backImagePath(DocumentType.vehicleRC),
+          DocumentProgressStore.documentNumber(DocumentType.vehicleRC),
         );
       case 'aadhaar_card':
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.aadhaarCard),
           DocumentProgressStore.backImagePath(DocumentType.aadhaarCard),
+          DocumentProgressStore.documentNumber(DocumentType.aadhaarCard),
         );
       case 'pan_card':
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.panCard),
           DocumentProgressStore.backImagePath(DocumentType.panCard),
+          DocumentProgressStore.documentNumber(DocumentType.panCard),
         );
       case _bankAccountId:
+        final accountNumber =
+            TextFieldStore.read('bank_details.account_number');
         final completed = DocumentProgressStore.isCompleted(
           DocumentType.bankDetails,
         );
         final status = completed
             ? DocumentStatus.verified
             : DocumentStatus.notUploaded;
-        return doc.copyWith(status: status);
+        return doc.copyWith(
+          status: status,
+          documentNumber: accountNumber?.trim().isEmpty ?? true
+              ? null
+              : accountNumber,
+        );
       default:
         return doc;
     }
@@ -117,6 +129,7 @@ class DocumentsCubit extends Cubit<DocumentsState> {
     DocumentModel doc,
     String? frontPath,
     String? backPath,
+    String? number,
   ) {
     final hasImages =
         (frontPath?.isNotEmpty ?? false) && (backPath?.isNotEmpty ?? false);
@@ -127,6 +140,8 @@ class DocumentsCubit extends Cubit<DocumentsState> {
       status: status,
       frontImagePath: frontPath,
       backImagePath: backPath,
+      documentNumber: number?.trim().isEmpty ?? true ? null : number,
     );
   }
+
 }

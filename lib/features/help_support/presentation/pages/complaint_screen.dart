@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
+import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.dart';
 import 'package:goapp/features/help_support/domain/entities/help_entities.dart';
-import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class ComplaintScreen extends StatelessWidget {
   const ComplaintScreen({super.key});
@@ -53,15 +59,35 @@ class _FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<_FormScreen> {
-  late final PersistentTextController _descController;
+  static const int _maxMediaSizeBytes = 20 * 1024 * 1024;
+  static const Set<String> _imageExtensions = <String>{
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'heic',
+  };
+  static const Set<String> _videoExtensions = <String>{
+    'mp4',
+    'mov',
+    'avi',
+    'mkv',
+    '3gp',
+    'm4v',
+    'webm',
+  };
+  static const Set<String> _documentExtensions = <String>{
+    'pdf',
+    'doc',
+    'docx',
+  };
+
+  late final TextEditingController _descController;
 
   @override
   void initState() {
     super.initState();
-    _descController = PersistentTextController(
-      storageKey: 'help_support.complaint.description',
-    );
-    _descController.attach();
+    _descController = TextEditingController();
     if (_descController.text.isEmpty && widget.state.description.isNotEmpty) {
       _descController.text = widget.state.description;
     }
@@ -86,7 +112,7 @@ class _FormScreenState extends State<_FormScreen> {
     final cubit = context.read<ComplaintCubit>();
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
@@ -206,7 +232,9 @@ class _FormScreenState extends State<_FormScreen> {
             ),
             const SizedBox(height: 8),
             GestureDetector(
-              onTap: () {},
+              onTap: widget.state.mediaName == null
+                  ? () => _pickSupportingMedia(context)
+                  : null,
               child: Container(
                 height: 140,
                 width: double.infinity,
@@ -218,40 +246,134 @@ class _FormScreenState extends State<_FormScreen> {
                     style: BorderStyle.solid,
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.emerald.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
+                child: widget.state.mediaName == null
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.emerald.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_outlined,
+                              color: AppColors.emerald,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Attach Evidence (Photos/Video/Document)',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Text(
+                            'IMAGE/VIDEO/DOCUMENT - UP TO 20MB',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (widget.state.mediaType ==
+                                          ComplaintMediaType.image &&
+                                      widget.state.mediaPath != null)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.file(
+                                        File(widget.state.mediaPath!),
+                                        width: 96,
+                                        height: 68,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                            const Icon(
+                                          Icons.image_outlined,
+                                          color: AppColors.textSecondary,
+                                          size: 32,
+                                        ),
+                                      ),
+                                    )
+                                  else if (widget.state.mediaType ==
+                                      ComplaintMediaType.document)
+                                    const Icon(
+                                      Icons.description_rounded,
+                                      color: AppColors.textSecondary,
+                                      size: 32,
+                                    )
+                                  else
+                                    const Icon(
+                                      Icons.videocam_outlined,
+                                      color: AppColors.textSecondary,
+                                      size: 32,
+                                    ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    widget.state.mediaName!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.textBody,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: cubit.removeMedia,
+                                child: Container(
+                                  width: 26,
+                                  height: 26,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFFEEEE),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close_rounded,
+                                    size: 14,
+                                    color: Color(0xFFE53935),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.camera_alt_outlined,
-                        color: AppColors.emerald,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Attach Evidence (Photos/Video)',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const Text(
-                      'UP TO 20MB',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
+            if (widget.state.mediaValidationMessage != null &&
+                widget.state.mediaValidationMessage!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                widget.state.mediaValidationMessage!,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFFEF5350),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -261,7 +383,7 @@ class _FormScreenState extends State<_FormScreen> {
           return Container(
             color: AppColors.white,
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-            child: ElevatedButton(
+            child: ShadowButton(
               onPressed: s.isValid && !s.isSubmitting
                   ? () => context.read<ComplaintCubit>().submitComplaint()
                   : null,
@@ -287,12 +409,74 @@ class _FormScreenState extends State<_FormScreen> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text('Submit Complaint'),
+                  : const Text('Submit Complaint',
+                style: TextStyle(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.1,
+                ),
+              ),
             ),
           );
         },
       ),
     );
+  }
+
+  Future<void> _pickSupportingMedia(BuildContext context) async {
+    final cubit = context.read<ComplaintCubit>();
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        allowedExtensions: <String>[
+          ..._imageExtensions,
+          ..._videoExtensions,
+          ..._documentExtensions,
+        ],
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.single;
+      if (file.size > _maxMediaSizeBytes) {
+        cubit.setMediaValidationError(
+          'File size must be up to 20MB.',
+        );
+        return;
+      }
+      final path = file.path;
+      if (path == null || path.isEmpty) {
+        cubit.setMediaValidationError(
+          'Could not access selected file. Try again.',
+        );
+        return;
+      }
+      final extension = (file.extension ?? '').toLowerCase();
+      final mediaType = _resolveMediaType(extension);
+      if (mediaType == null) {
+        cubit.setMediaValidationError(
+          'Unsupported file format.',
+        );
+        return;
+      }
+      cubit.attachMedia(
+        path: path,
+        name: file.name,
+        mediaType: mediaType,
+      );
+    } catch (_) {
+      cubit.setMediaValidationError(
+        'Unable to pick file right now. Please try again.',
+      );
+    }
+  }
+
+  ComplaintMediaType? _resolveMediaType(String extension) {
+    if (_imageExtensions.contains(extension)) return ComplaintMediaType.image;
+    if (_videoExtensions.contains(extension)) return ComplaintMediaType.video;
+    if (_documentExtensions.contains(extension)) {
+      return ComplaintMediaType.document;
+    }
+    return null;
   }
 }
 
@@ -346,7 +530,7 @@ class _CategoryPickerSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
+              ShadowButton(
                 onPressed: selected != null
                     ? () => Navigator.pop(context)
                     : null,
@@ -499,28 +683,46 @@ class _SuccessScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () =>
-                    Navigator.popUntil(context, (route) => route.isFirst),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.emerald,
-                  foregroundColor: AppColors.white,
-                  minimumSize: const Size.fromHeight(52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                child: const Text('Return to Dashboard'),
-              ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+        child: ShadowButton(
+          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<void>(
+              builder: (_) => BlocProvider<DriverCubit>(
+                create: (_) => DriverCubit(),
+                child: const HomeScreen(),
+              ),
+            ),
+            (route) => false,
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.emerald,
+            foregroundColor: AppColors.white,
+            minimumSize: const Size.fromHeight(52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          child: const Text(
+            'Return to Dashboard',
+            style: TextStyle(
+              fontSize: 15.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.1,
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+

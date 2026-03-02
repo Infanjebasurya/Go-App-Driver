@@ -7,10 +7,13 @@ import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/documents/presentation/widgets/doc_number_field.dart';
 import 'package:goapp/features/documents/presentation/widgets/document_capture_card.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
-import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_model.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 
 import '../cubit/document_upload_cubit.dart';
 import '../model/document_upload_model.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class DocumentUploadScreen extends StatelessWidget {
   const DocumentUploadScreen({super.key, this.initialStepIndex = 0});
@@ -35,7 +38,8 @@ class _DocumentUploadView extends StatefulWidget {
 
 class _DocumentUploadViewState extends State<_DocumentUploadView>
     with SingleTickerProviderStateMixin {
-  late final List<PersistentTextController> _docControllers;
+  late final List<TextEditingController> _docControllers;
+  bool _navigatedToSuccess = false;
 
   late AnimationController _slideCtrl;
   late Animation<Offset> _slideIn;
@@ -43,23 +47,7 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
   @override
   void initState() {
     super.initState();
-    _docControllers = [
-      PersistentTextController(
-        storageKey: 'documents.driving_license.number',
-      ),
-      PersistentTextController(
-        storageKey: 'documents.vehicle_rc.number',
-      ),
-      PersistentTextController(
-        storageKey: 'documents.aadhaar.number',
-      ),
-      PersistentTextController(
-        storageKey: 'documents.pan.number',
-      ),
-    ];
-    for (final controller in _docControllers) {
-      controller.attach();
-    }
+    _docControllers = List.generate(4, (_) => TextEditingController());
     _slideCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 320),
@@ -93,35 +81,23 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
   Widget build(BuildContext context) {
     return BlocConsumer<DocumentUploadCubit, DocumentUploadState>(
       listener: (context, state) {
-        if (state.isAllDone) {
+        if (state.isAllDone && !_navigatedToSuccess) {
+          _navigatedToSuccess = true;
           _navigateToSuccess(context);
         }
       },
       builder: (context, state) {
-        void handleBack() {
-          if (state.currentStepIndex >= 3) {
-            Navigator.of(context).pop();
-            return;
-          }
-          if (state.canGoBack) {
-            _animateTransition(forward: false);
-            context.read<DocumentUploadCubit>().goBack();
-          } else {
-            Navigator.of(context).pop();
-          }
-        }
-
         return PopScope(
           canPop: false,
-          onPopInvoked: (didPop) {
+          onPopInvokedWithResult: (didPop, _) {
             if (didPop) return;
-            handleBack();
+            _handleBack(context);
           },
           child: Scaffold(
             backgroundColor: Colors.white,
             appBar: AppAppBar(
               title: 'GoApp',
-              onBack: handleBack,
+              onBack: () => _handleBack(context),
             ),
             body: SafeArea(
               child: Column(
@@ -177,13 +153,47 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
   }
 
   void _navigateToSuccess(BuildContext context) {
+    final missingMessage = _missingDocumentsMessage();
+    if (missingMessage != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const VerificationScreen()),
+      );
+      return;
+    }
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (_, _, _) => const VerificationSubmittedScreen(),
+        pageBuilder: (_, _, _) => VerificationSubmittedScreen(
+          snackbarMessage: null,
+        ),
         transitionsBuilder: (_, anim, _, child) =>
             FadeTransition(opacity: anim, child: child),
       ),
+    );
+  }
+
+  String? _missingDocumentsMessage() {
+    const requiredDocs = <DocumentType>[
+      DocumentType.drivingLicense,
+      DocumentType.vehicleRC,
+      DocumentType.aadhaarCard,
+      DocumentType.panCard,
+      DocumentType.bankDetails,
+    ];
+    final allComplete = requiredDocs
+        .every((doc) => DocumentProgressStore.isCompleted(doc));
+    if (allComplete) return null;
+    return 'Please upload all required documents.';
+  }
+
+  void _handleBack(BuildContext context) {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    navigator.pushReplacement(
+      MaterialPageRoute(builder: (_) => const VerificationScreen()),
     );
   }
 }
@@ -251,6 +261,7 @@ class _DocStepContent extends StatelessWidget {
   void _showImageSourceSheet(
       BuildContext context, {
         required Future<void> Function(ImageSource source) onPick,
+        required Future<void> Function() onPickDocument,
       }) {
     showModalBottomSheet<void>(
       context: context,
@@ -286,6 +297,14 @@ class _DocStepContent extends StatelessWidget {
                 onTap: () {
                   Navigator.of(ctx).pop();
                   onPick(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.description_rounded),
+                title: const Text('Document'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  onPickDocument();
                 },
               ),
               const SizedBox(height: 8),
@@ -340,8 +359,13 @@ class _DocStepContent extends StatelessWidget {
               onPick: (source) => context
                   .read<DocumentUploadCubit>()
                   .captureFront(source: source),
+              onPickDocument: () => context
+                  .read<DocumentUploadCubit>()
+                  .captureFrontDocument(),
             ),
             onRemove: () => context.read<DocumentUploadCubit>().removeFront(),
+            filePath: stepData.frontPath,
+            uploadType: stepData.frontType,
           ),
           const SizedBox(height: 14),
           DocumentCaptureCard(
@@ -353,8 +377,13 @@ class _DocStepContent extends StatelessWidget {
               onPick: (source) => context
                   .read<DocumentUploadCubit>()
                   .captureBack(source: source),
+              onPickDocument: () => context
+                  .read<DocumentUploadCubit>()
+                  .captureBackDocument(),
             ),
             onRemove: () => context.read<DocumentUploadCubit>().removeBack(),
+            filePath: stepData.backPath,
+            uploadType: stepData.backType,
           ),
           if (stepData.imageError != null) ...[
             const SizedBox(height: 10),
@@ -375,6 +404,7 @@ class _DocStepContent extends StatelessWidget {
             errorText: stepData.numberError,
             allowedPattern: config.allowedPattern,
             forceUppercase: config.forceUppercase,
+            maxLength: config.maxLength,
             onChanged: (v) =>
                 context.read<DocumentUploadCubit>().updateDocumentNumber(v),
           ),
@@ -420,7 +450,7 @@ class _ActionButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 52,
-        child: ElevatedButton(
+        child: ShadowButton(
           key: const Key('save_next_button'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.emerald,
@@ -464,48 +494,28 @@ class BankAccountForm extends StatefulWidget {
 }
 
 class _BankAccountFormState extends State<BankAccountForm> {
-  late final PersistentTextController _nameCtrl;
-  late final PersistentTextController _accCtrl;
-  late final PersistentTextController _confirmCtrl;
-  late final PersistentTextController _ifscCtrl;
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _bankCtrl;
+  late final TextEditingController _accCtrl;
+  late final TextEditingController _confirmCtrl;
+  late final TextEditingController _ifscCtrl;
   bool _obscureAccount = true;
 
   @override
   void initState() {
     super.initState();
-    _nameCtrl = PersistentTextController(
-      storageKey: 'bank_details.account_holder',
-    );
-    _accCtrl = PersistentTextController(
-      storageKey: 'bank_details.account_number',
-    );
-    _confirmCtrl = PersistentTextController(
-      storageKey: 'bank_details.confirm_account_number',
-    );
-    _ifscCtrl = PersistentTextController(
-      storageKey: 'bank_details.ifsc',
-    );
-    _nameCtrl.attach();
-    _accCtrl.attach();
-    _confirmCtrl.attach();
-    _ifscCtrl.attach();
-    if (widget.bankData.accountHolderName.isNotEmpty) {
-      _nameCtrl.text = widget.bankData.accountHolderName;
-    }
-    if (widget.bankData.accountNumber.isNotEmpty) {
-      _accCtrl.text = widget.bankData.accountNumber;
-    }
-    if (widget.bankData.confirmAccountNumber.isNotEmpty) {
-      _confirmCtrl.text = widget.bankData.confirmAccountNumber;
-    }
-    if (widget.bankData.ifscCode.isNotEmpty) {
-      _ifscCtrl.text = widget.bankData.ifscCode;
-    }
+    _nameCtrl = TextEditingController(text: widget.bankData.accountHolderName);
+    _bankCtrl = TextEditingController(text: widget.bankData.bankName);
+    _accCtrl = TextEditingController(text: widget.bankData.accountNumber);
+    _confirmCtrl =
+        TextEditingController(text: widget.bankData.confirmAccountNumber);
+    _ifscCtrl = TextEditingController(text: widget.bankData.ifscCode);
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _bankCtrl.dispose();
     _accCtrl.dispose();
     _confirmCtrl.dispose();
     _ifscCtrl.dispose();
@@ -542,7 +552,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
               fontWeight: FontWeight.w400,
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 24),
           _BankField(
             label: 'Account Holder Name',
             hint: 'Enter full name as per bank records',
@@ -557,7 +567,21 @@ class _BankAccountFormState extends State<BankAccountForm> {
               _UpperCaseFormatter(),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
+          _BankField(
+            label: 'Bank Name',
+            hint: 'Enter bank name',
+            controller: _bankCtrl,
+            errorText: data.bankNameError,
+            onChanged: (value) => cubit.updateBankName(value.toUpperCase()),
+            keyboardType: TextInputType.name,
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+              _UpperCaseFormatter(),
+            ],
+          ),
+          const SizedBox(height: 20),
           _BankField(
             label: 'Account Number',
             hint: '•••• •••• •••• ••••',
@@ -581,7 +605,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _BankField(
             label: 'Confirm Account Number',
             hint: 'Re-enter account number',
@@ -595,7 +619,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
               _UpperCaseFormatter(),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _BankField(
             label: 'IFSC Code',
             hint: 'HDFC0000000',
@@ -693,7 +717,7 @@ class _BankField extends StatelessWidget {
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 3),
         TextField(
           controller: controller,
           onChanged: onChanged,
@@ -754,3 +778,4 @@ class _UpperCaseFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
+

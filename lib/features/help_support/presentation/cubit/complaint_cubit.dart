@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/help_support/domain/entities/help_entities.dart';
 
+enum ComplaintMediaType { image, document, video }
+
 abstract class ComplaintState extends Equatable {
   const ComplaintState();
 
@@ -16,12 +18,20 @@ class ComplaintFormState extends ComplaintState {
   final String description;
   final bool showCategoryPicker;
   final bool isSubmitting;
+  final String? mediaPath;
+  final String? mediaName;
+  final ComplaintMediaType? mediaType;
+  final String? mediaValidationMessage;
 
   const ComplaintFormState({
     this.selectedCategoryId,
     this.description = '',
     this.showCategoryPicker = false,
     this.isSubmitting = false,
+    this.mediaPath,
+    this.mediaName,
+    this.mediaType,
+    this.mediaValidationMessage,
   });
 
   ComplaintFormState copyWith({
@@ -29,12 +39,21 @@ class ComplaintFormState extends ComplaintState {
     String? description,
     bool? showCategoryPicker,
     bool? isSubmitting,
+    String? mediaPath,
+    String? mediaName,
+    ComplaintMediaType? mediaType,
+    String? mediaValidationMessage,
   }) {
     return ComplaintFormState(
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
       description: description ?? this.description,
       showCategoryPicker: showCategoryPicker ?? this.showCategoryPicker,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      mediaPath: mediaPath ?? this.mediaPath,
+      mediaName: mediaName ?? this.mediaName,
+      mediaType: mediaType ?? this.mediaType,
+      mediaValidationMessage:
+          mediaValidationMessage ?? this.mediaValidationMessage,
     );
   }
 
@@ -58,6 +77,10 @@ class ComplaintFormState extends ComplaintState {
     description,
     showCategoryPicker,
     isSubmitting,
+    mediaPath,
+    mediaName,
+    mediaType,
+    mediaValidationMessage,
   ];
 }
 
@@ -100,6 +123,42 @@ class ComplaintCubit extends Cubit<ComplaintState> {
     if (state is ComplaintFormState) {
       emit((state as ComplaintFormState).copyWith(description: text));
     }
+  }
+
+  void attachMedia({
+    required String path,
+    required String name,
+    required ComplaintMediaType mediaType,
+  }) {
+    if (state is! ComplaintFormState) return;
+    final current = state as ComplaintFormState;
+    emit(
+      current.copyWith(
+        mediaPath: path,
+        mediaName: name,
+        mediaType: mediaType,
+        mediaValidationMessage: '',
+      ),
+    );
+  }
+
+  void removeMedia() {
+    if (state is! ComplaintFormState) return;
+    final current = state as ComplaintFormState;
+    emit(
+      ComplaintFormState(
+        selectedCategoryId: current.selectedCategoryId,
+        description: current.description,
+        showCategoryPicker: current.showCategoryPicker,
+        isSubmitting: current.isSubmitting,
+      ),
+    );
+  }
+
+  void setMediaValidationError(String message) {
+    if (state is! ComplaintFormState) return;
+    final current = state as ComplaintFormState;
+    emit(current.copyWith(mediaValidationMessage: message));
   }
 
   Future<void> submitComplaint() async {
