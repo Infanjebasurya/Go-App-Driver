@@ -87,7 +87,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     await UserCacheStore.save(
       LocalUserCacheModel(
         id: user?.id ?? existing?.id ?? 'captain-001',
-        fullName: existing?.fullName ?? 'Captain',
+        fullName: existing?.fullName ?? '',
         gender: existing?.gender ?? '',
         referCode: existing?.referCode ?? '',
         emergencyContact: existing?.emergencyContact ?? '',
