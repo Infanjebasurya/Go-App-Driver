@@ -102,7 +102,7 @@ class _VerificationSubmittedScreenState
             child: const HomeScreen(),
           ),
         ),
-        (route) => false,
+            (route) => false,
       );
     }
 
@@ -110,7 +110,8 @@ class _VerificationSubmittedScreenState
       backgroundColor: Colors.white,
       appBar: AppAppBar(
         title: 'GoApp',
-        onBack: goHome,
+        backEnabled: false,
+        onBack: null,
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1),
           child: Divider(height: 1, color: AppColors.coolwhite),
@@ -202,9 +203,9 @@ class _GoHomeButton extends StatelessWidget {
         12,
         24,
         math.max(
-              MediaQuery.viewInsetsOf(context).bottom,
-              MediaQuery.of(context).padding.bottom,
-            ) +
+          MediaQuery.viewInsetsOf(context).bottom,
+          MediaQuery.of(context).padding.bottom,
+        ) +
             20,
       ),
       decoration: const BoxDecoration(
@@ -225,8 +226,8 @@ class _GoHomeButton extends StatelessWidget {
             ),
           ),
           onPressed:
-              onTap ??
-              () {
+          onTap ??
+                  () {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
                     builder: (_) => BlocProvider<DriverCubit>(
@@ -234,7 +235,7 @@ class _GoHomeButton extends StatelessWidget {
                       child: const HomeScreen(),
                     ),
                   ),
-                  (route) => false,
+                      (route) => false,
                 );
               },
           child: const Text(

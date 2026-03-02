@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,7 +60,7 @@ class _ToggleSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.read<DriverCubit>().toggleStatus(),
+      onTap: () => unawaited(context.read<DriverCubit>().toggleStatus()),
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFFF0F0F0),

@@ -7,6 +7,7 @@ import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/documents/presentation/widgets/doc_number_field.dart';
 import 'package:goapp/features/documents/presentation/widgets/document_capture_card.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 import '../cubit/document_upload_cubit.dart';
 import '../model/document_upload_model.dart';
@@ -34,10 +35,7 @@ class _DocumentUploadView extends StatefulWidget {
 
 class _DocumentUploadViewState extends State<_DocumentUploadView>
     with SingleTickerProviderStateMixin {
-  final List<TextEditingController> _docControllers = List.generate(
-    4,
-    (_) => TextEditingController(),
-  );
+  late final List<PersistentTextController> _docControllers;
 
   late AnimationController _slideCtrl;
   late Animation<Offset> _slideIn;
@@ -45,6 +43,23 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
   @override
   void initState() {
     super.initState();
+    _docControllers = [
+      PersistentTextController(
+        storageKey: 'documents.driving_license.number',
+      ),
+      PersistentTextController(
+        storageKey: 'documents.vehicle_rc.number',
+      ),
+      PersistentTextController(
+        storageKey: 'documents.aadhaar.number',
+      ),
+      PersistentTextController(
+        storageKey: 'documents.pan.number',
+      ),
+    ];
+    for (final controller in _docControllers) {
+      controller.attach();
+    }
     _slideCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 320),
@@ -83,64 +98,77 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppAppBar(
-            title: 'GoApp',
-            onBack: () {
-              if (state.canGoBack) {
-                _animateTransition(forward: false);
-                context.read<DocumentUploadCubit>().goBack();
-              } else {
-                Navigator.of(context).pop();
-              }
-            },
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 4),
-                  child: _StepLabel(
-                    currentStep: state.currentStepIndex,
-                    totalSteps: state.totalSteps,
+        void handleBack() {
+          if (state.currentStepIndex >= 3) {
+            Navigator.of(context).pop();
+            return;
+          }
+          if (state.canGoBack) {
+            _animateTransition(forward: false);
+            context.read<DocumentUploadCubit>().goBack();
+          } else {
+            Navigator.of(context).pop();
+          }
+        }
+
+        return PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) {
+            if (didPop) return;
+            handleBack();
+          },
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppAppBar(
+              title: 'GoApp',
+              onBack: handleBack,
+            ),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 4),
+                    child: _StepLabel(
+                      currentStep: state.currentStepIndex,
+                      totalSteps: state.totalSteps,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _SegmentedBar(
-                    currentStep: state.currentStepIndex,
-                    totalSteps: state.totalSteps,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: _SegmentedBar(
+                      currentStep: state.currentStepIndex,
+                      totalSteps: state.totalSteps,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: SlideTransition(
-                    position: _slideIn,
-                    child: state.isCurrentStepBank
-                        ? BankAccountForm(
-                            key: const ValueKey('bank_step'),
-                            bankData: state.bankData,
-                          )
-                        : _DocStepContent(
-                            key: ValueKey(state.currentStepIndex),
-                            config: state.currentConfig,
-                            stepData: state.currentDocStep,
-                            numberController:
-                                _docControllers[state.currentStepIndex],
-                          ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SlideTransition(
+                      position: _slideIn,
+                      child: state.isCurrentStepBank
+                          ? BankAccountForm(
+                        key: const ValueKey('bank_step'),
+                        bankData: state.bankData,
+                      )
+                          : _DocStepContent(
+                        key: ValueKey(state.currentStepIndex),
+                        config: state.currentConfig,
+                        stepData: state.currentDocStep,
+                        numberController:
+                        _docControllers[state.currentStepIndex],
+                      ),
+                    ),
                   ),
-                ),
-                _ActionButton(
-                  isLastStep: state.isLastStep,
-                  isCurrentStepBank: state.isCurrentStepBank,
-                  isSubmitting: state.isSubmitting,
-                  onTap: () {
-                    _animateTransition(forward: true);
-                    context.read<DocumentUploadCubit>().saveAndNext();
-                  },
-                ),
-              ],
+                  _ActionButton(
+                    isLastStep: state.isLastStep,
+                    isCurrentStepBank: state.isCurrentStepBank,
+                    isSubmitting: state.isSubmitting,
+                    onTap: () {
+                      _animateTransition(forward: true);
+                      context.read<DocumentUploadCubit>().saveAndNext();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -221,9 +249,9 @@ class _DocStepContent extends StatelessWidget {
   });
 
   void _showImageSourceSheet(
-    BuildContext context, {
-    required Future<void> Function(ImageSource source) onPick,
-  }) {
+      BuildContext context, {
+        required Future<void> Function(ImageSource source) onPick,
+      }) {
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -345,6 +373,8 @@ class _DocStepContent extends StatelessWidget {
                 : null,
             controller: numberController,
             errorText: stepData.numberError,
+            allowedPattern: config.allowedPattern,
+            forceUppercase: config.forceUppercase,
             onChanged: (v) =>
                 context.read<DocumentUploadCubit>().updateDocumentNumber(v),
           ),
@@ -403,21 +433,21 @@ class _ActionButton extends StatelessWidget {
           onPressed: isSubmitting ? null : onTap,
           child: isSubmitting
               ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          )
               : Text(
-                  _label,
-                  style: const TextStyle(
-                    fontSize: 15.5,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.1,
-                  ),
-                ),
+            _label,
+            style: const TextStyle(
+              fontSize: 15.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.1,
+            ),
+          ),
         ),
       ),
     );
@@ -434,19 +464,43 @@ class BankAccountForm extends StatefulWidget {
 }
 
 class _BankAccountFormState extends State<BankAccountForm> {
-  final _nameCtrl = TextEditingController();
-  final _accCtrl = TextEditingController();
-  final _confirmCtrl = TextEditingController();
-  final _ifscCtrl = TextEditingController();
+  late final PersistentTextController _nameCtrl;
+  late final PersistentTextController _accCtrl;
+  late final PersistentTextController _confirmCtrl;
+  late final PersistentTextController _ifscCtrl;
   bool _obscureAccount = true;
 
   @override
   void initState() {
     super.initState();
-    _nameCtrl.text = widget.bankData.accountHolderName;
-    _accCtrl.text = widget.bankData.accountNumber;
-    _confirmCtrl.text = widget.bankData.confirmAccountNumber;
-    _ifscCtrl.text = widget.bankData.ifscCode;
+    _nameCtrl = PersistentTextController(
+      storageKey: 'bank_details.account_holder',
+    );
+    _accCtrl = PersistentTextController(
+      storageKey: 'bank_details.account_number',
+    );
+    _confirmCtrl = PersistentTextController(
+      storageKey: 'bank_details.confirm_account_number',
+    );
+    _ifscCtrl = PersistentTextController(
+      storageKey: 'bank_details.ifsc',
+    );
+    _nameCtrl.attach();
+    _accCtrl.attach();
+    _confirmCtrl.attach();
+    _ifscCtrl.attach();
+    if (widget.bankData.accountHolderName.isNotEmpty) {
+      _nameCtrl.text = widget.bankData.accountHolderName;
+    }
+    if (widget.bankData.accountNumber.isNotEmpty) {
+      _accCtrl.text = widget.bankData.accountNumber;
+    }
+    if (widget.bankData.confirmAccountNumber.isNotEmpty) {
+      _confirmCtrl.text = widget.bankData.confirmAccountNumber;
+    }
+    if (widget.bankData.ifscCode.isNotEmpty) {
+      _ifscCtrl.text = widget.bankData.ifscCode;
+    }
   }
 
   @override
@@ -494,9 +548,14 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: 'Enter full name as per bank records',
             controller: _nameCtrl,
             errorText: data.nameError,
-            onChanged: cubit.updateAccountHolderName,
+            onChanged: (value) =>
+                cubit.updateAccountHolderName(value.toUpperCase()),
             keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+              _UpperCaseFormatter(),
+            ],
           ),
           const SizedBox(height: 24),
           _BankField(
@@ -504,10 +563,13 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: '•••• •••• •••• ••••',
             controller: _accCtrl,
             errorText: data.accountNumberError,
-            onChanged: cubit.updateAccountNumber,
+            onChanged: (value) => cubit.updateAccountNumber(value.toUpperCase()),
             keyboardType: TextInputType.number,
             obscureText: _obscureAccount,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+              _UpperCaseFormatter(),
+            ],
             suffixIcon: GestureDetector(
               onTap: () => setState(() => _obscureAccount = !_obscureAccount),
               child: Icon(
@@ -525,9 +587,13 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: 'Re-enter account number',
             controller: _confirmCtrl,
             errorText: data.confirmAccountNumberError,
-            onChanged: cubit.updateConfirmAccountNumber,
+            onChanged: (value) =>
+                cubit.updateConfirmAccountNumber(value.toUpperCase()),
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+              _UpperCaseFormatter(),
+            ],
           ),
           const SizedBox(height: 24),
           _BankField(
@@ -682,9 +748,9 @@ class _BankField extends StatelessWidget {
 class _UpperCaseFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }

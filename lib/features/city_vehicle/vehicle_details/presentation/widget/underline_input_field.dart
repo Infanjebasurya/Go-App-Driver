@@ -11,6 +11,7 @@ class UnderlineInputField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool readOnly;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChanged;
   final String? suffixText;
   final FocusNode? focusNode;
 
@@ -24,6 +25,7 @@ class UnderlineInputField extends StatelessWidget {
     this.inputFormatters,
     this.readOnly = false,
     this.onTap,
+    this.onChanged,
     this.suffixText,
     this.focusNode,
   });
@@ -49,6 +51,7 @@ class UnderlineInputField extends StatelessWidget {
           focusNode: focusNode,
           readOnly: readOnly,
           onTap: onTap,
+          onChanged: onChanged,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           style: const TextStyle(

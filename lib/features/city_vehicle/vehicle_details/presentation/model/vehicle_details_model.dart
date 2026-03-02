@@ -127,6 +127,7 @@ class VehicleDetailsState extends Equatable {
       (vehicleType != VehicleType.bike || selectedBikeType != null) &&
       (vehicleType != VehicleType.cab || selectedSeatOption != null) &&
       selectedFuelType != null &&
+      hasPhoto &&
       year.trim().isNotEmpty &&
       _isValidYear(year.trim());
 

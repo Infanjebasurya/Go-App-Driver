@@ -3,7 +3,7 @@ class ProfileValidationService {
     r'^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$',
   );
   static final RegExp _emailPattern =
-      RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+  RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
   static final RegExp _allSameDigitPattern = RegExp(r'^(\d)\1{9}$');
 
   static const Set<String> _allowedGenders = {
@@ -72,11 +72,11 @@ class ProfileValidationService {
 
     final age =
         now.year -
-        parsed.year -
-        ((now.month < parsed.month ||
+            parsed.year -
+            ((now.month < parsed.month ||
                 (now.month == parsed.month && now.day < parsed.day))
-            ? 1
-            : 0);
+                ? 1
+                : 0);
 
     if (age < 18) return 'You must be at least 18 years old';
     if (age > 100) return 'Please enter a valid date of birth';

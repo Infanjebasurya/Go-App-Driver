@@ -109,7 +109,7 @@ class _VerificationViewState extends State<_VerificationView> {
                       ),
                       const SizedBox(height: 8),
                       ...state.documents.map(
-                        (doc) => DocumentCard(
+                            (doc) => DocumentCard(
                           key: ValueKey(doc.type),
                           document: doc,
                           onTap: () => _handleDocumentTap(context, doc, state),
@@ -129,10 +129,10 @@ class _VerificationViewState extends State<_VerificationView> {
   }
 
   void _handleDocumentTap(
-    BuildContext context,
-    Document doc,
-    VerificationState state,
-  ) {
+      BuildContext context,
+      Document doc,
+      VerificationState state,
+      ) {
     final stepIndex = _stepIndexForDoc(doc.type);
     if (stepIndex != null) {
       unawaited(
@@ -143,14 +143,14 @@ class _VerificationViewState extends State<_VerificationView> {
       );
       Navigator.of(context)
           .push(
-            MaterialPageRoute(
-              builder: (_) => DocumentUploadScreen(initialStepIndex: stepIndex),
-            ),
-          )
+        MaterialPageRoute(
+          builder: (_) => DocumentUploadScreen(initialStepIndex: stepIndex),
+        ),
+      )
           .then((_) {
-            if (!context.mounted) return;
-            context.read<VerificationCubit>().syncFromStore();
-          });
+        if (!context.mounted) return;
+        context.read<VerificationCubit>().syncFromStore();
+      });
       return;
     }
   }
@@ -236,7 +236,7 @@ class _VerificationViewState extends State<_VerificationView> {
                         child: const HomeScreen(),
                       ),
                     ),
-                    (route) => false,
+                        (route) => false,
                   );
                 },
                 child: const Text(
@@ -277,9 +277,9 @@ class _SubmitSection extends StatelessWidget {
         12,
         16,
         math.max(
-              MediaQuery.viewInsetsOf(context).bottom,
-              MediaQuery.of(context).padding.bottom,
-            ) +
+          MediaQuery.viewInsetsOf(context).bottom,
+          MediaQuery.of(context).padding.bottom,
+        ) +
             16,
       ),
       decoration: const BoxDecoration(
@@ -309,21 +309,21 @@ class _SubmitSection extends StatelessWidget {
                   : () => context.read<VerificationCubit>().submitForReview(),
               child: state.isSubmitting
                   ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
                   : const Text(
-                      'SUBMIT FOR REVIEW',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
+                'SUBMIT FOR REVIEW',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 10),

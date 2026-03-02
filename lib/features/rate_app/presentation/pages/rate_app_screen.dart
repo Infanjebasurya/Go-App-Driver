@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/rate_app/presentation/cubit/rate_app_cubit.dart';
 import 'package:goapp/features/rate_app/presentation/cubit/rate_app_state.dart';
+import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 class RateAppScreen extends StatelessWidget {
   const RateAppScreen({super.key});
@@ -16,8 +17,38 @@ class RateAppScreen extends StatelessWidget {
   }
 }
 
-class _RateAppView extends StatelessWidget {
+class _RateAppView extends StatefulWidget {
   const _RateAppView();
+
+  @override
+  State<_RateAppView> createState() => _RateAppViewState();
+}
+
+class _RateAppViewState extends State<_RateAppView> {
+  late final PersistentTextController _feedbackController;
+
+  @override
+  void initState() {
+    super.initState();
+    _feedbackController = PersistentTextController(
+      storageKey: 'rate_app.feedback',
+    );
+    _feedbackController.attach();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_feedbackController.text.isNotEmpty) {
+        context.read<RateAppCubit>().updateFeedback(
+              _feedbackController.text,
+            );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _feedbackController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +154,7 @@ class _RateAppView extends StatelessWidget {
                         enabled:
                             state.status != RateAppStatus.submitting &&
                             state.status != RateAppStatus.submitted,
+                        controller: _feedbackController,
                         onChanged: (t) =>
                             context.read<RateAppCubit>().updateFeedback(t),
                       ),
@@ -336,9 +368,14 @@ class _StarSelector extends StatelessWidget {
 
 class _FeedbackBox extends StatelessWidget {
   final bool enabled;
+  final TextEditingController controller;
   final ValueChanged<String> onChanged;
 
-  const _FeedbackBox({required this.enabled, required this.onChanged});
+  const _FeedbackBox({
+    required this.enabled,
+    required this.controller,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -349,6 +386,7 @@ class _FeedbackBox extends StatelessWidget {
         border: Border.all(color: AppColors.strokeLight),
       ),
       child: TextField(
+        controller: controller,
         enabled: enabled,
         onChanged: onChanged,
         maxLines: 5,

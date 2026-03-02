@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:goapp/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:goapp/features/auth/domain/services/phone_number_service.dart';
 import 'package:goapp/features/auth/domain/usecases/resend_otp_usecase.dart';
 import 'package:goapp/features/auth/presentation/bloc/auth_bloc.dart';
@@ -17,6 +15,7 @@ import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:goapp/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
+import 'package:goapp/injection.dart';
 
 class RLoginPage extends StatefulWidget {
   const RLoginPage({super.key});
@@ -54,10 +53,9 @@ class _RLoginPageState extends State<RLoginPage> {
                           value: context.read<AuthBloc>(),
                         ),
                         BlocProvider<OtpCubit>(
+                          // B-08 FIX: Use shared ResendOtpUseCase from get_it.
                           create: (_) => OtpCubit(
-                            resendOtpUseCase: ResendOtpUseCase(
-                              AuthRepositoryImpl(AuthRemoteDataSourceImpl()),
-                            ),
+                            resendOtpUseCase: sl<ResendOtpUseCase>(),
                           ),
                         ),
                       ],
@@ -74,7 +72,7 @@ class _RLoginPageState extends State<RLoginPage> {
           ),
           BlocListener<LoginFormCubit, LoginFormState>(
             listenWhen: (previous, current) =>
-                previous.submitRequested != current.submitRequested ||
+            previous.submitRequested != current.submitRequested ||
                 previous.submitError != current.submitError,
             listener: (context, state) {
               if (state.submitError != null) {
@@ -230,12 +228,12 @@ class _RLoginPageState extends State<RLoginPage> {
                                       children: [
                                         TextSpan(
                                           text:
-                                              'By continuing, you agree to receive SMS for verification.  ',
+                                          'By continuing, you agree to receive SMS for verification.  ',
                                         ),
                                         TextSpan(text: ' and\n'),
                                         TextSpan(
                                           text:
-                                              'Message and data rates may apply. View our ',
+                                          'Message and data rates may apply. View our ',
                                         ),
                                         TextSpan(
                                           text: 'Privacy \nPolicy.',
@@ -243,7 +241,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                             color: AppColors.black,
                                             fontSize: 14,
                                             decoration:
-                                                TextDecoration.underline,
+                                            TextDecoration.underline,
                                           ),
                                         ),
                                       ],
