@@ -27,6 +27,7 @@ import 'features/city_vehicle/vehicle_selection/presentation/model/vehicle_model
 import 'features/city_vehicle/vehicle_details/presentation/pages/vehicle_details_screen.dart';
 import 'features/document_verify/presentation/pages/verification_screen.dart';
 import 'features/documents/presentation/pages/document_upload_screen.dart';
+import 'features/driver_activation/presentation/pages/new_driver_activation_screen.dart';
 import 'features/documents/presentation/pages/verification_submitted_screen.dart';
 
 class AppEntryGate extends StatefulWidget {
@@ -98,6 +99,13 @@ class _AppEntryGateState extends State<AppEntryGate> {
                   return _buildRegistrationResume(progress);
                 }
 
+                // If user already verified OTP and there is no pending
+                // registration step, resume to home instead of onboarding/get started.
+                if (progress.otpVerified &&
+                    progress.step == RegistrationStep.none) {
+                  return _buildHomeLanding();
+                }
+
                 if (progress.onboardingSeen) {
                   return const LoginFormPage();
                 }
@@ -165,6 +173,12 @@ class _AppEntryGateState extends State<AppEntryGate> {
         );
       case RegistrationStep.verificationSubmitted:
         return const VerificationSubmittedScreen();
+      case RegistrationStep.documentReviewPending:
+        return const NewDriverActivationScreen();
+      case RegistrationStep.walletTopUpPending:
+        return const NewDriverActivationScreen(
+          initialPhase: NewDriverActivationPhase.walletTopUp,
+        );
       case RegistrationStep.none:
         return _buildGetStarted(context);
     }
@@ -183,9 +197,7 @@ class _AppEntryGateState extends State<AppEntryGate> {
       case HomeTripResumeStage.passengerOnboard:
         return const PassengerOnboardPage();
       case HomeTripResumeStage.tripNavigation:
-        return const TripNavigationPage(
-          dropPoint: LatLng(13.0744, 80.2241),
-        );
+        return const TripNavigationPage(dropPoint: LatLng(13.0744, 80.2241));
       case HomeTripResumeStage.rideCompleted:
         return const RideCompletedScreen();
       case HomeTripResumeStage.rateExperience:

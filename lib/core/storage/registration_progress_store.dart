@@ -11,6 +11,8 @@ enum RegistrationStep {
   verification,
   documentUpload,
   verificationSubmitted,
+  documentReviewPending,
+  walletTopUpPending,
 }
 
 class RegistrationProgress {
@@ -31,10 +33,10 @@ class RegistrationProgress {
   });
 
   factory RegistrationProgress.empty() => const RegistrationProgress(
-        otpVerified: false,
-        onboardingSeen: false,
-        step: RegistrationStep.none,
-      );
+    otpVerified: false,
+    onboardingSeen: false,
+    step: RegistrationStep.none,
+  );
 
   bool get shouldResume => otpVerified && step != RegistrationStep.none;
 

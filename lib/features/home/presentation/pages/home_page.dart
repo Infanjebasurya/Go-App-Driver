@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    unawaited(context.read<DriverCubit>().refreshDashboardMetrics());
     // B-13 FIX: Only clear the trip store when no trip is active.
     // Calling clear() unconditionally wiped the persisted stage on every
     // home-screen mount, breaking crash-recovery if the home screen was
@@ -54,6 +55,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(context.read<DriverCubit>().refreshDashboardMetrics());
+    }
     if (state == AppLifecycleState.resumed &&
         context.read<DriverCubit>().state.isOffline) {
       unawaited(_runOfflinePermissionFlow());
@@ -124,17 +128,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     _isPermissionFlowRunning = true;
     try {
-      final bool shouldPromptSettings =
-          await LocationPermissionPromptStore.consumePendingSettingsPrompt();
-      if (shouldPromptSettings && mounted) {
-        await _showSettingsDialog(
-          title: 'Location Access Required',
-          message:
-              'Location access was denied multiple times. Please open Settings and enable Location permission to continue receiving ride requests.',
-        );
-      }
-
-      final initial = await _locationGuard.ensureReady(requestPermission: false);
+      final initial = await _locationGuard.ensureReady(
+        requestPermission: false,
+      );
       if (!mounted) return;
       if (initial.isReady) {
         await LocationPermissionPromptStore.clearDeniedHistory();
@@ -144,11 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return;
       }
 
-      if (initial.issue == LocationIssue.serviceDisabled) {
-        await _showGpsDialog();
-        return;
-      }
-
+      // Native OS prompt first: While using app / Only this time / Don't allow.
       final retried = await _locationGuard.ensureReady(requestPermission: true);
       if (!mounted) return;
       if (retried.isReady) {
@@ -159,19 +151,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return;
       }
 
-      await LocationPermissionPromptStore.noteDeniedAttempt();
-
+      // Count only permission denials. After 2 denies, show app-settings dialog.
       if (retried.issue == LocationIssue.permissionDenied ||
           retried.issue == LocationIssue.permissionDeniedForever) {
-        await _showSettingsDialog(
-          title: retried.issue == LocationIssue.permissionDeniedForever
-              ? 'Location Permission Blocked'
-              : 'Location Permission Needed',
-          message:
-              retried.issue == LocationIssue.permissionDeniedForever
-              ? 'Location permission is permanently denied for this app. Please open Settings and allow Location access.'
-              : 'Location permission is required to go online and receive rides. Please open Settings and allow Location access.',
-        );
+        await LocationPermissionPromptStore.noteDeniedAttempt();
+        final bool shouldPromptSettings =
+            await LocationPermissionPromptStore.consumePendingSettingsPrompt();
+        if (shouldPromptSettings && mounted) {
+          await _showSettingsDialog(
+            title: 'Location Permission Needed',
+            message:
+                'You denied location permission multiple times. Open app settings and enable Location permission to continue receiving rides.',
+          );
+        }
       }
     } finally {
       _isPermissionFlowRunning = false;
@@ -199,36 +191,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return route?.isCurrent ?? false;
   }
 
-  Future<void> _showGpsDialog() async {
-    if (!mounted) return;
-    _isPermissionDialogVisible = true;
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Enable GPS'),
-          content: const Text(
-            'Location services are currently turned off. Please enable GPS to continue receiving ride requests.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Not now'),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                _locationGuard.openLocationSettings();
-              },
-              child: const Text('Open location settings'),
-            ),
-          ],
-        );
-      },
-    );
-    _isPermissionDialogVisible = false;
-  }
-
   Future<void> _showSettingsDialog({
     required String title,
     required String message,
@@ -247,9 +209,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: const Text('Not now'),
             ),
             FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                _locationGuard.openAppSettings();
+                await _locationGuard.openAppSettings();
               },
               child: const Text('Open app settings'),
             ),
@@ -273,11 +235,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ? 'Enable GPS'
               : 'Settings',
           onPressed: () {
-            final guard = const LocationPermissionGuard();
             if (issue == LocationIssue.serviceDisabled) {
-              guard.openLocationSettings();
+              const LocationPermissionGuard().openLocationSettings();
             } else {
-              guard.openAppSettings();
+              const LocationPermissionGuard().openAppSettings();
             }
           },
         ),
@@ -288,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _locationBlockedMessage(LocationIssue issue) {
     switch (issue) {
       case LocationIssue.serviceDisabled:
-        return 'Turn on GPS to go online and receive ride requests.';
+        return 'Location is off. Open app settings and verify location permission.';
       case LocationIssue.permissionDenied:
         return 'Allow Location permission to go online and receive ride requests.';
       case LocationIssue.permissionDeniedForever:

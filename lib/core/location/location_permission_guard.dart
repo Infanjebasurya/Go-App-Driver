@@ -1,4 +1,6 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart'
+    as permission_handler;
 
 enum LocationIssue {
   serviceDisabled,
@@ -47,7 +49,15 @@ class LocationPermissionGuard {
     return const LocationAccessResult.ready();
   }
 
-  Future<bool> openLocationSettings() => Geolocator.openLocationSettings();
+  Future<bool> openLocationSettings() async {
+    final bool opened = await Geolocator.openLocationSettings();
+    if (opened) return true;
+    return permission_handler.openAppSettings();
+  }
 
-  Future<bool> openAppSettings() => Geolocator.openAppSettings();
+  Future<bool> openAppSettings() async {
+    final bool opened = await Geolocator.openAppSettings();
+    if (opened) return true;
+    return permission_handler.openAppSettings();
+  }
 }

@@ -334,9 +334,12 @@ class _WalletCard extends StatelessWidget {
           const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const WalletPage()));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const WalletPage()))
+                  .then((_) {
+                    if (!context.mounted) return;
+                    context.read<DriverCubit>().refreshDashboardMetrics();
+                  });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
@@ -452,4 +455,3 @@ class _RewardCard extends StatelessWidget {
     );
   }
 }
-

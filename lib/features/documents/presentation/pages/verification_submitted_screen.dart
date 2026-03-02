@@ -4,7 +4,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
+import 'package:goapp/features/driver_activation/presentation/pages/new_driver_activation_screen.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
@@ -77,6 +79,10 @@ class _VerificationSubmittedScreenState
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) _checkCtrl.forward();
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(NotificationPermissionHelper.ensureRequestedOnce());
+    });
   }
 
   @override
@@ -94,15 +100,14 @@ class _VerificationSubmittedScreenState
       if (widget.onGoHome != null) {
         widget.onGoHome!();
       }
-      unawaited(RegistrationProgressStore.clear());
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider<DriverCubit>(
-            create: (_) => DriverCubit(),
-            child: const HomeScreen(),
-          ),
+      unawaited(
+        RegistrationProgressStore.setStep(
+          RegistrationStep.documentReviewPending,
         ),
-            (route) => false,
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const NewDriverActivationScreen()),
+        (route) => false,
       );
     }
 
@@ -203,9 +208,9 @@ class _GoHomeButton extends StatelessWidget {
         12,
         24,
         math.max(
-          MediaQuery.viewInsetsOf(context).bottom,
-          MediaQuery.of(context).padding.bottom,
-        ) +
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
             20,
       ),
       decoration: const BoxDecoration(
@@ -226,8 +231,8 @@ class _GoHomeButton extends StatelessWidget {
             ),
           ),
           onPressed:
-          onTap ??
-                  () {
+              onTap ??
+              () {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
                     builder: (_) => BlocProvider<DriverCubit>(
@@ -235,7 +240,7 @@ class _GoHomeButton extends StatelessWidget {
                       child: const HomeScreen(),
                     ),
                   ),
-                      (route) => false,
+                  (route) => false,
                 );
               },
           child: const Text(

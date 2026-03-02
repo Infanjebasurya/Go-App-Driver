@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
@@ -56,5 +57,29 @@ class EarningsCubit extends Cubit<EarningsState> {
     final next = (current + amount).toString();
     unawaited(TextFieldStore.write('earnings.recharge_amount', next));
     emit(state.copyWith(rechargeAmount: next));
+  }
+
+  Future<bool> rechargeWallet() async {
+    final double? amount = _parseAmount(state.rechargeAmount);
+    if (amount == null || amount <= 0) return false;
+    await DriverWalletStore.addAmount(amount);
+    await load();
+    return true;
+  }
+
+  Future<bool> withdrawWallet() async {
+    final double? amount = _parseAmount(state.rechargeAmount);
+    if (amount == null || amount <= 0) return false;
+    if (amount > state.snapshot.walletBalance) return false;
+    final double? next = await DriverWalletStore.subtractAmount(amount);
+    if (next == null) return false;
+    await load();
+    return true;
+  }
+
+  double? _parseAmount(String raw) {
+    final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
+    if (cleaned.isEmpty) return null;
+    return double.tryParse(cleaned);
   }
 }

@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
@@ -82,7 +81,6 @@ class _RideArrivedPageState extends State<RideArrivedPage>
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
     WidgetsBinding.instance.addObserver(this);
-    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
     _loadDriverMarkerIcon();
     unawaited(_refreshLocationState(requestPermission: true));
@@ -293,7 +291,9 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     }
 
     if (previousIssue == null) return;
-    final int remainingSeconds = ((1 - _driverProgress) * 10).clamp(1, 10).round();
+    final int remainingSeconds = ((1 - _driverProgress) * 10)
+        .clamp(1, 10)
+        .round();
     unawaited(
       TripBackgroundService.startTrip(
         title: 'Heading to pickup location',
@@ -333,15 +333,13 @@ class _RideArrivedPageState extends State<RideArrivedPage>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _CancellationReasonSheet(
-        onConfirm: (
-          String canceledBy,
-          String reason,
-        ) async {
+        onConfirm: (String canceledBy, String reason) async {
           await RideHistoryStore.markCanceledNowOrCreate(
             canceledBy: canceledBy,
             cancelReason: reason,
             pickupLocation: '42, I-Block, Arumbakkam, Chennai-106',
-            dropLocation: '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
+            dropLocation:
+                '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
           );
           await HomeTripResumeStore.clear();
           if (!mounted) return;
@@ -505,16 +503,12 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                                   ),
                                   onPressed: canProceed
                                       ? () async {
-                                          await RideHistoryStore
-                                              .markPickedUpNow();
+                                          await RideHistoryStore.markPickedUpNow();
                                           // TripSessionStore: captain arrived at pickup.
-                                          unawaited(TripSessionStore.markArrivedAtPickup());
-                                          if (!context.mounted) return;
-                                          NotificationsFeed.add(
-                                            title: 'OTP verification started',
-                                            message:
-                                                'Driver arrived. Ask rider for OTP to start trip.',
+                                          unawaited(
+                                            TripSessionStore.markArrivedAtPickup(),
                                           );
+                                          if (!context.mounted) return;
                                           Navigator.of(context).push(
                                             MaterialPageRoute<void>(
                                               builder: (_) =>
