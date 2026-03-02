@@ -9,6 +9,7 @@ import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/features/home/presentation/pages/available_orders_page.dart';
 import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
 
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
@@ -24,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _lastNavigationToken = 0;
   int _lastShownBlockEventId = -1;
   final LocationPermissionGuard _locationGuard =
@@ -45,6 +47,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (Env.mockApi) {
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
+    unawaited(
+      RegistrationProgressStore.setStep(RegistrationStep.home),
+    );
     _locationSyncTimer = Timer.periodic(const Duration(seconds: 2), (_) {
       unawaited(_syncLocationUiState());
     });
@@ -110,11 +115,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       builder: (context, state) {
         return HomeNoDeviceBack(
           child: Scaffold(
+            key: _scaffoldKey,
             backgroundColor: Colors.white,
-            drawer: const AppDrawer(),
-            body: state.isOnline
-                ? const OnlineContent()
-                : const OfflineContent(),
+            drawer: AppDrawer(
+              onReopenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
+            body: state.isOnline ? const OnlineContent() : const OfflineContent(),
           ),
         );
       },

@@ -376,3 +376,4 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     );
   }
 }
+

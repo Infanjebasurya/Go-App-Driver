@@ -322,17 +322,14 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                       child: ElevatedButton(
                         onPressed: () async {
                           // TripSessionStore: save the passenger rating.
-                          final ratingState = context
-                              .read<RateExperienceCubit>()
-                              .state;
+                          final cubit = context.read<RateExperienceCubit>();
+                          final ratingState = cubit.state;
                           await TripSessionStore.savePassengerRating(
                             stars: ratingState.selectedRating,
                             tags: ratingState.selectedTags.toList(),
                             comment: ratingState.comment,
                           );
-                          await context
-                              .read<RateExperienceCubit>()
-                              .submitFeedback();
+                          await cubit.submitFeedback();
                           await _navigateToHome();
                         },
                         style: ElevatedButton.styleFrom(
@@ -364,3 +361,4 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     );
   }
 }
+

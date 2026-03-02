@@ -6,15 +6,22 @@ import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
+import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
 import 'package:goapp/features/driver_activation/presentation/pages/new_driver_activation_screen.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class VerificationSubmittedScreen extends StatefulWidget {
   final VoidCallback? onGoHome;
+  final String? snackbarMessage;
 
-  const VerificationSubmittedScreen({super.key, this.onGoHome});
+  const VerificationSubmittedScreen({
+    super.key,
+    this.onGoHome,
+    this.snackbarMessage,
+  });
 
   @override
   State<VerificationSubmittedScreen> createState() =>
@@ -73,6 +80,13 @@ class _VerificationSubmittedScreenState
         );
 
     _scaleCtrl.forward();
+    if (widget.snackbarMessage != null &&
+        widget.snackbarMessage!.trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        SnackBarUtils.showError(context, widget.snackbarMessage!);
+      });
+    }
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) _fadeCtrl.forward();
     });
@@ -100,95 +114,94 @@ class _VerificationSubmittedScreenState
       if (widget.onGoHome != null) {
         widget.onGoHome!();
       }
-      unawaited(
-        RegistrationProgressStore.setStep(
-          RegistrationStep.documentReviewPending,
-        ),
-      );
+      unawaited(RegistrationProgressStore.setStep(RegistrationStep.home));
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const NewDriverActivationScreen()),
         (route) => false,
       );
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppAppBar(
-        title: 'GoApp',
-        backEnabled: false,
-        onBack: null,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: AppColors.coolwhite),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppAppBar(
+          title: 'GoApp',
+          backEnabled: false,
+          onBack: null,
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: Divider(height: 1, color: AppColors.coolwhite),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 24),
-                      Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: Center(
-                          child: Image.asset(
-                            'assets/image/register_success.png',
-                            fit: BoxFit.contain,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 24),
+                        Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(color: Colors.white),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/image/register_success.png',
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 36),
-                      FadeTransition(
-                        opacity: _textFadeAnim,
-                        child: SlideTransition(
-                          position: _textSlideAnim,
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Verification Submitted',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.headingNavy,
-                                  letterSpacing: -0.6,
-                                  height: 1.15,
+                        const SizedBox(height: 36),
+                        FadeTransition(
+                          opacity: _textFadeAnim,
+                          child: SlideTransition(
+                            position: _textSlideAnim,
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'Verification Submitted',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.headingNavy,
+                                    letterSpacing: -0.6,
+                                    height: 1.15,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 14),
-                              Text(
-                                'Your credentials are now under review by our\nelite concierge team. Expect a status update\nwithin 24-48 hours..',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey.shade500,
-                                  height: 1.6,
-                                  letterSpacing: 0.1,
+                                const SizedBox(height: 14),
+                                Text(
+                                  'Your credentials are now under review by our\nelite concierge team. Expect a status update\nwithin 24-48 hours..',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.grey.shade500,
+                                    height: 1.6,
+                                    letterSpacing: 0.1,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 32),
-                            ],
+                                const SizedBox(height: 32),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+                        const SizedBox(height: 32),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            FadeTransition(
-              opacity: _fadeAnim,
-              child: _GoHomeButton(onTap: goHome),
-            ),
-          ],
+              FadeTransition(
+                opacity: _fadeAnim,
+                child: _GoHomeButton(onTap: goHome),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -220,7 +233,7 @@ class _GoHomeButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 52,
-        child: ElevatedButton(
+        child: ShadowButton(
           key: const Key('go_home_button'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.emerald,
@@ -256,3 +269,4 @@ class _GoHomeButton extends StatelessWidget {
     );
   }
 }
+

@@ -8,6 +8,8 @@ enum DocumentStep {
   bankAccount,
 }
 
+enum DocumentUploadType { image, document }
+
 class StepConfig {
   final DocumentStep step;
   final String title;
@@ -17,6 +19,7 @@ class StepConfig {
   final String numberExample;
   final String allowedPattern;
   final bool forceUppercase;
+  final int? maxLength;
   final bool isBankStep;
   final String frontLabel;
   final String backLabel;
@@ -30,6 +33,7 @@ class StepConfig {
     required this.allowedPattern,
     this.forceUppercase = false,
     this.numberExample = '',
+    this.maxLength,
     this.isBankStep = false,
     this.frontLabel = 'Front Side',
     this.backLabel = 'Back Side',
@@ -42,36 +46,43 @@ const List<StepConfig> kStepConfigs = [
     title: 'Driving License',
     subtitle: 'Driving Certificate',
     numberLabel: 'Driving License Number',
-    numberHint: 'Tn02 2354851253',
-    numberExample: 'Example: MH12 20180012345',
+    numberHint: 'Mh022354851253',
+    numberExample: 'Example: MH1220180012345',
     allowedPattern: r'[A-Za-z0-9]',
     forceUppercase: true,
+    maxLength: 15,
   ),
   StepConfig(
     step: DocumentStep.vehicleRC,
     title: 'Vehicle RC',
     subtitle: 'Registration Certificate',
     numberLabel: 'Vehicle Number',
-    numberHint: 'Tn02 2354851253',
+    numberHint: 'Tn02bh2345',
+    numberExample: 'Example: TN12AZ2018',
     allowedPattern: r'[A-Za-z0-9]',
     forceUppercase: true,
+    maxLength: 10,
   ),
   StepConfig(
     step: DocumentStep.identityAadhaar,
-    title: 'Identity Verification',
+    title: 'Aadhaar Verification',
     subtitle: 'Upload your Aadhaar for quick approval',
     numberLabel: 'Document Number',
-    numberHint: 'EG : 1234562378945',
+    numberHint: '123456237894',
+    numberExample: 'Example: 201800123453',
     allowedPattern: r'[0-9]',
+    maxLength: 12,
   ),
   StepConfig(
     step: DocumentStep.identityPan,
-    title: 'Identity Verification',
+    title: 'Pan Verification',
     subtitle: 'Upload your Pan for quick approval',
     numberLabel: 'Document Number',
-    numberHint: 'EG : ABCDE1231',
+    numberHint: 'ABCDE1231P',
+    numberExample: 'Example: AKCDE1531P',
     allowedPattern: r'[A-Za-z0-9]',
     forceUppercase: true,
+    maxLength: 10,
   ),
   StepConfig(
     step: DocumentStep.bankAccount,
@@ -86,20 +97,24 @@ const List<StepConfig> kStepConfigs = [
 
 class BankAccountData extends Equatable {
   final String accountHolderName;
+  final String bankName;
   final String accountNumber;
   final String confirmAccountNumber;
   final String ifscCode;
   final String? nameError;
+  final String? bankNameError;
   final String? accountNumberError;
   final String? confirmAccountNumberError;
   final String? ifscError;
 
   const BankAccountData({
     this.accountHolderName = '',
+    this.bankName = '',
     this.accountNumber = '',
     this.confirmAccountNumber = '',
     this.ifscCode = '',
     this.nameError,
+    this.bankNameError,
     this.accountNumberError,
     this.confirmAccountNumberError,
     this.ifscError,
@@ -107,12 +122,14 @@ class BankAccountData extends Equatable {
 
   bool get hasErrors =>
       nameError != null ||
+          bankNameError != null ||
           accountNumberError != null ||
           confirmAccountNumberError != null ||
           ifscError != null;
 
   bool get isComplete =>
       accountHolderName.trim().isNotEmpty &&
+          bankName.trim().isNotEmpty &&
           accountNumber.trim().isNotEmpty &&
           confirmAccountNumber.trim().isNotEmpty &&
           confirmAccountNumber == accountNumber &&
@@ -120,24 +137,30 @@ class BankAccountData extends Equatable {
 
   BankAccountData copyWith({
     String? accountHolderName,
+    String? bankName,
     String? accountNumber,
     String? confirmAccountNumber,
     String? ifscCode,
     String? nameError,
+    String? bankNameError,
     String? accountNumberError,
     String? confirmAccountNumberError,
     String? ifscError,
     bool clearNameError = false,
+    bool clearBankNameError = false,
     bool clearAccountNumberError = false,
     bool clearConfirmError = false,
     bool clearIfscError = false,
   }) {
     return BankAccountData(
       accountHolderName: accountHolderName ?? this.accountHolderName,
+      bankName: bankName ?? this.bankName,
       accountNumber: accountNumber ?? this.accountNumber,
       confirmAccountNumber: confirmAccountNumber ?? this.confirmAccountNumber,
       ifscCode: ifscCode ?? this.ifscCode,
       nameError: clearNameError ? null : (nameError ?? this.nameError),
+      bankNameError:
+          clearBankNameError ? null : (bankNameError ?? this.bankNameError),
       accountNumberError: clearAccountNumberError
           ? null
           : (accountNumberError ?? this.accountNumberError),
@@ -151,10 +174,12 @@ class BankAccountData extends Equatable {
   @override
   List<Object?> get props => [
     accountHolderName,
+    bankName,
     accountNumber,
     confirmAccountNumber,
     ifscCode,
     nameError,
+    bankNameError,
     accountNumberError,
     confirmAccountNumberError,
     ifscError,
@@ -165,6 +190,10 @@ class StepData extends Equatable {
   final DocumentStep step;
   final bool frontCaptured;
   final bool backCaptured;
+  final String? frontPath;
+  final String? backPath;
+  final DocumentUploadType? frontType;
+  final DocumentUploadType? backType;
   final String documentNumber;
   final String? numberError;
   final String? imageError;
@@ -173,6 +202,10 @@ class StepData extends Equatable {
     required this.step,
     this.frontCaptured = false,
     this.backCaptured = false,
+    this.frontPath,
+    this.backPath,
+    this.frontType,
+    this.backType,
     this.documentNumber = '',
     this.numberError,
     this.imageError,
@@ -184,16 +217,26 @@ class StepData extends Equatable {
   StepData copyWith({
     bool? frontCaptured,
     bool? backCaptured,
+    String? frontPath,
+    String? backPath,
+    DocumentUploadType? frontType,
+    DocumentUploadType? backType,
     String? documentNumber,
     String? numberError,
     bool clearError = false,
     String? imageError,
     bool clearImageError = false,
+    bool clearFrontUpload = false,
+    bool clearBackUpload = false,
   }) {
     return StepData(
       step: step,
       frontCaptured: frontCaptured ?? this.frontCaptured,
       backCaptured: backCaptured ?? this.backCaptured,
+      frontPath: clearFrontUpload ? null : (frontPath ?? this.frontPath),
+      backPath: clearBackUpload ? null : (backPath ?? this.backPath),
+      frontType: clearFrontUpload ? null : (frontType ?? this.frontType),
+      backType: clearBackUpload ? null : (backType ?? this.backType),
       documentNumber: documentNumber ?? this.documentNumber,
       numberError: clearError ? null : (numberError ?? this.numberError),
       imageError: clearImageError ? null : (imageError ?? this.imageError),
@@ -205,6 +248,10 @@ class StepData extends Equatable {
     step,
     frontCaptured,
     backCaptured,
+    frontPath,
+    backPath,
+    frontType,
+    backType,
     documentNumber,
     numberError,
     imageError,

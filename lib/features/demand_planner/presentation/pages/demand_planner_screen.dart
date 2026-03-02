@@ -6,6 +6,7 @@ import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/demand_planner/presentation/cubit/demand_planner_cubit.dart';
 import 'package:goapp/features/demand_planner/presentation/cubit/demand_planner_state.dart';
 import 'package:goapp/features/demand_planner/presentation/model/peak_hour_model.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class DemandPlannerScreen extends StatelessWidget {
   const DemandPlannerScreen({super.key});
@@ -26,7 +27,7 @@ class _DemandPlannerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -550,3 +551,4 @@ class _LoadingView extends StatelessWidget {
     );
   }
 }
+

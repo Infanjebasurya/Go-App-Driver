@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
+import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
-import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
-import 'package:goapp/features/home/presentation/pages/home_page.dart';
+import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
 
 import '../cubit/verification_cubit.dart';
 import '../cubit/verification_state.dart';
 import '../model/document_model.dart';
 import '../widgets/document_card.dart';
 import '../widgets/verification_progress_card.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class VerificationScreen extends StatelessWidget {
   const VerificationScreen({super.key});
@@ -36,6 +37,7 @@ class _VerificationView extends StatefulWidget {
 }
 
 class _VerificationViewState extends State<_VerificationView> {
+  bool _navigated = false;
   @override
   void initState() {
     super.initState();
@@ -46,84 +48,95 @@ class _VerificationViewState extends State<_VerificationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const AppAppBar(
-        title: 'GoApp',
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: Color(0xFFE8EDF2)),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: const AppAppBar(
+          title: 'GoApp',
+          backEnabled: false,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: Divider(height: 1, color: Color(0xFFE8EDF2)),
+          ),
         ),
-      ),
-      body: BlocConsumer<VerificationCubit, VerificationState>(
-        listener: (context, state) {
-          if (state.isSubmitted) {
-            _showSuccessDialog(context);
-          }
-          if (state.errorMessage != null) {
-            _showErrorSnackbar(context, state.errorMessage!);
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Professional Credentials',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.headingNavy,
-                            letterSpacing: -0.6,
-                            height: 1.1,
+        body: BlocConsumer<VerificationCubit, VerificationState>(
+          listener: (context, state) {
+            if (state.isSubmitted && !_navigated) {
+              _navigated = true;
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const VerificationSubmittedScreen(),
+                ),
+              );
+              context.read<VerificationCubit>().clearSubmitted();
+            }
+            if (state.errorMessage != null) {
+              _showErrorSnackbar(context, state.errorMessage!);
+              context.read<VerificationCubit>().clearError();
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'Professional Credentials',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.headingNavy,
+                              letterSpacing: -0.6,
+                              height: 1.1,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Step 1 to 5',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey.shade500,
+                        const SizedBox(height: 6),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'Step 1 to 5',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey.shade500,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      VerificationProgressCard(
-                        completedCount: state.completedCount,
-                        totalCount: state.documents.length,
-                        progressPercent: state.progressPercent,
-                      ),
-                      const SizedBox(height: 8),
-                      ...state.documents.map(
-                            (doc) => DocumentCard(
-                          key: ValueKey(doc.type),
-                          document: doc,
-                          onTap: () => _handleDocumentTap(context, doc, state),
+                        const SizedBox(height: 24),
+                        VerificationProgressCard(
+                          completedCount: state.completedCount,
+                          totalCount: state.documents.length,
+                          progressPercent: state.progressPercent,
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
+                        const SizedBox(height: 8),
+                        ...state.documents.map(
+                              (doc) => DocumentCard(
+                            key: ValueKey(doc.type),
+                            document: doc,
+                            onTap: () => _handleDocumentTap(context, doc, state),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              _SubmitSection(state: state),
-            ],
-          );
-        },
+                _SubmitSection(state: state),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -170,97 +183,8 @@ class _VerificationViewState extends State<_VerificationView> {
     }
   }
 
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.all(28),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: AppColors.emerald.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check_rounded,
-                size: 40,
-                color: AppColors.emerald,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Submitted!',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.headingNavy,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Your documents have been submitted for review. We\'ll notify you once verified.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13.5,
-                color: Color(0xFF6B7C93),
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.emerald,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  context.read<VerificationCubit>().reset();
-                  RegistrationProgressStore.clear();
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider<DriverCubit>(
-                        create: (_) => DriverCubit(),
-                        child: const HomeScreen(),
-                      ),
-                    ),
-                        (route) => false,
-                  );
-                },
-                child: const Text(
-                  'Done',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showErrorSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: const Color(0xFFE53935),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      ),
-    );
+    SnackBarUtils.showError(context, message);
   }
 }
 
@@ -292,7 +216,7 @@ class _SubmitSection extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 52,
-            child: ElevatedButton(
+            child: ShadowButton(
               key: const Key('submit_button'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.emerald,
@@ -352,3 +276,4 @@ class _SubmitSection extends StatelessWidget {
     );
   }
 }
+

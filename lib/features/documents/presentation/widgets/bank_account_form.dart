@@ -18,6 +18,7 @@ class BankAccountForm extends StatefulWidget {
 
 class _BankAccountFormState extends State<BankAccountForm> {
   late final PersistentTextController _nameCtrl;
+  late final PersistentTextController _bankNameCtrl;
   late final PersistentTextController _accCtrl;
   late final PersistentTextController _confirmCtrl;
   late final PersistentTextController _ifscCtrl;
@@ -29,6 +30,9 @@ class _BankAccountFormState extends State<BankAccountForm> {
     _nameCtrl = PersistentTextController(
       storageKey: 'bank_details.account_holder',
     );
+    _bankNameCtrl = PersistentTextController(
+      storageKey: 'bank_details.bank_name',
+    );
     _accCtrl = PersistentTextController(
       storageKey: 'bank_details.account_number',
     );
@@ -37,11 +41,15 @@ class _BankAccountFormState extends State<BankAccountForm> {
     );
     _ifscCtrl = PersistentTextController(storageKey: 'bank_details.ifsc');
     _nameCtrl.attach();
+    _bankNameCtrl.attach();
     _accCtrl.attach();
     _confirmCtrl.attach();
     _ifscCtrl.attach();
     if (widget.bankData.accountHolderName.isNotEmpty) {
       _nameCtrl.text = widget.bankData.accountHolderName;
+    }
+    if (widget.bankData.bankName.isNotEmpty) {
+      _bankNameCtrl.text = widget.bankData.bankName;
     }
     if (widget.bankData.accountNumber.isNotEmpty) {
       _accCtrl.text = widget.bankData.accountNumber;
@@ -57,6 +65,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _bankNameCtrl.dispose();
     _accCtrl.dispose();
     _confirmCtrl.dispose();
     _ifscCtrl.dispose();
@@ -101,6 +110,20 @@ class _BankAccountFormState extends State<BankAccountForm> {
             errorText: data.nameError,
             onChanged: (value) =>
                 cubit.updateAccountHolderName(value.toUpperCase()),
+            keyboardType: TextInputType.name,
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+              _UpperCaseFormatter(),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _BankField(
+            label: 'Bank Name',
+            hint: 'Enter bank name',
+            controller: _bankNameCtrl,
+            errorText: data.bankNameError,
+            onChanged: (value) => cubit.updateBankName(value.toUpperCase()),
             keyboardType: TextInputType.name,
             textCapitalization: TextCapitalization.characters,
             inputFormatters: [

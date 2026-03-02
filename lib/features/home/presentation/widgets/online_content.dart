@@ -10,6 +10,7 @@ import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
 import 'map_widget.dart';
 import 'status_header.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class OnlineContent extends StatefulWidget {
   const OnlineContent({super.key});
@@ -388,7 +389,7 @@ class _BottomWalletCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          ElevatedButton(
+          ShadowButton(
             onPressed: () {
               Navigator.of(
                 context,
@@ -430,4 +431,5 @@ class _GpsButton extends StatelessWidget {
     );
   }
 }
+
 

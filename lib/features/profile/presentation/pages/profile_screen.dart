@@ -1,16 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/core/error/failures.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/profile/domain/entities/profile.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
 import 'package:goapp/features/profile/presentation/widgets/either.dart';
-import 'package:goapp/core/widgets/persistent_text_controller.dart';
 
 import '../../domain/repositories/profile_repository.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -28,6 +36,7 @@ class ProfileScreen extends StatelessWidget {
       create: (context) => ProfileEditCubit(
         getCachedProfileUseCase: GetCachedProfileUseCase(
           repository,
+        
         ),
       ),
       child: const _ProfileView(),
@@ -83,7 +92,7 @@ class _ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -115,10 +124,13 @@ class _ProfileView extends StatelessWidget {
         listener: (BuildContext context, ProfileEditState state) {
           if (state.status == ProfileEditStatus.loggedOut ||
               state.status == ProfileEditStatus.deleted) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const RLoginPage()),
-              (route) => false,
-            );
+            _clearSessionCache().whenComplete(() {
+              if (!context.mounted) return;
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const RLoginPage()),
+                (route) => false,
+              );
+            });
           }
         },
         builder: (BuildContext context, ProfileEditState state) {
@@ -135,6 +147,17 @@ class _ProfileView extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> _clearSessionCache() async {
+    await UserCacheStore.clear();
+    await RegistrationProgressStore.clear();
+    DocumentProgressStore.reset();
+    await TextFieldStore.remove('bank_details.account_holder');
+    await TextFieldStore.remove('bank_details.bank_name');
+    await TextFieldStore.remove('bank_details.account_number');
+    await TextFieldStore.remove('bank_details.confirm_account_number');
+    await TextFieldStore.remove('bank_details.ifsc');
   }
 }
 
@@ -158,46 +181,7 @@ class _ProfileBody extends StatelessWidget {
               children: <Widget>[
                 Stack(
                   children: <Widget>[
-                    Container(
-                      width: 88,
-                      height: 88,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AuthUiColors.brandGreen,
-                          width: 2.5,
-                        ),
-                      ),
-                      child: ClipOval(
-                        child: Container(
-                          color: const Color(0xFF3A3A3A),
-                          child: const Icon(
-                            Icons.person,
-                            size: 52,
-                            color: Colors.white54,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Positioned(
-                      bottom: 2,
-                      right: 2,
-                      child: SizedBox(
-                        width: 26,
-                        height: 26,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: AuthUiColors.brandGreen,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                    ),
+                    const _ProfileAvatar(),
                   ],
                 ),
                 const SizedBox(height: 14),
@@ -633,21 +617,28 @@ class _EditFieldSheet extends StatefulWidget {
 }
 
 class _EditFieldSheetState extends State<_EditFieldSheet> {
-  late PersistentTextController _ctrl;
+  late TextEditingController _ctrl;
+  VoidCallback? _persistListener;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = PersistentTextController(storageKey: widget.storageKey);
-    _ctrl.attach();
-    if (_ctrl.text.isEmpty && widget.initialValue.isNotEmpty) {
-      _ctrl.text = widget.initialValue;
-    }
+    final stored = TextFieldStore.read(widget.storageKey) ?? '';
+    _ctrl = TextEditingController(
+      text: stored.isNotEmpty ? stored : widget.initialValue,
+    );
+    _persistListener = () {
+      TextFieldStore.write(widget.storageKey, _ctrl.text);
+    };
+    _ctrl.addListener(_persistListener!);
   }
 
   @override
   void dispose() {
+    if (_persistListener != null) {
+      _ctrl.removeListener(_persistListener!);
+    }
     _ctrl.dispose();
     super.dispose();
   }
@@ -747,7 +738,7 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton.icon(
+                child: ShadowButton(
                   onPressed: _saving ? null : _save,
                   icon: _saving
                       ? const SizedBox(
@@ -775,6 +766,141 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ProfileAvatar extends StatefulWidget {
+  const _ProfileAvatar();
+
+  @override
+  State<_ProfileAvatar> createState() => _ProfileAvatarState();
+}
+
+class _ProfileAvatarState extends State<_ProfileAvatar> {
+  static const String _photoKey = 'profile.photo.path';
+  final ImagePicker _picker = ImagePicker();
+  String? _photoPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoPath = TextFieldStore.read(_photoKey);
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    final picked = await _picker.pickImage(
+      source: source,
+      imageQuality: 85,
+      maxWidth: 1200,
+    );
+    if (picked == null) return;
+    _photoPath = picked.path;
+    await TextFieldStore.write(_photoKey, picked.path);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _showPhotoSourceSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const SizedBox(height: 10),
+              const Text(
+                'Upload Profile Photo',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+              const SizedBox(height: 6),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _pickPhoto(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _pickPhoto(ImageSource.gallery);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = _photoPath != null &&
+        _photoPath!.isNotEmpty &&
+        File(_photoPath!).existsSync();
+    return Stack(
+      children: [
+        Container(
+          width: 88,
+          height: 88,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: AuthUiColors.brandGreen,
+              width: 2.5,
+            ),
+          ),
+          child: ClipOval(
+            child: Container(
+              color: const Color(0xFF3A3A3A),
+              child: hasPhoto
+                  ? Image.file(
+                      File(_photoPath!),
+                      fit: BoxFit.cover,
+                    )
+                  : const Icon(
+                      Icons.person,
+                      size: 52,
+                      color: Colors.white54,
+                    ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 2,
+          right: 2,
+          child: GestureDetector(
+            onTap: _showPhotoSourceSheet,
+            child: Container(
+              width: 26,
+              height: 26,
+              decoration: const BoxDecoration(
+                color: AuthUiColors.brandGreen,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+                size: 14,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -861,7 +987,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
           Row(
             children: <Widget>[
               Expanded(
-                child: ElevatedButton(
+                child: ShadowButton(
                   onPressed: _loading ? null : _confirm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.actionColor,
@@ -892,7 +1018,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
+                child: ShadowButton(
                   onPressed: _loading
                       ? null
                       : () => Navigator.of(context).pop(),
@@ -918,3 +1044,5 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
     );
   }
 }
+
+

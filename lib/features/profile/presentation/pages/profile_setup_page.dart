@@ -4,13 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/core/error/failures.dart';
+import 'package:goapp/core/storage/user_cache_model.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
+import 'package:goapp/features/profile/data/repositories/local_profile_repository.dart';
 import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/pages/city_selection_screen.dart';
 import 'package:goapp/features/profile/domain/entities/profile.dart';
-import 'package:goapp/features/profile/domain/repositories/profile_repository.dart';
 import 'package:goapp/features/profile/domain/services/profile_validation_service.dart';
 import 'package:goapp/features/profile/domain/usecases/create_profile_usecase.dart';
 import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
@@ -19,8 +20,9 @@ import 'package:goapp/features/profile/presentation/bloc/profile_event.dart';
 import 'package:goapp/features/profile/presentation/bloc/profile_state.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_state.dart';
-import 'package:goapp/features/profile/presentation/widgets/either.dart';
-import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class ProfileSetupPage extends StatefulWidget {
   const ProfileSetupPage({super.key, this.allowBack = false});
@@ -32,42 +34,27 @@ class ProfileSetupPage extends StatefulWidget {
 }
 
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _emailController;
-  late final TextEditingController _referController;
-  late final TextEditingController _emergencyController;
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _referController = TextEditingController();
+  final _emergencyController = TextEditingController();
 
   bool _prefilled = false;
+  bool _didNavigate = false;
   late final ProfileSetupCubit _cubit;
   late final ProfileBloc _profileBloc;
   late final bool _ownsProfileBloc;
-  _FakeProfileRepository? _fallbackRepository;
+  LocalProfileRepository? _fallbackRepository;
 
   @override
   void initState() {
     super.initState();
-    final nameController =
-        PersistentTextController(storageKey: 'profile_setup.name');
-    final emailController =
-        PersistentTextController(storageKey: 'profile_setup.email');
-    final referController =
-        PersistentTextController(storageKey: 'profile_setup.refer');
-    final emergencyController =
-        PersistentTextController(storageKey: 'profile_setup.emergency');
-    nameController.attach();
-    emailController.attach();
-    referController.attach();
-    emergencyController.attach();
-    _nameController = nameController;
-    _emailController = emailController;
-    _referController = referController;
-    _emergencyController = emergencyController;
     _cubit = ProfileSetupCubit(validationService: ProfileValidationService());
     try {
       _profileBloc = context.read<ProfileBloc>();
       _ownsProfileBloc = false;
     } catch (_) {
-      _fallbackRepository = _FakeProfileRepository();
+      _fallbackRepository = LocalProfileRepository();
       _profileBloc = ProfileBloc(
         CreateProfileUseCase(_fallbackRepository!),
         GetCachedProfileUseCase(_fallbackRepository!),
@@ -76,11 +63,12 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       _ownsProfileBloc = true;
     }
     _cubit.setInitial(
-      name: _nameController.text,
-      email: _emailController.text,
-      gender: _cubit.state.gender,
-      refer: _referController.text,
-      emergencyContact: _emergencyController.text,
+      name: '',
+      email: '',
+      gender: '',
+      dob: '',
+      refer: '',
+      emergencyContact: '',
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -135,9 +123,32 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       name: name,
       email: email,
       gender: profile.gender,
+      dob: profile.dob ?? '',
       refer: refer,
       emergencyContact: emergency,
     );
+  }
+
+  void _clearForm() {
+    _nameController.clear();
+    _emailController.clear();
+    _referController.clear();
+    _emergencyController.clear();
+    _prefilled = false;
+    _cubit.setInitial(
+      name: '',
+      email: '',
+      gender: '',
+      dob: '',
+      refer: '',
+      emergencyContact: '',
+    );
+    unawaited(TextFieldStore.remove('profile_setup.name'));
+    unawaited(TextFieldStore.remove('profile_setup.email'));
+    unawaited(TextFieldStore.remove('profile_setup.gender'));
+    unawaited(TextFieldStore.remove('profile_setup.dob'));
+    unawaited(TextFieldStore.remove('profile_setup.refer'));
+    unawaited(TextFieldStore.remove('profile_setup.emergency'));
   }
 
   static const List<String> _genders = [
@@ -469,6 +480,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                 BlocListener<ProfileBloc, ProfileState>(
                   listener: (context, state) async {
                     if (state is ProfileSuccess) {
+                      if (_didNavigate) return;
                       final formState = context.read<ProfileSetupCubit>().state;
                       final hasSubmission = formState.submission != null;
                       if (!hasSubmission) {
@@ -479,12 +491,38 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                         Navigator.of(context).pop();
                         return;
                       }
+                      await UserCacheStore.save(
+                        LocalUserCacheModel(
+                          id: state.profile.id,
+                          fullName: formState.name.trim(),
+                          gender: formState.gender.trim(),
+                          referCode: formState.refer.trim(),
+                          emergencyContact: formState.emergencyContact.trim(),
+                          email: formState.email.trim().isEmpty
+                              ? null
+                              : formState.email.trim(),
+                          phone: state.profile.phone,
+                          dob: formState.dob.trim().isEmpty
+                              ? null
+                              : formState.dob.trim(),
+                          rating: state.profile.rating,
+                          totalTrips: state.profile.totalTrips,
+                          totalYears: state.profile.totalYears,
+                        ),
+                      );
                       if (!context.mounted) return;
-                      Navigator.of(context).push(
+                      _didNavigate = true;
+                      _clearForm();
+                      Navigator.of(context)
+                          .pushReplacement(
                         MaterialPageRoute(
                           builder: (_) => const CitySelectionScreen(),
                         ),
-                      );
+                      )
+                          .then((_) {
+                        if (!mounted) return;
+                        _didNavigate = false;
+                      });
                     }
                   },
                 ),
@@ -710,93 +748,102 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                 ),
               ),
             ),
-            bottomNavigationBar: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 14),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    BlocBuilder<ProfileBloc, ProfileState>(
-                      builder: (context, state) {
-                        if (state is ProfileLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
+            bottomNavigationBar: KeyboardAwareBottom(
+              padding: const EdgeInsets.fromLTRB(18, 0, 18, 14),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BlocBuilder<ProfileSetupCubit, ProfileSetupState>(
+                    builder: (context, formState) {
+                      final isFormValid =
+                          context.read<ProfileSetupCubit>().isFormValid;
+                      return BlocBuilder<ProfileBloc, ProfileState>(
+                        builder: (context, state) {
+                          if (state is ProfileLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return SizedBox(
+                            width: double.infinity,
+                            height: 46,
+                            child: ShadowButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.emerald,
+                                foregroundColor: AppColors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                elevation: 0,
+                              ),
+                              onPressed: state is ProfileLoading
+                                  ? null
+                                  : () {
+                                      if (!isFormValid) {
+                                        context.read<ProfileSetupCubit>().submit();
+                                        return;
+                                      }
+                                      context.read<ProfileSetupCubit>().submit();
+                                    },
+                              child: const Text(
+                                'Save & Continue',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                           );
-                        }
-                        return SizedBox(
-                          width: double.infinity,
-                          height: 46,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.emerald,
-                              foregroundColor: AppColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              elevation: 0,
-                            ),
-                            onPressed: () {
-                              context.read<ProfileSetupCubit>().submit();
-                            },
-                            child: const Text(
-                              'Save & Continue',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                        },
+                      );
+                    },
+                  ),
+                  BlocBuilder<ProfileBloc, ProfileState>(
+                    builder: (context, state) {
+                      if (state is! ProfileFailure) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.red,
                           ),
-                        );
-                      },
-                    ),
-                    BlocBuilder<ProfileBloc, ProfileState>(
-                      builder: (context, state) {
-                        if (state is! ProfileFailure) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            state.message,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.red,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text.rich(
-                        TextSpan(
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.helperText,
-                          ),
-                          children: [
-                            TextSpan(
-                              text:
-                              'By tapping Save & Continue, you agree to our ',
-                            ),
-                            TextSpan(
-                              text: 'Terms of Service',
-                              style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
                         ),
-                        textAlign: TextAlign.center,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text.rich(
+                      TextSpan(
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.helperText,
+                        ),
+                        children: [
+                          TextSpan(
+                            text:
+                                'By tapping Save & Continue, you agree to our ',
+                          ),
+                          TextSpan(
+                            text: 'Terms of Service',
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -806,30 +853,3 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 }
 
-class _FakeProfileRepository implements ProfileRepository {
-  Profile? _cached;
-
-  @override
-  Future<Either<Failure, Profile>> createProfile({
-    required String name,
-    required String gender,
-    required String email,
-    required String refer,
-    required String emergencyContact,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _cached = Profile(
-      id: 'demo-profile',
-      name: name,
-      gender: gender,
-      refer: refer,
-      emergencyContact: emergencyContact, email: email,
-    );
-    return Right(_cached!);
-  }
-
-  @override
-  Future<Either<Failure, Profile?>> getCachedProfile() async {
-    return Right(_cached);
-  }
-}

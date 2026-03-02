@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
 
 import '../../../about/presentation/pages/about_screen.dart';
 import '../../../auth/presentation/theme/auth_ui_tokens.dart';
@@ -13,7 +18,9 @@ import '../../../refer_earn/presentation/pages/refer_earn_screen.dart';
 import '../../../ride_history/presentation/pages/ride_history_screen.dart';
 
 class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({super.key});
+  const HomeDrawer({super.key, required this.onReopenDrawer});
+
+  final VoidCallback onReopenDrawer;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +36,10 @@ class HomeDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProfileHeader(context: context),
+            _ProfileHeader(
+              context: context,
+              onReopenDrawer: onReopenDrawer,
+            ),
 
             const SizedBox(height: 16),
 
@@ -44,7 +54,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const EarningsScreen()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -55,7 +65,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const IncentivesPage()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -66,7 +76,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const DocumentsScreen()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -79,7 +89,7 @@ class HomeDrawer extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => const DemandPlannerScreen(),
                   ),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -90,7 +100,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ReferEarnScreen()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -117,7 +127,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const AboutScreen()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -128,7 +138,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const RateAppScreen()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
             _DrawerItem(
@@ -139,7 +149,7 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const HelpSupportScreen()),
-                );
+                ).then((_) => onReopenDrawer());
               },
             ),
 
@@ -151,21 +161,53 @@ class HomeDrawer extends StatelessWidget {
   }
 }
 
-class _ProfileHeader extends StatelessWidget {
+class _ProfileHeader extends StatefulWidget {
   final BuildContext context;
-  const _ProfileHeader({required this.context});
+  final VoidCallback onReopenDrawer;
+
+  const _ProfileHeader({
+    required this.context,
+    required this.onReopenDrawer,
+  });
+
+  @override
+  State<_ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<_ProfileHeader> {
+  static const String _photoKey = 'profile.photo.path';
+  final ImagePicker _picker = ImagePicker();
+  String? _photoPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoPath = TextFieldStore.read(_photoKey);
+  }
+
+  Future<void> _pickPhoto() async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+    _photoPath = picked.path;
+    await TextFieldStore.write(_photoKey, picked.path);
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final name = (UserCacheStore.read()?.fullName ?? 'Sam Yogi').trim();
+    final displayName = name.isEmpty ? 'Sam Yogi' : name;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
       child: GestureDetector(
         onTap: () {
-          Navigator.pop(context);
+          Navigator.pop(widget.context);
           Navigator.push(
-            context,
+            widget.context,
             MaterialPageRoute(builder: (_) => const ProfileScreen()),
-          );
+          ).then((_) => widget.onReopenDrawer());
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,36 +232,46 @@ class _ProfileHeader extends StatelessWidget {
                       child: ClipOval(
                         child: Container(
                           color: const Color(0xFF3A3A3A),
-                          child: const Icon(
-                            Icons.person,
-                            size: 44,
-                            color: Colors.white54,
-                          ),
+                          child: _photoPath != null &&
+                                  _photoPath!.isNotEmpty &&
+                                  File(_photoPath!).existsSync()
+                              ? Image.file(
+                                  File(_photoPath!),
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(
+                                  Icons.person,
+                                  size: 44,
+                                  color: Colors.white54,
+                                ),
                         ),
                       ),
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: AuthUiColors.brandGreen,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 13,
+                      child: GestureDetector(
+                        onTap: _pickPhoto,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(
+                            color: AuthUiColors.brandGreen,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                            size: 13,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Sam Yogi',
+                Text(
+                  displayName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

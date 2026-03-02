@@ -2,8 +2,9 @@ class ProfileValidationService {
   static final RegExp _dobPattern = RegExp(
     r'^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$',
   );
-  static final RegExp _emailPattern =
-  RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+  static final RegExp _emailPattern = RegExp(
+    r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.(com|in|org)$',
+  );
   static final RegExp _allSameDigitPattern = RegExp(r'^(\d)\1{9}$');
 
   static const Set<String> _allowedGenders = {

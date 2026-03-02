@@ -6,6 +6,7 @@ import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
 import 'status_header.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class OfflineContent extends StatelessWidget {
   const OfflineContent({super.key});
@@ -332,7 +333,7 @@ class _WalletCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          ElevatedButton(
+          ShadowButton(
             onPressed: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (_) => const WalletPage()))

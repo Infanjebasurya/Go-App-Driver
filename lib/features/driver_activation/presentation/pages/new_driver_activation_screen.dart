@@ -40,13 +40,13 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
     if (_phase == NewDriverActivationPhase.documentReview) {
       unawaited(
         RegistrationProgressStore.setStep(
-          RegistrationStep.documentReviewPending,
+          RegistrationStep.verificationSubmitted,
         ),
       );
       _startReviewCountdown();
     } else {
       unawaited(
-        RegistrationProgressStore.setStep(RegistrationStep.walletTopUpPending),
+        RegistrationProgressStore.setStep(RegistrationStep.verificationSubmitted),
       );
     }
   }
@@ -74,7 +74,7 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
   void _moveToWalletTopUp() {
     if (!mounted) return;
     unawaited(
-      RegistrationProgressStore.setStep(RegistrationStep.walletTopUpPending),
+      RegistrationProgressStore.setStep(RegistrationStep.verificationSubmitted),
     );
     setState(() {
       _phase = NewDriverActivationPhase.walletTopUp;

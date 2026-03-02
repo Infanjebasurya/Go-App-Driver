@@ -4,6 +4,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/withdrawal_success_page.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class WithdrawPage extends StatelessWidget {
   const WithdrawPage({super.key});
@@ -21,7 +22,7 @@ class WithdrawPage extends StatelessWidget {
         );
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: AppBar(
+          appBar: AppAppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
             leading: IconButton(
@@ -188,3 +189,5 @@ class WithdrawPage extends StatelessWidget {
     );
   }
 }
+
+

@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 
 class ProfileEditCubit extends Cubit<ProfileEditState> {
   ProfileEditCubit({
-    required GetCachedProfileUseCase getCachedProfileUseCase,  // ✅ injected
+    required GetCachedProfileUseCase getCachedProfileUseCase,
     Duration saveDelay = const Duration(milliseconds: 700),
     Duration statusResetDelay = const Duration(milliseconds: 400),
     Duration actionDelay = const Duration(milliseconds: 800),
@@ -45,9 +46,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
             phone: profile.phone ?? '',
             gender: profile.gender,
             dateOfBirth: profile.dob ?? '',
-            rating: profile.rating ?? 0.0,
-            totalTrips: profile.totalTrips ?? 0,
-            totalYears: profile.totalYears ?? 0.0,
+            rating: profile.rating,
+            totalTrips: profile.totalTrips,
+            totalYears: profile.totalYears,
           ),
         ));
       },
@@ -62,6 +63,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       status: ProfileEditStatus.saved,
       data: state.data!.copyWith(fullName: name.trim()),
     ));
+    final cached = UserCacheStore.read();
+    if (cached != null) {
+      await UserCacheStore.save(cached.copyWith(fullName: name.trim()));
+    }
     await Future<void>.delayed(_statusResetDelay);
     emit(state.copyWith(status: ProfileEditStatus.loaded));
   }
@@ -74,6 +79,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       status: ProfileEditStatus.saved,
       data: state.data!.copyWith(email: email.trim()),
     ));
+    final cached = UserCacheStore.read();
+    if (cached != null) {
+      await UserCacheStore.save(
+        cached.copyWith(email: email.trim().isEmpty ? null : email.trim()),
+      );
+    }
     await Future<void>.delayed(_statusResetDelay);
     emit(state.copyWith(status: ProfileEditStatus.loaded));
   }
@@ -90,3 +101,4 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     emit(state.copyWith(status: ProfileEditStatus.deleted));
   }
 }
+

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
 import 'package:goapp/features/rate_app/presentation/cubit/rate_app_cubit.dart';
 import 'package:goapp/features/rate_app/presentation/cubit/rate_app_state.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class RateAppScreen extends StatelessWidget {
   const RateAppScreen({super.key});
@@ -54,7 +57,7 @@ class _RateAppViewState extends State<_RateAppView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
@@ -65,7 +68,7 @@ class _RateAppViewState extends State<_RateAppView> {
             child: Icon(
               Icons.arrow_back_ios,
               color: AppColors.headingDark,
-              size: 18,
+              size: 14,
             ),
           ),
         ),
@@ -160,7 +163,7 @@ class _RateAppViewState extends State<_RateAppView> {
                       ),
                       const SizedBox(height: 32),
                       Container(
-                        width: 40,
+                        width: 100,
                         height: 4,
                         decoration: BoxDecoration(
                           color: AppColors.neutralDDD,
@@ -172,8 +175,18 @@ class _RateAppViewState extends State<_RateAppView> {
                   ),
                 ),
               ),
-              _SubmitButton(state: state),
             ],
+          );
+        },
+      ),
+      bottomNavigationBar: BlocBuilder<RateAppCubit, RateAppState>(
+        builder: (context, state) {
+          return Container(
+            color: AppColors.white,
+            child: KeyboardAwareBottom(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: _SubmitButton(state: state),
+            ),
           );
         },
       ),
@@ -244,7 +257,7 @@ class _RateAppViewState extends State<_RateAppView> {
               SizedBox(
                 width: double.infinity,
                 height: 48,
-                child: ElevatedButton(
+                child: ShadowButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
@@ -379,12 +392,12 @@ class _FeedbackBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: AppColors.strokeLight),
+    );
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.strokeLight),
-      ),
       child: TextField(
         controller: controller,
         enabled: enabled,
@@ -398,13 +411,19 @@ class _FeedbackBox extends StatelessWidget {
         ),
         decoration: InputDecoration(
           fillColor: AppColors.white,
+          filled: true,
           hintText: 'Share your feedback',
           hintStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
             color: AppColors.neutral888,
           ),
-          border: InputBorder.none,
+          border: border,
+          enabledBorder: border,
+          disabledBorder: border,
+          focusedBorder: border.copyWith(
+            borderSide: const BorderSide(color: AppColors.strokeLight, width: 1.2),
+          ),
           contentPadding: const EdgeInsets.all(16),
         ),
       ),
@@ -423,46 +442,43 @@ class _SubmitButton extends StatelessWidget {
     final isSubmitted = state.status == RateAppStatus.submitted;
     final isEnabled = state.canSubmit && !isLoading && !isSubmitted;
 
-    return Container(
-      color: AppColors.white,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        height: 54,
-        child: ElevatedButton(
-          onPressed: isEnabled
-              ? () => context.read<RateAppCubit>().submitReview()
-              : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isEnabled
-                ? AppColors.emerald
-                : AppColors.neutralCCC,
-            foregroundColor: AppColors.white,
-            elevation: 0,
-            minimumSize: const Size(double.infinity, 54),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ShadowButton(
+        onPressed: isEnabled
+            ? () => context.read<RateAppCubit>().submitReview()
+            : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isEnabled ? AppColors.emerald : AppColors.neutralCCC,
+          foregroundColor: AppColors.white,
+          elevation: 0,
+          minimumSize: const Size(double.infinity, 54),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
           ),
-          child: isLoading
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    color: AppColors.white,
-                    strokeWidth: 2.5,
-                  ),
-                )
-              : Text(
-                  isSubmitted ? '✓ REVIEW SUBMITTED' : 'SUBMIT REVIEW',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                  ),
-                ),
         ),
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: AppColors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Text(
+                isSubmitted ? '✓ REVIEW SUBMITTED' : 'SUBMIT REVIEW',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                ),
+              ),
       ),
     );
   }
 }
+
+
+
