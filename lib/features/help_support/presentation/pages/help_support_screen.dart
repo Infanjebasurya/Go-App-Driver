@@ -7,6 +7,7 @@ import 'package:goapp/features/help_support/presentation/pages/complaint_screen.
 import 'package:goapp/features/help_support/presentation/pages/explore_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/safety.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -24,7 +25,7 @@ class HelpSupportScreen extends StatelessWidget {
         },
         child: Scaffold(
           backgroundColor: AppColors.white,
-          appBar: AppBar(
+          appBar: AppAppBar(
             leading: IconButton(
               icon: const Icon(Icons.chevron_left),
               onPressed: () => Navigator.of(context).pop(true),
@@ -142,3 +143,4 @@ class _MenuTile extends StatelessWidget {
     );
   }
 }
+

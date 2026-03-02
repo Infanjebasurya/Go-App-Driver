@@ -15,6 +15,7 @@ import 'package:goapp/features/home/presentation/cubit/available_orders_cubit.da
 import 'package:goapp/features/home/presentation/cubit/available_orders_state.dart';
 import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
 import 'package:vibration/vibration.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class AvailableOrdersPage extends StatefulWidget {
   const AvailableOrdersPage({super.key});
@@ -523,7 +524,7 @@ class _OrderCard extends StatelessWidget {
                   flex: 2,
                   child: SizedBox(
                     height: 44,
-                    child: ElevatedButton(
+                    child: ShadowButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.emerald,
                         foregroundColor: AppColors.white,
@@ -632,3 +633,4 @@ class _LocationPoint extends StatelessWidget {
     );
   }
 }
+

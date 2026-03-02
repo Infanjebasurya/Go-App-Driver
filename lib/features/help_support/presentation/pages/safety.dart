@@ -5,6 +5,7 @@ import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/help_support/presentation/cubit/emergency_contacts_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class SafetyPage extends StatelessWidget {
   const SafetyPage({super.key});
@@ -17,7 +18,14 @@ class SafetyPage extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             backgroundColor: AppColors.coolwhite,
-            appBar: const AppAppBar(title: 'Safety'),
+            appBar: const AppAppBar(
+              title: 'Safety',
+              titleStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.headingDark,
+              ),
+            ),
             body: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
@@ -243,7 +251,13 @@ class AddEmergencyNumberPage extends StatelessWidget {
       child: Builder(
         builder: (context) {
           return Scaffold(
-            appBar: const AppAppBar(title: 'Add Emergency Number'),
+            appBar: const AppAppBar(title: 'Add Emergency Number',
+              titleStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.headingDark,
+              ),
+            ),
             body: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
@@ -632,6 +646,8 @@ class _InputField extends StatelessWidget {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hint,
+        filled: true,
+        fillColor: AppColors.white,
         prefixIcon: Icon(leading, size: 18, color: AppColors.sectionLabel),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -663,10 +679,16 @@ class _AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
+    return ShadowButton(
       onPressed: onPressed,
       icon: leading ?? const SizedBox.shrink(),
-      label: Text(label),
+      label: Text(label,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.0,
+        ),
+      ),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
@@ -676,3 +698,4 @@ class _AppButton extends StatelessWidget {
     );
   }
 }
+

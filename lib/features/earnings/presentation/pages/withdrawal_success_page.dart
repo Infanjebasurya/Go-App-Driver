@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class WithdrawalSuccessPage extends StatelessWidget {
   const WithdrawalSuccessPage({
@@ -94,7 +95,7 @@ class WithdrawalSuccessPage extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: ElevatedButton(
+                child: ShadowButton(
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.pop(context);
@@ -120,3 +121,4 @@ class WithdrawalSuccessPage extends StatelessWidget {
     );
   }
 }
+

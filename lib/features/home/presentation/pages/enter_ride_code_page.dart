@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
@@ -42,7 +41,6 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
     if (Env.mockApi) {
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
-    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
   }
 
   void _handleBack() {
@@ -157,8 +155,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                             ? () async {
                                 await RideHistoryStore.markStartedNow();
                                 // TripSessionStore: OTP verified, trip started.
-                                final String code =
-                                    state.digits.join();
+                                final String code = state.digits.join();
                                 await TripSessionStore.markTripStarted(
                                   rideCode: code,
                                 );
@@ -281,3 +278,4 @@ class _KeypadNumberButton extends StatelessWidget {
     );
   }
 }
+

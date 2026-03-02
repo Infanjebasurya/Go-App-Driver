@@ -11,6 +11,7 @@ class DocNumberField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final String? allowedPattern;
   final bool forceUppercase;
+  final int? maxLength;
 
   const DocNumberField({
     super.key,
@@ -20,6 +21,7 @@ class DocNumberField extends StatelessWidget {
     required this.onChanged,
     this.allowedPattern,
     this.forceUppercase = false,
+    this.maxLength,
     this.example,
     this.errorText,
   });
@@ -51,6 +53,8 @@ class DocNumberField extends StatelessWidget {
               FilteringTextInputFormatter.allow(
                 RegExp(allowedPattern!),
               ),
+            if (maxLength != null)
+              LengthLimitingTextInputFormatter(maxLength),
             if (forceUppercase) _UpperCaseTextFormatter(),
           ],
           style: const TextStyle(
@@ -75,8 +79,11 @@ class DocNumberField extends StatelessWidget {
                 width: 1.2,
               ),
             ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.emerald, width: 2),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: hasError ? const Color(0xFFE53935) : AppColors.emerald,
+                width: 2,
+              ),
             ),
             errorBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFFE53935), width: 1.2),

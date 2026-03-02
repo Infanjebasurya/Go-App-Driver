@@ -4,6 +4,9 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/recharge_success_page.dart';
+import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class RechargeWalletPage extends StatelessWidget {
   const RechargeWalletPage({super.key});
@@ -21,7 +24,7 @@ class RechargeWalletPage extends StatelessWidget {
         );
         return Scaffold(
           backgroundColor: AppColors.surfaceF5,
-          appBar: AppBar(
+          appBar: AppAppBar(
             backgroundColor: AppColors.surfaceF5,
             elevation: 0,
             leading: IconButton(
@@ -153,47 +156,47 @@ class RechargeWalletPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) =>
-                              RechargeSuccessPage(amount: state.rechargeAmount),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.emerald,
-                      foregroundColor: AppColors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
+            ],
+          ),
+          bottomNavigationBar: KeyboardAwareBottom(
+            padding: const EdgeInsets.all(24),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ShadowButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          RechargeSuccessPage(amount: state.rechargeAmount),
                     ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'Proceed to Pay',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward, size: 20),
-                      ],
-                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.emerald,
+                  foregroundColor: AppColors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
                   ),
                 ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Proceed to Pay',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward, size: 20),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         );
       },
@@ -318,3 +321,5 @@ class _PaymentMethodTile extends StatelessWidget {
     );
   }
 }
+
+

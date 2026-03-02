@@ -10,7 +10,6 @@ import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
-import 'package:goapp/core/permissions/notification_permission_helper.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
@@ -52,10 +51,7 @@ class TripNavigationPage extends StatelessWidget {
 
 class _TripNavigationView extends StatefulWidget {
   // B-05 FIX: dropPoint propagated from TripNavigationPage.
-  const _TripNavigationView({
-    this.initialRoutePath,
-    required this.dropPoint,
-  });
+  const _TripNavigationView({this.initialRoutePath, required this.dropPoint});
 
   final List<LatLng>? initialRoutePath;
   final LatLng dropPoint;
@@ -98,7 +94,6 @@ class _TripNavigationViewState extends State<_TripNavigationView>
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
     WidgetsBinding.instance.addObserver(this);
-    unawaited(NotificationPermissionHelper.ensureRequestedOnce());
     _loadMapStyle();
     _loadBikeIcon();
     unawaited(_refreshLocationState(requestPermission: true));
@@ -433,10 +428,11 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                 // safely outside the build phase.
                 if (!state.showArrivalSheet && !state.isPaused) {
                   final cubit = context.read<TripNavigationCubit>();
-                  final LatLng bikePoint =
-                      cubit.pointAlongRoute(_mapRoutePath);
-                  final double metersToDrop =
-                      _distanceMeters(bikePoint, widget.dropPoint);
+                  final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
+                  final double metersToDrop = _distanceMeters(
+                    bikePoint,
+                    widget.dropPoint,
+                  );
                   if (metersToDrop <= 100) {
                     cubit.markArrived();
                   }
@@ -447,132 +443,133 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                     previous.progress != current.progress ||
                     previous.showArrivalSheet != current.showArrivalSheet ||
                     previous.isPaused != current.isPaused,
-              builder: (BuildContext context, TripNavigationState state) {
-                // B-01 + B-02 FIX: No side effects here. Notifications,
-                // timer cancellations and cubit mutations have been moved
-                // to the BlocListener above.
-                final cubit = context.read<TripNavigationCubit>();
-                final List<LatLng> routePoints = cubit.currentRoutePoints(
-                  _mapRoutePath,
-                );
-                final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
+                builder: (BuildContext context, TripNavigationState state) {
+                  // B-01 + B-02 FIX: No side effects here. Notifications,
+                  // timer cancellations and cubit mutations have been moved
+                  // to the BlocListener above.
+                  final cubit = context.read<TripNavigationCubit>();
+                  final List<LatLng> routePoints = cubit.currentRoutePoints(
+                    _mapRoutePath,
+                  );
+                  final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
 
-                return Stack(
-                  children: <Widget>[
-                    Positioned.fill(
-                      child: AppGoogleMap(
-                        initialCameraPosition: const CameraPosition(
-                          target: LatLng(13.0638, 80.2181),
-                          zoom: 14.6,
+                  return Stack(
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: AppGoogleMap(
+                          initialCameraPosition: const CameraPosition(
+                            target: LatLng(13.0638, 80.2181),
+                            zoom: 14.6,
+                          ),
+                          style: _mapStyle,
+                          polylines: <Polyline>{
+                            Polyline(
+                              polylineId: const PolylineId('route'),
+                              points: routePoints,
+                              color: AppColors.emerald,
+                              width: 5,
+                            ),
+                          },
+                          markers: <Marker>{
+                            Marker(
+                              markerId: const MarkerId('destination_marker'),
+                              position: widget.dropPoint,
+                              infoWindow: const InfoWindow(title: 'Drop'),
+                            ),
+                            Marker(
+                              markerId: const MarkerId('bike_marker'),
+                              position: bikePoint,
+                              icon: _bikeMarkerIcon,
+                              infoWindow: const InfoWindow(title: 'Driver'),
+                            ),
+                          },
                         ),
-                        style: _mapStyle,
-                        polylines: <Polyline>{
-                          Polyline(
-                            polylineId: const PolylineId('route'),
-                            points: routePoints,
-                            color: AppColors.emerald,
-                            width: 5,
-                          ),
-                        },
-                        markers: <Marker>{
-                          Marker(
-                            markerId: const MarkerId('destination_marker'),
-                            position: widget.dropPoint,
-                            infoWindow: const InfoWindow(title: 'Drop'),
-                          ),
-                          Marker(
-                            markerId: const MarkerId('bike_marker'),
-                            position: bikePoint,
-                            icon: _bikeMarkerIcon,
-                            infoWindow: const InfoWindow(title: 'Driver'),
-                          ),
-                        },
                       ),
-                    ),
-                    if (!state.showArrivalSheet)
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top + 18,
-                        left: 14,
-                        right: 14,
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(12, 12, 14, 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            gradient: const LinearGradient(
-                              begin: Alignment(-1, 0.05),
-                              end: Alignment(1, 0),
-                              colors: <Color>[
-                                AppColors.homeStatusDark,
-                                AppColors.emerald,
+                      if (!state.showArrivalSheet)
+                        Positioned(
+                          top: MediaQuery.of(context).padding.top + 18,
+                          left: 14,
+                          right: 14,
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(12, 12, 14, 12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              gradient: const LinearGradient(
+                                begin: Alignment(-1, 0.05),
+                                end: Alignment(1, 0),
+                                colors: <Color>[
+                                  AppColors.homeStatusDark,
+                                  AppColors.emerald,
+                                ],
+                              ),
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                const _TurnIconBadge(),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        'Next Turn',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.white.withValues(
+                                            alpha: 0.75,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text.rich(
+                                        TextSpan(
+                                          children: <InlineSpan>[
+                                            TextSpan(
+                                              text:
+                                                  '${state.remainingMeters}m ',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w800,
+                                                color: AppColors.white,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: 'onto Dr.NSK Street Rd',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.white
+                                                    .withValues(alpha: 0.85),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          child: Row(
-                            children: <Widget>[
-                              const _TurnIconBadge(),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      'Next Turn',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.white.withValues(
-                                          alpha: 0.75,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 3),
-                                    Text.rich(
-                                      TextSpan(
-                                        children: <InlineSpan>[
-                                          TextSpan(
-                                            text: '${state.remainingMeters}m ',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w800,
-                                              color: AppColors.white,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: 'onto Dr.NSK Street Rd',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.white.withValues(
-                                                alpha: 0.85,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                        ),
+                      if (_locationIssue != null)
+                        Positioned(
+                          top: MediaQuery.of(context).padding.top + 12,
+                          left: 0,
+                          right: 0,
+                          child: LocationDisabledBanner(
+                            issue: _locationIssue!,
+                            onActionTap: _onLocationBannerActionTap,
                           ),
                         ),
-                      ),
-                    if (_locationIssue != null)
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top + 12,
-                        left: 0,
-                        right: 0,
-                        child: LocationDisabledBanner(
-                          issue: _locationIssue!,
-                          onActionTap: _onLocationBannerActionTap,
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
+                    ],
+                  );
+                },
+              ),
             ), // closes BlocListener (B-01/B-02 fix)
             BlocSelector<TripNavigationCubit, TripNavigationState, bool>(
               selector: (state) => state.showArrivalSheet,
@@ -606,19 +603,27 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                         child: AnimatedOpacity(
                           duration: const Duration(milliseconds: 280),
                           opacity: showArrivalSheet ? 1 : 0,
-                        child: _ReachedCustomerSheet(
+                          child: _ReachedCustomerSheet(
                             onCompleteTap: () async {
                               // TripSessionStore: drop reached, trip completed.
                               unawaited(TripSessionStore.markTripCompleted());
-                              // B-04 FIX: fareLabel is now included so the trip history
-                              // record stores a valid fare amount.
+                              final TripSession? session =
+                                  await TripSessionStore.loadActive();
+                              final String pickupLocation =
+                                  session?.pickupAddress ??
+                                  '42, I-Block, Arumbakkam, Chennai-106';
+                              final String dropLocation =
+                                  session?.dropAddress ??
+                                  '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai';
+                              final String fareLabel =
+                                  session?.fareLabel ?? '\u20B990';
+                              final String distanceLabel =
+                                  session?.distanceLabel ?? '2.1 km';
                               await RideHistoryStore.markCompletedNowOrCreate(
-                                pickupLocation:
-                                    '42, I-Block, Arumbakkam, Chennai-106',
-                                dropLocation:
-                                    '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
-                                fareLabel: '₹90',
-                                distanceLabel: '2.1 km',
+                                pickupLocation: pickupLocation,
+                                dropLocation: dropLocation,
+                                fareLabel: fareLabel,
+                                distanceLabel: distanceLabel,
                               );
                               if (!context.mounted) return;
                               Navigator.push(

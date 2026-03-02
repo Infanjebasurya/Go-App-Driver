@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
+import 'package:goapp/features/city_vehicle/vehicle_details/presentation/model/vehicle_details_model.dart';
 
 class VehiclePhotoUpload extends StatelessWidget {
   final bool hasPhoto;
+  final String? uploadPath;
+  final String? uploadName;
+  final VehicleUploadType? uploadType;
   final VoidCallback onTap;
   final VoidCallback? onRemove;
   final VehicleType vehicleType;
@@ -11,6 +17,9 @@ class VehiclePhotoUpload extends StatelessWidget {
   const VehiclePhotoUpload({
     super.key,
     required this.hasPhoto,
+    this.uploadPath,
+    this.uploadName,
+    this.uploadType,
     required this.onTap,
     required this.vehicleType,
     this.onRemove,
@@ -39,7 +48,12 @@ class VehiclePhotoUpload extends StatelessWidget {
           ),
         ),
         child: hasPhoto
-            ? _UploadedState(onRemove: onRemove)
+            ? _UploadedState(
+                onRemove: onRemove,
+                uploadPath: uploadPath,
+                uploadName: uploadName,
+                uploadType: uploadType,
+              )
             : _EmptyState(vehicleType: vehicleType),
       ),
     );
@@ -90,39 +104,66 @@ class _EmptyState extends StatelessWidget {
 
 class _UploadedState extends StatelessWidget {
   final VoidCallback? onRemove;
+  final String? uploadPath;
+  final String? uploadName;
+  final VehicleUploadType? uploadType;
 
-  const _UploadedState({this.onRemove});
+  const _UploadedState({
+    this.onRemove,
+    this.uploadPath,
+    this.uploadName,
+    this.uploadType,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isImage = uploadType == VehicleUploadType.image && uploadPath != null;
+    final isDocument =
+        uploadType == VehicleUploadType.document && uploadPath != null;
+
     return Stack(
       children: [
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: AppColors.emerald.withValues(alpha: 0.12),
+              if (isImage)
+                ClipRRect(
                   borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    File(uploadPath!),
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        _fallbackIcon(),
+                  ),
+                )
+              else
+                _fallbackIcon(isDocument: isDocument),
+              if (isDocument &&
+                  uploadName != null &&
+                  uploadName!.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        uploadName!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.headingNavy,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: const Icon(
-                  Icons.check_rounded,
-                  size: 28,
-                  color: AppColors.emerald,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Photo uploaded',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.emerald,
-                ),
-              ),
+              ],
             ],
           ),
         ),
@@ -148,6 +189,22 @@ class _UploadedState extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _fallbackIcon({bool isDocument = false}) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: AppColors.emerald.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        isDocument ? Icons.description_rounded : Icons.check_rounded,
+        size: 32,
+        color: AppColors.emerald,
+      ),
     );
   }
 }

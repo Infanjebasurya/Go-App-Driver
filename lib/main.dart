@@ -1,8 +1,12 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
+import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/injection.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
@@ -16,11 +20,15 @@ void main() async {
   await LocalNotificationService.initialize();
   await TripBackgroundService.initialize();
   await TextFieldStore.init();
-  // B-08 FIX: Register all dependencies before the app starts so every
-  // feature reads from the same singleton instances via get_it.
+  await UserCacheStore.init();
   await initializeDependencies();
 
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+      enabled: kDebugMode && Env.enableDevicePreview,
+      builder: (context) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

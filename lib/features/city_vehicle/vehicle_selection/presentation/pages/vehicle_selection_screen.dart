@@ -11,6 +11,7 @@ import 'package:goapp/features/city_vehicle/vehicle_details/presentation/pages/v
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/cubit/vehicle_selection_cubit.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/widgets/vehicle_card.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class VehicleSelectionScreen extends StatelessWidget {
   final City selectedCity;
@@ -51,90 +52,94 @@ class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const AppAppBar(
-        title: 'GoApp',
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: AppColors.coolwhite),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: const AppAppBar(
+          title: 'GoApp',
+          backEnabled: false,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: Divider(height: 1, color: AppColors.coolwhite),
+          ),
         ),
-      ),
-      body: BlocBuilder<VehicleSelectionCubit, VehicleSelectionState>(
-        builder: (context, state) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Select Vehicle Type',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.headingNavy,
-                        letterSpacing: -0.6,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Select the vehicle you want do drive with',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade500,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: kVehicles.map((vehicle) {
-                    return VehicleCard(
-                      key: ValueKey(vehicle.type),
-                      vehicle: vehicle,
-                      isSelected: state.isSelected(vehicle),
-                      onTap: () => context
-                          .read<VehicleSelectionCubit>()
-                          .selectVehicle(vehicle),
-                    );
-                  }).toList(),
-                ),
-              ),
-              _ConfirmButton(
-                enabled: state.hasSelection,
-                vehicleLabel: state.selectedVehicle?.label,
-                onTap: () {
-                  if (state.hasSelection) {
-                    unawaited(
-                      RegistrationProgressStore.setStep(
-                        RegistrationStep.vehicleDetails,
-                        cityId: widget.selectedCity.id,
-                        vehicleType: state.selectedVehicle!.type.name,
-                        clearDocumentStep: true,
-                      ),
-                    );
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => VehicleDetailsScreen(
-                          vehicleType: state.selectedVehicle!.type,
+        body: BlocBuilder<VehicleSelectionCubit, VehicleSelectionState>(
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Select Vehicle Type',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.headingNavy,
+                          letterSpacing: -0.6,
+                          height: 1.1,
                         ),
                       ),
-                    );
-                  }
-                },
-              ),
-            ],
-          );
-        },
+                      const SizedBox(height: 8),
+                      Text(
+                        'Select the vehicle you want do drive with',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: kVehicles.map((vehicle) {
+                      return VehicleCard(
+                        key: ValueKey(vehicle.type),
+                        vehicle: vehicle,
+                        isSelected: state.isSelected(vehicle),
+                        onTap: () => context
+                            .read<VehicleSelectionCubit>()
+                            .selectVehicle(vehicle),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                _ConfirmButton(
+                  enabled: state.hasSelection,
+                  vehicleLabel: state.selectedVehicle?.label,
+                  onTap: () {
+                    if (state.hasSelection) {
+                      unawaited(
+                        RegistrationProgressStore.setStep(
+                          RegistrationStep.vehicleDetails,
+                          cityId: widget.selectedCity.id,
+                          vehicleType: state.selectedVehicle!.type.name,
+                          clearDocumentStep: true,
+                        ),
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => VehicleDetailsScreen(
+                            vehicleType: state.selectedVehicle!.type,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -170,7 +175,7 @@ class _ConfirmButton extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           height: 52,
-          child: ElevatedButton(
+          child: ShadowButton(
             key: const Key('confirm_vehicle_button'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.emerald,
@@ -197,3 +202,4 @@ class _ConfirmButton extends StatelessWidget {
     );
   }
 }
+

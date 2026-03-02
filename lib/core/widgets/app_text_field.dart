@@ -23,6 +23,10 @@ class AppTextField extends StatelessWidget {
     this.hint,
     this.hintStyle,
     this.inputFormatters,
+    this.autofillHints,
+    this.autocorrect,
+    this.enableSuggestions,
+    this.enableIMEPersonalizedLearning,
     this.onChanged,
   });
 
@@ -45,6 +49,10 @@ class AppTextField extends StatelessWidget {
   final String? hint;
   final TextStyle? hintStyle;
   final List<TextInputFormatter>? inputFormatters;
+  final Iterable<String>? autofillHints;
+  final bool? autocorrect;
+  final bool? enableSuggestions;
+  final bool? enableIMEPersonalizedLearning;
   final ValueChanged<String>? onChanged;
 
   @override
@@ -64,9 +72,17 @@ class AppTextField extends StatelessWidget {
       maxLength: maxLength,
       style: textStyle,
       inputFormatters: inputFormatters,
+      autofillHints: autofillHints,
+      autocorrect: autocorrect ?? true,
+      enableSuggestions: enableSuggestions ?? true,
+      enableIMEPersonalizedLearning:
+          enableIMEPersonalizedLearning ?? true,
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
+        floatingLabelBehavior: label == null
+            ? FloatingLabelBehavior.auto
+            : FloatingLabelBehavior.always,
         counterText: '',
         hintText: hint,
         hintStyle: hintStyle,

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/model/vehicle_details_model.dart';
@@ -33,8 +34,39 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
   }
 
   void updateYear(String value) {
-    final err = state.errors.copyWith(clearYear: true);
+    String? yearError;
+    final trimmed = value.trim();
+    if (trimmed.isNotEmpty) {
+      final n = int.tryParse(trimmed);
+      final current = DateTime.now().year;
+      if (n == null || n < 1980 || n > current) {
+        yearError = 'Enter a valid year (1980-$current)';
+      }
+    }
+    final err = state.errors.copyWith(
+      year: yearError,
+      clearYear: yearError == null,
+    );
     emit(state.copyWith(year: value, errors: err));
+  }
+
+
+  static const int _maxImageBytes = 5 * 1024 * 1024;
+
+  bool _validateFileSize(int sizeBytes) {
+    if (sizeBytes <= 0 || sizeBytes > _maxImageBytes) {
+      emit(
+        state.copyWith(
+          hasPhoto: false,
+          clearUpload: true,
+          errors: state.errors.copyWith(
+            photo: 'File size must be under 5 MB.',
+          ),
+        ),
+      );
+      return false;
+    }
+    return true;
   }
 
   Future<void> pickPhoto({required ImageSource source}) async {
@@ -56,24 +88,66 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       return;
     }
 
-    final picked = await _picker.pickImage(source: source);
-    if (picked == null) return;
 
-    final sizeBytes = await picked.length();
-    const maxBytes = 5 * 1024 * 1024;
-    if (sizeBytes > maxBytes) {
+    if (source == ImageSource.gallery) {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        withData: false,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.single;
+      if (!_validateFileSize(file.size)) return;
       emit(
         state.copyWith(
-          hasPhoto: false,
-          errors: state.errors.copyWith(photo: 'Image must be 5 MB or less'),
+          hasPhoto: true,
+          uploadPath: file.path,
+          uploadName: file.name,
+          uploadType: VehicleUploadType.image,
+          errors: state.errors.copyWith(clearPhoto: true),
+        ),
+      );
+      return;
+    } else {
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
+      if (picked == null) return;
+      final sizeBytes = await File(picked.path).length();
+      if (!_validateFileSize(sizeBytes)) return;
+      emit(
+        state.copyWith(
+          hasPhoto: true,
+          uploadPath: picked.path,
+          uploadName: picked.name,
+          uploadType: VehicleUploadType.image,
+          errors: state.errors.copyWith(clearPhoto: true),
         ),
       );
       return;
     }
+  }
+
+  Future<void> pickDocument() async {
+    if (state.errors.photo != null) {
+      emit(state.copyWith(errors: state.errors.copyWith(clearPhoto: true)));
+    }
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['pdf', 'doc', 'docx'],
+      withData: false,
+    );
+    if (result == null || result.files.isEmpty) return;
+    final file = result.files.single;
+    if (!_validateFileSize(file.size)) return;
 
     emit(
       state.copyWith(
         hasPhoto: true,
+        uploadPath: file.path,
+        uploadName: file.name,
+        uploadType: VehicleUploadType.document,
         errors: state.errors.copyWith(clearPhoto: true),
       ),
     );
@@ -83,6 +157,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     emit(
       state.copyWith(
         hasPhoto: false,
+        clearUpload: true,
         errors: state.errors.copyWith(clearPhoto: true),
       ),
     );
@@ -90,7 +165,6 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
 
   Future<bool> _ensurePermission(ImageSource source) async {
     if (source == ImageSource.gallery && Platform.isAndroid) {
-      // Android system picker doesn't require explicit storage permission.
       return true;
     }
 

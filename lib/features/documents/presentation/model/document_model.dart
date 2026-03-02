@@ -8,6 +8,7 @@ class DocumentModel {
   final DocumentStatus status;
   final String? frontImagePath;
   final String? backImagePath;
+  final String? documentNumber;
 
   const DocumentModel({
     required this.id,
@@ -17,12 +18,14 @@ class DocumentModel {
     required this.status,
     this.frontImagePath,
     this.backImagePath,
+    this.documentNumber,
   });
 
   DocumentModel copyWith({
     DocumentStatus? status,
     String? frontImagePath,
     String? backImagePath,
+    String? documentNumber,
   }) {
     return DocumentModel(
       id: id,
@@ -32,6 +35,7 @@ class DocumentModel {
       status: status ?? this.status,
       frontImagePath: frontImagePath ?? this.frontImagePath,
       backImagePath: backImagePath ?? this.backImagePath,
+      documentNumber: documentNumber ?? this.documentNumber,
     );
   }
 }

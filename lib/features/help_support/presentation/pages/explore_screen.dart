@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -15,7 +16,7 @@ class ExploreScreen extends StatelessWidget {
         final categories = cubit.filteredIssueCategories;
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: AppBar(
+          appBar: AppAppBar(
             leading: IconButton(
               icon: const Icon(Icons.chevron_left),
               onPressed: () => Navigator.of(context).pop(),
@@ -89,3 +90,4 @@ class ExploreScreen extends StatelessWidget {
     );
   }
 }
+

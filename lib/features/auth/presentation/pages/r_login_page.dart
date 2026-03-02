@@ -15,6 +15,7 @@ import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:goapp/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
+import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
 import 'package:goapp/injection.dart';
 
 class RLoginPage extends StatefulWidget {
@@ -26,6 +27,7 @@ class RLoginPage extends StatefulWidget {
 
 class _RLoginPageState extends State<RLoginPage> {
   final TextEditingController _controller = TextEditingController();
+  bool _didForceClear = false;
 
   @override
   void dispose() {
@@ -78,7 +80,10 @@ class _RLoginPageState extends State<RLoginPage> {
               if (state.submitError != null) {
                 return;
               }
-              if (state.submitRequested && state.phoneE164 != null) {
+              if (state.submitRequested &&
+                  state.phoneE164 != null &&
+                  state.digits.length == 10 &&
+                  state.error == null) {
                 context.read<AuthBloc>().add(
                   RequestOtpRequested(phone: state.phoneE164!),
                 );
@@ -89,6 +94,7 @@ class _RLoginPageState extends State<RLoginPage> {
         ],
         child: BlocBuilder<LoginFormCubit, LoginFormState>(
           builder: (context, formState) {
+            _ensureEmptyOnFirstBuild(context);
             if (_controller.text != formState.digits) {
               _controller.value = TextEditingValue(
                 text: formState.digits,
@@ -171,6 +177,10 @@ class _RLoginPageState extends State<RLoginPage> {
                                               .digitsOnly,
                                           LengthLimitingTextInputFormatter(10),
                                         ],
+                                        autofillHints: const <String>[],
+                                        autocorrect: false,
+                                        enableSuggestions: false,
+                                        enableIMEPersonalizedLearning: false,
                                         isCollapsed: true,
                                         filled: false,
                                         hint: '0000000000',
@@ -248,23 +258,6 @@ class _RLoginPageState extends State<RLoginPage> {
                                     ),
                                   ),
                                 ),
-                                const Spacer(),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 46,
-                                  child: BlocBuilder<AuthBloc, AuthState>(
-                                    builder: (context, state) {
-                                      final bool loading = state is AuthLoading;
-                                      return AuthPrimaryButton(
-                                        label: 'Get Verification Code',
-                                        loading: loading,
-                                        onPressed: context
-                                            .read<LoginFormCubit>()
-                                            .submit,
-                                      );
-                                    },
-                                  ),
-                                ),
                                 const SizedBox(height: 34),
                               ],
                             ),
@@ -275,10 +268,42 @@ class _RLoginPageState extends State<RLoginPage> {
                   },
                 ),
               ),
+              bottomNavigationBar: KeyboardAwareBottom(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final bool loading = state is AuthLoading;
+                      final isValid =
+                          formState.digits.length == 10 &&
+                              formState.error == null;
+                      return AuthPrimaryButton(
+                        label: 'Get Verification Code',
+                        loading: loading,
+                        onPressed: isValid && !loading
+                            ? context.read<LoginFormCubit>().submit
+                            : null,
+                      );
+                    },
+                  ),
+                ),
+              ),
             );
           },
         ),
       ),
     );
+  }
+
+  void _ensureEmptyOnFirstBuild(BuildContext context) {
+    if (_didForceClear) return;
+    _didForceClear = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _controller.clear();
+      context.read<LoginFormCubit>().reset();
+    });
   }
 }

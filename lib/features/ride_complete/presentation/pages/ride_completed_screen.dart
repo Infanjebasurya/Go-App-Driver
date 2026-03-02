@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/ride_complete/data/repositories/ride_complete_repository_impl.dart';
+import 'package:goapp/features/ride_complete/domain/entities/ride_completion_summary.dart';
 import 'package:goapp/features/ride_complete/domain/usecases/get_ride_completion_summary.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/ride_completed_cubit.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/ride_completed_state.dart';
@@ -42,29 +44,61 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     if (Env.mockApi) {
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
-    final summary = context.read<RideCompletedCubit>().state.summary;
-    // B-03 FIX: markCompletedNowOrCreate was already called by
-    // trip_navigation_page.dart when the captain tapped "Complete Trip".
-    // Calling it again here created a duplicate trip record.
-    // We only update the fare/distance labels on the existing record.
-    unawaited(
-      RideHistoryStore.updateLatestCompletedDetails(
-        fareLabel: '\u20B9 ${summary.totalEarnings.toStringAsFixed(2)}',
-        distanceLabel: '${summary.distanceKm.toStringAsFixed(1)} km',
-      ),
+    unawaited(_syncSummaryAndPersist());
+  }
+
+  Future<void> _syncSummaryAndPersist() async {
+    final RideCompletedCubit cubit = context.read<RideCompletedCubit>();
+    RideCompletionSummary summary = cubit.state.summary;
+    final TripSession? session = await TripSessionStore.loadActive();
+    if (session != null) {
+      final double fare = _parseCurrency(session.fareLabel);
+      final double distance = _parseDistanceKm(session.distanceLabel);
+      if (fare > 0) {
+        summary = RideCompletionSummary(
+          totalEarnings: fare,
+          distanceKm: distance > 0 ? distance : summary.distanceKm,
+          tripFare: fare,
+          tips: 0,
+          discountPercent: 0,
+          discountAmount: 0,
+          paymentLink: summary.paymentLink,
+          driverName: summary.driverName,
+          driverRating: summary.driverRating,
+          avatarAssetPath: summary.avatarAssetPath,
+        );
+        cubit.setSummary(summary);
+      }
+    }
+
+    if (!mounted) return;
+    await RideHistoryStore.updateLatestCompletedDetails(
+      fareLabel: '\u20B9 ${summary.totalEarnings.toStringAsFixed(2)}',
+      distanceLabel: '${summary.distanceKm.toStringAsFixed(1)} km',
     );
-    // TripSessionStore: cache the full payment breakdown from the server.
-    unawaited(
-      TripSessionStore.savePaymentDetails(
-        totalEarnings: summary.totalEarnings,
-        tripFare: summary.tripFare,
-        tips: summary.tips,
-        discountPercent: summary.discountPercent,
-        discountAmount: summary.discountAmount,
-        paymentLink: summary.paymentLink,
-        method: 'cash',
-      ),
+    await TripSessionStore.savePaymentDetails(
+      totalEarnings: summary.totalEarnings,
+      tripFare: summary.tripFare,
+      tips: summary.tips,
+      discountPercent: summary.discountPercent,
+      discountAmount: summary.discountAmount,
+      paymentLink: summary.paymentLink,
+      method: 'cash',
     );
+  }
+
+  double _parseCurrency(String? raw) {
+    if (raw == null || raw.isEmpty) return 0;
+    final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
+    if (cleaned.isEmpty) return 0;
+    return double.tryParse(cleaned) ?? 0;
+  }
+
+  double _parseDistanceKm(String? raw) {
+    if (raw == null || raw.isEmpty) return 0;
+    final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
+    if (cleaned.isEmpty) return 0;
+    return double.tryParse(cleaned) ?? 0;
   }
 
   @override
@@ -257,19 +291,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // TripSessionStore: captain confirmed payment received.
-                          unawaited(TripSessionStore.markPaymentReceived());
-                          unawaited(
-                            HomeTripResumeStore.setStage(
-                              HomeTripResumeStage.rateExperience,
-                            ),
-                          );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RateExperienceScreen(),
-                            ),
-                          );
+                          unawaited(_onCollectCashTap());
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
@@ -311,6 +333,25 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     );
   }
 
+  Future<void> _onCollectCashTap() async {
+    final RideCompletionSummary summary = context
+        .read<RideCompletedCubit>()
+        .state
+        .summary;
+    final TripSession? session = await TripSessionStore.loadActive();
+    final bool alreadyReceived = session?.payment?.receivedAtEpochMs != null;
+    if (!alreadyReceived) {
+      await DriverWalletStore.addAmount(summary.totalEarnings);
+    }
+    await TripSessionStore.markPaymentReceived();
+    await HomeTripResumeStore.setStage(HomeTripResumeStage.rateExperience);
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const RateExperienceScreen()),
+    );
+  }
+
   Widget _buildFareRow(String label, String value, {bool isDiscount = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -335,3 +376,4 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     );
   }
 }
+

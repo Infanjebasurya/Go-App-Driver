@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/features/documents/presentation/model/document_model.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class DocumentDetailScreen extends StatelessWidget {
   final DocumentModel document;
@@ -29,7 +31,7 @@ class DocumentDetailScreen extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
+    return AppAppBar(
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
@@ -66,25 +68,29 @@ class DocumentDetailScreen extends StatelessWidget {
         return _DrivingLicenseDetail(
           frontImagePath: document.frontImagePath,
           backImagePath: document.backImagePath,
+          licenseNumber: document.documentNumber,
         );
       case 'vehicle_rc':
         return _VehicleRCDetail(
           frontImagePath: document.frontImagePath,
           backImagePath: document.backImagePath,
+          vehicleNumber: document.documentNumber,
         );
       case 'aadhaar_card':
         return _AadhaarCardDetail(
           frontImagePath: document.frontImagePath,
           backImagePath: document.backImagePath,
+          aadhaarNumber: document.documentNumber,
         );
       case 'pan_card':
         return _PanCardDetail(
           frontImagePath: document.frontImagePath,
           backImagePath: document.backImagePath,
+          panNumber: document.documentNumber,
         );
       case 'bank_account':
       case 'add bank account':
-        return const _PanCardDetail();
+        return const _BankAccountDetail();
       default:
         return _DrivingLicenseDetail(
           frontImagePath: document.frontImagePath,
@@ -97,8 +103,13 @@ class DocumentDetailScreen extends StatelessWidget {
 class _DrivingLicenseDetail extends StatelessWidget {
   final String? frontImagePath;
   final String? backImagePath;
+  final String? licenseNumber;
 
-  const _DrivingLicenseDetail({this.frontImagePath, this.backImagePath});
+  const _DrivingLicenseDetail({
+    this.frontImagePath,
+    this.backImagePath,
+    this.licenseNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +142,9 @@ class _DrivingLicenseDetail extends StatelessWidget {
           children: [
             _InfoRow(
               label: 'LICENSE NUMBER',
-              value: 'MH12 20180012345',
+              value: licenseNumber?.isNotEmpty == true
+                  ? licenseNumber!
+                  : '—',
               valueLarge: true,
             ),
             const SizedBox(height: 16),
@@ -175,8 +188,13 @@ class _DrivingLicenseDetail extends StatelessWidget {
 class _VehicleRCDetail extends StatelessWidget {
   final String? frontImagePath;
   final String? backImagePath;
+  final String? vehicleNumber;
 
-  const _VehicleRCDetail({this.frontImagePath, this.backImagePath});
+  const _VehicleRCDetail({
+    this.frontImagePath,
+    this.backImagePath,
+    this.vehicleNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +227,9 @@ class _VehicleRCDetail extends StatelessWidget {
           children: [
             _InfoRow(
               label: 'VEHICLE NUMBER',
-              value: 'TN02 BY2026',
+              value: vehicleNumber?.isNotEmpty == true
+                  ? vehicleNumber!
+                  : '—',
               valueLarge: true,
             ),
             const SizedBox(height: 16),
@@ -256,8 +276,13 @@ class _VehicleRCDetail extends StatelessWidget {
 class _AadhaarCardDetail extends StatefulWidget {
   final String? frontImagePath;
   final String? backImagePath;
+  final String? aadhaarNumber;
 
-  const _AadhaarCardDetail({this.frontImagePath, this.backImagePath});
+  const _AadhaarCardDetail({
+    this.frontImagePath,
+    this.backImagePath,
+    this.aadhaarNumber,
+  });
 
   @override
   State<_AadhaarCardDetail> createState() => _AadhaarCardDetailState();
@@ -302,7 +327,11 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  _masked ? '**** **** 1425' : '2345 6789 1425',
+                  _masked
+                      ? _maskLast4(widget.aadhaarNumber) ?? '—'
+                      : (widget.aadhaarNumber?.isNotEmpty == true
+                          ? widget.aadhaarNumber!
+                          : '—'),
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w600,
@@ -328,13 +357,27 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
       ],
     );
   }
+
+  String? _maskLast4(String? raw) {
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return null;
+    if (trimmed.length <= 4) return trimmed;
+    final last4 = trimmed.substring(trimmed.length - 4);
+    return '****$last4';
+  }
 }
 
 class _PanCardDetail extends StatefulWidget {
   final String? frontImagePath;
   final String? backImagePath;
+  final String? panNumber;
 
-  const _PanCardDetail({this.frontImagePath, this.backImagePath});
+  const _PanCardDetail({
+    this.frontImagePath,
+    this.backImagePath,
+    this.panNumber,
+  });
 
   @override
   State<_PanCardDetail> createState() => _PanCardDetailState();
@@ -371,7 +414,11 @@ class _PanCardDetailState extends State<_PanCardDetail> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  _masked ? '******142F' : 'ABCDE1142F',
+                  _masked
+                      ? _maskLast4(widget.panNumber) ?? '—'
+                      : (widget.panNumber?.isNotEmpty == true
+                          ? widget.panNumber!
+                          : '—'),
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -406,6 +453,60 @@ class _PanCardDetailState extends State<_PanCardDetail> {
         ),
       ],
     );
+  }
+
+  String? _maskLast4(String? raw) {
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return null;
+    if (trimmed.length <= 4) return trimmed;
+    final last4 = trimmed.substring(trimmed.length - 4);
+    return '****$last4';
+  }
+}
+
+class _BankAccountDetail extends StatelessWidget {
+  const _BankAccountDetail();
+
+  @override
+  Widget build(BuildContext context) {
+    final name = _readValue('bank_details.account_holder');
+    final ifsc = _readValue('bank_details.ifsc');
+    final account = _maskAccount(_readValue('bank_details.account_number'));
+    final bankName = _readValue('bank_details.bank_name');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _LinkedBankSection(
+          children: [
+            const SizedBox(height: 12),
+            _InfoField(label: 'ACCOUNT HOLDER', value: name ?? '—'),
+            const SizedBox(height: 16),
+            _InfoField(label: 'BANK NAME', value: bankName ?? '—'),
+            const SizedBox(height: 16),
+            _InfoField(label: 'IFSC CODE', value: ifsc ?? '—'),
+            const SizedBox(height: 16),
+            _InfoField(label: 'ACCOUNT NUMBER', value: account ?? '—'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  String? _readValue(String key) {
+    final raw = TextFieldStore.read(key);
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  String? _maskAccount(String? value) {
+    if (value == null || value.isEmpty) return null;
+    if (value.length <= 4) return value;
+    final last4 = value.substring(value.length - 4);
+    return '****$last4';
   }
 }
 
@@ -524,6 +625,7 @@ class _ImageBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = fullWidth ? double.infinity : null;
     final height = fullWidth ? 160.0 : 90.0;
+    final isDocument = _isDocumentPath(imagePath);
     if (imagePath == null || imagePath!.isEmpty) {
       return Container(
         width: width,
@@ -537,6 +639,39 @@ class _ImageBox extends StatelessWidget {
             Icons.credit_card,
             color: Colors.white.withValues(alpha: 0.3),
             size: 36,
+          ),
+        ),
+      );
+    }
+    if (isDocument) {
+      return Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.description_rounded,
+                color: Colors.white,
+                size: 36,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _basename(imagePath),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -566,6 +701,21 @@ class _ImageBox extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _isDocumentPath(String? path) {
+    if (path == null || path.isEmpty) return false;
+    final lower = path.toLowerCase();
+    return lower.endsWith('.pdf') ||
+        lower.endsWith('.doc') ||
+        lower.endsWith('.docx');
+  }
+
+  String _basename(String? path) {
+    if (path == null || path.isEmpty) return '';
+    final normalized = path.replaceAll('\\', '/');
+    final idx = normalized.lastIndexOf('/');
+    return idx >= 0 ? normalized.substring(idx + 1) : normalized;
   }
 }
 
@@ -648,6 +798,7 @@ class _InfoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -659,7 +810,7 @@ class _InfoField extends StatelessWidget {
             letterSpacing: 0.6,
           ),
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 8),
         Text(
           value,
           style: const TextStyle(
@@ -696,12 +847,63 @@ class _VerifiedSection extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 'VERIFIED IDENTIFICATION',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.headingDark,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Divider(color: AppColors.surfaceF0),
+          const SizedBox(height: 14),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _LinkedBankSection extends StatelessWidget {
+  final List<Widget> children;
+
+  const _LinkedBankSection({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.strokeLight),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'BANK DETAILS',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -749,3 +951,4 @@ class _EncryptionFooter extends StatelessWidget {
     );
   }
 }
+

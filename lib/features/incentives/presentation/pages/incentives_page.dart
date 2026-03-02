@@ -4,6 +4,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 
 import '../cubit/incentives_cubit.dart';
 import '../cubit/incentives_state.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class IncentivesPage extends StatelessWidget {
   const IncentivesPage({super.key});
@@ -26,19 +27,16 @@ class _IncentivesView extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(
+          appBar: AppAppBar(
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black,size: 14,),
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
               'Incentives',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.black),
             ),
             centerTitle: true,
           ),
@@ -496,3 +494,4 @@ class _IncentivesView extends StatelessWidget {
     );
   }
 }
+

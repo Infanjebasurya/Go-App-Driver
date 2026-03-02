@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/onboarding_ui_tokens.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class OnboardingPrimaryButton extends StatelessWidget {
   const OnboardingPrimaryButton({
@@ -21,7 +22,7 @@ class OnboardingPrimaryButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: height,
-      child: ElevatedButton(
+      child: ShadowButton(
         onPressed: loading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: OnboardingUiColors.brandGreen,
@@ -48,3 +49,4 @@ class OnboardingPrimaryButton extends StatelessWidget {
     );
   }
 }
+

@@ -75,9 +75,25 @@ class VerificationCubit extends Cubit<VerificationState> {
   }
 
   Future<void> submitForReview() async {
-    if (!state.canSubmit) {
+    final syncedDocs = state.documents.map((doc) {
+      final completed = DocumentProgressStore.isCompleted(doc.type);
+      return doc.copyWith(
+        status: completed ? DocumentStatus.completed : DocumentStatus.required,
+      );
+    }).toList();
+    final canSubmit = syncedDocs.every((doc) => doc.isCompleted);
+
+    if (!canSubmit) {
+      // Clear stale error first so repeated invalid submits emit a new state.
       emit(
         state.copyWith(
+          documents: syncedDocs,
+          clearError: true,
+        ),
+      );
+      emit(
+        state.copyWith(
+          documents: syncedDocs,
           errorMessage:
           'Please complete all required documents before submitting.',
         ),
@@ -85,7 +101,13 @@ class VerificationCubit extends Cubit<VerificationState> {
       return;
     }
 
-    emit(state.copyWith(isSubmitting: true, clearError: true));
+    emit(
+      state.copyWith(
+        documents: syncedDocs,
+        isSubmitting: true,
+        clearError: true,
+      ),
+    );
 
     await Future.delayed(const Duration(seconds: 2));
 
@@ -94,6 +116,10 @@ class VerificationCubit extends Cubit<VerificationState> {
 
   void reset() {
     emit(VerificationState.initial());
+  }
+
+  void clearSubmitted() {
+    emit(state.copyWith(isSubmitted: false));
   }
 
   void clearError() {

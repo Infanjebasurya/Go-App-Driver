@@ -12,6 +12,8 @@ import 'package:goapp/features/city_vehicle/city_selection/presentation/widget/c
 import 'package:goapp/features/city_vehicle/city_selection/presentation/widget/featured_city_chip.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/pages/vehicle_selection_screen.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class CitySelectionScreen extends StatelessWidget {
   const CitySelectionScreen({super.key});
@@ -41,6 +43,7 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
     _searchController =
         PersistentTextController(storageKey: 'city_selection.search');
     _searchController.attach();
+    RegistrationProgressStore.setStep(RegistrationStep.citySelection);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final query = _searchController.text.trim();
@@ -58,139 +61,142 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const AppAppBar(title: 'GoApp', backEnabled: false),
-      bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
-        builder: (context, state) {
-          return _ContinueButton(
-            enabled: state.hasSelection,
-            onTap: () {
-              if (state.hasSelection) {
-                FocusScope.of(context).unfocus();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => VehicleSelectionScreen(
-                      selectedCity: state.selectedCity!,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: const AppAppBar(title: 'GoApp', backEnabled: false),
+        bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
+          builder: (context, state) {
+            return _ContinueButton(
+              enabled: state.hasSelection,
+              onTap: () {
+                if (state.hasSelection) {
+                  FocusScope.of(context).unfocus();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => VehicleSelectionScreen(
+                        selectedCity: state.selectedCity!,
+                      ),
                     ),
-                  ),
-                );
-              }
-            },
-          );
-        },
-      ),
-      body: BlocBuilder<CitySelectionCubit, CitySelectionState>(
-        builder: (context, state) {
-          return SafeArea(
-            bottom: false,
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Where will you be\ndriving?',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.headingNavy,
-                            height: 1.2,
-                            letterSpacing: -0.5,
+                  );
+                }
+              },
+            );
+          },
+        ),
+        body: BlocBuilder<CitySelectionCubit, CitySelectionState>(
+          builder: (context, state) {
+            return SafeArea(
+              bottom: false,
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Where will you be\ndriving?',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.headingNavy,
+                              height: 1.2,
+                              letterSpacing: -0.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'SELECT YOUR PRIMARY OPERATIONAL CITY',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.emerald,
-                            letterSpacing: 1.1,
+                          const SizedBox(height: 8),
+                          const Text(
+                            'SELECT YOUR PRIMARY OPERATIONAL CITY',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.emerald,
+                              letterSpacing: 1.1,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        _SearchBar(
-                          controller: _searchController,
-                          onChanged: (q) =>
-                              context.read<CitySelectionCubit>().search(q),
-                          onClear: () {
-                            _searchController.clear();
-                            context.read<CitySelectionCubit>().clearSearch();
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        if (state.filteredFeaturedCities.isNotEmpty) ...[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: state.filteredFeaturedCities.map((city) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: FeaturedCityChip(
-                                  city: city,
-                                  isSelected: state.isSelected(city),
-                                  onTap: () => context
-                                      .read<CitySelectionCubit>()
-                                      .selectCity(city),
-                                ),
-                              );
-                            }).toList(),
+                          const SizedBox(height: 16),
+                          _SearchBar(
+                            controller: _searchController,
+                            onChanged: (q) =>
+                                context.read<CitySelectionCubit>().search(q),
+                            onClear: () {
+                              _searchController.clear();
+                              context.read<CitySelectionCubit>().clearSearch();
+                            },
                           ),
                           const SizedBox(height: 20),
+                          if (state.filteredFeaturedCities.isNotEmpty) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: state.filteredFeaturedCities.map((city) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: FeaturedCityChip(
+                                    city: city,
+                                    isSelected: state.isSelected(city),
+                                    onTap: () => context
+                                        .read<CitySelectionCubit>()
+                                        .selectCity(city),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
                         ],
-                      ],
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.only(left: 24, bottom: 6),
-                  sliver: SliverToBoxAdapter(
-                    child: Text(
-                      'ALL CITIES',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade400,
-                        letterSpacing: 1.1,
                       ),
                     ),
                   ),
-                ),
-                if (state.filteredAllCities.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _EmptyState(query: state.searchQuery),
-                  )
-                else
                   SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, i) {
-                          final city = state.filteredAllCities[i];
-                          return CityListTile(
-                            key: ValueKey(city.id),
-                            city: city,
-                            isSelected: state.isSelected(city),
-                            onTap: () => context
-                                .read<CitySelectionCubit>()
-                                .selectCity(city),
-                          );
-                        },
-                        childCount: state.filteredAllCities.length,
+                    padding: const EdgeInsets.only(left: 24, bottom: 6),
+                    sliver: SliverToBoxAdapter(
+                      child: Text(
+                        'ALL CITIES',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey.shade400,
+                          letterSpacing: 1.1,
+                        ),
                       ),
                     ),
                   ),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
-            ),
-          );
-        },
+                  if (state.filteredAllCities.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _EmptyState(query: state.searchQuery),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, i) {
+                            final city = state.filteredAllCities[i];
+                            return CityListTile(
+                              key: ValueKey(city.id),
+                              city: city,
+                              isSelected: state.isSelected(city),
+                              onTap: () => context
+                                  .read<CitySelectionCubit>()
+                                  .selectCity(city),
+                            );
+                          },
+                          childCount: state.filteredAllCities.length,
+                        ),
+                      ),
+                    ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -298,7 +304,7 @@ class _ContinueButton extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           height: 52,
-          child: ElevatedButton(
+          child: ShadowButton(
             key: const Key('continue_button'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.emerald,
@@ -323,3 +329,4 @@ class _ContinueButton extends StatelessWidget {
     );
   }
 }
+
