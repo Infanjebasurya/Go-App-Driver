@@ -95,7 +95,7 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
             SizedBox(
               width: double.infinity,
               height: 52,
-              child: ElevatedButton(
+              child: ShadowButton(
                 onPressed: () => Navigator.of(context).pop(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.darkRed,
@@ -372,3 +372,4 @@ class _PickupDropSection extends StatelessWidget {
     );
   }
 }
+

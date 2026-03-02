@@ -17,6 +17,7 @@ import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
 import 'package:goapp/features/home/presentation/pages/enter_ride_code_page.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 part 'ride_arrived_page_sections.dart';
 part 'ride_arrived_page_state_extensions.dart';
@@ -395,7 +396,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                     SizedBox(
                       width: double.infinity,
                       height: 46,
-                      child: ElevatedButton(
+                      child: ShadowButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
                           foregroundColor: AppColors.white,
@@ -447,3 +448,4 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     );
   }
 }
+

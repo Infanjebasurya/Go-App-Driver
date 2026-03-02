@@ -15,7 +15,7 @@ import 'package:goapp/features/city_vehicle/vehicle_details/presentation/widget/
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/widget/vehicle_photo_upload.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
-import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class VehicleDetailsScreen extends StatelessWidget {
   const VehicleDetailsScreen({super.key, required this.vehicleType});
@@ -41,30 +41,15 @@ class _VehicleDetailsView extends StatefulWidget {
 }
 
 class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
-  late final PersistentTextController _modelController;
-  late final PersistentTextController _bikeTypeController;
-  late final PersistentTextController _seatController;
-  late final PersistentTextController _fuelTypeController;
-  late final PersistentTextController _yearController;
+  final _modelController = TextEditingController();
+  final _bikeTypeController = TextEditingController();
+  final _seatController = TextEditingController();
+  final _fuelTypeController = TextEditingController();
+  final _yearController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final prefix = 'vehicle_details.${widget.vehicleType.name}';
-    _modelController =
-        PersistentTextController(storageKey: '$prefix.model_name');
-    _bikeTypeController =
-        PersistentTextController(storageKey: '$prefix.bike_type');
-    _seatController =
-        PersistentTextController(storageKey: '$prefix.seat_option');
-    _fuelTypeController =
-        PersistentTextController(storageKey: '$prefix.fuel_type');
-    _yearController = PersistentTextController(storageKey: '$prefix.year');
-    _modelController.attach();
-    _bikeTypeController.attach();
-    _seatController.attach();
-    _fuelTypeController.attach();
-    _yearController.attach();
     unawaited(
       RegistrationProgressStore.setStep(
         RegistrationStep.vehicleDetails,
@@ -74,39 +59,12 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final cubit = context.read<VehicleDetailsCubit>();
-      final model = _modelController.text;
-      final year = _yearController.text;
-      if (model.isNotEmpty) {
-        cubit.updateModelName(model);
-      }
-      if (year.isNotEmpty) {
-        cubit.updateYear(year);
-      }
-      final bike = _bikeTypeController.text.trim();
-      if (bike.isNotEmpty) {
-        final selected = BikeType.values.firstWhere(
-          (t) => t.label.toLowerCase() == bike.toLowerCase(),
-          orElse: () => BikeType.bike,
-        );
-        cubit.selectBikeType(selected);
-      }
-      final seat = _seatController.text.trim();
-      if (seat.isNotEmpty) {
-        final selected = SeatOption.values.firstWhere(
-          (t) => t.label.toLowerCase() == seat.toLowerCase(),
-          orElse: () => SeatOption.four,
-        );
-        cubit.selectSeatOption(selected);
-      }
-      final fuel = _fuelTypeController.text.trim();
-      if (fuel.isNotEmpty) {
-        final selected = FuelType.values.firstWhere(
-          (t) => t.label.toLowerCase() == fuel.toLowerCase(),
-          orElse: () => FuelType.petrol,
-        );
-        cubit.selectFuelType(selected);
-      }
+      context.read<VehicleDetailsCubit>().reset();
+      _modelController.clear();
+      _bikeTypeController.clear();
+      _seatController.clear();
+      _fuelTypeController.clear();
+      _yearController.clear();
     });
   }
 
@@ -122,153 +80,160 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const AppAppBar(
-        title: 'GoApp',
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: AppColors.coolwhite),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: const AppAppBar(
+          title: 'GoApp',
+          backEnabled: false,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: Divider(height: 1, color: AppColors.coolwhite),
+          ),
         ),
-      ),
-      body: BlocConsumer<VehicleDetailsCubit, VehicleDetailsState>(
-        listener: (context, state) {
-          _bikeTypeController.text = state.bikeTypeDisplay;
-          _seatController.text = state.seatDisplay;
-          _fuelTypeController.text = state.fuelTypeDisplay;
-          if (state.isSubmitted) {
-            unawaited(
-              RegistrationProgressStore.setStep(RegistrationStep.verification),
-            );
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const VerificationScreen()),
-            );
-            context.read<VehicleDetailsCubit>().clearSuccess();
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Vehicle Details',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.headingNavy,
-                          letterSpacing: -0.6,
-                          height: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Fill in your vehicle details to proceed',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      VehiclePhotoUpload(
-                        hasPhoto: state.hasPhoto,
-                        vehicleType: state.vehicleType,
-                        onTap: () => _showPhotoSourceSheet(context),
-                        onRemove: () =>
-                            context.read<VehicleDetailsCubit>().removePhoto(),
-                      ),
-                      if (state.errors.photo != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          state.errors.photo!,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFFE53935),
+        body: BlocConsumer<VehicleDetailsCubit, VehicleDetailsState>(
+          listener: (context, state) {
+            _bikeTypeController.text = state.bikeTypeDisplay;
+            _seatController.text = state.seatDisplay;
+            _fuelTypeController.text = state.fuelTypeDisplay;
+            if (state.isSubmitted) {
+              unawaited(
+                RegistrationProgressStore.setStep(RegistrationStep.verification),
+              );
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const VerificationScreen()),
+              );
+              context.read<VehicleDetailsCubit>().clearSuccess();
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Vehicle Details',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.headingNavy,
+                            letterSpacing: -0.6,
+                            height: 1.1,
                           ),
                         ),
-                      ],
-                      const SizedBox(height: 28),
-                      if (state.vehicleType != VehicleType.auto) ...[
-                        UnderlineInputField(
-                          label: 'Model Name',
-                          hint: 'e.g., TVS Ntorq 125cc',
-                          controller: _modelController,
-                          errorText: state.errors.modelName,
-                          keyboardType: TextInputType.text,
-                          onChanged: context
-                              .read<VehicleDetailsCubit>()
-                              .updateModelName,
+                        const SizedBox(height: 6),
+                        Text(
+                          'Fill in your vehicle details to proceed',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey.shade500,
+                          ),
                         ),
-                        const SizedBox(height: 22),
-                      ],
-                      if (state.vehicleType == VehicleType.bike) ...[
-                        UnderlineInputField(
-                          label: 'Bike Type',
-                          hint: 'e.g., Scooter',
-                          controller: _bikeTypeController,
-                          errorText: state.errors.bikeType,
-                          readOnly: true,
-                          onTap: () => _showBikeTypeSheet(context, state),
+                        const SizedBox(height: 24),
+                        VehiclePhotoUpload(
+                          hasPhoto: state.hasPhoto,
+                          uploadPath: state.uploadPath,
+                          uploadName: state.uploadName,
+                          uploadType: state.uploadType,
+                          vehicleType: state.vehicleType,
+                          onTap: () => _showPhotoSourceSheet(context),
+                          onRemove: () =>
+                              context.read<VehicleDetailsCubit>().removePhoto(),
                         ),
-                        const SizedBox(height: 22),
-                      ],
-                      if (state.vehicleType == VehicleType.cab) ...[
-                        UnderlineInputField(
-                          label: 'Select Seats',
-                          hint: 'Choose seats',
-                          controller: _seatController,
-                          errorText: state.errors.seatOption,
-                          readOnly: true,
-                          onTap: () => _showSeatSheet(context, state),
-                        ),
-                        const SizedBox(height: 22),
-                      ],
-                      UnderlineInputField(
-                        label: 'Fuel Type',
-                        hint: 'Select Fuel',
-                        controller: _fuelTypeController,
-                        errorText: state.errors.fuelType,
-                        readOnly: true,
-                        onTap: () => _showFuelTypeSheet(context, state),
-                      ),
-                      const SizedBox(height: 22),
-                      UnderlineInputField(
-                        label: 'Year',
-                        hint: 'e.g., ${DateTime.now().year}',
-                        controller: _yearController,
-                        errorText: state.errors.year,
-                        keyboardType: TextInputType.number,
-                        onChanged:
-                            context.read<VehicleDetailsCubit>().updateYear,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(4),
+                        if (state.errors.photo != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            state.errors.photo!,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFFE53935),
+                            ),
+                          ),
                         ],
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+                        const SizedBox(height: 28),
+                        if (state.vehicleType != VehicleType.auto) ...[
+                          UnderlineInputField(
+                            label: 'Model Name',
+                            hint: 'e.g., TVS Ntorq 125cc',
+                            controller: _modelController,
+                            errorText: state.errors.modelName,
+                            keyboardType: TextInputType.text,
+                            onChanged: context
+                                .read<VehicleDetailsCubit>()
+                                .updateModelName,
+                          ),
+                          const SizedBox(height: 22),
+                        ],
+                        if (state.vehicleType == VehicleType.bike) ...[
+                          UnderlineInputField(
+                            label: 'Bike Type',
+                            hint: 'e.g., Scooter',
+                            controller: _bikeTypeController,
+                            errorText: state.errors.bikeType,
+                            readOnly: true,
+                            onTap: () => _showBikeTypeSheet(context, state),
+                          ),
+                          const SizedBox(height: 22),
+                        ],
+                        if (state.vehicleType == VehicleType.cab) ...[
+                          UnderlineInputField(
+                            label: 'Select Seats',
+                            hint: 'Choose seats',
+                            controller: _seatController,
+                            errorText: state.errors.seatOption,
+                            readOnly: true,
+                            onTap: () => _showSeatSheet(context, state),
+                          ),
+                          const SizedBox(height: 22),
+                        ],
+                        UnderlineInputField(
+                          label: 'Fuel Type',
+                          hint: 'Select Fuel',
+                          controller: _fuelTypeController,
+                          errorText: state.errors.fuelType,
+                          readOnly: true,
+                          onTap: () => _showFuelTypeSheet(context, state),
+                        ),
+                        const SizedBox(height: 22),
+                        UnderlineInputField(
+                          label: 'Year',
+                          hint: 'e.g., ${DateTime.now().year}',
+                          controller: _yearController,
+                          errorText: state.errors.year,
+                          keyboardType: TextInputType.number,
+                          onChanged:
+                              context.read<VehicleDetailsCubit>().updateYear,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(4),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              _ContinueButton(
-                isSubmitting: state.isSubmitting,
-                enabled: state.isFormValid,
-                onTap: () {
-                  final cubit = context.read<VehicleDetailsCubit>();
-                  cubit.updateModelName(_modelController.text);
-                  cubit.updateYear(_yearController.text);
-                  cubit.submit();
-                },
-              ),
-            ],
-          );
-        },
+                _ContinueButton(
+                  isSubmitting: state.isSubmitting,
+                  enabled: state.isFormValid,
+                  onTap: () {
+                    final cubit = context.read<VehicleDetailsCubit>();
+                    cubit.updateModelName(_modelController.text);
+                    cubit.updateYear(_yearController.text);
+                    cubit.submit();
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -336,6 +301,14 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                   );
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.description_rounded),
+                title: const Text('Document'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<VehicleDetailsCubit>().pickDocument();
+                },
+              ),
               const SizedBox(height: 8),
             ],
           ),
@@ -387,7 +360,7 @@ class _ContinueButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 52,
-        child: ElevatedButton(
+        child: ShadowButton(
           key: const Key('continue_button'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.emerald,
@@ -420,3 +393,4 @@ class _ContinueButton extends StatelessWidget {
     );
   }
 }
+

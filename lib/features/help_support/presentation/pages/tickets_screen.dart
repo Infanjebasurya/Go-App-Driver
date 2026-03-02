@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/help_support/domain/entities/help_entities.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class TicketsScreen extends StatelessWidget {
   final List<SupportTicket> tickets;
@@ -12,7 +13,7 @@ class TicketsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surfaceSoft,
-      appBar: AppBar(
+      appBar: AppAppBar(
         leading: const BackButton(),
         title: const Text('Make Complaint'),
         backgroundColor: AppColors.white,
@@ -141,3 +142,4 @@ class _StatusBadge extends StatelessWidget {
     );
   }
 }
+

@@ -12,6 +12,7 @@ import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/pages/trip_navigation_page.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class PassengerOnboardPage extends StatefulWidget {
   const PassengerOnboardPage({super.key});
@@ -292,7 +293,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                     SizedBox(
                       width: double.infinity,
                       height: 46,
-                      child: ElevatedButton(
+                      child: ShadowButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
                           foregroundColor: AppColors.white,
@@ -409,3 +410,4 @@ class _MapCenterMarker extends StatelessWidget {
     );
   }
 }
+

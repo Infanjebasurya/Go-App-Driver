@@ -7,6 +7,7 @@ import 'package:goapp/features/ride_complete/presentation/cubit/ride_completed_c
 import 'package:goapp/features/ride_complete/presentation/cubit/ride_completed_state.dart';
 import 'package:goapp/features/ride_complete/presentation/pages/rate_experience_screen.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class RideCompletedScreen extends StatelessWidget {
   const RideCompletedScreen({super.key});
@@ -209,7 +210,7 @@ class _RideCompletedView extends StatelessWidget {
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: ShadowButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -281,3 +282,4 @@ class _RideCompletedView extends StatelessWidget {
     );
   }
 }
+

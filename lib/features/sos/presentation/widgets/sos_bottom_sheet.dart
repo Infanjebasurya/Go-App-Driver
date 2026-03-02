@@ -51,18 +51,34 @@ class SOSBottomSheet extends StatelessWidget {
                   child: const Icon(
                     Icons.close,
                     color: AppColors.neutral333,
-                    size: 28,
+                    size: 20,
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   child: Center(
-                    child: Text(
-                      'Emergency SOS',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Saira',
-                        letterSpacing: -0.5,
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontFamily: 'Saira',
+                          letterSpacing: -0.5,
+                          color: AppColors.black,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Emergency ',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'SOS',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -99,8 +115,13 @@ class SOSBottomSheet extends StatelessWidget {
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.star, color: AppColors.white, size: 48),
-                  SizedBox(height: 12),
+                  Text( '*',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 58,
+                        fontWeight: FontWeight.w700,
+                      ),
+                  ),
                   Text(
                     'Hold to Call',
                     style: TextStyle(
@@ -172,7 +193,7 @@ class SOSBottomSheet extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.check_circle, size: 20, color: AppColors.neutral888),
+              Icon(Icons.shield_moon, size: 20, color: AppColors.neutral888),
               SizedBox(width: 8),
               Text(
                 'Encrypted Safety Connection',

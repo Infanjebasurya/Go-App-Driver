@@ -9,6 +9,7 @@ import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/earnings_details_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
 import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class EarningsScreen extends StatelessWidget {
   const EarningsScreen({super.key});
@@ -53,16 +54,16 @@ class _EarningsViewState extends State<_EarningsView>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surfaceF5,
-      appBar: AppBar(
+      appBar: AppAppBar(
         title: const Text(
           'Earnings',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.black),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.black),
         ),
         centerTitle: true,
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black,size: 14,),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -72,9 +73,11 @@ class _EarningsViewState extends State<_EarningsView>
             color: AppColors.white,
             child: TabBar(
               controller: _tabController,
+              dividerColor: Colors.transparent,
               labelColor: AppColors.black,
               unselectedLabelColor: AppColors.neutral888,
               indicatorColor: AppColors.emerald,
+              indicatorSize: TabBarIndicatorSize.label,
               indicatorWeight: 3,
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
@@ -136,14 +139,14 @@ class _AllEarningsView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           _MenuItem(
-            icon: Icons.receipt_long_outlined,
+            icon: Icons.receipt_long,
             title: 'All Orders',
             subtitle: 'View history and daily breakdowns',
             onTap: () => SOSBottomSheet.show(context),
           ),
           const SizedBox(height: 16),
           _MenuItem(
-            icon: Icons.payments_outlined,
+            icon: Icons.payments,
             title: 'View Rate Card',
             subtitle: 'Standard rates and surge pricing',
             onTap: () {},
@@ -235,13 +238,28 @@ class _SummaryCard extends StatelessWidget {
               color: AppColors.neutral666,
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
-            '₹${amount.toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.w500,
-              color: AppColors.black,
+          const SizedBox(height: 4),
+          RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                const TextSpan(
+                  text: '\u20B9',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.neutral666,
+                  ),
+                ),
+                TextSpan(
+                  text: amount.toStringAsFixed(2),
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontFamily: "Saira",
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.black,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -343,7 +361,7 @@ class _MenuItem extends StatelessWidget {
                 ),
                 const Icon(
                   Icons.arrow_forward_ios,
-                  size: 16,
+                  size: 14,
                   color: AppColors.neutral888,
                 ),
               ],
@@ -354,3 +372,4 @@ class _MenuItem extends StatelessWidget {
     );
   }
 }
+

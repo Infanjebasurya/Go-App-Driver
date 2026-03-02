@@ -7,6 +7,8 @@ import '../../domain/entities/referral.dart';
 import '../cubit/referral_cubit.dart';
 import '../cubit/referral_state.dart';
 import '../widget/key_star_badge.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class ReferEarnScreen extends StatelessWidget {
   const ReferEarnScreen({super.key});
@@ -450,7 +452,7 @@ class _CompletedView extends StatelessWidget {
 }
 
 PreferredSizeWidget _buildAppBar(BuildContext context, String title) {
-  return AppBar(
+  return AppAppBar(
     backgroundColor: Colors.white,
     elevation: 0,
     centerTitle: true,
@@ -708,7 +710,7 @@ class _InviteButton extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
       child: SizedBox(
         height: 54,
-        child: ElevatedButton.icon(
+        child: ShadowButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
             backgroundColor: AuthUiColors.brandGreen,
@@ -1199,4 +1201,6 @@ class _StatCol extends StatelessWidget {
     );
   }
 }
+
+
 

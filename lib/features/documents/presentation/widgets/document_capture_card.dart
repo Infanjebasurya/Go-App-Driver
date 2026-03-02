@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
+import 'package:goapp/features/documents/presentation/model/document_upload_model.dart';
 
 class DocumentCaptureCard extends StatelessWidget {
   final String label;
   final bool captured;
+  final String? filePath;
+  final DocumentUploadType? uploadType;
   final VoidCallback onTap;
   final VoidCallback? onRemove;
 
@@ -11,12 +16,19 @@ class DocumentCaptureCard extends StatelessWidget {
     super.key,
     required this.label,
     required this.captured,
+    this.filePath,
+    this.uploadType,
     required this.onTap,
     this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isImage = uploadType == DocumentUploadType.image && filePath != null;
+    final isDocument =
+        uploadType == DocumentUploadType.document && filePath != null;
+    final fileName = isDocument ? _basename(filePath) : null;
+
     return GestureDetector(
       onTap: captured ? null : onTap,
       child: AnimatedContainer(
@@ -35,69 +47,58 @@ class DocumentCaptureCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedSwitcher(
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: captured
-                        ? Container(
-                            key: const ValueKey('captured'),
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: AppColors.emerald.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.check_rounded,
-                              color: AppColors.emerald,
-                              size: 26,
-                            ),
-                          )
-                        : Container(
+                        ? (isImage
+                            ? _ImagePreview(path: filePath!)
+                            : _fallbackIcon(
+                                key: const ValueKey('document'),
+                                isDocument: isDocument,
+                              ))
+                        : _fallbackIcon(
                             key: const ValueKey('empty'),
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: AppColors.coolwhite,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.smartphone_rounded,
-                              color: Color(0xFFB0BEC5),
-                              size: 26,
-                            ),
+                            isDocument: false,
                           ),
                   ),
-                  const SizedBox(height: 10),
+                ),
+                if (!captured) ...[
+                  const SizedBox(height: 8),
                   Text(
                     label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
-                      color: captured
-                          ? AppColors.emerald
-                          : const Color(0xFF6B7C93),
+                      color: Color(0xFF6B7C93),
                       letterSpacing: 0.1,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                ],
+                if (isDocument && fileName != null) ...[
+                  const SizedBox(height: 8),
                   Text(
-                    captured ? 'Captured' : 'Tap to Capture',
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w500,
-                      color: captured
-                          ? AppColors.emerald.withValues(alpha: 0.7)
-                          : AppColors.emerald,
-                      letterSpacing: 0.2,
+                    fileName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.headingNavy,
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
+          ),
+        ),
             if (captured && onRemove != null)
               Positioned(
                 top: 10,
@@ -121,6 +122,74 @@ class DocumentCaptureCard extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _fallbackIcon({Key? key, required bool isDocument}) {
+    return Container(
+      key: key,
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: isDocument
+            ? AppColors.emerald.withValues(alpha: 0.12)
+            : AppColors.coolwhite,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        isDocument ? Icons.description_rounded : Icons.smartphone_rounded,
+        color: isDocument ? AppColors.emerald : const Color(0xFFB0BEC5),
+        size: 26,
+      ),
+    );
+  }
+
+  String? _basename(String? path) {
+    if (path == null || path.isEmpty) return null;
+    final normalized = path.replaceAll('\\', '/');
+    final idx = normalized.lastIndexOf('/');
+    return idx >= 0 ? normalized.substring(idx + 1) : normalized;
+  }
+}
+
+class _ImagePreview extends StatelessWidget {
+  final String path;
+
+  const _ImagePreview({required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth.clamp(0, 200).toDouble();
+        final maxHeight = constraints.maxHeight.clamp(0, 120).toDouble();
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.file(
+            File(path),
+            width: maxWidth,
+            height: maxHeight,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => _imageFallback(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _imageFallback() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: AppColors.coolwhite,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Icon(
+        Icons.smartphone_rounded,
+        color: Color(0xFFB0BEC5),
+        size: 26,
       ),
     );
   }

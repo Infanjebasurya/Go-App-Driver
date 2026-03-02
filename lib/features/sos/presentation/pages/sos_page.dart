@@ -4,6 +4,8 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/sos/presentation/cubit/sos_cubit.dart';
 import 'package:goapp/features/sos/presentation/cubit/sos_state.dart';
 import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class SOSPage extends StatelessWidget {
   const SOSPage({super.key});
@@ -12,7 +14,7 @@ class SOSPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
@@ -96,7 +98,7 @@ class SOSPage extends StatelessWidget {
                     children: [
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton.icon(
+                        child: ShadowButton(
                           onPressed: () => context.read<SosCubit>().markSafe(),
                           icon: const Icon(Icons.check_circle_outline),
                           label: Text(
@@ -222,3 +224,5 @@ class _ContactCard extends StatelessWidget {
     );
   }
 }
+
+

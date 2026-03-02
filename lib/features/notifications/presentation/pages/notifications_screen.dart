@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -9,7 +10,7 @@ class NotificationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surfaceF5,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: AppColors.white,
         surfaceTintColor: AppColors.white,
         elevation: 0.8,
@@ -175,3 +176,4 @@ class _EmptyNotifications extends StatelessWidget {
     );
   }
 }
+

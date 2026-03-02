@@ -4,6 +4,9 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/withdrawal_success_page.dart';
+import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class WithdrawPage extends StatelessWidget {
   const WithdrawPage({super.key});
@@ -21,7 +24,7 @@ class WithdrawPage extends StatelessWidget {
         );
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: AppBar(
+          appBar: AppAppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
             leading: IconButton(
@@ -130,47 +133,47 @@ class WithdrawPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-                child: SafeArea(
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (_) => WithdrawalSuccessPage(
-                              amount: state.rechargeAmount,
-                              bankName: state.selectedBank,
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.emerald,
-                        foregroundColor: AppColors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
-                        ),
-                      ),
-                      child: const Text(
-                        'Proceed to Withdraw',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+            ],
+          ),
+          bottomNavigationBar: KeyboardAwareBottom(
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ShadowButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => WithdrawalSuccessPage(
+                        amount: state.rechargeAmount,
+                        bankName: state.selectedBank,
                       ),
                     ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.emerald,
+                  foregroundColor: AppColors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                ),
+                child: const Text(
+                  'Proceed to Withdraw',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         );
       },
     );
   }
 }
+
+

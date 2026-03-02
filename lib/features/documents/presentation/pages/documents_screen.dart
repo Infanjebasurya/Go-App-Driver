@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
@@ -7,6 +5,8 @@ import 'package:goapp/features/documents/presentation/cubit/documents_cubit.dart
 import 'package:goapp/features/documents/presentation/cubit/documents_state.dart';
 import 'package:goapp/features/documents/presentation/model/document_model.dart';
 import 'package:goapp/features/documents/presentation/pages/document_detail_screen.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class DocumentsScreen extends StatelessWidget {
   const DocumentsScreen({super.key});
@@ -20,8 +20,22 @@ class DocumentsScreen extends StatelessWidget {
   }
 }
 
-class _DocumentsView extends StatelessWidget {
+class _DocumentsView extends StatefulWidget {
   const _DocumentsView();
+
+  @override
+  State<_DocumentsView> createState() => _DocumentsViewState();
+}
+
+class _DocumentsViewState extends State<_DocumentsView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<DocumentsCubit>().refresh();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +60,7 @@ class _DocumentsView extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
+    return AppAppBar(
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
@@ -140,7 +154,11 @@ class _DocumentCard extends StatelessWidget {
                   color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: _DocumentThumbnail(document: document),
+                child: Icon(
+                  _iconData(document.iconAsset),
+                  color: const Color(0xFF444444),
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -188,39 +206,6 @@ class _DocumentCard extends StatelessWidget {
         return const Color(0xFFCCCCCC);
     }
   }
-}
-
-class _DocumentThumbnail extends StatelessWidget {
-  final DocumentModel document;
-
-  const _DocumentThumbnail({required this.document});
-
-  @override
-  Widget build(BuildContext context) {
-    final imagePath = document.frontImagePath ?? document.backImagePath;
-    if (imagePath == null || imagePath.isEmpty) {
-      return Icon(
-        _iconData(document.iconAsset),
-        color: const Color(0xFF444444),
-        size: 22,
-      );
-    }
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.file(
-        File(imagePath),
-        width: 44,
-        height: 44,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => Icon(
-          _iconData(document.iconAsset),
-          color: const Color(0xFF444444),
-          size: 22,
-        ),
-      ),
-    );
-  }
 
   IconData _iconData(String asset) {
     switch (asset) {
@@ -231,9 +216,9 @@ class _DocumentThumbnail extends StatelessWidget {
       case 'aadhaar_card':
         return Icons.fingerprint;
       case 'pan_card':
-        return Icons.account_balance_outlined;
+        return Icons.credit_card;
       case 'bank_account':
-      case 'add bank account':
+      case 'link bank account':
         return Icons.account_balance_outlined;
       default:
         return Icons.description_outlined;
@@ -432,7 +417,7 @@ class _ErrorView extends StatelessWidget {
             style: const TextStyle(fontSize: 14, color: Color(0xFF888888)),
           ),
           const SizedBox(height: 20),
-          ElevatedButton.icon(
+          ShadowButton(
             onPressed: () => context.read<DocumentsCubit>().refresh(),
             icon: const Icon(Icons.refresh),
             label: const Text('Retry'),
@@ -449,3 +434,5 @@ class _ErrorView extends StatelessWidget {
     );
   }
 }
+
+

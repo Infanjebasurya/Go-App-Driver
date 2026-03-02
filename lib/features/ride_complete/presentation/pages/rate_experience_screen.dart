@@ -9,6 +9,7 @@ import 'package:goapp/features/ride_complete/domain/usecases/submit_ride_feedbac
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_cubit.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_state.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class RateExperienceScreen extends StatelessWidget {
   const RateExperienceScreen({super.key});
@@ -280,7 +281,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: ShadowButton(
                       onPressed: () async {
                         await context
                             .read<RateExperienceCubit>()
@@ -324,3 +325,4 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     );
   }
 }
+

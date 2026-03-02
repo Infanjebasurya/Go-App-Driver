@@ -8,6 +8,8 @@ import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/recharge_wallet_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/withdraw_page.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class WalletPage extends StatelessWidget {
   const WalletPage({super.key});
@@ -45,7 +47,7 @@ class _WalletView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
+      appBar: AppAppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
@@ -105,7 +107,7 @@ class _WalletView extends StatelessWidget {
                       Row(
                         children: <Widget>[
                           Expanded(
-                            child: ElevatedButton.icon(
+                            child: ShadowButton(
                               onPressed: () {
                                 final cubit = context.read<EarningsCubit>();
                                 Navigator.push(
@@ -135,7 +137,7 @@ class _WalletView extends StatelessWidget {
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: ElevatedButton.icon(
+                            child: ShadowButton(
                               onPressed: () {
                                 final cubit = context.read<EarningsCubit>();
                                 Navigator.push(
@@ -287,3 +289,5 @@ class _TransactionItem extends StatelessWidget {
     );
   }
 }
+
+

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/about/presentation/cubit/about_cubit.dart';
 import 'package:goapp/features/about/presentation/cubit/about_state.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -172,7 +173,7 @@ class _ContentScreen extends StatelessWidget {
                   Text(
                     parts[0],
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppColors.headingDark,
                       height: 1.5,
@@ -182,7 +183,7 @@ class _ContentScreen extends StatelessWidget {
                   Text(
                     parts.sublist(1).join('\n'),
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.neutral444,
                       height: 1.7,
                     ),
@@ -197,7 +198,7 @@ class _ContentScreen extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: isSectionHeader ? FontWeight.w700 : FontWeight.w400,
                 color: isSectionHeader
                     ? AppColors.headingDark
@@ -223,7 +224,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return AppAppBar(
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
@@ -233,13 +234,13 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
         icon: const Icon(
           Icons.arrow_back_ios,
           color: AppColors.headingDark,
-          size: 18,
+          size: 14,
         ),
       ),
       title: Text(
         title,
         style: const TextStyle(
-          fontSize: 17,
+          fontSize: 18,
           fontWeight: FontWeight.w700,
           color: AppColors.headingDark,
         ),
@@ -330,3 +331,4 @@ class _SkeletonListState extends State<_SkeletonList>
     );
   }
 }
+

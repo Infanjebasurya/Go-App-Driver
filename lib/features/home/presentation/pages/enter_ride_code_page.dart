@@ -8,6 +8,7 @@ import 'package:goapp/features/home/presentation/cubit/enter_ride_code_cubit.dar
 import 'package:goapp/features/home/presentation/cubit/enter_ride_code_state.dart';
 import 'package:goapp/features/home/presentation/pages/passenger_onboard_page.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 
 class EnterRideCodePage extends StatelessWidget {
   const EnterRideCodePage({super.key});
@@ -121,7 +122,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                   child: SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: ElevatedButton(
+                    child: ShadowButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.emerald,
                         foregroundColor: AppColors.white,
@@ -248,3 +249,4 @@ class _KeypadNumberButton extends StatelessWidget {
     );
   }
 }
+

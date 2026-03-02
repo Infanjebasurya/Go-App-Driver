@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/profile/domain/services/profile_validation_service.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_state.dart';
-import 'package:goapp/core/storage/text_field_store.dart';
 
 class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   ProfileSetupCubit({required ProfileValidationService validationService})
@@ -12,10 +9,26 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
   final ProfileValidationService _validationService;
 
+  bool get isFormValid {
+    final nameError = _validationService.validateName(state.name);
+    final emailError = _validationService.validateEmail(state.email);
+    final genderError = _validationService.validateGender(state.gender);
+    final dobError = _validationService.validateDob(state.dob);
+    final emergencyError = _validationService.validateEmergencyContact(
+      state.emergencyContact,
+    );
+    return nameError == null &&
+        emailError == null &&
+        genderError == null &&
+        dobError == null &&
+        emergencyError == null;
+  }
+
   void setInitial({
     required String name,
     String email = '',
     required String gender,
+    String dob = '',
     required String refer,
     required String emergencyContact,
   }) {
@@ -24,6 +37,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
         name: name,
         email: email,
         gender: gender,
+        dob: dob,
         refer: refer,
         emergencyContact: emergencyContact,
         showValidation: false,
@@ -34,7 +48,6 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateName(String value) {
-    unawaited(TextFieldStore.write('profile_setup.name', value));
     final nameError = _validationService.validateName(value);
     emit(
       state.copyWith(
@@ -47,7 +60,6 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateEmail(String value) {
-    unawaited(TextFieldStore.write('profile_setup.email', value));
     final emailError = _validationService.validateEmail(value);
     emit(
       state.copyWith(
@@ -63,7 +75,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
     emit(
       state.copyWith(
         gender: value,
-        showValidation: false,
+        showValidation: state.showValidation,
         submitRequested: false,
       ),
     );
@@ -71,12 +83,15 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
   void updateDob(String value) {
     emit(
-      state.copyWith(dob: value, showValidation: false, submitRequested: false),
+      state.copyWith(
+        dob: value,
+        showValidation: state.showValidation,
+        submitRequested: false,
+      ),
     );
   }
 
   void updateRefer(String value) {
-    unawaited(TextFieldStore.write('profile_setup.refer', value));
     emit(
       state.copyWith(
         refer: value,
@@ -87,7 +102,6 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
   }
 
   void updateEmergencyContact(String value) {
-    unawaited(TextFieldStore.write('profile_setup.emergency', value));
     emit(
       state.copyWith(
         emergencyContact: value,

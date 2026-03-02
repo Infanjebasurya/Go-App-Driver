@@ -11,6 +11,7 @@ enum RegistrationStep {
   verification,
   documentUpload,
   verificationSubmitted,
+  home,
 }
 
 class RegistrationProgress {

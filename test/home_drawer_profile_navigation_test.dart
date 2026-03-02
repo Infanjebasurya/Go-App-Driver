@@ -8,7 +8,11 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: HomeDrawer())),
+      MaterialApp(
+        home: Scaffold(
+          body: HomeDrawer(onReopenDrawer: () {}),
+        ),
+      ),
     );
 
     // Ignore any network-image loading exception from drawer avatar in test env.
