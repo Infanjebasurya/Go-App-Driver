@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/documents/presentation/model/document_model.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 
@@ -470,10 +470,10 @@ class _BankAccountDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = _readValue('bank_details.account_holder');
-    final ifsc = _readValue('bank_details.ifsc');
-    final account = _maskAccount(_readValue('bank_details.account_number'));
-    final bankName = _readValue('bank_details.bank_name');
+    final name = _readDraft('accountHolderName');
+    final ifsc = _readDraft('ifscCode');
+    final account = _maskAccount(_readDraft('accountNumber'));
+    final bankName = _readDraft('bankName');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,9 +495,8 @@ class _BankAccountDetail extends StatelessWidget {
     );
   }
 
-  String? _readValue(String key) {
-    final raw = TextFieldStore.read(key);
-    if (raw == null) return null;
+  String? _readDraft(String field) {
+    final raw = DocumentProgressStore.bankDraftValue(field);
     final trimmed = raw.trim();
     return trimmed.isEmpty ? null : trimmed;
   }

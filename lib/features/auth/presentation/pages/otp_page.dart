@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/storage/user_cache_model.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -80,6 +82,23 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
   Future<void> _handleSuccess({required bool syncSession, User? user}) async {
     if (_successHandled) return;
     _successHandled = true;
+    final existing = await UserCacheStore.load();
+    final resolvedPhone = (user?.phone ?? widget.phoneNumber).trim();
+    await UserCacheStore.save(
+      LocalUserCacheModel(
+        id: user?.id ?? existing?.id ?? 'captain-001',
+        fullName: existing?.fullName ?? '',
+        gender: existing?.gender ?? '',
+        referCode: existing?.referCode ?? '',
+        emergencyContact: existing?.emergencyContact ?? '',
+        email: existing?.email,
+        phone: resolvedPhone.isEmpty ? existing?.phone : resolvedPhone,
+        dob: existing?.dob,
+        rating: existing?.rating ?? 0.0,
+        totalTrips: existing?.totalTrips ?? 0,
+        totalYears: existing?.totalYears ?? 0.0,
+      ),
+    );
     await RegistrationProgressStore.markOtpVerified();
     await RegistrationProgressStore.setStep(
       RegistrationStep.profileSetup,

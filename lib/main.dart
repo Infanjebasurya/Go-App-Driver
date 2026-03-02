@@ -15,6 +15,8 @@ import 'features/auth/domain/usecases/request_otp_usecase.dart';
 import 'features/auth/presentation/theme/app_theme.dart';
 import 'app_entry_gate.dart';
 
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalNotificationService.initialize();
@@ -40,9 +42,14 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (_) => AuthBloc(sl<LoginUseCase>(), sl<RequestOtpUseCase>()),
       child: MaterialApp(
+        navigatorKey: _rootNavigatorKey,
         title: 'GoApp Captain',
         theme: AppTheme.lightTheme(isTest: false),
         debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          if (child == null) return const SizedBox.shrink();
+          return child;
+        },
         home: const AppEntryGate(),
       ),
     );
