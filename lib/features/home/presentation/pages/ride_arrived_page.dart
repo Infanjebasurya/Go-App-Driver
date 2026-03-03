@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -11,12 +12,12 @@ import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/app_assets.dart';
 import 'package:goapp/core/utils/env.dart';
-import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/enter_ride_code_page.dart';
@@ -69,6 +70,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   int _totalMovementTicks = 1;
   Timer? _movementTimer;
   LocationIssue? _locationIssue;
+  bool _isLocationDialogVisible = false;
   bool _driverMovingNotified = false;
   bool _pickupReachedNotified = false;
   int _lastPickupProgressNotified = -1;
@@ -101,6 +103,9 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     );
     if (!mounted) return;
     setState(() => _locationIssue = result.issue);
+    if (previousIssue != result.issue && result.issue != null) {
+      unawaited(_showLocationBlockedDialog(result.issue!));
+    }
     _handleTrackingLocationState(previousIssue, result.issue);
   }
 
@@ -315,7 +320,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     super.dispose();
   }
 
-  Future<void> _onLocationBannerActionTap() async {
+  Future<void> _onLocationDialogActionTap() async {
     final issue = _locationIssue;
     if (issue == null) return;
     if (issue == LocationIssue.serviceDisabled) {
@@ -327,6 +332,38 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     unawaited(_refreshLocationState());
   }
 
+  Future<void> _showLocationBlockedDialog(LocationIssue issue) async {
+    if (!mounted || _isLocationDialogVisible) return;
+    _isLocationDialogVisible = true;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Location Required'),
+          content: Text(_locationBlockedMessage(issue)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await _onLocationDialogActionTap();
+              },
+              child: Text(
+                issue == LocationIssue.serviceDisabled
+                    ? 'Enable GPS'
+                    : 'Open Settings',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    _isLocationDialogVisible = false;
+  }
+
   Future<void> _showCancellationReasonSheet() {
     return showModalBottomSheet<void>(
       context: context,
@@ -334,12 +371,17 @@ class _RideArrivedPageState extends State<RideArrivedPage>
       backgroundColor: Colors.transparent,
       builder: (_) => _CancellationReasonSheet(
         onConfirm: (String canceledBy, String reason) async {
+          final double cancellationFee = _cancellationFeeFor(canceledBy);
           await RideHistoryStore.markCanceledNowOrCreate(
             canceledBy: canceledBy,
             cancelReason: reason,
             pickupLocation: '42, I-Block, Arumbakkam, Chennai-106',
             dropLocation:
                 '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
+            fareLabel: cancellationFee > 0
+                ? '\u20B9 ${cancellationFee.toStringAsFixed(2)}'
+                : null,
+            cancellationFeeAmount: cancellationFee,
           );
           await HomeTripResumeStore.clear();
           if (!mounted) return;
@@ -355,6 +397,14 @@ class _RideArrivedPageState extends State<RideArrivedPage>
         },
       ),
     );
+  }
+
+  double _cancellationFeeFor(String canceledBy) {
+    final String normalized = canceledBy.trim().toLowerCase();
+    if (normalized == 'customer') {
+      return 30.0;
+    }
+    return 0;
   }
 
   void _openChatScreen() {
@@ -434,16 +484,6 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                 ),
               ),
             ),
-            if (_locationIssue != null)
-              Positioned(
-                top: MediaQuery.of(context).padding.top + 12,
-                left: 0,
-                right: 0,
-                child: LocationDisabledBanner(
-                  issue: _locationIssue!,
-                  onActionTap: _onLocationBannerActionTap,
-                ),
-              ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum DocumentStep {
+  profilePhoto,
   drivingLicense,
   vehicleRC,
   identityAadhaar,
@@ -21,6 +22,7 @@ class StepConfig {
   final bool forceUppercase;
   final int? maxLength;
   final bool isBankStep;
+  final bool isProfileStep;
   final String frontLabel;
   final String backLabel;
 
@@ -35,12 +37,22 @@ class StepConfig {
     this.numberExample = '',
     this.maxLength,
     this.isBankStep = false,
+    this.isProfileStep = false,
     this.frontLabel = 'Front Side',
     this.backLabel = 'Back Side',
   });
 }
 
 const List<StepConfig> kStepConfigs = [
+  StepConfig(
+    step: DocumentStep.profilePhoto,
+    title: 'Profile Photo',
+    subtitle: 'Upload a clear profile picture',
+    numberLabel: '',
+    numberHint: '',
+    allowedPattern: r'[A-Za-z0-9]',
+    isProfileStep: true,
+  ),
   StepConfig(
     step: DocumentStep.drivingLicense,
     title: 'Driving License',
@@ -212,7 +224,9 @@ class StepData extends Equatable {
   });
 
   bool get isNumberValid => documentNumber.trim().isNotEmpty;
-  bool get isComplete => frontCaptured && backCaptured && isNumberValid;
+  bool get isProfileStep => step == DocumentStep.profilePhoto;
+  bool get isComplete =>
+      isProfileStep ? frontCaptured : frontCaptured && backCaptured && isNumberValid;
 
   StepData copyWith({
     bool? frontCaptured,
@@ -264,6 +278,7 @@ class DocumentUploadState extends Equatable {
   final BankAccountData bankData;
   final bool isSubmitting;
   final bool isAllDone;
+  final bool isProfileImageProcessing;
 
   const DocumentUploadState({
     this.currentStepIndex = 0,
@@ -271,11 +286,13 @@ class DocumentUploadState extends Equatable {
     this.bankData = const BankAccountData(),
     this.isSubmitting = false,
     this.isAllDone = false,
+    this.isProfileImageProcessing = false,
   });
 
   factory DocumentUploadState.initial() => DocumentUploadState(
     currentStepIndex: 0,
     steps: [
+      DocumentStep.profilePhoto,
       DocumentStep.drivingLicense,
       DocumentStep.vehicleRC,
       DocumentStep.identityAadhaar,
@@ -286,7 +303,9 @@ class DocumentUploadState extends Equatable {
 
   int get totalSteps => steps.length + 1;
 
-  bool get isCurrentStepBank => currentStepIndex == 4;
+  bool get isCurrentStepBank => currentStepIndex == steps.length;
+
+  bool get isCurrentStepProfile => !isCurrentStepBank && currentDocStep.isProfileStep;
 
   StepData get currentDocStep => steps[currentStepIndex];
 
@@ -314,6 +333,7 @@ class DocumentUploadState extends Equatable {
     BankAccountData? bankData,
     bool? isSubmitting,
     bool? isAllDone,
+    bool? isProfileImageProcessing,
   }) {
     return DocumentUploadState(
       currentStepIndex: currentStepIndex ?? this.currentStepIndex,
@@ -321,6 +341,8 @@ class DocumentUploadState extends Equatable {
       bankData: bankData ?? this.bankData,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isAllDone: isAllDone ?? this.isAllDone,
+      isProfileImageProcessing:
+          isProfileImageProcessing ?? this.isProfileImageProcessing,
     );
   }
 
@@ -331,5 +353,6 @@ class DocumentUploadState extends Equatable {
     bankData,
     isSubmitting,
     isAllDone,
+    isProfileImageProcessing,
   ];
 }

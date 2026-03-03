@@ -38,6 +38,8 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
   String _selectedReason = _driverReasons.first;
   bool _submitting = false;
 
+  double get _cancellationFee => _cancelType == 'Customer' ? 30.0 : 0.0;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -125,8 +127,8 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Cancellation Fee: \u20B900.00',
+            Text(
+              'Cancellation Fee: \u20B9${_cancellationFee.toStringAsFixed(2)}',
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.neutral888,
@@ -243,6 +245,8 @@ class _DriverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -256,16 +260,18 @@ class _DriverCard extends StatelessWidget {
             height: 54,
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
-              child: Image.asset('assets/image/profile.png', fit: BoxFit.cover),
+              child: profilePath != null
+                  ? Image.file(File(profilePath), fit: BoxFit.cover)
+                  : Image.asset('assets/image/profile.png', fit: BoxFit.cover),
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Sam Yogi',
+                  displayName,
                   style: TextStyle(
                     fontSize: 26 / 2,
                     fontWeight: FontWeight.w700,

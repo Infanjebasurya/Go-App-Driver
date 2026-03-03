@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +49,10 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
   @override
   void initState() {
     super.initState();
-    _docControllers = List.generate(4, (_) => TextEditingController());
+    _docControllers = List.generate(
+      kStepConfigs.length,
+      (_) => TextEditingController(),
+    );
     _slideCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 320),
@@ -125,6 +130,14 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
                         key: const ValueKey('bank_step'),
                         bankData: state.bankData,
                       )
+                          : state.isCurrentStepProfile
+                          ? _ProfilePhotoStepContent(
+                              key: const ValueKey('profile_photo_step'),
+                              stepData: state.currentDocStep,
+                              isProcessing: state.isProfileImageProcessing,
+                              onCameraTap: () =>
+                                  _showProfileImageSourceSheet(context),
+                            )
                           : _DocStepContent(
                         key: ValueKey(state.currentStepIndex),
                         config: state.currentConfig,
@@ -173,6 +186,10 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
   }
 
   String? _missingDocumentsMessage() {
+    final hasProfilePhoto = DocumentProgressStore.isProfileImageUploaded();
+    if (!hasProfilePhoto) {
+      return 'Please upload your profile picture before proceeding.';
+    }
     const requiredDocs = <DocumentType>[
       DocumentType.drivingLicense,
       DocumentType.vehicleRC,
@@ -194,6 +211,55 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
     }
     navigator.pushReplacement(
       MaterialPageRoute(builder: (_) => const VerificationScreen()),
+    );
+  }
+
+  void _showProfileImageSourceSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Upload Profile Photo',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.headingNavy,
+                ),
+              ),
+              const SizedBox(height: 6),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureProfilePhoto(
+                    source: ImageSource.camera,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureProfilePhoto(
+                    source: ImageSource.gallery,
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -409,6 +475,133 @@ class _DocStepContent extends StatelessWidget {
                 context.read<DocumentUploadCubit>().updateDocumentNumber(v),
           ),
           const SizedBox(height: 30),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfilePhotoStepContent extends StatelessWidget {
+  const _ProfilePhotoStepContent({
+    super.key,
+    required this.stepData,
+    required this.isProcessing,
+    required this.onCameraTap,
+  });
+
+  final StepData stepData;
+  final bool isProcessing;
+  final VoidCallback onCameraTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    final double avatarSize =
+        (shortestSide * 0.38).clamp(182.0, 196.0).toDouble();
+    final double cameraSize =
+        (avatarSize * 0.2).clamp(40.0, 45.0).toDouble();
+    final double cameraIconSize =
+        (cameraSize * 0.58).clamp(15.0, 20.0).toDouble();
+    final hasImage = stepData.frontCaptured &&
+        stepData.frontPath != null &&
+        stepData.frontPath!.isNotEmpty &&
+        File(stepData.frontPath!).existsSync();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 22),
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+          const Text(
+            'Profile Picture',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+              color: AppColors.headingNavy,
+              letterSpacing: -0.6,
+              height: 1.1,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Upload your profile picture',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 48),
+          Center(
+            child: Stack(
+              children: [
+                Container(
+                  width: avatarSize,
+                  height: avatarSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.emerald, width: 2.5),
+                  ),
+                  child: ClipOval(
+                    child: Container(
+                      color: Colors.grey.shade200,
+                      child: hasImage
+                          ? Image.file(
+                              File(stepData.frontPath!),
+                              fit: BoxFit.cover,
+                            )
+                          : Icon(
+                              Icons.person,
+                              size: avatarSize * 0.55,
+                              color: Colors.white54,
+                            ),
+                    ),
+                  )
+                ),
+                Positioned(
+                  bottom: 2,
+                  right: 2,
+                  child: GestureDetector(
+                    onTap: isProcessing ? null : onCameraTap,
+                    child: Container(
+                      width: cameraSize,
+                      height: cameraSize,
+                      decoration: const BoxDecoration(
+                        color: AppColors.emerald,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: cameraIconSize,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (isProcessing)
+            const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.emerald),
+              ),
+            ),
+          if (stepData.imageError != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              stepData.imageError!,
+              style: const TextStyle(fontSize: 12, color: Color(0xFFE53935)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          const Spacer(),
         ],
       ),
     );

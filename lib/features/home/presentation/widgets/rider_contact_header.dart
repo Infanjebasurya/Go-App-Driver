@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
+import 'dart:io';
 
 class RiderContactHeader extends StatelessWidget {
   const RiderContactHeader({
@@ -7,7 +9,7 @@ class RiderContactHeader extends StatelessWidget {
     required this.onBackTap,
     required this.onActionTap,
     required this.actionIcon,
-    this.name = 'Sam Yogi',
+    this.name = '',
     this.idLabel = 'ID 123456',
     this.rating = '4.9',
   });
@@ -21,6 +23,10 @@ class RiderContactHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = name.trim().isEmpty
+        ? ProfileDisplayStore.displayName()
+        : name;
+    final profilePath = ProfileDisplayStore.photoPath();
     final double topInset = MediaQuery.of(context).padding.top;
     return Container(
       color: AppColors.white,
@@ -34,7 +40,9 @@ class RiderContactHeader extends StatelessWidget {
             height: 42,
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
-              child: Image.asset('assets/image/profile.png', fit: BoxFit.cover),
+              child: profilePath != null
+                  ? Image.file(File(profilePath), fit: BoxFit.cover)
+                  : Image.asset('assets/image/profile.png', fit: BoxFit.cover),
             ),
           ),
           const SizedBox(width: 10),
@@ -44,7 +52,7 @@ class RiderContactHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  name,
+                  displayName,
                   style: const TextStyle(
                     fontSize: 18 / 1.2,
                     fontWeight: FontWeight.w700,

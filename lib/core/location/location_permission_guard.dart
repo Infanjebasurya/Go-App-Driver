@@ -26,11 +26,6 @@ class LocationPermissionGuard {
   Future<LocationAccessResult> ensureReady({
     bool requestPermission = false,
   }) async {
-    final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return const LocationAccessResult.blocked(LocationIssue.serviceDisabled);
-    }
-
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied && requestPermission) {
       permission = await Geolocator.requestPermission();
@@ -44,6 +39,11 @@ class LocationPermissionGuard {
       return const LocationAccessResult.blocked(
         LocationIssue.permissionDeniedForever,
       );
+    }
+
+    final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return const LocationAccessResult.blocked(LocationIssue.serviceDisabled);
     }
 
     return const LocationAccessResult.ready();

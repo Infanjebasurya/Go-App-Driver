@@ -199,16 +199,31 @@ class _WalletView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                for (final item in state.transactions)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _TransactionItem(
-                      title: item.title,
-                      subtitle: item.subtitle,
-                      amount: item.amount,
-                      isCredit: item.isCredit,
+                if (state.transactions.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 24),
+                    child: Center(
+                      child: Text(
+                        'No wallet transactions yet',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.neutral666,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                  ),
+                  )
+                else
+                  for (final item in state.transactions)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _TransactionItem(
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        amount: item.amount,
+                        isCredit: item.isCredit,
+                      ),
+                    ),
               ],
             ),
           );

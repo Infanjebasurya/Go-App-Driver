@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/features/incentives/data/repositories/incentives_repository_impl.dart';
+import 'package:goapp/features/incentives/domain/usecases/get_incentives_config_usecase.dart';
 
 import '../cubit/incentives_cubit.dart';
 import '../cubit/incentives_state.dart';
@@ -11,8 +13,11 @@ class IncentivesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final repository = const IncentivesRepositoryImpl();
     return BlocProvider(
-      create: (_) => IncentivesCubit(),
+      create: (_) => IncentivesCubit(
+        getIncentivesConfig: GetIncentivesConfigUseCase(repository),
+      ),
       child: const _IncentivesView(),
     );
   }

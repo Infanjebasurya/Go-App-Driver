@@ -329,6 +329,16 @@ class _WalletCard extends StatelessWidget {
                     color: isNegative ? Colors.red : Colors.black87,
                   ),
                 ),
+                if (state.isWalletBelowDutyThreshold &&
+                    state.showLowWalletWarning)
+                  Text(
+                    '-Rs ${state.walletShortfall.toStringAsFixed(2)} to Rs ${kMinimumDutyWalletBalance.toInt()} minimum',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.red,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -456,3 +466,5 @@ class _RewardCard extends StatelessWidget {
     );
   }
 }
+
+

@@ -16,6 +16,10 @@ class RideHistoryTrip {
     this.cancelReason,
     this.fareLabel,
     this.distanceLabel,
+    this.tripAmount,
+    this.incentiveAmount,
+    this.cancellationFeeAmount,
+    this.netEarningAmount,
   });
 
   final String id;
@@ -30,6 +34,10 @@ class RideHistoryTrip {
   final String? cancelReason;
   final String? fareLabel;
   final String? distanceLabel;
+  final double? tripAmount;
+  final double? incentiveAmount;
+  final double? cancellationFeeAmount;
+  final double? netEarningAmount;
 
   RideHistoryTrip copyWith({
     int? pickedUpAtEpochMs,
@@ -40,6 +48,10 @@ class RideHistoryTrip {
     String? cancelReason,
     String? fareLabel,
     String? distanceLabel,
+    double? tripAmount,
+    double? incentiveAmount,
+    double? cancellationFeeAmount,
+    double? netEarningAmount,
     bool clearFare = false,
     bool clearDistance = false,
   }) {
@@ -56,6 +68,11 @@ class RideHistoryTrip {
       cancelReason: cancelReason ?? this.cancelReason,
       fareLabel: clearFare ? null : (fareLabel ?? this.fareLabel),
       distanceLabel: clearDistance ? null : (distanceLabel ?? this.distanceLabel),
+      tripAmount: tripAmount ?? this.tripAmount,
+      incentiveAmount: incentiveAmount ?? this.incentiveAmount,
+      cancellationFeeAmount:
+          cancellationFeeAmount ?? this.cancellationFeeAmount,
+      netEarningAmount: netEarningAmount ?? this.netEarningAmount,
     );
   }
 
@@ -73,6 +90,10 @@ class RideHistoryTrip {
       'cancelReason': cancelReason,
       'fareLabel': fareLabel,
       'distanceLabel': distanceLabel,
+      'tripAmount': tripAmount,
+      'incentiveAmount': incentiveAmount,
+      'cancellationFeeAmount': cancellationFeeAmount,
+      'netEarningAmount': netEarningAmount,
     };
   }
 
@@ -92,6 +113,11 @@ class RideHistoryTrip {
       cancelReason: json['cancelReason'] as String?,
       fareLabel: json['fareLabel'] as String?,
       distanceLabel: json['distanceLabel'] as String?,
+      tripAmount: (json['tripAmount'] as num?)?.toDouble(),
+      incentiveAmount: (json['incentiveAmount'] as num?)?.toDouble(),
+      cancellationFeeAmount:
+          (json['cancellationFeeAmount'] as num?)?.toDouble(),
+      netEarningAmount: (json['netEarningAmount'] as num?)?.toDouble(),
     );
   }
 }
@@ -136,6 +162,7 @@ class RideHistoryStore {
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final String id = 'trip_$now';
+    final double parsedFare = _parseCurrency(fareLabel);
     final RideHistoryTrip trip = RideHistoryTrip(
       id: id,
       acceptedAtEpochMs: now,
@@ -143,6 +170,8 @@ class RideHistoryStore {
       dropLocation: dropLocation,
       fareLabel: fareLabel,
       distanceLabel: distanceLabel,
+      tripAmount: parsedFare > 0 ? parsedFare : null,
+      netEarningAmount: parsedFare > 0 ? parsedFare : null,
     );
     await _upsertTrip(trip, setAsActive: true);
   }
@@ -170,6 +199,10 @@ class RideHistoryStore {
   static Future<void> markCompletedNow({
     String? fareLabel,
     String? distanceLabel,
+    double? tripAmount,
+    double? incentiveAmount,
+    double? cancellationFeeAmount,
+    double? netEarningAmount,
   }) async {
     final String? activeTripId = await _loadActiveTripId();
     final RideHistoryTrip? active = await _loadTripForProgressUpdate();
@@ -179,6 +212,10 @@ class RideHistoryStore {
         completedAtEpochMs: DateTime.now().millisecondsSinceEpoch,
         fareLabel: fareLabel,
         distanceLabel: distanceLabel,
+        tripAmount: tripAmount,
+        incentiveAmount: incentiveAmount,
+        cancellationFeeAmount: cancellationFeeAmount,
+        netEarningAmount: netEarningAmount,
       ),
       clearActive: activeTripId != null && activeTripId == active.id,
     );
@@ -189,6 +226,8 @@ class RideHistoryStore {
     required String cancelReason,
     String? pickupLocation,
     String? dropLocation,
+    String? fareLabel,
+    double cancellationFeeAmount = 0,
   }) async {
     final RideHistoryTrip? active = await _loadTripForProgressUpdate();
     final int now = DateTime.now().millisecondsSinceEpoch;
@@ -199,6 +238,11 @@ class RideHistoryStore {
           canceledAtEpochMs: now,
           canceledBy: canceledBy,
           cancelReason: cancelReason,
+          fareLabel: fareLabel,
+          cancellationFeeAmount: cancellationFeeAmount,
+          netEarningAmount: cancellationFeeAmount > 0
+              ? cancellationFeeAmount
+              : 0,
         ),
         clearActive: true,
       );
@@ -213,6 +257,9 @@ class RideHistoryStore {
       canceledAtEpochMs: now,
       canceledBy: canceledBy,
       cancelReason: cancelReason,
+      fareLabel: fareLabel,
+      cancellationFeeAmount: cancellationFeeAmount,
+      netEarningAmount: cancellationFeeAmount > 0 ? cancellationFeeAmount : 0,
     );
     await _upsertTrip(trip, clearActive: true);
   }
@@ -222,17 +269,26 @@ class RideHistoryStore {
     required String dropLocation,
     String? fareLabel,
     String? distanceLabel,
+    double? tripAmount,
+    double? incentiveAmount,
+    double? cancellationFeeAmount,
+    double? netEarningAmount,
   }) async {
     final RideHistoryTrip? active = await _loadTripForProgressUpdate();
     if (active != null) {
       await markCompletedNow(
         fareLabel: fareLabel,
         distanceLabel: distanceLabel,
+        tripAmount: tripAmount,
+        incentiveAmount: incentiveAmount,
+        cancellationFeeAmount: cancellationFeeAmount,
+        netEarningAmount: netEarningAmount,
       );
       return;
     }
 
     final int now = DateTime.now().millisecondsSinceEpoch;
+    final double parsedFare = _parseCurrency(fareLabel);
     final RideHistoryTrip trip = RideHistoryTrip(
       id: 'trip_$now',
       acceptedAtEpochMs: now,
@@ -243,6 +299,11 @@ class RideHistoryStore {
       completedAtEpochMs: now,
       fareLabel: fareLabel,
       distanceLabel: distanceLabel,
+      tripAmount: tripAmount ?? (parsedFare > 0 ? parsedFare : null),
+      incentiveAmount: incentiveAmount,
+      cancellationFeeAmount: cancellationFeeAmount,
+      netEarningAmount:
+          netEarningAmount ?? (parsedFare > 0 ? parsedFare : null),
     );
     await _upsertTrip(trip);
   }
@@ -250,6 +311,10 @@ class RideHistoryStore {
   static Future<void> updateLatestCompletedDetails({
     String? fareLabel,
     String? distanceLabel,
+    double? tripAmount,
+    double? incentiveAmount,
+    double? cancellationFeeAmount,
+    double? netEarningAmount,
   }) async {
     final List<RideHistoryTrip> trips = (await loadTrips()).toList();
     final int index = trips.indexWhere((RideHistoryTrip trip) {
@@ -260,9 +325,20 @@ class RideHistoryStore {
     final RideHistoryTrip updated = current.copyWith(
       fareLabel: fareLabel,
       distanceLabel: distanceLabel,
+      tripAmount: tripAmount,
+      incentiveAmount: incentiveAmount,
+      cancellationFeeAmount: cancellationFeeAmount,
+      netEarningAmount: netEarningAmount,
     );
     trips[index] = updated;
     await _saveTrips(trips);
+  }
+
+  static double _parseCurrency(String? raw) {
+    if (raw == null || raw.isEmpty) return 0;
+    final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
+    if (cleaned.isEmpty) return 0;
+    return double.tryParse(cleaned) ?? 0;
   }
 
   static Future<String?> _loadActiveTripId() async {

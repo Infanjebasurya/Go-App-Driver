@@ -8,7 +8,6 @@ import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/earnings_details_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
-import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class EarningsScreen extends StatelessWidget {
@@ -142,7 +141,18 @@ class _AllEarningsView extends StatelessWidget {
             icon: Icons.receipt_long,
             title: 'All Orders',
             subtitle: 'View history and daily breakdowns',
-            onTap: () => SOSBottomSheet.show(context),
+            onTap: () {
+              final cubit = context.read<EarningsCubit>();
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => BlocProvider<EarningsCubit>.value(
+                    value: cubit,
+                    child: const EarningsDetailsPage(),
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           _MenuItem(

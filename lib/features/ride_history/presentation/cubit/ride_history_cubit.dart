@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
+import 'package:goapp/core/utils/earnings_calculator.dart';
 import 'package:goapp/features/ride_history/presentation/cubit/ride_history_state.dart';
 
 class RideHistoryCubit extends Cubit<RideHistoryState> {
@@ -85,10 +86,8 @@ class RideHistoryCubit extends Cubit<RideHistoryState> {
   double totalEarnings() {
     double sum = 0;
     for (final RideHistoryTrip trip in state.allTrips) {
-      final String fare = trip.fareLabel ?? '';
-      final String cleaned = fare.replaceAll(RegExp(r'[^0-9.]'), '');
-      if (cleaned.isEmpty) continue;
-      sum += double.tryParse(cleaned) ?? 0;
+      if (!EarningsCalculator.isSettledTrip(trip)) continue;
+      sum += EarningsCalculator.totalEarning(trip);
     }
     return sum;
   }

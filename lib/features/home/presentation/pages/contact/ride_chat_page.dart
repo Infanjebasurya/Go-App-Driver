@@ -88,7 +88,7 @@ class _RideChatPageState extends State<RideChatPage> {
                           child: Container(
                             height: 42,
                             decoration: BoxDecoration(
-                              color: AppColors.neutralDDD,
+                              color: AppColors.surfaceF0,
                               borderRadius: BorderRadius.circular(24),
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -98,6 +98,8 @@ class _RideChatPageState extends State<RideChatPage> {
                                   child: TextField(
                                     controller: _messageController,
                                     decoration: const InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.transparent,
                                       border: InputBorder.none,
                                       hintText: 'Type a message...',
                                       hintStyle: TextStyle(
@@ -109,7 +111,7 @@ class _RideChatPageState extends State<RideChatPage> {
                                   ),
                                 ),
                                 const Icon(
-                                  Icons.mic_none_rounded,
+                                  Icons.mic,
                                   color: AppColors.neutralAAA,
                                   size: 20,
                                 ),
@@ -136,6 +138,8 @@ class _RideChatPageState extends State<RideChatPage> {
     );
   }
 }
+
+
 
 class _RoundIconButton extends StatelessWidget {
   const _RoundIconButton({

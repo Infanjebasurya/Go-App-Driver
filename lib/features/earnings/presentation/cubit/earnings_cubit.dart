@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/features/earnings/data/datasources/earnings_wallet_mock_api.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
@@ -11,8 +11,10 @@ class EarningsCubit extends Cubit<EarningsState> {
   EarningsCubit({
     required GetEarningsSnapshotUseCase getEarningsSnapshot,
     required GetWalletTransactionsUseCase getWalletTransactions,
+    EarningsWalletMockApi? walletApi,
   }) : _getEarningsSnapshot = getEarningsSnapshot,
        _getWalletTransactions = getWalletTransactions,
+       _walletApi = walletApi ?? const EarningsWalletMockApi(),
        super(
          EarningsState(
            rechargeAmount:
@@ -22,6 +24,7 @@ class EarningsCubit extends Cubit<EarningsState> {
 
   final GetEarningsSnapshotUseCase _getEarningsSnapshot;
   final GetWalletTransactionsUseCase _getWalletTransactions;
+  final EarningsWalletMockApi _walletApi;
 
   Future<void> load() async {
     final snapshot = await _getEarningsSnapshot();
@@ -62,7 +65,7 @@ class EarningsCubit extends Cubit<EarningsState> {
   Future<bool> rechargeWallet() async {
     final double? amount = _parseAmount(state.rechargeAmount);
     if (amount == null || amount <= 0) return false;
-    await DriverWalletStore.addAmount(amount);
+    await _walletApi.rechargeWallet(amount);
     await load();
     return true;
   }
@@ -71,7 +74,7 @@ class EarningsCubit extends Cubit<EarningsState> {
     final double? amount = _parseAmount(state.rechargeAmount);
     if (amount == null || amount <= 0) return false;
     if (amount > state.snapshot.walletBalance) return false;
-    final double? next = await DriverWalletStore.subtractAmount(amount);
+    final double? next = await _walletApi.withdrawWallet(amount);
     if (next == null) return false;
     await load();
     return true;

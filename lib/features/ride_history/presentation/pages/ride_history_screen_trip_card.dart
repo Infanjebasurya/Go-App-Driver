@@ -145,7 +145,7 @@ class _RideHistoryCard extends StatelessWidget {
                   if (trip.distanceLabel != null && trip.distanceLabel!.isNotEmpty)
                     _InfoRow(label: 'Distance', value: trip.distanceLabel!),
                   if (trip.fareLabel != null && trip.fareLabel!.isNotEmpty)
-                    _InfoRow(label: 'Total Fare', value: trip.fareLabel!),
+                    _InfoRow(label: 'Total Earnings', value: trip.fareLabel!),
                 ],
               ),
             ),

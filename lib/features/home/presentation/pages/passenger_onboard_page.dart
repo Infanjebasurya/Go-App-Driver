@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
@@ -7,6 +8,7 @@ import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/utils/env.dart';
@@ -36,6 +38,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
   List<LatLng> _routePoints = const <LatLng>[];
   AppMapController? _mapController;
   LocationIssue? _locationIssue;
+  bool _isLocationDialogVisible = false;
 
   @override
   void initState() {
@@ -148,18 +151,50 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
     setState(() => _locationIssue = result.issue);
     if (result.isReady) return true;
 
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger != null) {
-      messenger.hideCurrentSnackBar();
-      messenger.showSnackBar(
-        SnackBar(content: Text(_locationBlockedMessage(result.issue!))),
-      );
-    }
+    await _showLocationBlockedDialog(result.issue!);
     return false;
+  }
+
+  Future<void> _showLocationBlockedDialog(LocationIssue issue) async {
+    if (!mounted || _isLocationDialogVisible) return;
+    _isLocationDialogVisible = true;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Location Required'),
+          content: Text(_locationBlockedMessage(issue)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                if (issue == LocationIssue.serviceDisabled) {
+                  await _locationGuard.openLocationSettings();
+                } else {
+                  await _locationGuard.openAppSettings();
+                }
+              },
+              child: Text(
+                issue == LocationIssue.serviceDisabled
+                    ? 'Enable GPS'
+                    : 'Open Settings',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    _isLocationDialogVisible = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    final displayName = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
     return HomeNoDeviceBack(
       child: Scaffold(
         body: Stack(
@@ -286,15 +321,17 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                         height: 92,
                         decoration: const BoxDecoration(shape: BoxShape.circle),
                         child: ClipOval(
-                          child: Image.asset(
-                            'assets/image/profile.png',
-                            fit: BoxFit.cover,
-                          ),
+                          child: profilePath != null
+                              ? Image.file(File(profilePath), fit: BoxFit.cover)
+                              : Image.asset(
+                                  'assets/image/profile.png',
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                       ),
                       const SizedBox(height: 10),
-                      const Text(
-                        'Yogesh S',
+                      Text(
+                        displayName,
                         style: TextStyle(
                           fontSize: 33 / 2,
                           fontWeight: FontWeight.w700,

@@ -10,13 +10,19 @@ class VerificationCubit extends Cubit<VerificationState> {
   }
 
   void syncFromStore() {
+    final profileImageUploaded = DocumentProgressStore.isProfileImageUploaded();
     final updatedDocs = state.documents.map((doc) {
       final completed = DocumentProgressStore.isCompleted(doc.type);
       return doc.copyWith(
         status: completed ? DocumentStatus.completed : DocumentStatus.required,
       );
     }).toList();
-    emit(state.copyWith(documents: updatedDocs));
+    emit(
+      state.copyWith(
+        documents: updatedDocs,
+        isProfileImageUploaded: profileImageUploaded,
+      ),
+    );
   }
 
   Future<void> uploadDocument(DocumentType type) async {
@@ -75,27 +81,33 @@ class VerificationCubit extends Cubit<VerificationState> {
   }
 
   Future<void> submitForReview() async {
+    final profileImageUploaded = DocumentProgressStore.isProfileImageUploaded();
     final syncedDocs = state.documents.map((doc) {
       final completed = DocumentProgressStore.isCompleted(doc.type);
       return doc.copyWith(
         status: completed ? DocumentStatus.completed : DocumentStatus.required,
       );
     }).toList();
-    final canSubmit = syncedDocs.every((doc) => doc.isCompleted);
+    final canSubmit =
+        profileImageUploaded && syncedDocs.every((doc) => doc.isCompleted);
 
     if (!canSubmit) {
-      // Clear stale error first so repeated invalid submits emit a new state.
+      final errorMessage = !profileImageUploaded
+          ? 'Please upload your profile picture before proceeding.'
+          : 'Please complete all required documents before submitting.';
+
       emit(
         state.copyWith(
           documents: syncedDocs,
+          isProfileImageUploaded: profileImageUploaded,
           clearError: true,
         ),
       );
       emit(
         state.copyWith(
           documents: syncedDocs,
-          errorMessage:
-          'Please complete all required documents before submitting.',
+          isProfileImageUploaded: profileImageUploaded,
+          errorMessage: errorMessage,
         ),
       );
       return;
@@ -104,6 +116,7 @@ class VerificationCubit extends Cubit<VerificationState> {
     emit(
       state.copyWith(
         documents: syncedDocs,
+        isProfileImageUploaded: profileImageUploaded,
         isSubmitting: true,
         clearError: true,
       ),
