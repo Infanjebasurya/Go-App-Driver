@@ -75,10 +75,11 @@ void main() {
       ..selectCategory('fare_payment')
       ..updateDescription('Fare mismatch.');
     addTearDown(cubit.close);
-    await cubit.submitComplaint();
 
     await tester.pumpWidget(_buildTestApp(cubit));
+    cubit.submitComplaint();
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1200));
 
     expect(find.text('Return to Dashboard'), findsOneWidget);
   });

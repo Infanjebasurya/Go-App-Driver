@@ -10,7 +10,6 @@ import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_state.dart';
 import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
@@ -34,6 +33,8 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   final AvailableOrdersCubit _ordersCubit = AvailableOrdersCubit();
   LocationIssue? _locationIssue;
   bool _ordersStarted = false;
+  bool _isLocationDialogVisible = false;
+  int _declinedOrdersCount = 0;
 
   bool get _canReceiveOrders => _locationIssue == null;
 
@@ -137,6 +138,9 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
     if (!mounted) return;
     final LocationIssue? previousIssue = _locationIssue;
     setState(() => _locationIssue = result.issue);
+    if (previousIssue != result.issue && result.issue != null) {
+      unawaited(_showLocationBlockedDialog(result.issue!));
+    }
     await _handleOrderFlowByLocation(
       previousIssue: previousIssue,
       nextIssue: result.issue,
@@ -151,9 +155,6 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
       _ordersCubit.stop();
       _ordersStarted = false;
       await _audioPlayer.stop();
-      if (previousIssue == null && mounted) {
-        _showLocationPauseSnack();
-      }
       return;
     }
 
@@ -172,21 +173,7 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
     // Keep UI quiet on restore; just resume order flow.
   }
 
-  void _showLocationPauseSnack() {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      const SnackBar(
-        duration: Duration(seconds: 5),
-        content: Text(
-          'Orders are paused. Enable GPS and Location permission to continue receiving orders.',
-        ),
-      ),
-    );
-  }
-
-  Future<void> _onLocationBannerActionTap() async {
+  Future<void> _onLocationDialogActionTap() async {
     final issue = _locationIssue;
     if (issue == null) return;
     if (issue == LocationIssue.serviceDisabled) {
@@ -196,6 +183,71 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
     }
     if (!mounted) return;
     unawaited(_refreshLocationState());
+  }
+
+  Future<void> _showLocationBlockedDialog(LocationIssue issue) async {
+    if (!mounted || _isLocationDialogVisible) return;
+    _isLocationDialogVisible = true;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Location Required'),
+          content: const Text(
+            'Orders are paused. Enable GPS and Location permission to continue receiving orders.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await _onLocationDialogActionTap();
+              },
+              child: Text(
+                issue == LocationIssue.serviceDisabled
+                    ? 'Enable GPS'
+                    : 'Open Settings',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    _isLocationDialogVisible = false;
+  }
+
+  Future<void> _handleDeclineTap() async {
+    if (_declinedOrdersCount >= 2) {
+      await _showDeclineLimitDialog();
+      return;
+    }
+
+    _declinedOrdersCount += 1;
+    _ordersCubit.stop();
+  }
+
+  Future<void> _showDeclineLimitDialog() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Decline Limit Reached'),
+          content: const Text(
+            'You can decline only 2 orders while online. Accept the next order or go offline.',
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -230,13 +282,6 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
               return ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
                 children: <Widget>[
-                  if (_locationIssue != null) ...<Widget>[
-                    LocationDisabledBanner(
-                      issue: _locationIssue!,
-                      onActionTap: _onLocationBannerActionTap,
-                    ),
-                    const SizedBox(height: 12),
-                  ],
                   _OrderCard(
                     fare: '\u20B990',
                     pickupTitle: 'Arumbakkam',
@@ -247,12 +292,11 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                     progress: _canReceiveOrders ? cubit.progressForOrder(0) : 0,
                     isEnabled: _canReceiveOrders,
                     distanceLabel: '2.5 km',
-                    onDecline: _canReceiveOrders ? () {
-                      _ordersCubit.stop();
-                      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                        const SnackBar(content: Text('Order declined')),
-                      );
-                    } : null,
+                    onDecline: _canReceiveOrders
+                        ? () {
+                            unawaited(_handleDeclineTap());
+                          }
+                        : null,
                     onAccept: () async => _goToRideScreen(
                       pickupPoint: const LatLng(13.0696, 80.2154),
                       dropPoint: const LatLng(13.0744, 80.2241),
@@ -276,12 +320,11 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                       progress: _canReceiveOrders ? cubit.progressForOrder(1) : 0,
                       isEnabled: _canReceiveOrders,
                       distanceLabel: '3.2 km',
-                      onDecline: _canReceiveOrders ? () {
-                        _ordersCubit.stop();
-                        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                          const SnackBar(content: Text('Order declined')),
-                        );
-                      } : null,
+                      onDecline: _canReceiveOrders
+                          ? () {
+                              unawaited(_handleDeclineTap());
+                            }
+                          : null,
                       onAccept: () async => _goToRideScreen(
                         pickupPoint: const LatLng(13.0721, 80.2186),
                         dropPoint: const LatLng(13.0662, 80.2103),

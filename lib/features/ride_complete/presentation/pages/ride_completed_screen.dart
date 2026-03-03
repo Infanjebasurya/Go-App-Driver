@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
@@ -54,14 +53,16 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     if (session != null) {
       final double fare = _parseCurrency(session.fareLabel);
       final double distance = _parseDistanceKm(session.distanceLabel);
-      if (fare > 0) {
+      final bool shouldBackfillFare =
+          fare > 0 && summary.totalEarnings <= 0 && summary.tripFare <= 0;
+      if (shouldBackfillFare || (distance > 0 && summary.distanceKm <= 0)) {
         summary = RideCompletionSummary(
-          totalEarnings: fare,
+          totalEarnings: shouldBackfillFare ? fare : summary.totalEarnings,
           distanceKm: distance > 0 ? distance : summary.distanceKm,
-          tripFare: fare,
-          tips: 0,
-          discountPercent: 0,
-          discountAmount: 0,
+          tripFare: shouldBackfillFare ? fare : summary.tripFare,
+          tips: shouldBackfillFare ? 0 : summary.tips,
+          discountPercent: shouldBackfillFare ? 0 : summary.discountPercent,
+          discountAmount: shouldBackfillFare ? 0 : summary.discountAmount,
           paymentLink: summary.paymentLink,
           driverName: summary.driverName,
           driverRating: summary.driverRating,
@@ -72,13 +73,26 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     }
 
     if (!mounted) return;
+    final double tripAmount = summary.tripFare > 0
+        ? summary.tripFare
+        : _parseCurrency(session?.fareLabel);
+    final double incentiveAmount = _deriveIncentive(summary, tripAmount);
+    final double netEarning = _deriveNetEarning(
+      summary: summary,
+      tripAmount: tripAmount,
+      incentiveAmount: incentiveAmount,
+    );
     await RideHistoryStore.updateLatestCompletedDetails(
-      fareLabel: '\u20B9 ${summary.totalEarnings.toStringAsFixed(2)}',
+      fareLabel: '\u20B9 ${netEarning.toStringAsFixed(2)}',
       distanceLabel: '${summary.distanceKm.toStringAsFixed(1)} km',
+      tripAmount: tripAmount,
+      incentiveAmount: incentiveAmount,
+      cancellationFeeAmount: 0,
+      netEarningAmount: netEarning,
     );
     await TripSessionStore.savePaymentDetails(
-      totalEarnings: summary.totalEarnings,
-      tripFare: summary.tripFare,
+      totalEarnings: netEarning,
+      tripFare: tripAmount,
       tips: summary.tips,
       discountPercent: summary.discountPercent,
       discountAmount: summary.discountAmount,
@@ -99,6 +113,24 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
     if (cleaned.isEmpty) return 0;
     return double.tryParse(cleaned) ?? 0;
+  }
+
+  double _deriveIncentive(RideCompletionSummary summary, double tripAmount) {
+    final double computed =
+        summary.totalEarnings - tripAmount + summary.discountAmount;
+    if (computed > 0) return computed;
+    return 0;
+  }
+
+  double _deriveNetEarning({
+    required RideCompletionSummary summary,
+    required double tripAmount,
+    required double incentiveAmount,
+  }) {
+    final double explicit = summary.totalEarnings;
+    if (explicit > 0) return explicit;
+    final double net = tripAmount + incentiveAmount - summary.discountAmount;
+    return net > 0 ? net : 0;
   }
 
   @override
@@ -334,15 +366,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
   }
 
   Future<void> _onCollectCashTap() async {
-    final RideCompletionSummary summary = context
-        .read<RideCompletedCubit>()
-        .state
-        .summary;
-    final TripSession? session = await TripSessionStore.loadActive();
-    final bool alreadyReceived = session?.payment?.receivedAtEpochMs != null;
-    if (!alreadyReceived) {
-      await DriverWalletStore.addAmount(summary.totalEarnings);
-    }
+    // Ride earnings are tracked in earnings history, not wallet balance.
     await TripSessionStore.markPaymentReceived();
     await HomeTripResumeStore.setStage(HomeTripResumeStage.rateExperience);
     if (!mounted) return;

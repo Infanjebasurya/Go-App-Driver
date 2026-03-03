@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/utils/earnings_calculator.dart';
 import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
@@ -434,54 +436,137 @@ class _CompletedList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: const <Widget>[
-        TripCard(
-          date: 'Today',
-          timeRange: '05:30pm to 06:10pm',
-          price: '₹850',
-          pickupLocation: 'Arumbakkam',
-          pickupAddress: '42 i-block, arumbakkam',
-          dropLocation: 'VR Mall',
-          dropAddress: '42 i-block, arumbakkam',
-        ),
-        SizedBox(height: 16),
-        TripCard(
-          date: 'Today',
-          timeRange: '06:30pm to 07:00pm',
-          price: '₹780',
-          pickupLocation: 'Anna Nagar',
-          pickupAddress: '12th Main Road',
-          dropLocation: 'Express Avenue',
-          dropAddress: 'Whites Road, Chennai',
-        ),
-      ],
+    return FutureBuilder<List<RideHistoryTrip>>(
+      future: RideHistoryStore.loadTrips(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final List<RideHistoryTrip> completed =
+            (snapshot.data ?? const <RideHistoryTrip>[])
+                .where(EarningsCalculator.isCompletedTrip)
+                .toList(growable: false);
+        if (completed.isEmpty) {
+          return const _OrderHistoryEmptyState(message: 'No completed orders');
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.all(20),
+          itemCount: completed.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final RideHistoryTrip trip = completed[index];
+            final int startEpoch =
+                trip.startedAtEpochMs ??
+                trip.pickedUpAtEpochMs ??
+                trip.acceptedAtEpochMs;
+            final int endEpoch = trip.completedAtEpochMs ?? startEpoch;
+            return TripCard(
+              date: _formatDateLabel(endEpoch),
+              timeRange:
+                  '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
+              price:
+                  '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
+              pickupLocation: _locationTitle(trip.pickupLocation),
+              pickupAddress: trip.pickupLocation,
+              dropLocation: _locationTitle(trip.dropLocation),
+              dropAddress: trip.dropLocation,
+            );
+          },
+        );
+      },
     );
   }
 }
 
 class _CancelledList extends StatelessWidget {
+  const _CancelledList();
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: const <Widget>[
-        TripCard(
-          date: 'Today',
-          timeRange: '06:30pm',
-          price: '₹0',
-          pickupLocation: 'Anna Nagar',
-          pickupAddress: '12th Main Road, Anna Nagar',
-          dropLocation: 'VR Mall',
-          dropAddress: '100ft Road, Anna Nagar',
-          isCancelled: true,
-        ),
-      ],
+    return FutureBuilder<List<RideHistoryTrip>>(
+      future: RideHistoryStore.loadTrips(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final List<RideHistoryTrip> canceled =
+            (snapshot.data ?? const <RideHistoryTrip>[])
+                .where(EarningsCalculator.isCanceledTrip)
+                .toList(growable: false);
+        if (canceled.isEmpty) {
+          return const _OrderHistoryEmptyState(message: 'No cancelled orders');
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.all(20),
+          itemCount: canceled.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final RideHistoryTrip trip = canceled[index];
+            final int canceledEpoch =
+                trip.canceledAtEpochMs ?? trip.acceptedAtEpochMs;
+            return TripCard(
+              date: _formatDateLabel(canceledEpoch),
+              timeRange: _formatTimeLabel(canceledEpoch),
+              price:
+                  '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
+              pickupLocation: _locationTitle(trip.pickupLocation),
+              pickupAddress: trip.pickupLocation,
+              dropLocation: _locationTitle(trip.dropLocation),
+              dropAddress: trip.dropLocation,
+              isCancelled: true,
+            );
+          },
+        );
+      },
     );
   }
 }
 
+class _OrderHistoryEmptyState extends StatelessWidget {
+  const _OrderHistoryEmptyState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.neutral666,
+        ),
+      ),
+    );
+  }
+}
+
+String _locationTitle(String address) {
+  final List<String> chunks = address.split(',');
+  final String first = chunks.first.trim();
+  if (first.isEmpty) return 'Unknown';
+  return first;
+}
+
+String _formatDateLabel(int epochMs) {
+  final DateTime dt = DateTime.fromMillisecondsSinceEpoch(epochMs);
+  final DateTime now = DateTime.now();
+  final bool isToday =
+      dt.year == now.year && dt.month == now.month && dt.day == now.day;
+  if (isToday) return 'Today';
+  final String day = dt.day.toString().padLeft(2, '0');
+  final String month = dt.month.toString().padLeft(2, '0');
+  return '$day/$month/${dt.year}';
+}
+
+String _formatTimeLabel(int epochMs) {
+  final DateTime dt = DateTime.fromMillisecondsSinceEpoch(epochMs);
+  final int hour12 = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+  final String minute = dt.minute.toString().padLeft(2, '0');
+  final String amPm = dt.hour >= 12 ? 'pm' : 'am';
+  return '$hour12:$minute$amPm';
+}
 class _SummaryItem extends StatelessWidget {
   const _SummaryItem({
     required this.title,
@@ -547,4 +632,5 @@ class _SummaryItem extends StatelessWidget {
     );
   }
 }
+
 

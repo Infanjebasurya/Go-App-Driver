@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
-import 'package:goapp/core/storage/location_permission_prompt_store.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/utils/env.dart';
@@ -30,9 +29,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _lastShownBlockEventId = -1;
   final LocationPermissionGuard _locationGuard =
       const LocationPermissionGuard();
-  bool _isPermissionFlowRunning = false;
-  bool _isPermissionDialogVisible = false;
   Timer? _locationSyncTimer;
+  bool _isLocationDialogVisible = false;
 
   @override
   void initState() {
@@ -53,19 +51,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _locationSyncTimer = Timer.periodic(const Duration(seconds: 2), (_) {
       unawaited(_syncLocationUiState());
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_runOfflinePermissionFlow());
-    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       unawaited(context.read<DriverCubit>().refreshDashboardMetrics());
-    }
-    if (state == AppLifecycleState.resumed &&
-        context.read<DriverCubit>().state.isOffline) {
-      unawaited(_runOfflinePermissionFlow());
     }
   }
 
@@ -105,12 +96,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             state.offlineBlockEventId != _lastShownBlockEventId) {
           _lastShownBlockEventId = state.offlineBlockEventId;
           if (_isHomeRouteActive()) {
-            _showLocationBlockedSnack(context, state.offlineBlockIssue!);
-          }
-          if (state.isOffline && _isHomeRouteActive()) {
-            unawaited(_runOfflinePermissionFlow());
+            unawaited(_showLocationBlockedDialog(state.offlineBlockIssue!));
           }
         }
+
       },
       builder: (context, state) {
         return HomeNoDeviceBack(
@@ -127,58 +116,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _runOfflinePermissionFlow() async {
-    if (!mounted || _isPermissionFlowRunning) return;
-    if (!_isHomeRouteActive()) return;
-    if (context.read<DriverCubit>().state.isOnline) return;
-
-    _isPermissionFlowRunning = true;
-    try {
-      final initial = await _locationGuard.ensureReady(
-        requestPermission: false,
-      );
-      if (!mounted) return;
-      if (initial.isReady) {
-        await LocationPermissionPromptStore.clearDeniedHistory();
-        if (!mounted) return;
-        context.read<DriverCubit>().clearOfflineLocationBlock();
-        ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
-        return;
-      }
-
-      // Native OS prompt first: While using app / Only this time / Don't allow.
-      final retried = await _locationGuard.ensureReady(requestPermission: true);
-      if (!mounted) return;
-      if (retried.isReady) {
-        await LocationPermissionPromptStore.clearDeniedHistory();
-        if (!mounted) return;
-        context.read<DriverCubit>().clearOfflineLocationBlock();
-        ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
-        return;
-      }
-
-      // Count only permission denials. After 2 denies, show app-settings dialog.
-      if (retried.issue == LocationIssue.permissionDenied ||
-          retried.issue == LocationIssue.permissionDeniedForever) {
-        await LocationPermissionPromptStore.noteDeniedAttempt();
-        final bool shouldPromptSettings =
-            await LocationPermissionPromptStore.consumePendingSettingsPrompt();
-        if (shouldPromptSettings && mounted) {
-          await _showSettingsDialog(
-            title: 'Location Permission Needed',
-            message:
-                'You denied location permission multiple times. Open app settings and enable Location permission to continue receiving rides.',
-          );
-        }
-      }
-    } finally {
-      _isPermissionFlowRunning = false;
-    }
-  }
-
   Future<void> _syncLocationUiState() async {
     if (!mounted) return;
-    if (!_isHomeRouteActive() && !_isPermissionDialogVisible) return;
+    if (!_isHomeRouteActive()) return;
     if (context.read<DriverCubit>().state.isOnline) return;
 
     final result = await _locationGuard.ensureReady(requestPermission: false);
@@ -187,9 +127,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     context.read<DriverCubit>().clearOfflineLocationBlock();
     final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
-    if (_isPermissionDialogVisible) {
-      Navigator.of(context, rootNavigator: true).maybePop();
-    }
   }
 
   bool _isHomeRouteActive() {
@@ -197,18 +134,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return route?.isCurrent ?? false;
   }
 
-  Future<void> _showSettingsDialog({
-    required String title,
-    required String message,
-  }) async {
-    if (!mounted) return;
-    _isPermissionDialogVisible = true;
+  Future<void> _showLocationBlockedDialog(LocationIssue issue) async {
+    if (!mounted || _isLocationDialogVisible) return;
+    _isLocationDialogVisible = true;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(message),
+          title: const Text('Location Required'),
+          content: Text(_locationBlockedMessage(issue)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
@@ -217,39 +151,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             FilledButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                await _locationGuard.openAppSettings();
+                if (issue == LocationIssue.serviceDisabled) {
+                  await _locationGuard.openLocationSettings();
+                } else {
+                  await _locationGuard.openAppSettings();
+                }
               },
-              child: const Text('Open app settings'),
+              child: Text(
+                issue == LocationIssue.serviceDisabled
+                    ? 'Enable GPS'
+                    : 'Open Settings',
+              ),
             ),
           ],
         );
       },
     );
-    _isPermissionDialogVisible = false;
-  }
-
-  void _showLocationBlockedSnack(BuildContext context, LocationIssue issue) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 5),
-        content: Text(_locationBlockedMessage(issue)),
-        action: SnackBarAction(
-          label: issue == LocationIssue.serviceDisabled
-              ? 'Enable GPS'
-              : 'Settings',
-          onPressed: () {
-            if (issue == LocationIssue.serviceDisabled) {
-              const LocationPermissionGuard().openLocationSettings();
-            } else {
-              const LocationPermissionGuard().openAppSettings();
-            }
-          },
-        ),
-      ),
-    );
+    _isLocationDialogVisible = false;
   }
 
   String _locationBlockedMessage(LocationIssue issue) {
@@ -262,4 +180,5 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return 'Location permission is permanently denied. Enable it from app settings.';
     }
   }
+
 }

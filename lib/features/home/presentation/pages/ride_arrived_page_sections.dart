@@ -38,6 +38,8 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
   String _selectedReason = _driverReasons.first;
   bool _submitting = false;
 
+  double get _cancellationFee => _cancelType == 'Customer' ? 30.0 : 0.0;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -125,8 +127,8 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Cancellation Fee: \u20B900.00',
+            Text(
+              'Cancellation Fee: \u20B9${_cancellationFee.toStringAsFixed(2)}',
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.neutral888,

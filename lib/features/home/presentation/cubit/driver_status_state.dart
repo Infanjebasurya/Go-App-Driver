@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 
 enum DriverStatus { offline, online }
+const double kMinimumDutyWalletBalance = 300.0;
 
 @immutable
 class DriverState {
@@ -17,6 +18,7 @@ class DriverState {
   final int navigateToOrdersToken;
   final LocationIssue? offlineBlockIssue;
   final int offlineBlockEventId;
+  final int lowWalletBlockEventId;
 
   const DriverState({
     this.status = DriverStatus.offline,
@@ -31,12 +33,17 @@ class DriverState {
     this.navigateToOrdersToken = 0,
     this.offlineBlockIssue,
     this.offlineBlockEventId = 0,
+    this.lowWalletBlockEventId = 0,
   });
 
   bool get isOnline => status == DriverStatus.online;
   bool get isOffline => status == DriverStatus.offline;
   int get remainingRides => targetRides - completedRides;
   double get progressPercentage => completedRides / targetRides;
+  bool get isWalletBelowDutyThreshold => walletBalance < kMinimumDutyWalletBalance;
+  double get walletShortfall => (kMinimumDutyWalletBalance - walletBalance) > 0
+      ? (kMinimumDutyWalletBalance - walletBalance)
+      : 0;
 
   DriverState copyWith({
     DriverStatus? status,
@@ -51,6 +58,7 @@ class DriverState {
     int? navigateToOrdersToken,
     LocationIssue? offlineBlockIssue,
     int? offlineBlockEventId,
+    int? lowWalletBlockEventId,
     bool clearOfflineBlockIssue = false,
   }) {
     return DriverState(
@@ -69,6 +77,7 @@ class DriverState {
           ? null
           : (offlineBlockIssue ?? this.offlineBlockIssue),
       offlineBlockEventId: offlineBlockEventId ?? this.offlineBlockEventId,
+      lowWalletBlockEventId: lowWalletBlockEventId ?? this.lowWalletBlockEventId,
     );
   }
 }

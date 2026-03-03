@@ -36,6 +36,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
   List<LatLng> _routePoints = const <LatLng>[];
   AppMapController? _mapController;
   LocationIssue? _locationIssue;
+  bool _isLocationDialogVisible = false;
 
   @override
   void initState() {
@@ -148,14 +149,44 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
     setState(() => _locationIssue = result.issue);
     if (result.isReady) return true;
 
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger != null) {
-      messenger.hideCurrentSnackBar();
-      messenger.showSnackBar(
-        SnackBar(content: Text(_locationBlockedMessage(result.issue!))),
-      );
-    }
+    await _showLocationBlockedDialog(result.issue!);
     return false;
+  }
+
+  Future<void> _showLocationBlockedDialog(LocationIssue issue) async {
+    if (!mounted || _isLocationDialogVisible) return;
+    _isLocationDialogVisible = true;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Location Required'),
+          content: Text(_locationBlockedMessage(issue)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                if (issue == LocationIssue.serviceDisabled) {
+                  await _locationGuard.openLocationSettings();
+                } else {
+                  await _locationGuard.openAppSettings();
+                }
+              },
+              child: Text(
+                issue == LocationIssue.serviceDisabled
+                    ? 'Enable GPS'
+                    : 'Open Settings',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    _isLocationDialogVisible = false;
   }
 
   @override

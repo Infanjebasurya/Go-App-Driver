@@ -435,8 +435,8 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     final step = state.currentDocStep;
     if (!step.frontCaptured || !step.backCaptured) {
       final updated = step.copyWith(
+        numberError: 'Please upload both front and back documents',
         imageError: 'Please upload both front and back documents',
-        clearError: true,
       );
       emit(state.copyWithDocStep(updated));
       DocumentProgressStore.setCompleted(
