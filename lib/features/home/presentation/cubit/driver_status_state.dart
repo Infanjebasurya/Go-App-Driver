@@ -19,6 +19,7 @@ class DriverState {
   final LocationIssue? offlineBlockIssue;
   final int offlineBlockEventId;
   final int lowWalletBlockEventId;
+  final bool showLowWalletWarning;
 
   const DriverState({
     this.status = DriverStatus.offline,
@@ -34,6 +35,7 @@ class DriverState {
     this.offlineBlockIssue,
     this.offlineBlockEventId = 0,
     this.lowWalletBlockEventId = 0,
+    this.showLowWalletWarning = false,
   });
 
   bool get isOnline => status == DriverStatus.online;
@@ -59,6 +61,7 @@ class DriverState {
     LocationIssue? offlineBlockIssue,
     int? offlineBlockEventId,
     int? lowWalletBlockEventId,
+    bool? showLowWalletWarning,
     bool clearOfflineBlockIssue = false,
   }) {
     return DriverState(
@@ -78,6 +81,7 @@ class DriverState {
           : (offlineBlockIssue ?? this.offlineBlockIssue),
       offlineBlockEventId: offlineBlockEventId ?? this.offlineBlockEventId,
       lowWalletBlockEventId: lowWalletBlockEventId ?? this.lowWalletBlockEventId,
+      showLowWalletWarning: showLowWalletWarning ?? this.showLowWalletWarning,
     );
   }
 }

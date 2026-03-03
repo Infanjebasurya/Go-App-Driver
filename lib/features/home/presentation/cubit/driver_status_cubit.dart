@@ -26,6 +26,7 @@ class DriverCubit extends Cubit<DriverState> {
   Timer? _onlineTimer;
   Timer? _ordersNavigationTimer;
   Timer? _locationWatchTimer;
+  Timer? _lowWalletWarningTimer;
   int _onlineMinutesToday = 0;
   int? _onlineSessionStartEpochMs;
   String _onlineMinutesDateKey = '';
@@ -74,6 +75,7 @@ class DriverCubit extends Cubit<DriverState> {
       completedRides: rewardProgress,
     );
     emit(nextState);
+    _updateLowWalletWarning(walletBalance);
 
     if (nextState.isOnline && walletBalance < _minimumDutyWalletBalance) {
       goOffline();
@@ -108,6 +110,7 @@ class DriverCubit extends Cubit<DriverState> {
           lowWalletBlockEventId: state.lowWalletBlockEventId + 1,
         ),
       );
+      _updateLowWalletWarning(walletBalance);
       return;
     }
 
@@ -227,6 +230,7 @@ class DriverCubit extends Cubit<DriverState> {
     final double next = await DriverWalletStore.addAmount(amount);
     if (isClosed) return;
     emit(state.copyWith(walletBalance: next));
+    _updateLowWalletWarning(next);
   }
 
   bool addMoneyFromInput(String input) {
@@ -235,8 +239,33 @@ class DriverCubit extends Cubit<DriverState> {
     if (amount == null || amount <= 0) return false;
     final double next = state.walletBalance + amount;
     emit(state.copyWith(walletBalance: next));
+    _updateLowWalletWarning(next);
     unawaited(DriverWalletStore.saveBalance(next));
     return true;
+  }
+
+  void _updateLowWalletWarning(double walletBalance) {
+    if (walletBalance >= _minimumDutyWalletBalance) {
+      _lowWalletWarningTimer?.cancel();
+      _lowWalletWarningTimer = null;
+      if (state.showLowWalletWarning) {
+        emit(state.copyWith(showLowWalletWarning: false));
+      }
+      return;
+    }
+
+    if (!state.showLowWalletWarning) {
+      emit(state.copyWith(showLowWalletWarning: true));
+    }
+
+    _lowWalletWarningTimer?.cancel();
+    _lowWalletWarningTimer = Timer(const Duration(seconds: 10), () {
+      if (isClosed) return;
+      if (state.walletBalance < _minimumDutyWalletBalance &&
+          state.showLowWalletWarning) {
+        emit(state.copyWith(showLowWalletWarning: false));
+      }
+    });
   }
 
   Future<void> _bootstrapOnlineHoursIfNeeded() async {
@@ -378,6 +407,8 @@ class DriverCubit extends Cubit<DriverState> {
     _stopTimer();
     _stopOrdersNavigationDelay();
     _stopLocationWatch();
+    _lowWalletWarningTimer?.cancel();
+    _lowWalletWarningTimer = null;
     if (state.isOnline) {
       unawaited(_flushOnlineMinutesAndEndSession());
     }

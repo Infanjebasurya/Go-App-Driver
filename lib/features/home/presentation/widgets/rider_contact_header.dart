@@ -27,7 +27,6 @@ class RiderContactHeader extends StatelessWidget {
         ? ProfileDisplayStore.displayName()
         : name;
     final profilePath = ProfileDisplayStore.photoPath();
-    final hasProfilePhoto = profilePath != null;
     final double topInset = MediaQuery.of(context).padding.top;
     return Container(
       color: AppColors.white,
@@ -41,8 +40,8 @@ class RiderContactHeader extends StatelessWidget {
             height: 42,
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
-              child: hasProfilePhoto
-                  ? Image.file(File(profilePath!), fit: BoxFit.cover)
+              child: profilePath != null
+                  ? Image.file(File(profilePath), fit: BoxFit.cover)
                   : Image.asset('assets/image/profile.png', fit: BoxFit.cover),
             ),
           ),

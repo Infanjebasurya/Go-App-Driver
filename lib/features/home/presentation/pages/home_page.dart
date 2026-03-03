@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _lastNavigationToken = 0;
   int _lastShownBlockEventId = -1;
+  int _permissionDeniedAttempts = 0;
   final LocationPermissionGuard _locationGuard =
       const LocationPermissionGuard();
   Timer? _locationSyncTimer;
@@ -95,6 +96,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (state.offlineBlockIssue != null &&
             state.offlineBlockEventId != _lastShownBlockEventId) {
           _lastShownBlockEventId = state.offlineBlockEventId;
+          if (state.offlineBlockIssue == LocationIssue.permissionDenied) {
+            _permissionDeniedAttempts += 1;
+            if (_permissionDeniedAttempts <= 2) {
+              return;
+            }
+          } else {
+            _permissionDeniedAttempts = 0;
+          }
           if (_isHomeRouteActive()) {
             unawaited(_showLocationBlockedDialog(state.offlineBlockIssue!));
           }
@@ -124,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final result = await _locationGuard.ensureReady(requestPermission: false);
     if (!mounted || !result.isReady) return;
 
+    _permissionDeniedAttempts = 0;
     context.read<DriverCubit>().clearOfflineLocationBlock();
     final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
