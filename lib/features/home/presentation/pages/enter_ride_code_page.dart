@@ -74,7 +74,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 14),
                         onPressed: _handleBack,
                       ),
                     ),
@@ -83,7 +83,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                   const Text(
                     'Enter Ride Code',
                     style: TextStyle(
-                      fontSize: 22.5,
+                      fontSize: 30,
                       fontWeight: FontWeight.w800,
                       color: AppColors.neutral333,
                     ),
@@ -93,7 +93,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                     'Ask the passenger for the 4-digit\nstart code',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 13.6,
+                      fontSize: 14,
                       height: 1.5,
                       fontWeight: FontWeight.w500,
                       color: AppColors.neutral888,
@@ -116,7 +116,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                           child: Text(
                             hasDigit ? state.digits[index] : '·',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 24,
                               fontWeight: FontWeight.w700,
                               color: hasDigit
                                   ? AppColors.neutral333
@@ -133,10 +133,10 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.warningText,
+                      color: Color(0xFFC5A059),
                     ),
                   ),
-                  const SizedBox(height: 26),
+                  const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     child: SizedBox(
@@ -183,7 +183,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 34),
                     child: Column(
@@ -224,6 +224,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                     ),
                   ),
                   const SizedBox(height: 24),
+
                 ],
               );
             },
@@ -265,13 +266,18 @@ class _KeypadNumberButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double buttonHeight =
+        (screenHeight * 0.075).clamp(48.0, 70.0).toDouble();
     return SizedBox(
-      height: 62,
+      height: buttonHeight,
       child: TextButton(
         onPressed: onTap,
         style: TextButton.styleFrom(
           foregroundColor: AppColors.neutral333,
-          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          textStyle: const TextStyle(
+              fontFamily: "Saira",
+              fontSize: 24, fontWeight: FontWeight.w500),
         ),
         child: Text(label),
       ),

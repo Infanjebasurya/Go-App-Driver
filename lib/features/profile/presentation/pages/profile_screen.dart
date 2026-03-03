@@ -81,7 +81,8 @@ class _ProfileView extends StatelessWidget {
         listener: (BuildContext context, ProfileEditState state) {
           if (state.status == ProfileEditStatus.loggedOut ||
               state.status == ProfileEditStatus.deleted) {
-            _clearSessionCache().whenComplete(() {
+            final isDelete = state.status == ProfileEditStatus.deleted;
+            _clearSessionCache(isDeleteAccount: isDelete).whenComplete(() {
               if (!context.mounted) return;
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const RLoginPage()),
@@ -106,10 +107,16 @@ class _ProfileView extends StatelessWidget {
     );
   }
 
-  Future<void> _clearSessionCache() async {
+  Future<void> _clearSessionCache({required bool isDeleteAccount}) async {
     await UserCacheStore.clear();
     await RegistrationProgressStore.clear();
     DocumentProgressStore.reset();
+    if (isDeleteAccount) {
+      // Account deletion should wipe all local drafts so next login starts
+      // exactly like a brand-new user.
+      await TextFieldStore.clearAll();
+      return;
+    }
     await TextFieldStore.remove('bank_details.account_holder');
     await TextFieldStore.remove('bank_details.bank_name');
     await TextFieldStore.remove('bank_details.account_number');

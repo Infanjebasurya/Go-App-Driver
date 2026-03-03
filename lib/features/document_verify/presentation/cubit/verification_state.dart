@@ -9,12 +9,14 @@ class VerificationState extends Equatable {
     this.isSubmitting = false,
     this.isSubmitted = false,
     this.errorMessage,
+    this.isProfileImageUploaded = false,
   });
 
   final List<Document> documents;
   final bool isSubmitting;
   final bool isSubmitted;
   final String? errorMessage;
+  final bool isProfileImageUploaded;
 
   factory VerificationState.initial() {
     return const VerificationState(
@@ -25,23 +27,31 @@ class VerificationState extends Equatable {
         Document(type: DocumentType.panCard, status: DocumentStatus.required),
         Document(type: DocumentType.bankDetails, status: DocumentStatus.required),
       ],
+      isProfileImageUploaded: false,
     );
   }
 
   int get completedCount => documents.where((d) => d.isCompleted).length;
 
+  int get totalRequiredCount => documents.length + 1;
+
+  int get completedCountWithProfile =>
+      completedCount + (isProfileImageUploaded ? 1 : 0);
+
   double get progressPercentage =>
-      documents.isEmpty ? 0 : completedCount / documents.length;
+      totalRequiredCount == 0 ? 0 : completedCountWithProfile / totalRequiredCount;
 
   int get progressPercent => (progressPercentage * 100).round();
 
-  bool get canSubmit => completedCount == documents.length;
+  bool get canSubmit =>
+      isProfileImageUploaded && completedCount == documents.length;
 
   VerificationState copyWith({
     List<Document>? documents,
     bool? isSubmitting,
     bool? isSubmitted,
     String? errorMessage,
+    bool? isProfileImageUploaded,
     bool clearError = false,
   }) {
     return VerificationState(
@@ -49,6 +59,8 @@ class VerificationState extends Equatable {
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      isProfileImageUploaded:
+          isProfileImageUploaded ?? this.isProfileImageUploaded,
     );
   }
 
@@ -58,5 +70,6 @@ class VerificationState extends Equatable {
     isSubmitting,
     isSubmitted,
     errorMessage,
+    isProfileImageUploaded,
   ];
 }

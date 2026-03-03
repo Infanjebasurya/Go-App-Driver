@@ -4,12 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
 import '../../../document_verify/presentation/model/document_progress_store.dart';
 
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
+  static const String _profilePhotoStorageKey = 'profile.photo.path';
+
   DocumentUploadCubit({int initialStepIndex = 0})
       : super(
     DocumentUploadState.initial().copyWith(
@@ -25,6 +28,21 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   void _restoreDraft() {
     final updatedSteps = state.steps.map((step) {
+      if (step.step == DocumentStep.profilePhoto) {
+        final profilePath =
+            DocumentProgressStore.profileImagePath() ??
+                TextFieldStore.read(_profilePhotoStorageKey);
+        if (profilePath != null && profilePath.trim().isNotEmpty) {
+          DocumentProgressStore.setProfileImagePath(profilePath);
+        }
+        return step.copyWith(
+          frontCaptured: profilePath != null && profilePath.trim().isNotEmpty,
+          frontPath: profilePath,
+          frontType: profilePath == null ? null : DocumentUploadType.image,
+          clearError: true,
+          clearImageError: true,
+        );
+      }
       final docType = _mapStepToDocType(step.step);
       final frontPath = DocumentProgressStore.frontImagePath(docType);
       final backPath = DocumentProgressStore.backImagePath(docType);
@@ -64,6 +82,8 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   DocumentType _mapStepToDocType(DocumentStep step) {
     switch (step) {
+      case DocumentStep.profilePhoto:
+        throw ArgumentError('Profile photo is not mapped to DocumentType');
       case DocumentStep.drivingLicense:
         return DocumentType.drivingLicense;
       case DocumentStep.vehicleRC:
@@ -94,8 +114,94 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     return sizeBytes > 0 && sizeBytes <= _maxBytes;
   }
 
+  bool _isValidImageFormat(String path) {
+    final lower = path.toLowerCase();
+    return lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png');
+  }
+
+  Future<void> captureProfilePhoto({required ImageSource source}) async {
+    if (state.isCurrentStepBank || !state.isCurrentStepProfile) return;
+    if (_isPicking) return;
+    if (state.currentDocStep.imageError != null) {
+      emit(
+        state.copyWithDocStep(
+          state.currentDocStep.copyWith(clearImageError: true),
+        ),
+      );
+    }
+    if (_isTest) {
+      const testPath = 'test_profile.jpg';
+      DocumentProgressStore.setProfileImagePath(testPath);
+      await TextFieldStore.write(_profilePhotoStorageKey, testPath);
+      final updated = state.currentDocStep.copyWith(
+        frontCaptured: true,
+        frontPath: testPath,
+        frontType: DocumentUploadType.image,
+        clearImageError: true,
+      );
+      emit(state.copyWithDocStep(updated));
+      return;
+    }
+    if (!await _ensurePermission(source)) return;
+
+    _isPicking = true;
+    emit(state.copyWith(isProfileImageProcessing: true));
+    try {
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
+      if (picked == null) return;
+
+      if (!_isValidImageFormat(picked.path)) {
+        emit(
+          state.copyWithDocStep(
+            state.currentDocStep.copyWith(
+              imageError: 'Only JPG and PNG images are allowed.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      final fileSize = await File(picked.path).length();
+      final pickedSize = await picked.length();
+      final bytes = await picked.readAsBytes();
+      final sizeBytes = [
+        fileSize,
+        pickedSize,
+        bytes.length,
+      ].reduce((a, b) => a > b ? a : b);
+      if (!_validateFileSize(sizeBytes)) {
+        emit(
+          state.copyWithDocStep(
+            state.currentDocStep.copyWith(
+              imageError: 'File size must be under 5 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setProfileImagePath(picked.path);
+      await TextFieldStore.write(_profilePhotoStorageKey, picked.path);
+      final updated = state.currentDocStep.copyWith(
+        frontCaptured: true,
+        frontPath: picked.path,
+        frontType: DocumentUploadType.image,
+        clearImageError: true,
+      );
+      emit(state.copyWithDocStep(updated));
+    } finally {
+      _isPicking = false;
+      emit(state.copyWith(isProfileImageProcessing: false));
+    }
+  }
+
   Future<void> captureFront({required ImageSource source}) async {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     if (_isPicking) return;
     if (state.currentDocStep.imageError != null) {
       emit(
@@ -154,7 +260,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   Future<void> captureFrontDocument() async {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     if (_isPicking) return;
     if (state.currentDocStep.imageError != null) {
       emit(
@@ -208,7 +314,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   Future<void> captureBack({required ImageSource source}) async {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     if (_isPicking) return;
     if (state.currentDocStep.imageError != null) {
       emit(
@@ -264,7 +370,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   Future<void> captureBackDocument() async {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     if (_isPicking) return;
     if (state.currentDocStep.imageError != null) {
       emit(
@@ -318,7 +424,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void removeFront() {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     DocumentProgressStore.setFrontImagePath(
       _mapStepToDocType(state.currentDocStep.step),
       null,
@@ -332,7 +438,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void removeBack() {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     DocumentProgressStore.setBackImagePath(
       _mapStepToDocType(state.currentDocStep.step),
       null,
@@ -362,7 +468,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   void updateDocumentNumber(String value) {
-    if (state.isCurrentStepBank) return;
+    if (state.isCurrentStepBank || state.isCurrentStepProfile) return;
     final raw = value.trim();
     final normalized = _normalizeDocumentNumber(state.currentDocStep.step, raw);
     final hasValue = raw.isNotEmpty;
@@ -433,6 +539,22 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   bool _validateDocStep() {
     final step = state.currentDocStep;
+    if (step.step == DocumentStep.profilePhoto) {
+      if (step.frontCaptured) {
+        DocumentProgressStore.setProfileImagePath(step.frontPath);
+        return true;
+      }
+      emit(
+        state.copyWithDocStep(
+          step.copyWith(
+            imageError:
+                'Please upload your profile picture before proceeding.',
+            clearError: true,
+          ),
+        ),
+      );
+      return false;
+    }
     if (!step.frontCaptured || !step.backCaptured) {
       final updated = step.copyWith(
         numberError: 'Please upload both front and back documents',
@@ -492,6 +614,8 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   String _normalizeDocumentNumber(DocumentStep step, String value) {
     switch (step) {
+      case DocumentStep.profilePhoto:
+        return value.trim();
       case DocumentStep.drivingLicense:
       case DocumentStep.vehicleRC:
         return value.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
@@ -506,6 +630,8 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   String? _validateDocumentNumber(DocumentStep step, String value) {
     switch (step) {
+      case DocumentStep.profilePhoto:
+        return null;
       case DocumentStep.drivingLicense:
         if (!RegExp(r'^[A-Z]{2}\d{2}\d{4}\d{7}$').hasMatch(value)) {
           return 'Enter valid license number (e.g. MH1220180012345)';
@@ -602,7 +728,9 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   Future<void> saveAndNext() async {
-    if (state.isSubmitting || _isPicking) return;
+    if (state.isSubmitting || _isPicking || state.isProfileImageProcessing) {
+      return;
+    }
     if (state.isCurrentStepBank) {
       if (!_validateBankStep()) return;
       DocumentProgressStore.setCompleted(

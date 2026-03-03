@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/features/home/presentation/widgets/rider_contact_header.dart';
+import 'dart:io';
 
 class RideCallPage extends StatelessWidget {
   const RideCallPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final name = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
     return HomeNoDeviceBack(
       child: Scaffold(
         backgroundColor: AppColors.surfaceF5,
@@ -27,15 +31,17 @@ class RideCallPage extends StatelessWidget {
                     height: 110,
                     decoration: const BoxDecoration(shape: BoxShape.circle),
                     child: ClipOval(
-                      child: Image.asset(
-                        'assets/image/profile.png',
-                        fit: BoxFit.cover,
-                      ),
+                      child: profilePath != null
+                          ? Image.file(File(profilePath), fit: BoxFit.cover)
+                          : Image.asset(
+                              'assets/image/profile.png',
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
-                    'Calling Sam Yogi...',
+                  Text(
+                    'Calling $name...',
                     style: TextStyle(
                       fontSize: 18 / 1.08,
                       fontWeight: FontWeight.w700,

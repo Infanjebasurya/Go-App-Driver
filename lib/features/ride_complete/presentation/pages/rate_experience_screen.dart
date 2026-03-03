@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
@@ -14,6 +15,7 @@ import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'dart:io';
 
 class RateExperienceScreen extends StatelessWidget {
   const RateExperienceScreen({super.key});
@@ -87,6 +89,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
 
   @override
   Widget build(BuildContext context) {
+    final name = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
     return PopScope<void>(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -110,7 +114,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                     const Text(
                       'Rate Your Experience',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -146,8 +150,13 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                                     offset: const Offset(0, 4),
                                   ),
                                 ],
-                                image: const DecorationImage(
-                                  image: AssetImage('assets/image/profile.png'),
+                                image: DecorationImage(
+                                  image: profilePath != null
+                                      ? FileImage(File(profilePath))
+                                      : const AssetImage(
+                                              'assets/image/profile.png',
+                                            )
+                                            as ImageProvider,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -168,8 +177,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        const Text(
-                          'Sam Yogi',
+                        Text(
+                          name,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -213,8 +222,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                               horizontal: 4.0,
                             ),
                             child: Icon(
-                              Icons.star_rounded,
-                              size: 40,
+                              Icons.star,
+                              size: 32,
                               color: index < state.selectedRating
                                   ? const Color(0xFFFFC107)
                                   : Colors.grey[300],
@@ -223,7 +232,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         );
                       }),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 24),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -249,10 +258,11 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           onSelected: (_) {
                             context.read<RateExperienceCubit>().toggleTag(tag);
                           },
-                          backgroundColor: Colors.white,
-                          selectedColor: const Color(0xFF00C853),
+                          backgroundColor: Colors.grey.shade200,
+                          selectedColor: AppColors.emerald,
                           checkmarkColor: Colors.white,
                           labelStyle: TextStyle(
+                            fontSize: 14,
                             color: isSelected ? Colors.white : Colors.black87,
                             fontWeight: FontWeight.w500,
                           ),
@@ -261,7 +271,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                             side: BorderSide(
                               color: isSelected
                                   ? Colors.transparent
-                                  : Colors.grey[300]!,
+                                  : Colors.grey[200]!,
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(

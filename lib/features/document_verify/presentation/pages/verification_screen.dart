@@ -104,7 +104,7 @@ class _VerificationViewState extends State<_VerificationView> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
-                            'Step 1 to 5',
+                            'Step 1 to 6',
                             textAlign: TextAlign.start,
                             style: TextStyle(
                               fontSize: 16,
@@ -113,11 +113,16 @@ class _VerificationViewState extends State<_VerificationView> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 12),
                         VerificationProgressCard(
-                          completedCount: state.completedCount,
-                          totalCount: state.documents.length,
+                          completedCount: state.completedCountWithProfile,
+                          totalCount: state.totalRequiredCount,
                           progressPercent: state.progressPercent,
+                        ),
+                        const SizedBox(height: 8),
+                        _ProfilePictureCard(
+                          isCompleted: state.isProfileImageUploaded,
+                          onTap: () => _openProfileStep(context),
                         ),
                         const SizedBox(height: 8),
                         ...state.documents.map(
@@ -171,20 +176,151 @@ class _VerificationViewState extends State<_VerificationView> {
   int? _stepIndexForDoc(DocumentType type) {
     switch (type) {
       case DocumentType.drivingLicense:
-        return 0;
-      case DocumentType.vehicleRC:
         return 1;
-      case DocumentType.aadhaarCard:
+      case DocumentType.vehicleRC:
         return 2;
-      case DocumentType.panCard:
+      case DocumentType.aadhaarCard:
         return 3;
-      case DocumentType.bankDetails:
+      case DocumentType.panCard:
         return 4;
+      case DocumentType.bankDetails:
+        return 5;
     }
   }
 
   void _showErrorSnackbar(BuildContext context, String message) {
     SnackBarUtils.showError(context, message);
+  }
+
+  void _openProfileStep(BuildContext context) {
+    unawaited(
+      RegistrationProgressStore.setStep(
+        RegistrationStep.documentUpload,
+        documentStepIndex: 0,
+      ),
+    );
+    Navigator.of(context)
+        .push(
+      MaterialPageRoute(
+        builder: (_) => const DocumentUploadScreen(
+          initialStepIndex: 0,
+        ),
+      ),
+    )
+        .then((_) {
+      if (!context.mounted) return;
+      context.read<VerificationCubit>().syncFromStore();
+    });
+  }
+}
+
+class _ProfilePictureCard extends StatelessWidget {
+  const _ProfilePictureCard({
+    required this.isCompleted,
+    required this.onTap,
+  });
+
+  final bool isCompleted;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isCompleted
+                ? AppColors.emerald.withValues(alpha: 0.3)
+                : const Color(0xFFE8EDF2),
+            width: isCompleted ? 1.5 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 42,
+                height: 42,
+                child: Icon(
+                  Icons.person_rounded,
+                  color:
+                      isCompleted ? AppColors.emerald : const Color(0xFF8FA0B0),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Text(
+                  'Profile Picture',
+                  style: TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.headingNavy,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
+              if (isCompleted)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.emerald.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check_circle, size: 13, color: AppColors.emerald),
+                      SizedBox(width: 4),
+                      Text(
+                        'COMPLETED',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.emerald,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.coolwhite,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFD5DDE5)),
+                  ),
+                  child: const Text(
+                    'REQUIRED',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF8FA0B0),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

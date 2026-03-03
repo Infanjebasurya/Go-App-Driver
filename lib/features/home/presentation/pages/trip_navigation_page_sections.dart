@@ -79,6 +79,8 @@ class _ReachedCustomerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -119,19 +121,21 @@ class _ReachedCustomerSheet extends StatelessWidget {
                   height: 56,
                   decoration: const BoxDecoration(shape: BoxShape.circle),
                   child: ClipOval(
-                    child: Image.asset(
-                      'assets/image/profile.png',
-                      fit: BoxFit.cover,
-                    ),
+                    child: profilePath != null
+                        ? Image.file(File(profilePath), fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/image/profile.png',
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Sam Yogi',
+                        displayName,
                         style: TextStyle(
                           fontSize: 15.5,
                           fontWeight: FontWeight.w700,
