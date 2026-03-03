@@ -52,4 +52,12 @@ class TextFieldStore {
     _cache.remove(key);
     await _prefs!.setString(_prefsKey, jsonEncode(_cache));
   }
+
+  static Future<void> clearAll() async {
+    if (!_loaded) {
+      await init();
+    }
+    _cache.clear();
+    await _prefs!.setString(_prefsKey, jsonEncode(_cache));
+  }
 }

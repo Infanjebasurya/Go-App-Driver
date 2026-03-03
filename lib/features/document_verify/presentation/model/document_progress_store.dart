@@ -43,6 +43,8 @@ class DocumentProgressStore {
     'ifscCode': '',
   };
 
+  static String? _profileImagePath;
+
   static bool isCompleted(DocumentType type) {
     return _completed[type] ?? false;
   }
@@ -87,11 +89,24 @@ class DocumentProgressStore {
     _bankDraft.updateAll((_, _) => '');
   }
 
+  static String? profileImagePath() {
+    return _profileImagePath;
+  }
+
+  static bool isProfileImageUploaded() {
+    return _profileImagePath != null && _profileImagePath!.trim().isNotEmpty;
+  }
+
+  static void setProfileImagePath(String? path) {
+    _profileImagePath = path;
+  }
+
   static void reset() {
     _completed.updateAll((_, _) => false);
     _frontImagePath.updateAll((_, _) => null);
     _backImagePath.updateAll((_, _) => null);
     _documentNumber.updateAll((_, _) => null);
     clearBankDraft();
+    _profileImagePath = null;
   }
 }
