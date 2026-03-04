@@ -11,9 +11,13 @@ class _RouteDistanceMeta {
 }
 
 class _CancellationReasonSheet extends StatefulWidget {
-  const _CancellationReasonSheet({required this.onConfirm});
+  const _CancellationReasonSheet({
+    required this.onConfirm,
+    required this.customerCancellationFee,
+  });
 
   final Future<void> Function(String canceledBy, String reason) onConfirm;
+  final double customerCancellationFee;
 
   @override
   State<_CancellationReasonSheet> createState() =>
@@ -38,7 +42,9 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
   String _selectedReason = _driverReasons.first;
   bool _submitting = false;
 
-  double get _cancellationFee => _cancelType == 'Customer' ? 30.0 : 0.0;
+  double get _cancellationFee => _cancelType == 'Customer'
+      ? widget.customerCancellationFee
+      : 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -334,17 +340,25 @@ class _CircleIconButton extends StatelessWidget {
 }
 
 class _TripMetrics extends StatelessWidget {
-  const _TripMetrics();
+  const _TripMetrics({
+    required this.fareLabel,
+    required this.distanceLabel,
+    required this.arrivalLabel,
+  });
+
+  final String fareLabel;
+  final String distanceLabel;
+  final String arrivalLabel;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const <Widget>[
-        _MetricItem(label: 'Fare', value: '\u20B91,250'),
+      children: <Widget>[
+        _MetricItem(label: 'Fare', value: fareLabel),
         _MetricDivider(),
-        _MetricItem(label: 'Distance', value: '2.1 km'),
+        _MetricItem(label: 'Distance', value: distanceLabel),
         _MetricDivider(),
-        _MetricItem(label: 'Arrival', value: '4 mins'),
+        _MetricItem(label: 'Arrival', value: arrivalLabel),
       ],
     );
   }
@@ -399,7 +413,13 @@ class _MetricItem extends StatelessWidget {
 }
 
 class _PickupDropSection extends StatelessWidget {
-  const _PickupDropSection();
+  const _PickupDropSection({
+    required this.pickupAddress,
+    required this.dropAddress,
+  });
+
+  final String pickupAddress;
+  final String dropAddress;
 
   @override
   Widget build(BuildContext context) {
@@ -433,7 +453,7 @@ class _PickupDropSection extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -447,7 +467,7 @@ class _PickupDropSection extends StatelessWidget {
               ),
               SizedBox(height: 3),
               Text(
-                '42, I-Block, Arumbakkam, Chennai-106',
+                pickupAddress,
                 style: TextStyle(
                   fontSize: 21 / 2,
                   fontWeight: FontWeight.w500,
@@ -465,7 +485,7 @@ class _PickupDropSection extends StatelessWidget {
               ),
               SizedBox(height: 3),
               Text(
-                '13, vinobaji St, KamarajarNagar, NGO...',
+                dropAddress,
                 style: TextStyle(
                   fontSize: 21 / 2,
                   fontWeight: FontWeight.w500,

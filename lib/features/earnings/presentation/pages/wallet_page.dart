@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
 import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
+import 'package:goapp/features/earnings/domain/entities/transaction_item.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/recharge_wallet_page.dart';
+import 'package:goapp/features/earnings/presentation/pages/wallet_transactions_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/withdraw_page.dart';
-import 'package:goapp/core/widgets/app_app_bar.dart';
-import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/features/earnings/presentation/widgets/wallet_common_widgets.dart';
 
 class WalletPage extends StatelessWidget {
   const WalletPage({super.key});
@@ -46,9 +49,9 @@ class _WalletView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: const Color(0xFFF7F7F7),
       appBar: AppAppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: const Color(0xFFF7F7F7),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -62,170 +65,97 @@ class _WalletView extends StatelessWidget {
       ),
       body: BlocBuilder<EarningsCubit, EarningsState>(
         builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 32,
-                    horizontal: 24,
+          final List<int> performanceBars = _buildWeekBars(state.transactions);
+          final List<TransactionItem> preview = state.transactions.take(3).toList(growable: false);
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final bool tablet = constraints.maxWidth >= 700;
+              final double horizontal = tablet ? constraints.maxWidth * 0.14 : 14;
+              return ListView(
+                padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, 20),
+                children: <Widget>[
+                  _WalletBalanceCard(
+                    balance: state.snapshot.walletBalance,
+                    onRecharge: () {
+                      final cubit = context.read<EarningsCubit>();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => BlocProvider<EarningsCubit>.value(
+                            value: cubit,
+                            child: const RechargeWalletPage(),
+                          ),
+                        ),
+                      );
+                    },
+                    onWithdraw: () {
+                      final cubit = context.read<EarningsCubit>();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => BlocProvider<EarningsCubit>.value(
+                            value: cubit,
+                            child: const WithdrawPage(),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(32),
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(
-                        color: Color(0x14000000),
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
+                  const SizedBox(height: 14),
+                  _WalletPerformanceCard(values: performanceBars),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Text(
-                        'Available Balance',
+                        'Transaction History',
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 22 / 1.2,
+                          fontWeight: FontWeight.w700,
                           color: AppColors.neutral666,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        '₹${state.snapshot.walletBalance.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
+                      TextButton(
+                        onPressed: () {
+                          final cubit = context.read<EarningsCubit>();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (_) => BlocProvider<EarningsCubit>.value(
+                                value: cubit,
+                                child: const WalletTransactionsPage(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'See All',
+                          style: TextStyle(
+                            color: AppColors.emerald,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: ShadowButton(
-                              onPressed: () {
-                                final cubit = context.read<EarningsCubit>();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        BlocProvider<EarningsCubit>.value(
-                                          value: cubit,
-                                          child: const RechargeWalletPage(),
-                                        ),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.add_circle, size: 20),
-                              label: const Text('Recharge Now'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.emerald,
-                                foregroundColor: AppColors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ShadowButton(
-                              onPressed: () {
-                                final cubit = context.read<EarningsCubit>();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        BlocProvider<EarningsCubit>.value(
-                                          value: cubit,
-                                          child: const WithdrawPage(),
-                                        ),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(
-                                Icons.account_balance_wallet,
-                                size: 20,
-                              ),
-                              label: const Text('Withdraw'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.surfaceF5,
-                                foregroundColor: AppColors.neutral666,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                elevation: 0,
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const Text(
-                      'Transaction History',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.neutral666,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'See All',
-                        style: TextStyle(
-                          color: AppColors.emerald,
-                          fontWeight: FontWeight.bold,
+                  if (preview.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 24),
+                      child: Center(
+                        child: Text(
+                          'No wallet transactions yet',
+                          style: TextStyle(
+                            color: AppColors.neutral666,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                if (state.transactions.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 24),
-                    child: Center(
-                      child: Text(
-                        'No wallet transactions yet',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.neutral666,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  for (final item in state.transactions)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _TransactionItem(
-                        title: item.title,
-                        subtitle: item.subtitle,
-                        amount: item.amount,
-                        isCredit: item.isCredit,
-                      ),
-                    ),
-              ],
-            ),
+                    )
+                  else
+                    ...preview.map((item) => WalletTransactionTile(item: item)),
+                ],
+              );
+            },
           );
         },
       ),
@@ -233,70 +163,152 @@ class _WalletView extends StatelessWidget {
   }
 }
 
-class _TransactionItem extends StatelessWidget {
-  const _TransactionItem({
-    required this.title,
-    required this.subtitle,
-    required this.amount,
-    required this.isCredit,
+class _WalletBalanceCard extends StatelessWidget {
+  const _WalletBalanceCard({
+    required this.balance,
+    required this.onRecharge,
+    required this.onWithdraw,
   });
 
-  final String title;
-  final String subtitle;
-  final String amount;
-  final bool isCredit;
+  final double balance;
+  final VoidCallback onRecharge;
+  final VoidCallback onWithdraw;
 
   @override
   Widget build(BuildContext context) {
-    final Color accent = isCredit ? AppColors.emerald : AppColors.neutral666;
     return Container(
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.strokeLight),
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+        ],
       ),
-      child: Row(
+      child: Column(
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(Icons.account_balance_wallet, color: accent, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.black,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.neutral666,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            amount,
+          const Text(
+            'Available Balance',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.neutral666,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '\u20B9${balance.toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 42 / 1.3,
+              fontWeight: FontWeight.w700,
+              color: AppColors.black,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: ShadowButton(
+                  onPressed: onRecharge,
+                  icon: const Icon(Icons.add_circle, size: 16),
+                  label: const Text('Recharge Now'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.emerald,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ShadowButton(
+                  onPressed: onWithdraw,
+                  icon: const Icon(Icons.account_balance_wallet_rounded, size: 16),
+                  label: const Text('Withdraw'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF3F3F3),
+                    foregroundColor: AppColors.neutral666,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 0,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WalletPerformanceCard extends StatelessWidget {
+  const _WalletPerformanceCard({required this.values});
+
+  final List<int> values;
+
+  @override
+  Widget build(BuildContext context) {
+    final int maxValue = values.fold<int>(1, (a, b) => a > b ? a : b);
+    const List<String> labels = <String>['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: const <Widget>[
+              Text(
+                'Earning Performance',
+                style: TextStyle(color: AppColors.neutralAAA, fontWeight: FontWeight.w700, fontSize: 11),
+              ),
+              Spacer(),
+              _LegendDot(color: AppColors.emerald, label: 'Weekday'),
+              SizedBox(width: 8),
+              _LegendDot(color: AppColors.gold, label: 'Weekend'),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 130,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List<Widget>.generate(values.length, (index) {
+                final bool weekend = index >= 5;
+                final double height = ((values[index] / maxValue) * 86).clamp(8, 86);
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Container(
+                      width: 4,
+                      height: values[index] == 0 ? 0 : height,
+                      decoration: BoxDecoration(
+                        color: weekend ? AppColors.gold : AppColors.emerald,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      labels[index],
+                      style: const TextStyle(
+                        color: AppColors.neutralAAA,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
           ),
         ],
@@ -305,4 +317,42 @@ class _TransactionItem extends StatelessWidget {
   }
 }
 
+class _LegendDot extends StatelessWidget {
+  const _LegendDot({required this.color, required this.label});
 
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.neutralAAA,
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+List<int> _buildWeekBars(List<TransactionItem> transactions) {
+  final List<int> counts = List<int>.filled(7, 0);
+  for (final TransactionItem item in transactions) {
+    if (item.type != WalletTransactionType.earning) continue;
+    final DateTime dt = DateTime.fromMillisecondsSinceEpoch(item.eventEpochMs);
+    final int weekday = dt.weekday;
+    if (weekday >= 1 && weekday <= 7) counts[weekday - 1] += 1;
+  }
+  return counts;
+}

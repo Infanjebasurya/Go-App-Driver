@@ -87,6 +87,10 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   bool _dropProgressStarted = false;
   Timer? _dropProgressTimer;
   int? _tripStartEpochMs;
+  String _fareLabel = '\u20B990';
+  String _distanceLabel = '2.1 km';
+  String _pickupAddress = '42, I-Block, Arumbakkam, Chennai-106';
+  String _dropAddress = '13, vinobaji St, KamarajarNagar, NGO....';
 
   @override
   void initState() {
@@ -98,6 +102,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
     _loadBikeIcon();
+    unawaited(_loadTripSessionUiData());
     unawaited(_refreshLocationState(requestPermission: true));
     if (widget.initialRoutePath != null &&
         widget.initialRoutePath!.length > 1) {
@@ -107,6 +112,25 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     } else {
       _loadRoadRoutePath();
     }
+  }
+
+  Future<void> _loadTripSessionUiData() async {
+    final TripSession? session = await TripSessionStore.loadActive();
+    if (!mounted || session == null) return;
+    setState(() {
+      if (session.fareLabel.isNotEmpty) {
+        _fareLabel = session.fareLabel;
+      }
+      if (session.distanceLabel.isNotEmpty) {
+        _distanceLabel = session.distanceLabel;
+      }
+      if (session.pickupAddress.isNotEmpty) {
+        _pickupAddress = session.pickupAddress;
+      }
+      if (session.dropAddress.isNotEmpty) {
+        _dropAddress = session.dropAddress;
+      }
+    });
   }
 
   @override
@@ -454,6 +478,10 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                     _mapRoutePath,
                   );
                   final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
+                  final int metersToDrop = _distanceMeters(
+                    bikePoint,
+                    widget.dropPoint,
+                  ).round().clamp(0, 99999);
 
                   return Stack(
                     children: <Widget>[
@@ -529,8 +557,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                                         TextSpan(
                                           children: <InlineSpan>[
                                             TextSpan(
-                                              text:
-                                                  '${state.remainingMeters}m ',
+                                              text: '${metersToDrop}m ',
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800,
@@ -606,6 +633,10 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                           duration: const Duration(milliseconds: 280),
                           opacity: showArrivalSheet ? 1 : 0,
                           child: _ReachedCustomerSheet(
+                            fareLabel: _fareLabel,
+                            distanceLabel: _distanceLabel,
+                            pickupAddress: _pickupAddress,
+                            dropAddress: _dropAddress,
                             onCompleteTap: () async {
                               // TripSessionStore: drop reached, trip completed.
                               unawaited(TripSessionStore.markTripCompleted());

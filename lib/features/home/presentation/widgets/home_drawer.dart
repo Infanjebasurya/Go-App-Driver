@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
@@ -16,6 +17,7 @@ import '../../../profile/presentation/pages/profile_screen.dart';
 import '../../../rate_app/presentation/pages/rate_app_screen.dart';
 import '../../../refer_earn/presentation/pages/refer_earn_screen.dart';
 import '../../../ride_history/presentation/pages/ride_history_screen.dart';
+import '../cubit/driver_status_cubit.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key, required this.onReopenDrawer});
@@ -54,7 +56,11 @@ class HomeDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const EarningsScreen()),
-                ).then((_) => onReopenDrawer());
+                ).then((_) {
+                  onReopenDrawer();
+                  if (!context.mounted) return;
+                  context.read<DriverCubit>().refreshDashboardMetrics();
+                });
               },
             ),
             _DrawerItem(

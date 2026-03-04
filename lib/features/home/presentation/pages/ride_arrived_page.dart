@@ -74,6 +74,10 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   bool _driverMovingNotified = false;
   bool _pickupReachedNotified = false;
   int _lastPickupProgressNotified = -1;
+  String _fareLabel = '\u20B990';
+  String _distanceLabel = '2.1 km';
+  String _pickupAddress = '42, I-Block, Arumbakkam, Chennai-106';
+  String _dropAddress = '13, vinobaji St, Kamarajar Nagar, NGO...';
 
   @override
   void initState() {
@@ -86,7 +90,27 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     _loadMapStyle();
     _loadDriverMarkerIcon();
     unawaited(_refreshLocationState(requestPermission: true));
+    unawaited(_loadTripSessionUiData());
     _initializeTracking();
+  }
+
+  Future<void> _loadTripSessionUiData() async {
+    final TripSession? session = await TripSessionStore.loadActive();
+    if (!mounted || session == null) return;
+    setState(() {
+      if (session.fareLabel.isNotEmpty) {
+        _fareLabel = session.fareLabel;
+      }
+      if (session.distanceLabel.isNotEmpty) {
+        _distanceLabel = session.distanceLabel;
+      }
+      if (session.pickupAddress.isNotEmpty) {
+        _pickupAddress = session.pickupAddress;
+      }
+      if (session.dropAddress.isNotEmpty) {
+        _dropAddress = session.dropAddress;
+      }
+    });
   }
 
   @override
@@ -365,19 +389,20 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   }
 
   Future<void> _showCancellationReasonSheet() {
+    final double customerCancellationFee = _cancellationFeeFor('customer');
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _CancellationReasonSheet(
+        customerCancellationFee: customerCancellationFee,
         onConfirm: (String canceledBy, String reason) async {
           final double cancellationFee = _cancellationFeeFor(canceledBy);
           await RideHistoryStore.markCanceledNowOrCreate(
             canceledBy: canceledBy,
             cancelReason: reason,
-            pickupLocation: '42, I-Block, Arumbakkam, Chennai-106',
-            dropLocation:
-                '13, vinobaji St, Kamarajar Nagar, NGO Colony, Chennai',
+            pickupLocation: _pickupAddress,
+            dropLocation: _dropAddress,
             fareLabel: cancellationFee > 0
                 ? '\u20B9 ${cancellationFee.toStringAsFixed(2)}'
                 : null,
@@ -402,9 +427,24 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   double _cancellationFeeFor(String canceledBy) {
     final String normalized = canceledBy.trim().toLowerCase();
     if (normalized == 'customer') {
-      return 30.0;
+      final double km = _parseDistanceKm(_distanceLabel);
+      if (km <= 0) return 20.0;
+      return km <= 3.0 ? 20.0 : 30.0;
     }
     return 0;
+  }
+
+  double _parseDistanceKm(String raw) {
+    final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
+    if (cleaned.isEmpty) return 0;
+    return double.tryParse(cleaned) ?? 0;
+  }
+
+  String _estimateArrivalLabel() {
+    final double metersLeft = _metersToPickup();
+    final double kmLeft = metersLeft / 1000;
+    final int minutes = ((kmLeft / 24) * 60).ceil().clamp(1, 99);
+    return '$minutes mins';
   }
 
   void _openChatScreen() {
@@ -511,9 +551,21 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                         onCallTap: _openCallScreen,
                       ),
                       const SizedBox(height: 14),
-                      const _TripMetrics(),
+                      ValueListenableBuilder<int>(
+                        valueListenable: _mapFrameTick,
+                        builder: (context, value, child) {
+                          return _TripMetrics(
+                            fareLabel: _fareLabel,
+                            distanceLabel: _distanceLabel,
+                            arrivalLabel: _estimateArrivalLabel(),
+                          );
+                        },
+                      ),
                       const SizedBox(height: 12),
-                      const _PickupDropSection(),
+                      _PickupDropSection(
+                        pickupAddress: _pickupAddress,
+                        dropAddress: _dropAddress,
+                      ),
                       const SizedBox(height: 18),
                       ValueListenableBuilder<int>(
                         valueListenable: _mapFrameTick,

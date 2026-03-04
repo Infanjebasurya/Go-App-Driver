@@ -9,6 +9,7 @@ class TripCard extends StatelessWidget {
   final String pickupAddress;
   final String dropLocation;
   final String dropAddress;
+  final String? statusLine;
 
   final bool isCancelled;
 
@@ -21,6 +22,7 @@ class TripCard extends StatelessWidget {
     required this.pickupAddress,
     required this.dropLocation,
     required this.dropAddress,
+    this.statusLine,
     this.isCancelled = false,
   });
 
@@ -128,6 +130,18 @@ class TripCard extends StatelessWidget {
                               ),
                             ],
                           ),
+                          if (statusLine != null && statusLine!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                statusLine!,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.neutral555,
+                                ),
+                              ),
+                            ),
                           const SizedBox(height: 4),
                           Text(
                             pickupLocation,

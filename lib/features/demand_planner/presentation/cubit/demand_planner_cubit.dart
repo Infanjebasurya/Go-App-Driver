@@ -1,39 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/features/demand_planner/data/datasources/demand_planner_mock_api.dart';
 
-import '../model/peak_hour_model.dart';
 import 'demand_planner_state.dart';
 
 class DemandPlannerCubit extends Cubit<DemandPlannerState> {
-  DemandPlannerCubit() : super(const DemandPlannerInitial()) {
+  DemandPlannerCubit({DemandPlannerMockApi? mockApi})
+    : _mockApi = mockApi ?? const DemandPlannerMockApi(),
+      super(const DemandPlannerInitial()) {
     loadData();
   }
 
-  static const _mockPeakHours = [
-    PeakHour(
-      timeRange: '04:30 PM - 6:00 PM',
-      multiplier: 2.0,
-      demandLevel: DemandLevel.high,
-      isActive: true,
-    ),
-    PeakHour(
-      timeRange: '06:00 PM - 7:30 PM',
-      multiplier: 1.8,
-      demandLevel: DemandLevel.moderate,
-    ),
-    PeakHour(
-      timeRange: '7:30 PM - 9:00 PM',
-      multiplier: 1.2,
-      demandLevel: DemandLevel.steady,
-    ),
-  ];
+  final DemandPlannerMockApi _mockApi;
 
   Future<void> loadData() async {
     emit(const DemandPlannerLoading());
-    await Future.delayed(const Duration(milliseconds: 600));
+    final DemandPlannerPayload payload = await _mockApi.fetchPlannerData();
     emit(
-      const DemandPlannerLoaded(
-        peakHours: _mockPeakHours,
-        surgeNotificationsEnabled: true,
+      DemandPlannerLoaded(
+        peakHours: payload.peakHours,
+        surgeNotificationsEnabled: payload.surgeNotificationsEnabled,
       ),
     );
   }
