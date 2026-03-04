@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/auth/domain/services/phone_number_service.dart';
@@ -17,6 +18,7 @@ import 'package:goapp/features/auth/presentation/widgets/auth_primary_button.dar
 import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
 import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
 import 'package:goapp/injection.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RLoginPage extends StatefulWidget {
   const RLoginPage({super.key});
@@ -26,11 +28,20 @@ class RLoginPage extends StatefulWidget {
 }
 
 class _RLoginPageState extends State<RLoginPage> {
+  static final Uri _policyUri = Uri.parse('https://sybrox.com/about');
   final TextEditingController _controller = TextEditingController();
+  late final TapGestureRecognizer _privacyTap;
   bool _didForceClear = false;
 
   @override
+  void initState() {
+    super.initState();
+    _privacyTap = TapGestureRecognizer()..onTap = _openPolicyLink;
+  }
+
+  @override
   void dispose() {
+    _privacyTap.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -74,7 +85,7 @@ class _RLoginPageState extends State<RLoginPage> {
           ),
           BlocListener<LoginFormCubit, LoginFormState>(
             listenWhen: (previous, current) =>
-            previous.submitRequested != current.submitRequested ||
+                previous.submitRequested != current.submitRequested ||
                 previous.submitError != current.submitError,
             listener: (context, state) {
               if (state.submitError != null) {
@@ -226,7 +237,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                   ),
                                 ],
                                 const SizedBox(height: 18),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 12),
                                   child: Text.rich(
                                     TextSpan(
@@ -238,22 +249,23 @@ class _RLoginPageState extends State<RLoginPage> {
                                       children: [
                                         TextSpan(
                                           text:
-                                          'By continuing, you agree to receive SMS for verification.  ',
+                                              'By continuing, you agree to receive SMS for verification. ',
                                         ),
-                                        TextSpan(text: ' and\n'),
                                         TextSpan(
                                           text:
-                                          'Message and data rates may apply. View our ',
+                                              'Message and data rates may apply. View our ',
                                         ),
                                         TextSpan(
-                                          text: 'Privacy \nPolicy.',
+                                          text: 'Privacy Policy',
                                           style: TextStyle(
                                             color: AppColors.black,
                                             fontSize: 14,
                                             decoration:
-                                            TextDecoration.underline,
+                                                TextDecoration.underline,
                                           ),
+                                          recognizer: _privacyTap,
                                         ),
+                                        TextSpan(text: '.'),
                                       ],
                                     ),
                                   ),
@@ -278,7 +290,7 @@ class _RLoginPageState extends State<RLoginPage> {
                       final bool loading = state is AuthLoading;
                       final isValid =
                           formState.digits.length == 10 &&
-                              formState.error == null;
+                          formState.error == null;
                       return AuthPrimaryButton(
                         label: 'Get Verification Code',
                         loading: loading,
@@ -305,5 +317,14 @@ class _RLoginPageState extends State<RLoginPage> {
       _controller.clear();
       context.read<LoginFormCubit>().reset();
     });
+  }
+
+  Future<void> _openPolicyLink() async {
+    final launched = await launchUrl(
+      _policyUri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!mounted || launched) return;
+    SnackBarUtils.show(context, 'Unable to open link');
   }
 }

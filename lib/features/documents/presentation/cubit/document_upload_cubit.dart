@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/storage/user_cache_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -14,11 +15,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   static const String _profilePhotoStorageKey = 'profile.photo.path';
 
   DocumentUploadCubit({int initialStepIndex = 0})
-      : super(
-    DocumentUploadState.initial().copyWith(
-      currentStepIndex: initialStepIndex,
-    ),
-  ) {
+    : super(
+        DocumentUploadState.initial().copyWith(
+          currentStepIndex: initialStepIndex,
+        ),
+      ) {
     _restoreDraft();
   }
 
@@ -31,7 +32,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       if (step.step == DocumentStep.profilePhoto) {
         final profilePath =
             DocumentProgressStore.profileImagePath() ??
-                TextFieldStore.read(_profilePhotoStorageKey);
+            TextFieldStore.read(_profilePhotoStorageKey);
         if (profilePath != null && profilePath.trim().isNotEmpty) {
           DocumentProgressStore.setProfileImagePath(profilePath);
         }
@@ -149,10 +150,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     _isPicking = true;
     emit(state.copyWith(isProfileImageProcessing: true));
     try {
-      final picked = await _picker.pickImage(
-        source: source,
-        imageQuality: 100,
-      );
+      final picked = await _picker.pickImage(source: source, imageQuality: 100);
       if (picked == null) return;
 
       if (!_isValidImageFormat(picked.path)) {
@@ -219,10 +217,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
     _isPicking = true;
     try {
-      final picked = await _picker.pickImage(
-        source: source,
-        imageQuality: 100,
-      );
+      final picked = await _picker.pickImage(source: source, imageQuality: 100);
       if (picked == null) return;
 
       final fileSize = await File(picked.path).length();
@@ -547,8 +542,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       emit(
         state.copyWithDocStep(
           step.copyWith(
-            imageError:
-                'Please upload your profile picture before proceeding.',
+            imageError: 'Please upload your profile picture before proceeding.',
             clearError: true,
           ),
         ),
@@ -561,10 +555,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         imageError: 'Please upload both front and back documents',
       );
       emit(state.copyWithDocStep(updated));
-      DocumentProgressStore.setCompleted(
-        _mapStepToDocType(step.step),
-        false,
-      );
+      DocumentProgressStore.setCompleted(_mapStepToDocType(step.step), false);
       return false;
     }
 
@@ -572,10 +563,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (rawValue.isEmpty) {
       final updated = step.copyWith(numberError: 'Document number is required');
       emit(state.copyWithDocStep(updated));
-      DocumentProgressStore.setCompleted(
-        _mapStepToDocType(step.step),
-        false,
-      );
+      DocumentProgressStore.setCompleted(_mapStepToDocType(step.step), false);
       return false;
     }
 
@@ -584,10 +572,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (error != null) {
       final updated = step.copyWith(numberError: error);
       emit(state.copyWithDocStep(updated));
-      DocumentProgressStore.setCompleted(
-        _mapStepToDocType(step.step),
-        false,
-      );
+      DocumentProgressStore.setCompleted(_mapStepToDocType(step.step), false);
       return false;
     }
 
@@ -600,11 +585,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       emit(state.copyWithDocStep(updated));
     }
     if (step.imageError != null) {
-      emit(
-        state.copyWithDocStep(
-          step.copyWith(clearImageError: true),
-        ),
-      );
+      emit(state.copyWithDocStep(step.copyWith(clearImageError: true)));
     }
     // Step validity is fully verified above, so persist completion directly.
     DocumentProgressStore.setCompleted(_mapStepToDocType(step.step), true);
@@ -665,21 +646,29 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     if (b.accountHolderName.trim().isEmpty) {
       updated = updated.copyWith(nameError: 'Account holder name is required');
       valid = false;
-    } else if (!RegExp(r'^[A-Z ]+$')
-        .hasMatch(b.accountHolderName.trim().toUpperCase())) {
-      updated = updated.copyWith(
-        nameError: 'Only alphabets are allowed',
-      );
+    } else if (!RegExp(
+      r'^[A-Z ]+$',
+    ).hasMatch(b.accountHolderName.trim().toUpperCase())) {
+      updated = updated.copyWith(nameError: 'Only alphabets are allowed');
       valid = false;
+    } else {
+      final profileName = UserCacheStore.read()?.fullName ?? '';
+      final enteredName = _normalizePersonName(b.accountHolderName);
+      final savedName = _normalizePersonName(profileName);
+      if (savedName.isNotEmpty && enteredName != savedName) {
+        updated = updated.copyWith(
+          nameError: 'Account holder name must match your profile full name',
+        );
+        valid = false;
+      }
     }
     if (b.bankName.trim().isEmpty) {
       updated = updated.copyWith(bankNameError: 'Bank name is required');
       valid = false;
-    } else if (!RegExp(r'^[A-Z ]+$')
-        .hasMatch(b.bankName.trim().toUpperCase())) {
-      updated = updated.copyWith(
-        bankNameError: 'Only alphabets are allowed',
-      );
+    } else if (!RegExp(
+      r'^[A-Z ]+$',
+    ).hasMatch(b.bankName.trim().toUpperCase())) {
+      updated = updated.copyWith(bankNameError: 'Only alphabets are allowed');
       valid = false;
     }
     if (b.accountNumber.trim().isEmpty) {
@@ -687,8 +676,9 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         accountNumberError: 'Account number is required',
       );
       valid = false;
-    } else if (!RegExp(r'^[A-Z0-9]+$')
-        .hasMatch(b.accountNumber.trim().toUpperCase())) {
+    } else if (!RegExp(
+      r'^[A-Z0-9]+$',
+    ).hasMatch(b.accountNumber.trim().toUpperCase())) {
       updated = updated.copyWith(
         accountNumberError: 'Only alphabets and numbers are allowed',
       );
@@ -699,8 +689,9 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         confirmAccountNumberError: 'Please confirm account number',
       );
       valid = false;
-    } else if (!RegExp(r'^[A-Z0-9]+$')
-        .hasMatch(b.confirmAccountNumber.trim().toUpperCase())) {
+    } else if (!RegExp(
+      r'^[A-Z0-9]+$',
+    ).hasMatch(b.confirmAccountNumber.trim().toUpperCase())) {
       updated = updated.copyWith(
         confirmAccountNumberError: 'Only alphabets and numbers are allowed',
       );
@@ -725,6 +716,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       emit(state.copyWith(bankData: updated));
     }
     return valid;
+  }
+
+  String _normalizePersonName(String value) {
+    return value.trim().toUpperCase().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   Future<void> saveAndNext() async {
