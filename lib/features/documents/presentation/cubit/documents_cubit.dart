@@ -78,36 +78,53 @@ class DocumentsCubit extends Cubit<DocumentsState> {
   DocumentModel _applyProgress(DocumentModel doc) {
     switch (doc.id) {
       case 'driving_license':
+        final completed = DocumentProgressStore.isCompleted(
+          DocumentType.drivingLicense,
+        );
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.drivingLicense),
           DocumentProgressStore.backImagePath(DocumentType.drivingLicense),
           DocumentProgressStore.documentNumber(DocumentType.drivingLicense),
+          completed: completed,
         );
       case 'vehicle_rc':
+        final completed = DocumentProgressStore.isCompleted(
+          DocumentType.vehicleRC,
+        );
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.vehicleRC),
           DocumentProgressStore.backImagePath(DocumentType.vehicleRC),
           DocumentProgressStore.documentNumber(DocumentType.vehicleRC),
+          completed: completed,
         );
       case 'aadhaar_card':
+        final completed = DocumentProgressStore.isCompleted(
+          DocumentType.aadhaarCard,
+        );
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.aadhaarCard),
           DocumentProgressStore.backImagePath(DocumentType.aadhaarCard),
           DocumentProgressStore.documentNumber(DocumentType.aadhaarCard),
+          completed: completed,
         );
       case 'pan_card':
+        final completed = DocumentProgressStore.isCompleted(
+          DocumentType.panCard,
+        );
         return _withProgress(
           doc,
           DocumentProgressStore.frontImagePath(DocumentType.panCard),
           DocumentProgressStore.backImagePath(DocumentType.panCard),
           DocumentProgressStore.documentNumber(DocumentType.panCard),
+          completed: completed,
         );
       case _bankAccountId:
-        final accountNumber =
-            TextFieldStore.read('bank_details.account_number');
+        final accountNumber = TextFieldStore.read(
+          'bank_details.account_number',
+        );
         final completed = DocumentProgressStore.isCompleted(
           DocumentType.bankDetails,
         );
@@ -129,11 +146,12 @@ class DocumentsCubit extends Cubit<DocumentsState> {
     DocumentModel doc,
     String? frontPath,
     String? backPath,
-    String? number,
-  ) {
+    String? number, {
+    required bool completed,
+  }) {
     final hasImages =
         (frontPath?.isNotEmpty ?? false) && (backPath?.isNotEmpty ?? false);
-    final status = hasImages
+    final status = (completed || hasImages)
         ? DocumentStatus.verified
         : DocumentStatus.notUploaded;
     return doc.copyWith(
@@ -143,5 +161,4 @@ class DocumentsCubit extends Cubit<DocumentsState> {
       documentNumber: number?.trim().isEmpty ?? true ? null : number,
     );
   }
-
 }

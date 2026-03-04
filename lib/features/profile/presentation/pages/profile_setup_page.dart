@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +24,7 @@ import 'package:goapp/features/profile/presentation/cubit/profile_setup_state.da
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileSetupPage extends StatefulWidget {
   const ProfileSetupPage({super.key, this.allowBack = false});
@@ -34,10 +36,12 @@ class ProfileSetupPage extends StatefulWidget {
 }
 
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
+  static final Uri _termsUri = Uri.parse('https://sybrox.com/about');
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _referController = TextEditingController();
   final _emergencyController = TextEditingController();
+  late final TapGestureRecognizer _termsTap;
 
   bool _prefilled = false;
   bool _didNavigate = false;
@@ -49,6 +53,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   @override
   void initState() {
     super.initState();
+    _termsTap = TapGestureRecognizer()..onTap = _openTermsOfService;
     _cubit = ProfileSetupCubit(validationService: ProfileValidationService());
     try {
       _profileBloc = context.read<ProfileBloc>();
@@ -90,6 +95,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
 
   @override
   void dispose() {
+    _termsTap.dispose();
     _cubit.close();
     if (_ownsProfileBloc) {
       _profileBloc.close();
@@ -101,11 +107,23 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     super.dispose();
   }
 
+  Future<void> _openTermsOfService() async {
+    final launched = await launchUrl(
+      _termsUri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!mounted || launched) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Unable to open link')));
+  }
+
   void _prefillFromProfile(Profile profile) {
     if (_prefilled) return;
     _prefilled = true;
-    final name =
-        _nameController.text.isNotEmpty ? _nameController.text : profile.name;
+    final name = _nameController.text.isNotEmpty
+        ? _nameController.text
+        : profile.name;
     final email = _emailController.text.isNotEmpty
         ? _emailController.text
         : (profile.email ?? '');
@@ -515,20 +533,20 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       _clearForm();
                       Navigator.of(context)
                           .pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => const CitySelectionScreen(),
-                        ),
-                      )
+                            MaterialPageRoute(
+                              builder: (_) => const CitySelectionScreen(),
+                            ),
+                          )
                           .then((_) {
-                        if (!mounted) return;
-                        _didNavigate = false;
-                      });
+                            if (!mounted) return;
+                            _didNavigate = false;
+                          });
                     }
                   },
                 ),
                 BlocListener<ProfileSetupCubit, ProfileSetupState>(
                   listenWhen: (previous, current) =>
-                  previous.submitRequested != current.submitRequested,
+                      previous.submitRequested != current.submitRequested,
                   listener: (context, state) {
                     if (!state.submitRequested || state.submission == null) {
                       return;
@@ -755,8 +773,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                 children: [
                   BlocBuilder<ProfileSetupCubit, ProfileSetupState>(
                     builder: (context, formState) {
-                      final isFormValid =
-                          context.read<ProfileSetupCubit>().isFormValid;
+                      final isFormValid = context
+                          .read<ProfileSetupCubit>()
+                          .isFormValid;
                       return BlocBuilder<ProfileBloc, ProfileState>(
                         builder: (context, state) {
                           if (state is ProfileLoading) {
@@ -780,10 +799,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                   ? null
                                   : () {
                                       if (!isFormValid) {
-                                        context.read<ProfileSetupCubit>().submit();
+                                        context
+                                            .read<ProfileSetupCubit>()
+                                            .submit();
                                         return;
                                       }
-                                      context.read<ProfileSetupCubit>().submit();
+                                      context
+                                          .read<ProfileSetupCubit>()
+                                          .submit();
                                     },
                               child: const Text(
                                 'Save & Continue',
@@ -818,7 +841,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                     },
                   ),
                   const SizedBox(height: 8),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text.rich(
                       TextSpan(
@@ -837,6 +860,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.w600,
                             ),
+                            recognizer: _termsTap,
                           ),
                         ],
                       ),
@@ -852,4 +876,3 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     );
   }
 }
-

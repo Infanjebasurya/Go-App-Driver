@@ -38,10 +38,7 @@ class HomeDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProfileHeader(
-              context: context,
-              onReopenDrawer: onReopenDrawer,
-            ),
+            _ProfileHeader(context: context, onReopenDrawer: onReopenDrawer),
 
             const SizedBox(height: 16),
 
@@ -171,10 +168,7 @@ class _ProfileHeader extends StatefulWidget {
   final BuildContext context;
   final VoidCallback onReopenDrawer;
 
-  const _ProfileHeader({
-    required this.context,
-    required this.onReopenDrawer,
-  });
+  const _ProfileHeader({required this.context, required this.onReopenDrawer});
 
   @override
   State<_ProfileHeader> createState() => _ProfileHeaderState();
@@ -183,19 +177,44 @@ class _ProfileHeader extends StatefulWidget {
 class _ProfileHeaderState extends State<_ProfileHeader> {
   static const String _photoKey = 'profile.photo.path';
   final ImagePicker _picker = ImagePicker();
-  String? _photoPath;
+  ImageProvider? _avatarProvider;
 
   @override
   void initState() {
     super.initState();
-    _photoPath = TextFieldStore.read(_photoKey);
+    _loadAvatarFromStore();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _precacheAvatar();
+  }
+
+  void _loadAvatarFromStore() {
+    final raw = TextFieldStore.read(_photoKey);
+    _avatarProvider = _buildAvatarProvider(raw);
+  }
+
+  ImageProvider? _buildAvatarProvider(String? path) {
+    if (path == null || path.isEmpty) return null;
+    final file = File(path);
+    if (!file.existsSync()) return null;
+    return ResizeImage(FileImage(file), width: 160, height: 160);
+  }
+
+  void _precacheAvatar() {
+    final provider = _avatarProvider;
+    if (provider == null) return;
+    precacheImage(provider, context);
   }
 
   Future<void> _pickPhoto() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
-    _photoPath = picked.path;
+    _avatarProvider = _buildAvatarProvider(picked.path);
     await TextFieldStore.write(_photoKey, picked.path);
+    _precacheAvatar();
     if (mounted) {
       setState(() {});
     }
@@ -238,12 +257,12 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                       child: ClipOval(
                         child: Container(
                           color: const Color(0xFF3A3A3A),
-                          child: _photoPath != null &&
-                                  _photoPath!.isNotEmpty &&
-                                  File(_photoPath!).existsSync()
-                              ? Image.file(
-                                  File(_photoPath!),
+                          child: _avatarProvider != null
+                              ? Image(
+                                  image: _avatarProvider!,
                                   fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.low,
+                                  gaplessPlayback: true,
                                 )
                               : const Icon(
                                   Icons.person,
