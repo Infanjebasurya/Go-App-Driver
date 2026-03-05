@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
-import 'package:goapp/core/storage/user_cache_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -753,16 +752,6 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         nameError: 'Only alphabets are allowed',
       );
       valid = false;
-    } else {
-      final profileName = UserCacheStore.read()?.fullName ?? '';
-      final enteredName = _normalizePersonName(b.accountHolderName);
-      final savedName = _normalizePersonName(profileName);
-      if (savedName.isNotEmpty && enteredName != savedName) {
-        updated = updated.copyWith(
-          nameError: 'Account holder name must match your profile full name',
-        );
-        valid = false;
-      }
     }
     if (b.bankName.trim().isEmpty) {
       updated = updated.copyWith(bankNameError: 'Bank name is required');
@@ -824,10 +813,6 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       emit(state.copyWith(bankData: updated));
     }
     return valid;
-  }
-
-  String _normalizePersonName(String value) {
-    return value.trim().toUpperCase().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   Future<void> saveAndNext() async {
