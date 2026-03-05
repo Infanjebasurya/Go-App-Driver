@@ -694,6 +694,63 @@ class _BankAccountFormState extends State<BankAccountForm> {
   late final TextEditingController _ifscCtrl;
   bool _obscureAccount = true;
 
+  void _showBankDocumentSourceSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Upload Document',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.headingNavy,
+                ),
+              ),
+              const SizedBox(height: 6),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureBankDocument(
+                    source: ImageSource.camera,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureBankDocument(
+                    source: ImageSource.gallery,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.description_rounded),
+                title: const Text('Document'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureBankDocumentFile();
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -827,6 +884,23 @@ class _BankAccountFormState extends State<BankAccountForm> {
               _UpperCaseFormatter(),
             ],
           ),
+          const SizedBox(height: 20),
+          DocumentCaptureCard(
+            label: 'Bank Book Front Page',
+            captured: data.bankDocumentPath != null &&
+                data.bankDocumentPath!.trim().isNotEmpty,
+            filePath: data.bankDocumentPath,
+            uploadType: data.bankDocumentType,
+            onTap: () => _showBankDocumentSourceSheet(context),
+            onRemove: () => cubit.removeBankDocument(),
+          ),
+          if (data.bankDocumentError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              data.bankDocumentError!,
+              style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+            ),
+          ],
           const SizedBox(height: 32),
           Container(
             width: double.infinity,

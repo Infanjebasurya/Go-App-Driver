@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../document_verify/presentation/model/document_progress_store.dart';
 import '../../../document_verify/presentation/model/document_model.dart'
     show DocumentType;
-import 'package:goapp/core/storage/text_field_store.dart';
 import '../model/document_model.dart';
 import 'documents_state.dart';
 
@@ -122,8 +121,11 @@ class DocumentsCubit extends Cubit<DocumentsState> {
           completed: completed,
         );
       case _bankAccountId:
-        final accountNumber = TextFieldStore.read(
-          'bank_details.account_number',
+        final accountNumber = DocumentProgressStore.bankDraftValue(
+          'accountNumber',
+        );
+        final bankDocPath = DocumentProgressStore.frontImagePath(
+          DocumentType.bankDetails,
         );
         final completed = DocumentProgressStore.isCompleted(
           DocumentType.bankDetails,
@@ -133,7 +135,10 @@ class DocumentsCubit extends Cubit<DocumentsState> {
             : DocumentStatus.notUploaded;
         return doc.copyWith(
           status: status,
-          documentNumber: accountNumber?.trim().isEmpty ?? true
+          frontImagePath: bankDocPath?.trim().isEmpty ?? true
+              ? null
+              : bankDocPath,
+          documentNumber: accountNumber.trim().isEmpty
               ? null
               : accountNumber,
         );

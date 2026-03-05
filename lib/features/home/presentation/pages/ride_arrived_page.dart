@@ -259,6 +259,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
         _driverProgress = 1;
         _driverPoint = widget.pickupPoint;
         _mapFrameTick.value++;
+        unawaited(_mapController?.animateTo(_driverPoint, zoom: 15.5));
         _movementTimer?.cancel();
         _notifyPickupReached();
         return;
@@ -274,6 +275,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
       _driverProgress = next;
       _driverPoint = nextPoint;
       _mapFrameTick.value++;
+      unawaited(_mapController?.animateTo(_driverPoint, zoom: 15.5));
       unawaited(_updatePickupProgressNotification(_driverProgress));
     });
   }

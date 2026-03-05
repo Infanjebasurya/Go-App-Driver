@@ -198,30 +198,6 @@ extension _RideArrivedPageStateExtensions on _RideArrivedPageState {
   Future<void> _focusRouteInView() async {
     final controller = _mapController;
     if (controller == null) return;
-    final double minLat = math.min(
-      _driverPoint.latitude,
-      widget.pickupPoint.latitude,
-    );
-    final double maxLat = math.max(
-      _driverPoint.latitude,
-      widget.pickupPoint.latitude,
-    );
-    final double minLng = math.min(
-      _driverPoint.longitude,
-      widget.pickupPoint.longitude,
-    );
-    final double maxLng = math.max(
-      _driverPoint.longitude,
-      widget.pickupPoint.longitude,
-    );
-
-    const double pad = 0.0012;
-    await controller.animateToBounds(
-      LatLngBounds(
-        southwest: LatLng(minLat - pad, minLng - pad),
-        northeast: LatLng(maxLat + pad, maxLng + pad),
-      ),
-      padding: 72,
-    );
+    await controller.animateTo(_driverPoint, zoom: 15.5);
   }
 }

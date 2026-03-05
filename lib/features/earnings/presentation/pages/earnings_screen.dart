@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/utils/wallet_display.dart';
 import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
@@ -191,7 +192,9 @@ class _WalletMenuView extends StatelessWidget {
                 ),
               );
             },
-            child: _SummaryCard(amount: state.snapshot.walletBalance),
+            child: _SummaryCard(
+              amount: walletDisplayBalance(state.snapshot.walletBalance),
+            ),
           ),
           const SizedBox(height: 24),
           _MenuItem(

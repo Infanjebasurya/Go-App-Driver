@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/utils/wallet_display.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
@@ -87,27 +88,33 @@ class _OfflineStatusBanner extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                "You're Offline",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: Colors.black87,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "You're Offline",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                'Tap the slider to start receiving rides.',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black54,
+                SizedBox(height: 2),
+                Text(
+                  'Tap the slider to start receiving rides.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black54,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -277,7 +284,7 @@ class _WalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNegative = state.walletBalance < 0;
+    final double displayBalance = walletDisplayBalance(state.walletBalance);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -320,13 +327,13 @@ class _WalletCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                  '\u20B9 ${displayBalance.toStringAsFixed(2)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
-                    color: isNegative ? Colors.red : Colors.black87,
+                    color: Colors.black87,
                   ),
                 ),
                 if (state.isWalletBelowDutyThreshold &&

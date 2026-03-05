@@ -91,6 +91,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   String _distanceLabel = '2.1 km';
   String _pickupAddress = '42, I-Block, Arumbakkam, Chennai-106';
   String _dropAddress = '13, vinobaji St, KamarajarNagar, NGO....';
+  AppMapController? _mapController;
 
   @override
   void initState() {
@@ -455,6 +456,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                 if (!state.showArrivalSheet && !state.isPaused) {
                   final cubit = context.read<TripNavigationCubit>();
                   final LatLng bikePoint = cubit.pointAlongRoute(_mapRoutePath);
+                  unawaited(_mapController?.animateTo(bikePoint, zoom: 15.5));
                   final double metersToDrop = _distanceMeters(
                     bikePoint,
                     widget.dropPoint,
@@ -512,6 +514,10 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                               icon: _bikeMarkerIcon,
                               infoWindow: const InfoWindow(title: 'Driver'),
                             ),
+                          },
+                          onMapCreated: (controller) {
+                            _mapController = controller;
+                            unawaited(controller.animateTo(_driverPoint, zoom: 15.5));
                           },
                         ),
                       ),

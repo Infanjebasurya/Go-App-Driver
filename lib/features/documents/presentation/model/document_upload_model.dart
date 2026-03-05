@@ -113,11 +113,14 @@ class BankAccountData extends Equatable {
   final String accountNumber;
   final String confirmAccountNumber;
   final String ifscCode;
+  final String? bankDocumentPath;
+  final DocumentUploadType? bankDocumentType;
   final String? nameError;
   final String? bankNameError;
   final String? accountNumberError;
   final String? confirmAccountNumberError;
   final String? ifscError;
+  final String? bankDocumentError;
 
   const BankAccountData({
     this.accountHolderName = '',
@@ -125,11 +128,14 @@ class BankAccountData extends Equatable {
     this.accountNumber = '',
     this.confirmAccountNumber = '',
     this.ifscCode = '',
+    this.bankDocumentPath,
+    this.bankDocumentType,
     this.nameError,
     this.bankNameError,
     this.accountNumberError,
     this.confirmAccountNumberError,
     this.ifscError,
+    this.bankDocumentError,
   });
 
   bool get hasErrors =>
@@ -137,15 +143,17 @@ class BankAccountData extends Equatable {
           bankNameError != null ||
           accountNumberError != null ||
           confirmAccountNumberError != null ||
-          ifscError != null;
+          ifscError != null ||
+          bankDocumentError != null;
 
   bool get isComplete =>
-      accountHolderName.trim().isNotEmpty &&
-          bankName.trim().isNotEmpty &&
+      bankName.trim().isNotEmpty &&
           accountNumber.trim().isNotEmpty &&
           confirmAccountNumber.trim().isNotEmpty &&
           confirmAccountNumber == accountNumber &&
-          ifscCode.trim().isNotEmpty;
+          ifscCode.trim().isNotEmpty &&
+          bankDocumentPath != null &&
+          bankDocumentPath!.trim().isNotEmpty;
 
   BankAccountData copyWith({
     String? accountHolderName,
@@ -153,16 +161,21 @@ class BankAccountData extends Equatable {
     String? accountNumber,
     String? confirmAccountNumber,
     String? ifscCode,
+    String? bankDocumentPath,
+    DocumentUploadType? bankDocumentType,
     String? nameError,
     String? bankNameError,
     String? accountNumberError,
     String? confirmAccountNumberError,
     String? ifscError,
+    String? bankDocumentError,
     bool clearNameError = false,
     bool clearBankNameError = false,
     bool clearAccountNumberError = false,
     bool clearConfirmError = false,
     bool clearIfscError = false,
+    bool clearBankDocumentError = false,
+    bool clearBankDocument = false,
   }) {
     return BankAccountData(
       accountHolderName: accountHolderName ?? this.accountHolderName,
@@ -170,6 +183,12 @@ class BankAccountData extends Equatable {
       accountNumber: accountNumber ?? this.accountNumber,
       confirmAccountNumber: confirmAccountNumber ?? this.confirmAccountNumber,
       ifscCode: ifscCode ?? this.ifscCode,
+      bankDocumentPath: clearBankDocument
+          ? null
+          : (bankDocumentPath ?? this.bankDocumentPath),
+      bankDocumentType: clearBankDocument
+          ? null
+          : (bankDocumentType ?? this.bankDocumentType),
       nameError: clearNameError ? null : (nameError ?? this.nameError),
       bankNameError:
           clearBankNameError ? null : (bankNameError ?? this.bankNameError),
@@ -180,6 +199,9 @@ class BankAccountData extends Equatable {
           ? null
           : (confirmAccountNumberError ?? this.confirmAccountNumberError),
       ifscError: clearIfscError ? null : (ifscError ?? this.ifscError),
+      bankDocumentError: clearBankDocumentError
+          ? null
+          : (bankDocumentError ?? this.bankDocumentError),
     );
   }
 
@@ -190,11 +212,14 @@ class BankAccountData extends Equatable {
     accountNumber,
     confirmAccountNumber,
     ifscCode,
+    bankDocumentPath,
+    bankDocumentType,
     nameError,
     bankNameError,
     accountNumberError,
     confirmAccountNumberError,
     ifscError,
+    bankDocumentError,
   ];
 }
 

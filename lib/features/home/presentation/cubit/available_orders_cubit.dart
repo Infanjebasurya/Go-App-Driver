@@ -42,6 +42,16 @@ class AvailableOrdersCubit extends Cubit<AvailableOrdersState> {
         );
         return;
       }
+      if (state.activeOrderIndex == 2) {
+        emit(
+          state.copyWith(
+            activeOrderIndex: 3,
+            showFourthOrder: true,
+            progress: 0,
+          ),
+        );
+        return;
+      }
 
       emit(state.copyWith(progress: 1));
       _timer?.cancel();

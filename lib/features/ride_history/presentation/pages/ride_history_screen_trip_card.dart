@@ -52,20 +52,24 @@ class _RideHistoryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  'Trip ${trip.id.replaceFirst('trip_', '#')}',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.neutral333,
+                Expanded(
+                  child: Text(
+                    'Trip ${trip.id.replaceFirst('trip_', '#')}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.neutral333,
+                    ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 _StatusBadge(
                   isCompleted: isCompleted,
                   isCanceled: isCanceled,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Icon(
                   expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
                   color: AppColors.neutral666,

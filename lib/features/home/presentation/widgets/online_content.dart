@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
+import 'package:goapp/core/utils/wallet_display.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
@@ -334,7 +335,7 @@ class _BottomWalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNegative = state.walletBalance < 0;
+    final double displayBalance = walletDisplayBalance(state.walletBalance);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -376,13 +377,13 @@ class _BottomWalletCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${isNegative ? '-' : ''}₹ ${state.walletBalance.abs().toStringAsFixed(2)}',
+                  '\u20B9 ${displayBalance.toStringAsFixed(2)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
-                    color: isNegative ? Colors.red : Colors.black87,
+                    color: Colors.black87,
                   ),
                 ),
                 if (state.isWalletBelowDutyThreshold)

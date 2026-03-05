@@ -312,6 +312,8 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
               const LatLng secondDrop = LatLng(13.0662, 80.2103);
               const LatLng thirdPickup = LatLng(13.0864, 80.2102);
               const LatLng thirdDrop = LatLng(13.0878, 80.2018);
+              const LatLng fourthPickup = LatLng(11.1096, 77.3411);
+              const LatLng fourthDrop = LatLng(11.0989, 77.3438);
 
               final double firstTripKm = _distanceKm(firstPickup, firstDrop);
               final double firstPickupKm = _distanceKm(
@@ -327,6 +329,11 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
               final double thirdPickupKm = _distanceKm(
                 _defaultDriverPoint,
                 thirdPickup,
+              );
+              final double fourthTripKm = _distanceKm(fourthPickup, fourthDrop);
+              final double fourthPickupKm = _distanceKm(
+                _defaultDriverPoint,
+                fourthPickup,
               );
               return ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
@@ -418,6 +425,35 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                         dropAddress: 'Thirumangalam, Chennai',
                         fareLabel: '\u20B9110',
                         distanceLabel: _formatDistanceKm(thirdTripKm),
+                      ),
+                    ),
+                  ],
+                  if (state.showFourthOrder) ...<Widget>[
+                    const SizedBox(height: 14),
+                    _OrderCard(
+                      fare: '\u20B9120',
+                      pickupTitle: 'Tiruppur Old Bus Stand',
+                      pickupAddress: 'Tiruppur Old Bus Stand, Tiruppur',
+                      dropTitle: 'Rayapuram',
+                      dropAddress: 'Rayapuram, Tiruppur',
+                      progress: _canReceiveOrders ? cubit.progressForOrder(3) : 0,
+                      isEnabled: _canReceiveOrders,
+                      distanceLabel: _formatDistanceKm(fourthTripKm),
+                      etaLabel: _estimateEtaLabelFromKm(fourthPickupKm),
+                      pickupDistanceLabel: _formatDistanceKm(fourthPickupKm),
+                      dropDistanceLabel: _formatDistanceKm(fourthTripKm),
+                      onDecline: _canReceiveOrders
+                          ? () {
+                              unawaited(_handleDeclineTap());
+                            }
+                          : null,
+                      onAccept: () async => _goToRideScreen(
+                        pickupPoint: fourthPickup,
+                        dropPoint: fourthDrop,
+                        pickupAddress: 'Tiruppur Old Bus Stand, Tiruppur',
+                        dropAddress: 'Rayapuram, Tiruppur',
+                        fareLabel: '\u20B9120',
+                        distanceLabel: _formatDistanceKm(fourthTripKm),
                       ),
                     ),
                   ],

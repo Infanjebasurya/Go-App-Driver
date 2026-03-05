@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
-import 'package:goapp/core/storage/user_cache_store.dart';
 
 import '../model/document_upload_model.dart';
 import '../../../document_verify/presentation/model/document_model.dart';
@@ -70,11 +69,18 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         'confirmAccountNumber',
       ),
       ifscCode: DocumentProgressStore.bankDraftValue('ifscCode'),
+      bankDocumentPath: DocumentProgressStore.frontImagePath(
+        DocumentType.bankDetails,
+      ),
+      bankDocumentType: _inferUploadType(
+        DocumentProgressStore.frontImagePath(DocumentType.bankDetails),
+      ),
       clearNameError: true,
       clearBankNameError: true,
       clearAccountNumberError: true,
       clearConfirmError: true,
       clearIfscError: true,
+      clearBankDocumentError: true,
     );
     emit(state.copyWith(steps: updatedSteps, bankData: restoredBankData));
   }
@@ -483,9 +489,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   void updateAccountHolderName(String value) {
     final normalized = value.toUpperCase();
     DocumentProgressStore.setBankDraftValue('accountHolderName', normalized);
+    final trimmed = normalized.trim();
+    final valid = trimmed.isEmpty || RegExp(r'^[A-Z ]+$').hasMatch(trimmed);
     final updated = state.bankData.copyWith(
       accountHolderName: normalized,
-      clearNameError: normalized.trim().isNotEmpty,
+      clearNameError: valid,
     );
     emit(state.copyWith(bankData: updated));
   }
@@ -526,6 +534,102 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     final updated = state.bankData.copyWith(
       ifscCode: normalized,
       clearIfscError: normalized.trim().isNotEmpty,
+    );
+    emit(state.copyWith(bankData: updated));
+  }
+
+  Future<void> captureBankDocument({required ImageSource source}) async {
+    if (!state.isCurrentStepBank) return;
+    if (_isPicking) return;
+    if (!await _ensurePermission(source)) return;
+
+    _isPicking = true;
+    try {
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
+      if (picked == null) return;
+
+      final fileSize = await File(picked.path).length();
+      final pickedSize = await picked.length();
+      final bytes = await picked.readAsBytes();
+      final sizeBytes = [
+        fileSize,
+        pickedSize,
+        bytes.length,
+      ].reduce((a, b) => a > b ? a : b);
+      if (!_validateFileSize(sizeBytes)) {
+        emit(
+          state.copyWith(
+            bankData: state.bankData.copyWith(
+              bankDocumentError: 'File size must be under 5 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setFrontImagePath(
+        DocumentType.bankDetails,
+        picked.path,
+      );
+      final updated = state.bankData.copyWith(
+        bankDocumentPath: picked.path,
+        bankDocumentType: DocumentUploadType.image,
+        clearBankDocumentError: true,
+      );
+      emit(state.copyWith(bankData: updated));
+    } finally {
+      _isPicking = false;
+    }
+  }
+
+  Future<void> captureBankDocumentFile() async {
+    if (!state.isCurrentStepBank) return;
+    if (_isPicking) return;
+
+    _isPicking = true;
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['pdf', 'doc', 'docx'],
+        withData: false,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.single;
+      if (!_validateFileSize(file.size)) {
+        emit(
+          state.copyWith(
+            bankData: state.bankData.copyWith(
+              bankDocumentError: 'File size must be under 5 MB',
+            ),
+          ),
+        );
+        return;
+      }
+
+      DocumentProgressStore.setFrontImagePath(
+        DocumentType.bankDetails,
+        file.path,
+      );
+      final updated = state.bankData.copyWith(
+        bankDocumentPath: file.path,
+        bankDocumentType: DocumentUploadType.document,
+        clearBankDocumentError: true,
+      );
+      emit(state.copyWith(bankData: updated));
+    } finally {
+      _isPicking = false;
+    }
+  }
+
+  void removeBankDocument() {
+    if (!state.isCurrentStepBank) return;
+    DocumentProgressStore.setFrontImagePath(DocumentType.bankDetails, null);
+    final updated = state.bankData.copyWith(
+      clearBankDocument: true,
+      clearBankDocumentError: true,
     );
     emit(state.copyWith(bankData: updated));
   }
@@ -641,24 +745,13 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     BankAccountData updated = b;
     bool valid = true;
 
-    if (b.accountHolderName.trim().isEmpty) {
-      updated = updated.copyWith(nameError: 'Account holder name is required');
+    if (b.accountHolderName.trim().isNotEmpty &&
+        !RegExp(r'^[A-Z ]+$')
+            .hasMatch(b.accountHolderName.trim().toUpperCase())) {
+      updated = updated.copyWith(
+        nameError: 'Only alphabets are allowed',
+      );
       valid = false;
-    } else if (!RegExp(
-      r'^[A-Z ]+$',
-    ).hasMatch(b.accountHolderName.trim().toUpperCase())) {
-      updated = updated.copyWith(nameError: 'Only alphabets are allowed');
-      valid = false;
-    } else {
-      final profileName = UserCacheStore.read()?.fullName ?? '';
-      final enteredName = _normalizePersonName(b.accountHolderName);
-      final savedName = _normalizePersonName(profileName);
-      if (savedName.isNotEmpty && enteredName != savedName) {
-        updated = updated.copyWith(
-          nameError: 'Account holder name must match your profile full name',
-        );
-        valid = false;
-      }
     }
     if (b.bankName.trim().isEmpty) {
       updated = updated.copyWith(bankNameError: 'Bank name is required');
@@ -709,15 +802,17 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       updated = updated.copyWith(ifscError: 'Enter a valid IFSC code');
       valid = false;
     }
+    if (b.bankDocumentPath == null || b.bankDocumentPath!.trim().isEmpty) {
+      updated = updated.copyWith(
+        bankDocumentError: 'Please upload bank document',
+      );
+      valid = false;
+    }
 
     if (!valid) {
       emit(state.copyWith(bankData: updated));
     }
     return valid;
-  }
-
-  String _normalizePersonName(String value) {
-    return value.trim().toUpperCase().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   Future<void> saveAndNext() async {
