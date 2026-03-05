@@ -89,7 +89,7 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   Future<void> _loadMapStyle() async {
     try {
-      final style = await _styleLoader.loadDefault();
+      final style = await _styleLoader.loadBooking();
       if (!mounted) return;
       setState(() => _mapStyle = style);
     } catch (_) {}

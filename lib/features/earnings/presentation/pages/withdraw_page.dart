@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/utils/wallet_display.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
@@ -96,7 +97,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Rs ${state.snapshot.walletBalance.toStringAsFixed(2)}',
+                              'Rs ${walletDisplayBalance(state.snapshot.walletBalance).toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,

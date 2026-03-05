@@ -6,7 +6,6 @@ import 'package:goapp/core/background/trip_background_service.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
-import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/injection.dart';
 
@@ -29,7 +28,7 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: kDebugMode && Env.enableDevicePreview,
+      enabled: kDebugMode,
       builder: (context) => const MyApp(),
     ),
   );
@@ -48,10 +47,8 @@ class MyApp extends StatelessWidget {
         title: 'GoApp Captain',
         theme: AppTheme.lightTheme(isTest: false),
         debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          if (child == null) return const SizedBox.shrink();
-          return child;
-        },
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
         home: const AppEntryGate(),
       ),
     );

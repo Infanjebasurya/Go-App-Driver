@@ -129,6 +129,12 @@ class RideHistoryStore {
   static const String _activeTripIdKey = 'ride_history_active_trip_id_v1';
   static const int _maxItems = 100;
 
+  static Future<void> clearAll() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_historyKey);
+    await prefs.remove(_activeTripIdKey);
+  }
+
   static Future<List<RideHistoryTrip>> loadTrips() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? raw = prefs.getString(_historyKey);

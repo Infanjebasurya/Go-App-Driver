@@ -45,118 +45,125 @@ class HomeDrawer extends StatelessWidget {
             const Divider(height: 1, color: Color(0xFFF0F0F0)),
             const SizedBox(height: 16),
 
-            _DrawerItem(
-              icon: Icons.account_balance_wallet_outlined,
-              label: 'Earning & Wallet',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EarningsScreen()),
-                ).then((_) {
-                  onReopenDrawer();
-                  if (!context.mounted) return;
-                  context.read<DriverCubit>().refreshDashboardMetrics();
-                });
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.card_giftcard_outlined,
-              label: 'Incentives',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const IncentivesPage()),
-                ).then((_) => onReopenDrawer());
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.description_outlined,
-              label: 'Documents',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DocumentsScreen()),
-                ).then((_) => onReopenDrawer());
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.insights_outlined,
-              label: 'Demand Planner',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const DemandPlannerScreen(),
-                  ),
-                ).then((_) => onReopenDrawer());
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.share_outlined,
-              label: 'Refer & Earn',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ReferEarnScreen()),
-                ).then((_) => onReopenDrawer());
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.history,
-              label: 'Ride History',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RideHistoryScreen()),
-                );
-              },
-            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _DrawerItem(
+                      icon: Icons.account_balance_wallet_outlined,
+                      label: 'Earning & Wallet',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const EarningsScreen()),
+                        ).then((_) {
+                          onReopenDrawer();
+                          if (!context.mounted) return;
+                          context.read<DriverCubit>().refreshDashboardMetrics();
+                        });
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.card_giftcard_outlined,
+                      label: 'Incentives',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const IncentivesPage()),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.description_outlined,
+                      label: 'Documents',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.insights_outlined,
+                      label: 'Demand Planner',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DemandPlannerScreen(),
+                          ),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.share_outlined,
+                      label: 'Refer & Earn',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ReferEarnScreen()),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.history,
+                      label: 'Ride History',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const RideHistoryScreen()),
+                        );
+                      },
+                    ),
 
-            const SizedBox(height: 8),
-            const Divider(height: 1, color: Color(0xFFF0F0F0)),
-            const SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                    const SizedBox(height: 8),
 
-            _DrawerItem(
-              icon: Icons.info_outline,
-              label: 'About',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AboutScreen()),
-                ).then((_) => onReopenDrawer());
-              },
+                    _DrawerItem(
+                      icon: Icons.info_outline,
+                      label: 'About',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AboutScreen()),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.star_outline,
+                      label: 'Rate App',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const RateAppScreen()),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.help_outline,
+                      label: 'Help & Support',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const HelpSupportScreen()),
+                        ).then((_) => onReopenDrawer());
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-            _DrawerItem(
-              icon: Icons.star_outline,
-              label: 'Rate App',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RateAppScreen()),
-                ).then((_) => onReopenDrawer());
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.help_outline,
-              label: 'Help & Support',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HelpSupportScreen()),
-                ).then((_) => onReopenDrawer());
-              },
-            ),
-
-            const Spacer(),
           ],
         ),
       ),
@@ -225,7 +232,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
     final name = (UserCacheStore.read()?.fullName ?? 'Sam Yogi').trim();
     final displayName = name.isEmpty ? 'Sam Yogi' : name;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: GestureDetector(
         onTap: () {
           Navigator.pop(widget.context);
@@ -236,109 +243,117 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AuthUiColors.brandGreen,
-                          width: 2,
-                        ),
-                      ),
-                      child: ClipOval(
-                        child: Container(
-                          color: const Color(0xFF3A3A3A),
-                          child: _avatarProvider != null
-                              ? Image(
-                                  image: _avatarProvider!,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.low,
-                                  gaplessPlayback: true,
-                                )
-                              : const Icon(
-                                  Icons.person,
-                                  size: 44,
-                                  color: Colors.white54,
-                                ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _pickPhoto,
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          decoration: const BoxDecoration(
-                            color: AuthUiColors.brandGreen,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 13,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  displayName,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A1A1A),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AuthUiColors.brandGreen.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: AuthUiColors.brandGreen.withValues(alpha: 0.4),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Stack(
                     children: [
-                      const Icon(
-                        Icons.verified,
-                        color: AuthUiColors.brandGreen,
-                        size: 13,
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AuthUiColors.brandGreen,
+                            width: 2,
+                          ),
+                        ),
+                        child: ClipOval(
+                          child: Container(
+                            color: const Color(0xFF3A3A3A),
+                            child: _avatarProvider != null
+                                ? Image(
+                                    image: _avatarProvider!,
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.low,
+                                    gaplessPlayback: true,
+                                  )
+                                : const Icon(
+                                    Icons.person,
+                                    size: 44,
+                                    color: Colors.white54,
+                                  ),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'PLATINUM MEMBER',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: AuthUiColors.brandGreen,
-                          letterSpacing: 0.5,
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _pickPhoto,
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: const BoxDecoration(
+                              color: AuthUiColors.brandGreen,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 13,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Text(
+                    displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AuthUiColors.brandGreen.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AuthUiColors.brandGreen.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.verified,
+                          color: AuthUiColors.brandGreen,
+                          size: 13,
+                        ),
+                        const SizedBox(width: 4),
+                        const Flexible(
+                          child: Text(
+                            'PLATINUM MEMBER',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AuthUiColors.brandGreen,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
             Align(
               alignment: Alignment.bottomRight,
               child: const Icon(

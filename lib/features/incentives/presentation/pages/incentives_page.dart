@@ -48,12 +48,8 @@ class _IncentivesView extends StatelessWidget {
               ];
         final int currentRides = state.achievedRides;
         final int activeTierIndex = _activeTierIndex(achievedRides: currentRides, tiers: tiers);
-        final IncentiveTier activeTier = tiers[activeTierIndex];
-        final int floorTarget = activeTierIndex == 0 ? 0 : tiers[activeTierIndex - 1].targetRides;
-        final int range = (activeTier.targetRides - floorTarget) <= 0
-            ? 1
-            : (activeTier.targetRides - floorTarget);
-        final double progressFraction = ((currentRides - floorTarget) / range).clamp(0, 1);
+        final int totalTarget = tiers.isEmpty ? 1 : tiers.last.targetRides;
+        final double progressFraction = (currentRides / totalTarget).clamp(0, 1);
 
         return Scaffold(
           backgroundColor: Colors.white,

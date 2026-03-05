@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/utils/wallet_display.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
 import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
@@ -75,7 +76,7 @@ class _WalletView extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, 20),
                 children: <Widget>[
                   _WalletBalanceCard(
-                    balance: state.snapshot.walletBalance,
+                    balance: walletDisplayBalance(state.snapshot.walletBalance),
                     onRecharge: () {
                       final cubit = context.read<EarningsCubit>();
                       Navigator.push(

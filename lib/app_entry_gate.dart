@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/user_cache_model.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/model/city_model.dart';
@@ -130,12 +131,14 @@ class _AppEntryGateState extends State<AppEntryGate> {
     final user = await UserCacheStore.load();
     final progress = await RegistrationProgressStore.load();
     if (user == null && !progress.onboardingSeen) {
+      await RideHistoryStore.clearAll();
       DocumentProgressStore.reset();
       return const _EntryBootstrap(
         onboardingSeen: false,
       );
     }
     if (user == null) {
+      await RideHistoryStore.clearAll();
       DocumentProgressStore.reset();
       return const _EntryBootstrap(
         onboardingSeen: true,

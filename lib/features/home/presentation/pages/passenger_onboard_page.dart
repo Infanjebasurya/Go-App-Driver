@@ -125,26 +125,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
   Future<void> _focusRouteInView() async {
     final controller = _mapController;
     if (controller == null) return;
-    final minLat = _pickupPoint.latitude < _dropPoint.latitude
-        ? _pickupPoint.latitude
-        : _dropPoint.latitude;
-    final maxLat = _pickupPoint.latitude > _dropPoint.latitude
-        ? _pickupPoint.latitude
-        : _dropPoint.latitude;
-    final minLng = _pickupPoint.longitude < _dropPoint.longitude
-        ? _pickupPoint.longitude
-        : _dropPoint.longitude;
-    final maxLng = _pickupPoint.longitude > _dropPoint.longitude
-        ? _pickupPoint.longitude
-        : _dropPoint.longitude;
-    const pad = 0.0012;
-    await controller.animateToBounds(
-      LatLngBounds(
-        southwest: LatLng(minLat - pad, minLng - pad),
-        northeast: LatLng(maxLat + pad, maxLng + pad),
-      ),
-      padding: 64,
-    );
+    await controller.animateTo(_pickupPoint, zoom: 15.5);
   }
 
   @override
