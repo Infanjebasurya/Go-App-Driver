@@ -5,21 +5,25 @@ class AvailableOrdersState extends Equatable {
     this.activeOrderIndex = 0,
     this.progress = 0,
     this.showSecondOrder = false,
+    this.showThirdOrder = false,
   });
 
   final int activeOrderIndex;
   final double progress;
   final bool showSecondOrder;
+  final bool showThirdOrder;
 
   AvailableOrdersState copyWith({
     int? activeOrderIndex,
     double? progress,
     bool? showSecondOrder,
+    bool? showThirdOrder,
   }) {
     return AvailableOrdersState(
       activeOrderIndex: activeOrderIndex ?? this.activeOrderIndex,
       progress: progress ?? this.progress,
       showSecondOrder: showSecondOrder ?? this.showSecondOrder,
+      showThirdOrder: showThirdOrder ?? this.showThirdOrder,
     );
   }
 
@@ -28,5 +32,6 @@ class AvailableOrdersState extends Equatable {
     activeOrderIndex,
     progress,
     showSecondOrder,
+    showThirdOrder,
   ];
 }

@@ -73,9 +73,19 @@ class _CurrentLocationButton extends StatelessWidget {
 }
 
 class _ReachedCustomerSheet extends StatelessWidget {
-  const _ReachedCustomerSheet({required this.onCompleteTap});
+  const _ReachedCustomerSheet({
+    required this.onCompleteTap,
+    required this.fareLabel,
+    required this.distanceLabel,
+    required this.pickupAddress,
+    required this.dropAddress,
+  });
 
   final VoidCallback onCompleteTap;
+  final String fareLabel;
+  final String distanceLabel;
+  final String pickupAddress;
+  final String dropAddress;
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +174,7 @@ class _ReachedCustomerSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     Text(
@@ -177,7 +187,7 @@ class _ReachedCustomerSheet extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '2.1 km',
+                      distanceLabel,
                       style: TextStyle(
                         fontSize: 15.5,
                         fontWeight: FontWeight.w800,
@@ -189,16 +199,19 @@ class _ReachedCustomerSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            const _PickupDropInfo(),
+            _PickupDropInfo(
+              pickupAddress: pickupAddress,
+              dropAddress: dropAddress,
+            ),
             const SizedBox(height: 16),
             _SlideToCompleteButton(onCompleted: onCompleteTap),
             const SizedBox(height: 14),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
               color: AppColors.surfaceF0,
-              child: const Row(
+              child: Row(
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Ride in progress',
                     style: TextStyle(
                       fontSize: 13,
@@ -208,7 +221,7 @@ class _ReachedCustomerSheet extends StatelessWidget {
                   ),
                   Spacer(),
                   Text(
-                    'Total Fare: ₹1,250',
+                    'Total Fare: $fareLabel',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -323,7 +336,13 @@ class _SlideToCompleteButtonState extends State<_SlideToCompleteButton> {
 }
 
 class _PickupDropInfo extends StatelessWidget {
-  const _PickupDropInfo();
+  const _PickupDropInfo({
+    required this.pickupAddress,
+    required this.dropAddress,
+  });
+
+  final String pickupAddress;
+  final String dropAddress;
 
   @override
   Widget build(BuildContext context) {
@@ -357,7 +376,7 @@ class _PickupDropInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -371,7 +390,7 @@ class _PickupDropInfo extends StatelessWidget {
               ),
               SizedBox(height: 3),
               Text(
-                '42, I-Block, Arumbakkam, Chennai-106',
+                pickupAddress,
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w500,
@@ -389,7 +408,7 @@ class _PickupDropInfo extends StatelessWidget {
               ),
               SizedBox(height: 3),
               Text(
-                '13, vinobaji St, KamarajarNagar, NGO....',
+                dropAddress,
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w500,

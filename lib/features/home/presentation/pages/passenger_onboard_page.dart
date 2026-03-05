@@ -26,9 +26,9 @@ class PassengerOnboardPage extends StatefulWidget {
 
 class _PassengerOnboardPageState extends State<PassengerOnboardPage>
     with WidgetsBindingObserver {
-  static const LatLng _centerPoint = LatLng(13.0696, 80.2154);
-  static const LatLng _pickupPoint = LatLng(13.0696, 80.2154);
-  static const LatLng _dropPoint = LatLng(13.0744, 80.2241);
+  LatLng _pickupPoint = const LatLng(13.0696, 80.2154);
+  LatLng _dropPoint = const LatLng(13.0744, 80.2241);
+  String _dropAddress = '13, vinobaji St, KamarajarNag...';
   final MapStyleLoader _styleLoader = const MapStyleLoader();
   final LocationPermissionGuard _locationGuard =
       const LocationPermissionGuard();
@@ -51,8 +51,28 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
     }
     WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
-    _loadRoute();
+    unawaited(_loadTripSessionDataAndRoute());
     unawaited(_refreshLocationState(requestPermission: true));
+  }
+
+  Future<void> _loadTripSessionDataAndRoute() async {
+    final TripSession? session = await TripSessionStore.loadActive();
+    if (session != null) {
+      _pickupPoint = LatLng(
+        session.pickupLatLng.latitude,
+        session.pickupLatLng.longitude,
+      );
+      _dropPoint = LatLng(
+        session.dropLatLng.latitude,
+        session.dropLatLng.longitude,
+      );
+      if (session.dropAddress.isNotEmpty) {
+        _dropAddress = session.dropAddress;
+      }
+    }
+    if (!mounted) return;
+    setState(() {});
+    await _loadRoute();
   }
 
   @override
@@ -201,8 +221,8 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
           children: <Widget>[
             Positioned.fill(
               child: AppGoogleMap(
-                initialCameraPosition: const CameraPosition(
-                  target: _centerPoint,
+                initialCameraPosition: CameraPosition(
+                  target: _pickupPoint,
                   zoom: 15,
                 ),
                 style: _mapStyle,
@@ -450,7 +470,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                           color: AppColors.surfaceF5,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: <Widget>[
                             Icon(
                               Icons.location_on,
@@ -469,7 +489,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                             SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                '13, vinobaji St, KamarajarNag...',
+                                _dropAddress,
                                 textAlign: TextAlign.right,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

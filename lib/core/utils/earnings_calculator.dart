@@ -39,6 +39,12 @@ class EarningsCalculator {
   }
 
   static double totalEarning(RideHistoryTrip trip) {
+    if (isCanceledTrip(trip)) {
+      final double explicitCanceled = trip.netEarningAmount ?? 0;
+      if (explicitCanceled > 0) return explicitCanceled;
+      return cancellationFeeAmount(trip);
+    }
+
     final double explicit = trip.netEarningAmount ?? 0;
     if (explicit > 0) return explicit;
     return tripAmount(trip) + incentiveAmount(trip) + cancellationFeeAmount(trip);

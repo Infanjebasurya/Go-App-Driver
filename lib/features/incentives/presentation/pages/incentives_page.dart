@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/incentives/data/repositories/incentives_repository_impl.dart';
 import 'package:goapp/features/incentives/domain/usecases/get_incentives_config_usecase.dart';
 
 import '../cubit/incentives_cubit.dart';
 import '../cubit/incentives_state.dart';
-import 'package:goapp/core/widgets/app_app_bar.dart';
 
 class IncentivesPage extends StatelessWidget {
   const IncentivesPage({super.key});
@@ -15,9 +15,8 @@ class IncentivesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final repository = const IncentivesRepositoryImpl();
     return BlocProvider(
-      create: (_) => IncentivesCubit(
-        getIncentivesConfig: GetIncentivesConfigUseCase(repository),
-      ),
+      create: (_) =>
+          IncentivesCubit(getIncentivesConfig: GetIncentivesConfigUseCase(repository)),
       child: const _IncentivesView(),
     );
   }
@@ -26,32 +25,63 @@ class IncentivesPage extends StatelessWidget {
 class _IncentivesView extends StatelessWidget {
   const _IncentivesView();
 
+  static const List<String> _weekDays = <String>[
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<IncentivesCubit, IncentivesState>(
       builder: (context, state) {
+        final List<IncentiveTier> tiers = state.tiers.isNotEmpty
+            ? state.tiers
+            : const <IncentiveTier>[
+                IncentiveTier(title: 'Silver Milestone', targetRides: 3, rewardAmount: 50),
+                IncentiveTier(title: 'Gold Milestone', targetRides: 5, rewardAmount: 100),
+                IncentiveTier(title: 'Platinum Milestone', targetRides: 7, rewardAmount: 150),
+              ];
+        final int currentRides = state.achievedRides;
+        final int activeTierIndex = _activeTierIndex(achievedRides: currentRides, tiers: tiers);
+        final IncentiveTier activeTier = tiers[activeTierIndex];
+        final int floorTarget = activeTierIndex == 0 ? 0 : tiers[activeTierIndex - 1].targetRides;
+        final int range = (activeTier.targetRides - floorTarget) <= 0
+            ? 1
+            : (activeTier.targetRides - floorTarget);
+        final double progressFraction = ((currentRides - floorTarget) / range).clamp(0, 1);
+
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppAppBar(
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black,size: 14,),
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 14,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
               'Incentives',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.black),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.black,
+              ),
             ),
             centerTitle: true,
           ),
           body: Column(
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(25),
@@ -66,111 +96,145 @@ class _IncentivesView extends StatelessWidget {
               ),
               SizedBox(
                 height: 80,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  children: [
-                    _buildDateItem(context, state, 'Tue', '10', 0),
-                    _buildDateItem(context, state, 'Wed', '11', 1),
-                    _buildDateItem(context, state, 'Thu', '12', 2),
-                    _buildDateItem(context, state, 'Fri', '13', 3),
-                    _buildDateItem(context, state, 'Sat', '14', 4),
-                  ],
-                ),
+                child: state.selectedTab == 'Day'
+                    ? ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        children: List<Widget>.generate(state.dayOptions.length, (index) {
+                          final DateTime day = state.dayOptions[index];
+                          return _buildDateItem(
+                            context,
+                            state,
+                            _weekDays[day.weekday - 1],
+                            day.day.toString().padLeft(2, '0'),
+                            index,
+                          );
+                        }),
+                      )
+                    : ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        children: List<Widget>.generate(state.rangeLabels.length, (index) {
+                          return _buildRangeItem(
+                            context,
+                            state,
+                            state.rangeLabels[index],
+                            index,
+                          );
+                        }),
+                      ),
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'MORNING SESSION • 08:00 AM - 12:00 PM',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          letterSpacing: 1.0,
+                child: state.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _sessionTitle(state.selectedTab),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildActiveQuestCard(
+                              tiers: tiers,
+                              currentRides: currentRides,
+                              activeTierIndex: activeTierIndex,
+                              progressFraction: progressFraction,
+                              selectedTab: state.selectedTab,
+                            ),
+                            const SizedBox(height: 30),
+                            ...List<Widget>.generate(tiers.length, (index) {
+                              final IncentiveTier tier = tiers[index];
+                              final bool unlocked = currentRides >= tier.targetRides;
+                              final bool isActive = index == activeTierIndex && !unlocked;
+                              return _buildMilestoneItem(
+                                isLast: index == tiers.length - 1,
+                                isUnlocked: unlocked,
+                                icon: index == 2
+                                    ? Icons.diamond_outlined
+                                    : (index == 1
+                                        ? Icons.emoji_events
+                                        : Icons.emoji_events_outlined),
+                                title: tier.title,
+                                subtitle: _milestoneSubtitle(
+                                  selectedTab: state.selectedTab,
+                                  targetRides: tier.targetRides,
+                                ),
+                                reward: '\u20B9${tier.rewardAmount}',
+                                isActive: isActive,
+                              );
+                            }),
+                            if (state.selectedTab == 'Day') ...<Widget>[
+                              const SizedBox(height: 20),
+                              const Text(
+                                'MORNING SESSION \u2022 12:00 PM -4:00PM',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              ...List<Widget>.generate(tiers.length, (index) {
+                                final IncentiveTier tier = tiers[index];
+                                return _buildMilestoneItem(
+                                  isLast: index == tiers.length - 1,
+                                  isUnlocked: false,
+                                  icon: index == 2
+                                      ? Icons.diamond_outlined
+                                      : (index == 1
+                                          ? Icons.emoji_events
+                                          : Icons.emoji_events_outlined),
+                                  title: tier.title,
+                                  subtitle: _milestoneSubtitle(
+                                    selectedTab: state.selectedTab,
+                                    targetRides: tier.targetRides,
+                                  ),
+                                  reward: '\u20B9${tier.rewardAmount}',
+                                  isActive: false,
+                                );
+                              }),
+                            ],
+                            const SizedBox(height: 40),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildActiveQuestCard(),
-                      const SizedBox(height: 30),
-                      _buildMilestoneItem(
-                        isLast: false,
-                        isUnlocked: true,
-                        icon: Icons.emoji_events_outlined,
-                        title: 'Silver Milestone',
-                        subtitle: 'Complete 3 rides today',
-                        reward: '₹50',
-                        isActive: true,
-                      ),
-                      _buildMilestoneItem(
-                        isLast: false,
-                        isUnlocked: false,
-                        icon: Icons.emoji_events,
-                        title: 'Gold Milestone',
-                        subtitle: 'Complete 5 rides today',
-                        reward: '₹100',
-                        isActive: false,
-                      ),
-                      _buildMilestoneItem(
-                        isLast: true,
-                        isUnlocked: false,
-                        icon: Icons.diamond_outlined,
-                        title: 'Platinum Milestone',
-                        subtitle: 'Complete 7 rides today',
-                        reward: '₹150',
-                        isActive: false,
-                      ),
-                      const SizedBox(height: 30),
-                      const Text(
-                        'MORNING SESSION • 12:00 PM - 4:00 PM',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildMilestoneItem(
-                        isLast: false,
-                        isUnlocked: false,
-                        icon: Icons.emoji_events_outlined,
-                        title: 'Silver Milestone',
-                        subtitle: 'Complete 3 rides today',
-                        reward: '₹50',
-                        isActive: false,
-                      ),
-                      _buildMilestoneItem(
-                        isLast: false,
-                        isUnlocked: false,
-                        icon: Icons.emoji_events,
-                        title: 'Gold Milestone',
-                        subtitle: 'Complete 5 rides today',
-                        reward: '₹100',
-                        isActive: false,
-                      ),
-                      _buildMilestoneItem(
-                        isLast: true,
-                        isUnlocked: false,
-                        icon: Icons.diamond_outlined,
-                        title: 'Platinum Milestone',
-                        subtitle: 'Complete 7 rides today',
-                        reward: '₹150',
-                        isActive: false,
-                      ),
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-                ),
               ),
             ],
           ),
         );
       },
     );
+  }
+
+  int _activeTierIndex({
+    required int achievedRides,
+    required List<IncentiveTier> tiers,
+  }) {
+    for (int i = 0; i < tiers.length; i++) {
+      if (achievedRides < tiers[i].targetRides) return i;
+    }
+    return tiers.length - 1;
+  }
+
+  String _sessionTitle(String selectedTab) {
+    if (selectedTab == 'Week') return 'WEEKLY SESSION';
+    if (selectedTab == 'Bonus') return 'MONTHLY SESSION';
+    return 'DAILY SESSION';
+  }
+
+  int _potentialRewardFor(String selectedTab) {
+    if (selectedTab == 'Week') return 1500;
+    if (selectedTab == 'Bonus') return 4000;
+    return 150;
   }
 
   Widget _buildDateItem(
@@ -180,7 +244,7 @@ class _IncentivesView extends StatelessWidget {
     String date,
     int index,
   ) {
-    final isSelected = state.selectedDayIndex == index;
+    final bool isSelected = state.selectedDayIndex == index;
     return GestureDetector(
       onTap: () => context.read<IncentivesCubit>().selectDay(index),
       child: Container(
@@ -220,7 +284,45 @@ class _IncentivesView extends StatelessWidget {
     );
   }
 
-  Widget _buildActiveQuestCard() {
+  Widget _buildRangeItem(
+    BuildContext context,
+    IncentivesState state,
+    String label,
+    int index,
+  ) {
+    final bool isSelected = state.selectedDayIndex == index;
+    return GestureDetector(
+      onTap: () => context.read<IncentivesCubit>().selectDay(index),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFB7D7CC) : const Color(0xFFF3F3F3),
+          borderRadius: BorderRadius.circular(20),
+          border: isSelected ? Border.all(color: AppColors.emerald) : null,
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? AppColors.emerald : Colors.grey[700],
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveQuestCard({
+    required List<IncentiveTier> tiers,
+    required int currentRides,
+    required int activeTierIndex,
+    required double progressFraction,
+    required String selectedTab,
+  }) {
+    final int currentTarget = tiers[activeTierIndex].targetRides;
+    final int achievedDisplay = currentRides.clamp(0, currentTarget);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -251,15 +353,15 @@ class _IncentivesView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Row(
+          Row(
             children: [
-              Text(
+              const Text(
                 'Potential Reward: ',
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
-                '₹150',
-                style: TextStyle(
+                '\u20B9${_potentialRewardFor(selectedTab)}',
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -268,46 +370,52 @@ class _IncentivesView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Stack(
-            children: [
-              Container(
-                height: 4,
-                margin: const EdgeInsets.only(top: 6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Container(
-                height: 4,
-                width: 150,
-                margin: const EdgeInsets.only(top: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final double width = constraints.maxWidth * progressFraction;
+              return Stack(
                 children: [
-                  _buildProgressMarker('3', true),
-                  _buildProgressMarker('5', false),
-                  _buildProgressMarker('7', false),
+                  Container(
+                    height: 4,
+                    margin: const EdgeInsets.only(top: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Container(
+                    height: 4,
+                    width: width,
+                    margin: const EdgeInsets.only(top: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: tiers.map((tier) {
+                      return _buildProgressMarker(
+                        tier.targetRides.toString(),
+                        currentRides >= tier.targetRides,
+                      );
+                    }).toList(growable: false),
+                  ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
           const SizedBox(height: 8),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+              children: [
+                Text(
+                  '$achievedDisplay of $currentTarget rides completed',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
               Text(
-                '2 of 3 rides completed',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-              Text(
-                'TIER 1',
-                style: TextStyle(
+                'TIER ${activeTierIndex + 1}',
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
@@ -406,9 +514,7 @@ class _IncentivesView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isUnlocked
-                          ? const Color(0xFFFFF8E1)
-                          : Colors.grey[50],
+                      color: isUnlocked ? const Color(0xFFFFF8E1) : Colors.grey[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -449,9 +555,7 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: isUnlocked
-                              ? AppColors.emerald
-                              : Colors.grey[300],
+                          color: isUnlocked ? AppColors.emerald : Colors.grey[300],
                         ),
                       ),
                       Text(
@@ -474,7 +578,7 @@ class _IncentivesView extends StatelessWidget {
   }
 
   Widget _buildTab(BuildContext context, IncentivesState state, String text) {
-    final isSelected = state.selectedTab == text;
+    final bool isSelected = state.selectedTab == text;
     return Expanded(
       child: GestureDetector(
         onTap: () => context.read<IncentivesCubit>().selectTab(text),
@@ -498,5 +602,17 @@ class _IncentivesView extends StatelessWidget {
       ),
     );
   }
-}
 
+  String _milestoneSubtitle({
+    required String selectedTab,
+    required int targetRides,
+  }) {
+    if (selectedTab == 'Week') {
+      return 'Complete $targetRides rides this week';
+    }
+    if (selectedTab == 'Bonus') {
+      return 'Complete $targetRides rides this month';
+    }
+    return 'Complete $targetRides rides today';
+  }
+}

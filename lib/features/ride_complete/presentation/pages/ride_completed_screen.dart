@@ -50,26 +50,29 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     final RideCompletedCubit cubit = context.read<RideCompletedCubit>();
     RideCompletionSummary summary = cubit.state.summary;
     final TripSession? session = await TripSessionStore.loadActive();
-    if (session != null) {
-      final double fare = _parseCurrency(session.fareLabel);
-      final double distance = _parseDistanceKm(session.distanceLabel);
-      final bool shouldBackfillFare =
-          fare > 0 && summary.totalEarnings <= 0 && summary.tripFare <= 0;
-      if (shouldBackfillFare || (distance > 0 && summary.distanceKm <= 0)) {
-        summary = RideCompletionSummary(
-          totalEarnings: shouldBackfillFare ? fare : summary.totalEarnings,
-          distanceKm: distance > 0 ? distance : summary.distanceKm,
-          tripFare: shouldBackfillFare ? fare : summary.tripFare,
-          tips: shouldBackfillFare ? 0 : summary.tips,
-          discountPercent: shouldBackfillFare ? 0 : summary.discountPercent,
-          discountAmount: shouldBackfillFare ? 0 : summary.discountAmount,
-          paymentLink: summary.paymentLink,
-          driverName: summary.driverName,
-          driverRating: summary.driverRating,
-          avatarAssetPath: summary.avatarAssetPath,
-        );
-        cubit.setSummary(summary);
-      }
+    if (session != null && session.fareLabel.isNotEmpty) {
+      final double acceptedFare = _parseCurrency(session.fareLabel);
+      final double acceptedDistance = _parseDistanceKm(session.distanceLabel);
+      final bool shouldUseAcceptedFare = acceptedFare > 0;
+      final double nextTripFare = shouldUseAcceptedFare
+          ? acceptedFare
+          : summary.tripFare;
+      final double nextTotalEarnings = shouldUseAcceptedFare
+          ? acceptedFare
+          : (summary.totalEarnings > 0 ? summary.totalEarnings : nextTripFare);
+      summary = RideCompletionSummary(
+        totalEarnings: nextTotalEarnings,
+        distanceKm: acceptedDistance > 0 ? acceptedDistance : summary.distanceKm,
+        tripFare: nextTripFare,
+        tips: shouldUseAcceptedFare ? 0 : summary.tips,
+        discountPercent: shouldUseAcceptedFare ? 0 : summary.discountPercent,
+        discountAmount: shouldUseAcceptedFare ? 0 : summary.discountAmount,
+        paymentLink: summary.paymentLink,
+        driverName: summary.driverName,
+        driverRating: summary.driverRating,
+        avatarAssetPath: summary.avatarAssetPath,
+      );
+      cubit.setSummary(summary);
     }
 
     if (!mounted) return;

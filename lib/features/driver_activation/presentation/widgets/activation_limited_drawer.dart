@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/features/about/presentation/pages/about_screen.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/documents/presentation/pages/documents_screen.dart';
@@ -118,6 +121,8 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
       child: GestureDetector(
@@ -151,11 +156,13 @@ class _ProfileHeader extends StatelessWidget {
                       child: ClipOval(
                         child: Container(
                           color: const Color(0xFF3A3A3A),
-                          child: const Icon(
-                            Icons.person,
-                            size: 44,
-                            color: Colors.white54,
-                          ),
+                          child: profilePath != null
+                              ? Image.file(File(profilePath), fit: BoxFit.cover)
+                              : const Icon(
+                                  Icons.person,
+                                  size: 44,
+                                  color: Colors.white54,
+                                ),
                         ),
                       ),
                     ),
@@ -179,9 +186,9 @@ class _ProfileHeader extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Sam Yogi',
-                  style: TextStyle(
+                Text(
+                  displayName,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1A1A1A),

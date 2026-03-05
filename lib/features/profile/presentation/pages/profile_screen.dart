@@ -32,10 +32,7 @@ class ProfileScreen extends StatelessWidget {
 
     return BlocProvider<ProfileEditCubit>(
       create: (context) => ProfileEditCubit(
-        getCachedProfileUseCase: GetCachedProfileUseCase(
-          repository,
-        
-        ),
+        getCachedProfileUseCase: GetCachedProfileUseCase(repository),
       ),
       child: const _ProfileView(),
     );
@@ -143,11 +140,7 @@ class _ProfileBody extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 28),
             child: Column(
               children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    const _ProfileAvatar(),
-                  ],
-                ),
+                Stack(children: <Widget>[const _ProfileAvatar()]),
                 const SizedBox(height: 14),
                 Text(
                   data.fullName,
@@ -744,12 +737,36 @@ class _ProfileAvatar extends StatefulWidget {
 class _ProfileAvatarState extends State<_ProfileAvatar> {
   static const String _photoKey = 'profile.photo.path';
   final ImagePicker _picker = ImagePicker();
-  String? _photoPath;
+  ImageProvider? _avatarProvider;
 
   @override
   void initState() {
     super.initState();
-    _photoPath = TextFieldStore.read(_photoKey);
+    _loadAvatarFromStore();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _precacheAvatar();
+  }
+
+  void _loadAvatarFromStore() {
+    final raw = TextFieldStore.read(_photoKey);
+    _avatarProvider = _buildAvatarProvider(raw);
+  }
+
+  ImageProvider? _buildAvatarProvider(String? path) {
+    if (path == null || path.isEmpty) return null;
+    final file = File(path);
+    if (!file.existsSync()) return null;
+    return ResizeImage(FileImage(file), width: 192, height: 192);
+  }
+
+  void _precacheAvatar() {
+    final provider = _avatarProvider;
+    if (provider == null) return;
+    precacheImage(provider, context);
   }
 
   Future<void> _pickPhoto(ImageSource source) async {
@@ -759,8 +776,9 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
       maxWidth: 1200,
     );
     if (picked == null) return;
-    _photoPath = picked.path;
+    _avatarProvider = _buildAvatarProvider(picked.path);
     await TextFieldStore.write(_photoKey, picked.path);
+    _precacheAvatar();
     if (mounted) {
       setState(() {});
     }
@@ -813,9 +831,6 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    final hasPhoto = _photoPath != null &&
-        _photoPath!.isNotEmpty &&
-        File(_photoPath!).existsSync();
     return Stack(
       children: [
         Container(
@@ -823,24 +838,19 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
           height: 88,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: AuthUiColors.brandGreen,
-              width: 2.5,
-            ),
+            border: Border.all(color: AuthUiColors.brandGreen, width: 2.5),
           ),
           child: ClipOval(
             child: Container(
               color: const Color(0xFF3A3A3A),
-              child: hasPhoto
-                  ? Image.file(
-                      File(_photoPath!),
+              child: _avatarProvider != null
+                  ? Image(
+                      image: _avatarProvider!,
                       fit: BoxFit.cover,
+                      filterQuality: FilterQuality.low,
+                      gaplessPlayback: true,
                     )
-                  : const Icon(
-                      Icons.person,
-                      size: 52,
-                      color: Colors.white54,
-                    ),
+                  : const Icon(Icons.person, size: 52, color: Colors.white54),
             ),
           ),
         ),
@@ -1008,5 +1018,3 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
     );
   }
 }
-
-

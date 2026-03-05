@@ -8,6 +8,8 @@ import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 
 class EarningsCubit extends Cubit<EarningsState> {
+  static const double _minimumRetainedWalletBalance = 300.0;
+
   EarningsCubit({
     required GetEarningsSnapshotUseCase getEarningsSnapshot,
     required GetWalletTransactionsUseCase getWalletTransactions,
@@ -70,11 +72,15 @@ class EarningsCubit extends Cubit<EarningsState> {
     return true;
   }
 
-  Future<bool> withdrawWallet() async {
-    final double? amount = _parseAmount(state.rechargeAmount);
+  Future<bool> withdrawWallet({String? rawAmount}) async {
+    final double? amount = _parseAmount(rawAmount ?? state.rechargeAmount);
     if (amount == null || amount <= 0) return false;
-    if (amount > state.snapshot.walletBalance) return false;
-    final double? next = await _walletApi.withdrawWallet(amount);
+    final double maxWithdrawable = _round2(
+      state.snapshot.walletBalance - _minimumRetainedWalletBalance,
+    );
+    if (maxWithdrawable <= 0) return false;
+    if ((amount - maxWithdrawable) > 0.0001) return false;
+    final double? next = await _walletApi.withdrawWallet(_round2(amount));
     if (next == null) return false;
     await load();
     return true;
@@ -84,5 +90,9 @@ class EarningsCubit extends Cubit<EarningsState> {
     final String cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
     if (cleaned.isEmpty) return null;
     return double.tryParse(cleaned);
+  }
+
+  double _round2(double value) {
+    return double.parse(value.toStringAsFixed(2));
   }
 }

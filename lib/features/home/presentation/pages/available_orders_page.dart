@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class AvailableOrdersPage extends StatefulWidget {
 
 class _AvailableOrdersPageState extends State<AvailableOrdersPage>
     with WidgetsBindingObserver {
+  static const LatLng _defaultDriverPoint = LatLng(13.0624, 80.2098);
   bool _playedInitialAlert = false;
   bool _acceptedOrder = false;
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -73,6 +75,31 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
             RideArrivedPage(pickupPoint: pickupPoint, dropPoint: dropPoint),
       ),
     );
+  }
+
+  String _formatDistanceKm(double distanceKm) {
+    return '${distanceKm.toStringAsFixed(1)} km';
+  }
+
+  String _estimateEtaLabelFromKm(double distanceKm) {
+    final int minutes = ((distanceKm / 24) * 60).ceil().clamp(1, 99);
+    return '~$minutes mins';
+  }
+
+  double _distanceKm(LatLng from, LatLng to) {
+    const double earthRadiusKm = 6371;
+    final double dLat = (to.latitude - from.latitude) * (math.pi / 180);
+    final double dLng = (to.longitude - from.longitude) * (math.pi / 180);
+    final double lat1 = from.latitude * (math.pi / 180);
+    final double lat2 = to.latitude * (math.pi / 180);
+    final double a =
+        (math.sin(dLat / 2) * math.sin(dLat / 2)) +
+        (math.cos(lat1) *
+            math.cos(lat2) *
+            math.sin(dLng / 2) *
+            math.sin(dLng / 2));
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return earthRadiusKm * c;
   }
 
   Future<void> _playIncomingOrderAlert() async {
@@ -258,8 +285,8 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
         listenWhen: (previous, current) =>
             _canReceiveOrders &&
             !_acceptedOrder &&
-            !previous.showSecondOrder &&
-            current.showSecondOrder,
+            previous.activeOrderIndex != current.activeOrderIndex &&
+            current.activeOrderIndex > 0,
         listener: (context, state) {
           if (_acceptedOrder) return;
           // B-09 FIX: explicitly mark Future as unawaited.
@@ -279,6 +306,28 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
           body: BlocBuilder<AvailableOrdersCubit, AvailableOrdersState>(
             builder: (BuildContext context, AvailableOrdersState state) {
               final cubit = _ordersCubit;
+              const LatLng firstPickup = LatLng(13.0696, 80.2154);
+              const LatLng firstDrop = LatLng(13.0744, 80.2241);
+              const LatLng secondPickup = LatLng(13.0721, 80.2186);
+              const LatLng secondDrop = LatLng(13.0662, 80.2103);
+              const LatLng thirdPickup = LatLng(13.0864, 80.2102);
+              const LatLng thirdDrop = LatLng(13.0878, 80.2018);
+
+              final double firstTripKm = _distanceKm(firstPickup, firstDrop);
+              final double firstPickupKm = _distanceKm(
+                _defaultDriverPoint,
+                firstPickup,
+              );
+              final double secondTripKm = _distanceKm(secondPickup, secondDrop);
+              final double secondPickupKm = _distanceKm(
+                _defaultDriverPoint,
+                secondPickup,
+              );
+              final double thirdTripKm = _distanceKm(thirdPickup, thirdDrop);
+              final double thirdPickupKm = _distanceKm(
+                _defaultDriverPoint,
+                thirdPickup,
+              );
               return ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
                 children: <Widget>[
@@ -291,20 +340,23 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                         '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
                     progress: _canReceiveOrders ? cubit.progressForOrder(0) : 0,
                     isEnabled: _canReceiveOrders,
-                    distanceLabel: '2.5 km',
+                    distanceLabel: _formatDistanceKm(firstTripKm),
+                    etaLabel: _estimateEtaLabelFromKm(firstPickupKm),
+                    pickupDistanceLabel: _formatDistanceKm(firstPickupKm),
+                    dropDistanceLabel: _formatDistanceKm(firstTripKm),
                     onDecline: _canReceiveOrders
                         ? () {
                             unawaited(_handleDeclineTap());
                           }
                         : null,
                     onAccept: () async => _goToRideScreen(
-                      pickupPoint: const LatLng(13.0696, 80.2154),
-                      dropPoint: const LatLng(13.0744, 80.2241),
+                      pickupPoint: firstPickup,
+                      dropPoint: firstDrop,
                       pickupAddress: '42, MMDA Colony, Arumbakkam, ch-106',
                       dropAddress:
                           '13, vinobaji St, Kamarajar Nagar, NGO ColonyCholaimedu, Ch-94',
                       fareLabel: '\u20B990',
-                      distanceLabel: '2.5 km',
+                      distanceLabel: _formatDistanceKm(firstTripKm),
                     ),
                   ),
                   if (state.showSecondOrder) ...<Widget>[
@@ -319,21 +371,53 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                           '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
                       progress: _canReceiveOrders ? cubit.progressForOrder(1) : 0,
                       isEnabled: _canReceiveOrders,
-                      distanceLabel: '3.2 km',
+                      distanceLabel: _formatDistanceKm(secondTripKm),
+                      etaLabel: _estimateEtaLabelFromKm(secondPickupKm),
+                      pickupDistanceLabel: _formatDistanceKm(secondPickupKm),
+                      dropDistanceLabel: _formatDistanceKm(secondTripKm),
                       onDecline: _canReceiveOrders
                           ? () {
                               unawaited(_handleDeclineTap());
                             }
                           : null,
                       onAccept: () async => _goToRideScreen(
-                        pickupPoint: const LatLng(13.0721, 80.2186),
-                        dropPoint: const LatLng(13.0662, 80.2103),
+                        pickupPoint: secondPickup,
+                        dropPoint: secondDrop,
                         // B-10 FIX: Corrected pickup in stored record.
                         pickupAddress: '42, MMDA Colony, Arumbakkam, ch-106',
                         dropAddress:
                             '13, vinobaji St, Kamarajar Nagar, NGO ColonyCholaimedu, Ch-94',
                         fareLabel: '\u20B9100',
-                        distanceLabel: '2.5 km',
+                        distanceLabel: _formatDistanceKm(secondTripKm),
+                      ),
+                    ),
+                  ],
+                  if (state.showThirdOrder) ...<Widget>[
+                    const SizedBox(height: 14),
+                    _OrderCard(
+                      fare: '\u20B9110',
+                      pickupTitle: 'Anna Nagar Tower',
+                      pickupAddress: 'Anna Nagar Tower, Chennai',
+                      dropTitle: 'Thirumangalam',
+                      dropAddress: 'Thirumangalam, Chennai',
+                      progress: _canReceiveOrders ? cubit.progressForOrder(2) : 0,
+                      isEnabled: _canReceiveOrders,
+                      distanceLabel: _formatDistanceKm(thirdTripKm),
+                      etaLabel: _estimateEtaLabelFromKm(thirdPickupKm),
+                      pickupDistanceLabel: _formatDistanceKm(thirdPickupKm),
+                      dropDistanceLabel: _formatDistanceKm(thirdTripKm),
+                      onDecline: _canReceiveOrders
+                          ? () {
+                              unawaited(_handleDeclineTap());
+                            }
+                          : null,
+                      onAccept: () async => _goToRideScreen(
+                        pickupPoint: thirdPickup,
+                        dropPoint: thirdDrop,
+                        pickupAddress: 'Anna Nagar Tower, Chennai',
+                        dropAddress: 'Thirumangalam, Chennai',
+                        fareLabel: '\u20B9110',
+                        distanceLabel: _formatDistanceKm(thirdTripKm),
                       ),
                     ),
                   ],
@@ -421,6 +505,9 @@ class _OrderCard extends StatelessWidget {
     required this.isEnabled,
     // B-11 FIX: distanceLabel is now a required parameter used in the widget.
     required this.distanceLabel,
+    required this.etaLabel,
+    required this.pickupDistanceLabel,
+    required this.dropDistanceLabel,
     // B-06 FIX: onDecline is wired so the button actually does something.
     this.onDecline,
   });
@@ -434,6 +521,9 @@ class _OrderCard extends StatelessWidget {
   final VoidCallback? onAccept;
   final bool isEnabled;
   final String distanceLabel;
+  final String etaLabel;
+  final String pickupDistanceLabel;
+  final String dropDistanceLabel;
   final VoidCallback? onDecline;
 
   @override
@@ -511,8 +601,8 @@ class _OrderCard extends StatelessWidget {
                   color: AppColors.neutral666,
                 ),
                 const SizedBox(width: 4),
-                const Text(
-                  '~12 mins',
+                Text(
+                  etaLabel,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -525,14 +615,14 @@ class _OrderCard extends StatelessWidget {
             _LocationPoint(
               title: pickupTitle,
               subtitle: pickupAddress,
-              distance: '0.8 km',
+              distance: pickupDistanceLabel,
               showConnector: true,
             ),
             const SizedBox(height: 8),
             _LocationPoint(
               title: dropTitle,
               subtitle: dropAddress,
-              distance: '2.8 km',
+              distance: dropDistanceLabel,
               showConnector: false,
             ),
             const SizedBox(height: 14),
