@@ -30,9 +30,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   void _restoreDraft() {
     final updatedSteps = state.steps.map((step) {
       if (step.step == DocumentStep.profilePhoto) {
-        final profilePath =
-            DocumentProgressStore.profileImagePath() ??
-            TextFieldStore.read(_profilePhotoStorageKey);
+        final profilePath = DocumentProgressStore.profileImagePath();
         if (profilePath != null && profilePath.trim().isNotEmpty) {
           DocumentProgressStore.setProfileImagePath(profilePath);
         }
