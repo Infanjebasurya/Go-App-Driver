@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 
 import 'package:goapp/features/about/presentation/pages/about_screen.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
@@ -25,7 +28,7 @@ class ActivationLimitedDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProfileHeader(context: context),
+            _ProfileHeader(),
             const SizedBox(height: 16),
             const Divider(height: 1, color: Color(0xFFF0F0F0)),
             const SizedBox(height: 16),
@@ -113,11 +116,13 @@ class ActivationLimitedDrawer extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  final BuildContext context;
-  const _ProfileHeader({required this.context});
+  const _ProfileHeader();
 
   @override
   Widget build(BuildContext context) {
+    final displayName = ProfileDisplayStore.displayName();
+    final profilePath = ProfileDisplayStore.photoPath();
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
       child: GestureDetector(
@@ -151,11 +156,13 @@ class _ProfileHeader extends StatelessWidget {
                       child: ClipOval(
                         child: Container(
                           color: const Color(0xFF3A3A3A),
-                          child: const Icon(
-                            Icons.person,
-                            size: 44,
-                            color: Colors.white54,
-                          ),
+                          child: profilePath != null
+                              ? Image.file(File(profilePath), fit: BoxFit.cover)
+                              : const Icon(
+                                  Icons.person,
+                                  size: 44,
+                                  color: Colors.white54,
+                                ),
                         ),
                       ),
                     ),
@@ -179,8 +186,8 @@ class _ProfileHeader extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Sam Yogi',
+                Text(
+                  displayName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

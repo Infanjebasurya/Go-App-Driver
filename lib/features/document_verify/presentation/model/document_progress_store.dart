@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:goapp/core/storage/text_field_store.dart';
+
 import 'document_model.dart';
 
 class DocumentProgressStore {
   DocumentProgressStore._();
+  static const String _storageKey = 'document_progress_store_v1';
 
   static final Map<DocumentType, bool> _completed = {
     DocumentType.drivingLicense: false,
@@ -44,6 +50,93 @@ class DocumentProgressStore {
   };
 
   static String? _profileImagePath;
+  static bool _initialized = false;
+
+  static Future<void> init() async {
+    if (_initialized) return;
+    final raw = TextFieldStore.read(_storageKey);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map<String, dynamic>) {
+          _applyDecodedState(decoded);
+        }
+      } catch (_) {}
+    }
+    _initialized = true;
+  }
+
+  static void _applyDecodedState(Map<String, dynamic> json) {
+    final completedRaw = json['completed'];
+    if (completedRaw is Map<String, dynamic>) {
+      for (final type in DocumentType.values) {
+        final value = completedRaw[type.name];
+        if (value is bool) _completed[type] = value;
+      }
+    }
+
+    final frontRaw = json['frontImagePath'];
+    if (frontRaw is Map<String, dynamic>) {
+      for (final type in DocumentType.values) {
+        final value = frontRaw[type.name];
+        _frontImagePath[type] = value is String && value.isNotEmpty
+            ? value
+            : null;
+      }
+    }
+
+    final backRaw = json['backImagePath'];
+    if (backRaw is Map<String, dynamic>) {
+      for (final type in DocumentType.values) {
+        final value = backRaw[type.name];
+        _backImagePath[type] = value is String && value.isNotEmpty
+            ? value
+            : null;
+      }
+    }
+
+    final numberRaw = json['documentNumber'];
+    if (numberRaw is Map<String, dynamic>) {
+      for (final type in DocumentType.values) {
+        final value = numberRaw[type.name];
+        _documentNumber[type] = value is String && value.isNotEmpty
+            ? value
+            : null;
+      }
+    }
+
+    final bankDraftRaw = json['bankDraft'];
+    if (bankDraftRaw is Map<String, dynamic>) {
+      for (final key in _bankDraft.keys) {
+        final value = bankDraftRaw[key];
+        _bankDraft[key] = value is String ? value : '';
+      }
+    }
+
+    final profilePathRaw = json['profileImagePath'];
+    _profileImagePath = profilePathRaw is String && profilePathRaw.isNotEmpty
+        ? profilePathRaw
+        : null;
+  }
+
+  static Map<String, dynamic> _toJson() {
+    Map<String, dynamic> mapByType<T>(Map<DocumentType, T> source) {
+      return source.map((key, value) => MapEntry(key.name, value));
+    }
+
+    return <String, dynamic>{
+      'completed': mapByType(_completed),
+      'frontImagePath': mapByType(_frontImagePath),
+      'backImagePath': mapByType(_backImagePath),
+      'documentNumber': mapByType(_documentNumber),
+      'bankDraft': Map<String, String>.from(_bankDraft),
+      'profileImagePath': _profileImagePath,
+    };
+  }
+
+  static void _persist() {
+    unawaited(TextFieldStore.write(_storageKey, jsonEncode(_toJson())));
+  }
 
   static bool isCompleted(DocumentType type) {
     return _completed[type] ?? false;
@@ -51,6 +144,7 @@ class DocumentProgressStore {
 
   static void setCompleted(DocumentType type, bool completed) {
     _completed[type] = completed;
+    _persist();
   }
 
   static String? frontImagePath(DocumentType type) {
@@ -63,10 +157,12 @@ class DocumentProgressStore {
 
   static void setFrontImagePath(DocumentType type, String? path) {
     _frontImagePath[type] = path;
+    _persist();
   }
 
   static void setBackImagePath(DocumentType type, String? path) {
     _backImagePath[type] = path;
+    _persist();
   }
 
   static String? documentNumber(DocumentType type) {
@@ -75,6 +171,7 @@ class DocumentProgressStore {
 
   static void setDocumentNumber(DocumentType type, String? number) {
     _documentNumber[type] = number;
+    _persist();
   }
 
   static String bankDraftValue(String field) {
@@ -83,10 +180,12 @@ class DocumentProgressStore {
 
   static void setBankDraftValue(String field, String value) {
     _bankDraft[field] = value;
+    _persist();
   }
 
   static void clearBankDraft() {
     _bankDraft.updateAll((_, _) => '');
+    _persist();
   }
 
   static String? profileImagePath() {
@@ -99,6 +198,7 @@ class DocumentProgressStore {
 
   static void setProfileImagePath(String? path) {
     _profileImagePath = path;
+    _persist();
   }
 
   static void reset() {
@@ -108,5 +208,6 @@ class DocumentProgressStore {
     _documentNumber.updateAll((_, _) => null);
     clearBankDraft();
     _profileImagePath = null;
+    _persist();
   }
 }

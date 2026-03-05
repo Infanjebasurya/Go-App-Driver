@@ -90,7 +90,7 @@ class DocumentDetailScreen extends StatelessWidget {
         );
       case 'bank_account':
       case 'add bank account':
-        return const _BankAccountDetail();
+        return _BankAccountDetail(frontImagePath: document.frontImagePath);
       default:
         return _DrivingLicenseDetail(
           frontImagePath: document.frontImagePath,
@@ -466,7 +466,9 @@ class _PanCardDetailState extends State<_PanCardDetail> {
 }
 
 class _BankAccountDetail extends StatelessWidget {
-  const _BankAccountDetail();
+  final String? frontImagePath;
+
+  const _BankAccountDetail({this.frontImagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -479,6 +481,13 @@ class _BankAccountDetail extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        _CardImageBox(
+          label: 'BANK DOCUMENT',
+          color: const Color(0xFF8A9BAE),
+          fullWidth: true,
+          imagePath: frontImagePath,
+        ),
+        const SizedBox(height: 16),
         _LinkedBankSection(
           children: [
             const SizedBox(height: 12),

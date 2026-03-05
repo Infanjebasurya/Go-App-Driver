@@ -4,6 +4,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/about/presentation/cubit/about_cubit.dart';
 import 'package:goapp/features/about/presentation/cubit/about_state.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -47,6 +48,7 @@ class _AboutView extends StatelessWidget {
 
 class _AboutMenuList extends StatelessWidget {
   final AboutLoaded state;
+  static final Uri _termsUri = Uri.parse('https://sybrox.com/about');
 
   const _AboutMenuList({required this.state});
 
@@ -61,7 +63,7 @@ class _AboutMenuList extends StatelessWidget {
       _MenuItem(
         icon: Icons.gavel_outlined,
         label: 'Terms of Service',
-        onTap: () => _push(context, AboutSection.termsOfService, state),
+        onTap: () => _openTermsOfService(context),
       ),
       _MenuItem(
         icon: Icons.shield_outlined,
@@ -90,6 +92,17 @@ class _AboutMenuList extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openTermsOfService(BuildContext context) async {
+    final launched = await launchUrl(
+      _termsUri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!context.mounted || launched) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Unable to open link')));
   }
 }
 
@@ -331,4 +344,3 @@ class _SkeletonListState extends State<_SkeletonList>
     );
   }
 }
-

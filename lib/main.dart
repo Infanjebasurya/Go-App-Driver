@@ -7,6 +7,7 @@ import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/injection.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
@@ -22,6 +23,7 @@ void main() async {
   await LocalNotificationService.initialize();
   await TripBackgroundService.initialize();
   await TextFieldStore.init();
+  await DocumentProgressStore.init();
   await UserCacheStore.init();
   await initializeDependencies();
 

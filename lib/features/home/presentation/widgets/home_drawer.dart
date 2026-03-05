@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
-import 'package:goapp/core/storage/user_cache_store.dart';
 
 import '../../../about/presentation/pages/about_screen.dart';
 import '../../../auth/presentation/theme/auth_ui_tokens.dart';
@@ -182,7 +182,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    _photoPath = TextFieldStore.read(_photoKey);
+    _photoPath = ProfileDisplayStore.photoPath();
   }
 
   Future<void> _pickPhoto() async {
@@ -197,8 +197,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final name = (UserCacheStore.read()?.fullName ?? 'Sam Yogi').trim();
-    final displayName = name.isEmpty ? 'Sam Yogi' : name;
+    final displayName = ProfileDisplayStore.displayName();
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
       child: GestureDetector(
