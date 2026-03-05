@@ -6,6 +6,7 @@ import 'package:goapp/features/documents/presentation/model/document_upload_mode
 
 class DocumentCaptureCard extends StatelessWidget {
   final String label;
+  final Color? labelColor;
   final bool captured;
   final String? filePath;
   final DocumentUploadType? uploadType;
@@ -15,6 +16,7 @@ class DocumentCaptureCard extends StatelessWidget {
   const DocumentCaptureCard({
     super.key,
     required this.label,
+    this.labelColor,
     required this.captured,
     this.filePath,
     this.uploadType,
@@ -77,9 +79,8 @@ class DocumentCaptureCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF6B7C93),
                       letterSpacing: 0.1,
-                    ),
+                    ).copyWith(color: labelColor ?? const Color(0xFF6B7C93)),
                   ),
                 ],
                 if (isDocument && fileName != null) ...[

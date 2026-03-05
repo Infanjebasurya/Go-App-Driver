@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
-import 'package:goapp/core/storage/user_cache_store.dart';
 
 import '../../../about/presentation/pages/about_screen.dart';
 import '../../../auth/presentation/theme/auth_ui_tokens.dart';
@@ -229,8 +229,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final name = (UserCacheStore.read()?.fullName ?? 'Sam Yogi').trim();
-    final displayName = name.isEmpty ? 'Sam Yogi' : name;
+    final displayName = ProfileDisplayStore.displayName();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: GestureDetector(

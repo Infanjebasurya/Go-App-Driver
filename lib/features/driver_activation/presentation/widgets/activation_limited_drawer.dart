@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:goapp/core/storage/profile_display_store.dart';
+
 import 'package:goapp/features/about/presentation/pages/about_screen.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/documents/presentation/pages/documents_screen.dart';
@@ -28,7 +28,7 @@ class ActivationLimitedDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProfileHeader(context: context),
+            _ProfileHeader(),
             const SizedBox(height: 16),
             const Divider(height: 1, color: Color(0xFFF0F0F0)),
             const SizedBox(height: 16),
@@ -116,13 +116,13 @@ class ActivationLimitedDrawer extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  final BuildContext context;
-  const _ProfileHeader({required this.context});
+  const _ProfileHeader();
 
   @override
   Widget build(BuildContext context) {
     final displayName = ProfileDisplayStore.displayName();
     final profilePath = ProfileDisplayStore.photoPath();
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 20, 16, 16),
       child: GestureDetector(
@@ -188,7 +188,7 @@ class _ProfileHeader extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   displayName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1A1A1A),

@@ -22,6 +22,7 @@ void main() async {
   await LocalNotificationService.initialize();
   await TripBackgroundService.initialize();
   await TextFieldStore.init();
+  await DocumentProgressStore.init();
   await UserCacheStore.init();
   await DocumentProgressStore.init();
   await initializeDependencies();

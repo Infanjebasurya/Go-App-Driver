@@ -8,10 +8,20 @@ class ProfileDisplayStore {
 
   static const String _photoKey = 'profile.photo.path';
   static const String _fallbackName = 'Sam Yogi';
+  static const String _profileSetupNameKey = 'profile_setup.name';
+  static const String _profileEditNameKey = 'profile_edit.full_name';
 
   static String displayName() {
-    final raw = (UserCacheStore.read()?.fullName ?? '').trim();
-    return raw.isEmpty ? _fallbackName : raw;
+    final cached = (UserCacheStore.read()?.fullName ?? '').trim();
+    if (cached.isNotEmpty) return cached;
+
+    final edited = (TextFieldStore.read(_profileEditNameKey) ?? '').trim();
+    if (edited.isNotEmpty) return edited;
+
+    final setup = (TextFieldStore.read(_profileSetupNameKey) ?? '').trim();
+    if (setup.isNotEmpty) return setup;
+
+    return _fallbackName;
   }
 
   static String? photoPath() {
