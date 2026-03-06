@@ -33,7 +33,7 @@ class TicketsScreen extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         itemCount: tickets.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, index) => _TicketCard(ticket: tickets[index]),
       ),
       bottomNavigationBar: const HelpLiveChatBar(),

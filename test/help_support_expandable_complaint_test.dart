@@ -7,12 +7,12 @@ import 'package:goapp/features/help_support/presentation/pages/tickets_screen.da
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  Widget _buildApp() => const MaterialApp(home: HelpSupportScreen());
+  Widget buildApp() => const MaterialApp(home: HelpSupportScreen());
 
   testWidgets('expands Make Complaint options and navigates to tickets', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(_buildApp());
+    await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Make Complaint'));
@@ -31,7 +31,7 @@ void main() {
   testWidgets('Create New Complaint opens complaint page', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(_buildApp());
+    await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Make Complaint'));
