@@ -85,15 +85,23 @@ class ComplaintFormState extends ComplaintState {
 }
 
 class ComplaintSubmitted extends ComplaintState {
-  final String ticketId;
+  final SupportTicket ticket;
+  final List<SupportTicket> recentTickets;
 
-  const ComplaintSubmitted({required this.ticketId});
+  const ComplaintSubmitted({
+    required this.ticket,
+    required this.recentTickets,
+  });
 
   @override
-  List<Object?> get props => [ticketId];
+  List<Object?> get props => [ticket, recentTickets];
 }
 
 class ComplaintCubit extends Cubit<ComplaintState> {
+  static final List<SupportTicket> _recentTickets = <SupportTicket>[];
+  static List<SupportTicket> get recentTickets =>
+      List<SupportTicket>.unmodifiable(_recentTickets);
+
   ComplaintCubit() : super(const ComplaintFormState());
 
   void openCategoryPicker() {
@@ -168,10 +176,43 @@ class ComplaintCubit extends Cubit<ComplaintState> {
 
     emit(formState.copyWith(isSubmitting: true));
     await Future<void>.delayed(const Duration(milliseconds: 1200));
-    emit(const ComplaintSubmitted(ticketId: '#GP-BB421'));
+    final categoryName = _categoryName(formState.selectedCategoryId);
+    final ticket = SupportTicket(
+      id: _nextTicketId(),
+      title: categoryName,
+      description: formState.description.trim(),
+      status: TicketStatus.open,
+      createdAt: DateTime.now(),
+    );
+    _recentTickets
+      ..removeWhere((t) => t.id == ticket.id)
+      ..insert(0, ticket);
+    emit(
+      ComplaintSubmitted(
+        ticket: ticket,
+        recentTickets: List<SupportTicket>.unmodifiable(_recentTickets),
+      ),
+    );
   }
 
   void reset() {
     emit(const ComplaintFormState());
+  }
+
+  String _categoryName(String? selectedCategoryId) {
+    if (selectedCategoryId == null) {
+      return 'General Support';
+    }
+    final match = kComplaintCategories.where((c) => c.id == selectedCategoryId);
+    if (match.isNotEmpty) {
+      return match.first.name;
+    }
+    return 'General Support';
+  }
+
+  String _nextTicketId() {
+    final stamp = DateTime.now().microsecondsSinceEpoch % 100000;
+    final serial = stamp.toString().padLeft(5, '0');
+    return 'GP-$serial';
   }
 }

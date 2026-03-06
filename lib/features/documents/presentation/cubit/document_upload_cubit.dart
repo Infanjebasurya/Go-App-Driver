@@ -742,7 +742,14 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   bool _validateBankStep() {
     final b = state.bankData;
-    BankAccountData updated = b;
+    BankAccountData updated = b.copyWith(
+      clearNameError: true,
+      clearBankNameError: true,
+      clearAccountNumberError: true,
+      clearConfirmError: true,
+      clearIfscError: true,
+      clearBankDocumentError: true,
+    );
     bool valid = true;
 
     if (b.accountHolderName.trim().isNotEmpty &&
@@ -809,7 +816,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       valid = false;
     }
 
-    if (!valid) {
+    if (updated != b) {
       emit(state.copyWith(bankData: updated));
     }
     return valid;

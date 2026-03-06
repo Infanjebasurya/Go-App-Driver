@@ -4,6 +4,8 @@ import 'package:sms_autofill/sms_autofill.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/core/storage/user_cache_model.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
+import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
+import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -99,18 +101,32 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
         totalYears: existing?.totalYears ?? 0.0,
       ),
     );
+    final hasCompletedProfile =
+        (existing?.fullName.trim().isNotEmpty ?? false) &&
+        (existing?.gender.trim().isNotEmpty ?? false);
+
     await RegistrationProgressStore.markOtpVerified();
-    await RegistrationProgressStore.setStep(
-      RegistrationStep.profileSetup,
-      clearCity: true,
-      clearVehicle: true,
-      clearDocumentStep: true,
-    );
+    if (hasCompletedProfile) {
+      await RegistrationProgressStore.setStep(RegistrationStep.home);
+    } else {
+      await RegistrationProgressStore.setStep(
+        RegistrationStep.profileSetup,
+        clearCity: true,
+        clearVehicle: true,
+        clearDocumentStep: true,
+      );
+    }
     if (!mounted) return;
     final navigator = Navigator.of(context, rootNavigator: true);
-    navigator.pushReplacement(
-      MaterialPageRoute(builder: (_) => const ProfileSetupPage()),
-    );
+    navigator.pushReplacement(MaterialPageRoute(builder: (_) {
+      if (hasCompletedProfile) {
+        return BlocProvider<DriverCubit>(
+          create: (_) => DriverCubit(),
+          child: const HomeScreen(),
+        );
+      }
+      return const ProfileSetupPage();
+    }));
     _otpCubit.consumeActions();
   }
 

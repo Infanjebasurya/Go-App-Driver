@@ -149,4 +149,15 @@ class RegistrationProgressStore {
       ),
     );
   }
+
+  static Future<void> resetForSignedOut({
+    bool showLoginOnNextLaunch = true,
+  }) async {
+    final current = await load();
+    await save(
+      RegistrationProgress.empty().copyWith(
+        onboardingSeen: showLoginOnNextLaunch ? true : current.onboardingSeen,
+      ),
+    );
+  }
 }

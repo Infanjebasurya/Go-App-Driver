@@ -8,6 +8,7 @@ import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart'
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.dart';
 import 'package:goapp/features/help_support/domain/entities/help_entities.dart';
+import 'package:goapp/features/help_support/presentation/pages/tickets_screen.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
 
@@ -24,7 +25,10 @@ class ComplaintScreen extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is ComplaintSubmitted) {
-          return _SuccessScreen(ticketId: state.ticketId);
+          return _SuccessScreen(
+            ticket: state.ticket,
+            recentTickets: state.recentTickets,
+          );
         }
         return _FormScreen(
           state: state is ComplaintFormState
@@ -607,9 +611,13 @@ class _CategoryTile extends StatelessWidget {
 }
 
 class _SuccessScreen extends StatelessWidget {
-  final String ticketId;
+  final SupportTicket ticket;
+  final List<SupportTicket> recentTickets;
 
-  const _SuccessScreen({required this.ticketId});
+  const _SuccessScreen({
+    required this.ticket,
+    required this.recentTickets,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -670,7 +678,7 @@ class _SuccessScreen extends StatelessWidget {
                   children: [
                     const TextSpan(text: 'Your ticket '),
                     TextSpan(
-                      text: ticketId,
+                      text: '#${ticket.id}',
                       style: const TextStyle(
                         color: AppColors.emerald,
                         fontWeight: FontWeight.w700,
@@ -689,36 +697,66 @@ class _SuccessScreen extends StatelessWidget {
       ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(24, 12, 24, 20),
-        child: ShadowButton(
-          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute<void>(
-              builder: (_) => BlocProvider<DriverCubit>(
-                create: (_) => DriverCubit(),
-                child: const HomeScreen(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShadowButton(
+              onPressed: () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute<void>(
+                  builder: (_) => TicketsScreen(tickets: recentTickets),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.emerald,
+                foregroundColor: AppColors.white,
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              child: const Text(
+                'View Recent Support Tickets',
+                style: TextStyle(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.1,
+                ),
               ),
             ),
-            (route) => false,
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.emerald,
-            foregroundColor: AppColors.white,
-            minimumSize: const Size.fromHeight(52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+            const SizedBox(height: 10),
+            ShadowButton(
+              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute<void>(
+                  builder: (_) => BlocProvider<DriverCubit>(
+                    create: (_) => DriverCubit(),
+                    child: const HomeScreen(),
+                  ),
+                ),
+                (route) => false,
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.white,
+                foregroundColor: AppColors.textBody,
+                side: const BorderSide(color: AppColors.borderSoft),
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text(
+                'Return to Dashboard',
+                style: TextStyle(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.1,
+                ),
+              ),
             ),
-            textStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          child: const Text(
-            'Return to Dashboard',
-            style: TextStyle(
-              fontSize: 15.5,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -0.1,
-            ),
-          ),
+          ],
         ),
       ),
     );
