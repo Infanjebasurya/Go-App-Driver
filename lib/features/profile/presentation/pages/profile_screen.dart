@@ -105,8 +105,12 @@ class _ProfileView extends StatelessWidget {
   }
 
   Future<void> _clearSessionCache({required bool isDeleteAccount}) async {
-    await UserCacheStore.clear();
-    await RegistrationProgressStore.clear();
+    if (isDeleteAccount) {
+      await UserCacheStore.clear();
+    }
+    await RegistrationProgressStore.resetForSignedOut(
+      showLoginOnNextLaunch: true,
+    );
     DocumentProgressStore.reset();
     if (isDeleteAccount) {
       // Account deletion should wipe all local drafts so next login starts

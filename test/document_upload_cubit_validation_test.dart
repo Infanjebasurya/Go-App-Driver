@@ -169,6 +169,32 @@ void main() {
       expect(cubit.state.isCurrentStepBank, isTrue);
     });
 
+    test(
+      'bank mismatch error clears after correcting account number and re-submitting',
+      () async {
+        final cubit = DocumentUploadCubit(initialStepIndex: 5);
+        addTearDown(cubit.close);
+
+        cubit.updateAccountHolderName('JOHN DOE');
+        cubit.updateBankName('HDFC BANK');
+        cubit.updateAccountNumber('1234567890');
+        cubit.updateConfirmAccountNumber('0987654321');
+        cubit.updateIfscCode('HDFC0000001');
+        await cubit.captureBankDocument(source: ImageSource.gallery);
+
+        await cubit.saveAndNext();
+        expect(
+          cubit.state.bankData.confirmAccountNumberError,
+          'Account numbers do not match',
+        );
+
+        cubit.updateAccountNumber('0987654321');
+        await cubit.saveAndNext();
+        expect(cubit.state.bankData.confirmAccountNumberError, isNull);
+        expect(cubit.state.isAllDone, isTrue);
+      },
+    );
+
     test('normalizes lower-case formatted input for license and RC', () async {
       final licenseCubit = DocumentUploadCubit(initialStepIndex: 1);
       addTearDown(licenseCubit.close);

@@ -32,7 +32,6 @@ class AppEntryGate extends StatefulWidget {
 
 class _AppEntryGateState extends State<AppEntryGate> {
   late final Future<_EntryBootstrap> _bootstrapFuture = _loadBootstrap();
-  bool _didMarkOnboardingSeen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +53,6 @@ class _AppEntryGateState extends State<AppEntryGate> {
         if (data.onboardingSeen) {
           return const LoginFormPage();
         }
-        _markOnboardingSeenOnce();
         return _buildGetStarted(context);
       },
     );
@@ -121,23 +119,17 @@ class _AppEntryGateState extends State<AppEntryGate> {
     );
   }
 
-  void _markOnboardingSeenOnce() {
-    if (_didMarkOnboardingSeen) return;
-    _didMarkOnboardingSeen = true;
-    RegistrationProgressStore.markOnboardingSeen();
-  }
-
   Future<_EntryBootstrap> _loadBootstrap() async {
     final user = await UserCacheStore.load();
     final progress = await RegistrationProgressStore.load();
-    if (user == null && !progress.onboardingSeen) {
+    if ((user == null || !progress.otpVerified) && !progress.onboardingSeen) {
       await RideHistoryStore.clearAll();
       DocumentProgressStore.reset();
       return const _EntryBootstrap(
         onboardingSeen: false,
       );
     }
-    if (user == null) {
+    if (user == null || !progress.otpVerified) {
       await RideHistoryStore.clearAll();
       DocumentProgressStore.reset();
       return const _EntryBootstrap(
