@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
@@ -36,6 +37,8 @@ class _RideCompletedView extends StatefulWidget {
 }
 
 class _RideCompletedViewState extends State<_RideCompletedView> {
+  static const double _gstRate = 0.05;
+
   @override
   void initState() {
     super.initState();
@@ -150,6 +153,15 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Builder(
+                      builder: (context) {
+                        final double subTotal = _collectableSubTotal(
+                          state.summary,
+                        );
+                        final double gstAmount = _gstAmount(subTotal);
+                        final double totalCollectable = subTotal;
+                        return Column(
+                          children: [
                     const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -225,6 +237,16 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                             'Discount ${state.summary.discountPercent.toStringAsFixed(0)}%',
                             '-\u20B9${state.summary.discountAmount.toStringAsFixed(2)}',
                             isDiscount: true,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFareRow(
+                            'GST (5%)',
+                            '\u20B9${gstAmount.toStringAsFixed(2)} (included)',
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFareRow(
+                            'Total Collectable',
+                            '\u20B9${totalCollectable.toStringAsFixed(2)}',
                           ),
                         ],
                       ),
@@ -326,7 +348,12 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          unawaited(_onCollectCashTap());
+                          unawaited(
+                            _onCollectPaymentTap(
+                              viaQr: false,
+                              summary: state.summary,
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
@@ -357,7 +384,51 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          unawaited(
+                            _onCollectPaymentTap(
+                              viaQr: true,
+                              summary: state.summary,
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.emerald),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Collect via QR',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.emerald,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(
+                              Icons.qr_code_scanner,
+                              color: AppColors.emerald,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 20),
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 ),
               );
@@ -368,15 +439,50 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     );
   }
 
-  Future<void> _onCollectCashTap() async {
-    // Ride earnings are tracked in earnings history, not wallet balance.
-    await TripSessionStore.markPaymentReceived();
+  Future<void> _onCollectPaymentTap({
+    required bool viaQr,
+    required RideCompletionSummary summary,
+  }) async {
+    final double subTotal = _collectableSubTotal(summary);
+    final double gstAmount = _gstAmount(subTotal);
+    final double totalCollectable = subTotal;
+
+    if (viaQr) {
+      await DriverWalletStore.addAmount(totalCollectable);
+      await TripSessionStore.markPaymentReceived(method: 'online');
+    } else {
+      final double current = await DriverWalletStore.loadBalance();
+      final double next = _round2(current - gstAmount);
+      final double bounded =
+          next < DriverWalletStore.minAllowedNegativeBalance
+          ? DriverWalletStore.minAllowedNegativeBalance
+          : next;
+      await DriverWalletStore.saveBalance(bounded);
+      await TripSessionStore.markPaymentReceived(method: 'cash');
+    }
+
     await HomeTripResumeStore.setStage(HomeTripResumeStage.rateExperience);
     if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const RateExperienceScreen()),
     );
+  }
+
+  double _collectableSubTotal(RideCompletionSummary summary) {
+    final double value =
+        summary.tripFare + summary.tips - summary.discountAmount;
+    if (value <= 0) return 0;
+    return _round2(value);
+  }
+
+  double _gstAmount(double subTotal) {
+    if (subTotal <= 0) return 0;
+    return _round2((subTotal * _gstRate) / (1 + _gstRate));
+  }
+
+  double _round2(double value) {
+    return double.parse(value.toStringAsFixed(2));
   }
 
   Widget _buildFareRow(String label, String value, {bool isDiscount = false}) {

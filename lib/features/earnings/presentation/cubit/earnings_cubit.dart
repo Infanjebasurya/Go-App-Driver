@@ -8,8 +8,6 @@ import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 
 class EarningsCubit extends Cubit<EarningsState> {
-  static const double _minimumRetainedWalletBalance = 300.0;
-
   EarningsCubit({
     required GetEarningsSnapshotUseCase getEarningsSnapshot,
     required GetWalletTransactionsUseCase getWalletTransactions,
@@ -75,10 +73,7 @@ class EarningsCubit extends Cubit<EarningsState> {
   Future<bool> withdrawWallet({String? rawAmount}) async {
     final double? amount = _parseAmount(rawAmount ?? state.rechargeAmount);
     if (amount == null || amount <= 0) return false;
-    final double maxWithdrawable = _round2(
-      state.snapshot.walletBalance - _minimumRetainedWalletBalance,
-    );
-    if (maxWithdrawable <= 0) return false;
+    final double maxWithdrawable = _round2(state.snapshot.walletBalance);
     if ((amount - maxWithdrawable) > 0.0001) return false;
     final double? next = await _walletApi.withdrawWallet(_round2(amount));
     if (next == null) return false;

@@ -40,8 +40,10 @@ class OfflineContent extends StatelessWidget {
                       _EarningsCard(state: state),
                       const SizedBox(height: 16),
 
-                      _WalletCard(state: state),
-                      const SizedBox(height: 16),
+                      if (state.isWalletAtOrBelowDutyThreshold) ...[
+                        _WalletCard(state: state),
+                        const SizedBox(height: 16),
+                      ],
 
                       _RewardCard(state: state),
                     ],
@@ -336,10 +338,9 @@ class _WalletCard extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                if (state.isWalletBelowDutyThreshold &&
-                    state.showLowWalletWarning)
+                if (state.isWalletAtOrBelowDutyThreshold)
                   Text(
-                    '-Rs ${state.walletShortfall.toStringAsFixed(2)} to Rs ${kMinimumDutyWalletBalance.toInt()} minimum',
+                    'Wallet reached limit (-Rs ${kMinimumDutyWalletBalance.abs().toStringAsFixed(0)}). Add money to clear negative due.',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

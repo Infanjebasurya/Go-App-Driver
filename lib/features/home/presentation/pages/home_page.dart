@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       RegistrationProgressStore.setStep(RegistrationStep.home),
     );
     _locationSyncTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      unawaited(context.read<DriverCubit>().syncWalletBalance());
       unawaited(_syncLocationUiState());
     });
   }

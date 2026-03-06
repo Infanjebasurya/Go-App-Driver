@@ -310,8 +310,8 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
               const LatLng firstDrop = LatLng(13.0744, 80.2241);
               const LatLng secondPickup = LatLng(13.0721, 80.2186);
               const LatLng secondDrop = LatLng(13.0662, 80.2103);
-              const LatLng thirdPickup = LatLng(13.0864, 80.2102);
-              const LatLng thirdDrop = LatLng(13.0878, 80.2018);
+              const LatLng thirdPickup = LatLng(11.1085, 77.3411);
+              const LatLng thirdDrop = LatLng(9.9252, 78.1198);
               const LatLng fourthPickup = LatLng(11.1096, 77.3411);
               const LatLng fourthDrop = LatLng(11.0989, 77.3438);
 
@@ -402,11 +402,11 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                   if (state.showThirdOrder) ...<Widget>[
                     const SizedBox(height: 14),
                     _OrderCard(
-                      fare: '\u20B9110',
-                      pickupTitle: 'Anna Nagar Tower',
-                      pickupAddress: 'Anna Nagar Tower, Chennai',
-                      dropTitle: 'Thirumangalam',
-                      dropAddress: 'Thirumangalam, Chennai',
+                      fare: '\u20B91000',
+                      pickupTitle: 'Tiruppur',
+                      pickupAddress: 'Tiruppur, Tamil Nadu',
+                      dropTitle: 'Madurai',
+                      dropAddress: 'Madurai, Tamil Nadu',
                       progress: _canReceiveOrders ? cubit.progressForOrder(2) : 0,
                       isEnabled: _canReceiveOrders,
                       distanceLabel: _formatDistanceKm(thirdTripKm),
@@ -421,9 +421,9 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                       onAccept: () async => _goToRideScreen(
                         pickupPoint: thirdPickup,
                         dropPoint: thirdDrop,
-                        pickupAddress: 'Anna Nagar Tower, Chennai',
-                        dropAddress: 'Thirumangalam, Chennai',
-                        fareLabel: '\u20B9110',
+                        pickupAddress: 'Tiruppur, Tamil Nadu',
+                        dropAddress: 'Madurai, Tamil Nadu',
+                        fareLabel: '\u20B91000',
                         distanceLabel: _formatDistanceKm(thirdTripKm),
                       ),
                     ),

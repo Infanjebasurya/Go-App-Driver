@@ -26,7 +26,7 @@ class NewDriverActivationScreen extends StatefulWidget {
 
 class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
   static const int _reviewSeconds = 10;
-  static const double _minimumTopUp = 300;
+  static const double _minimumTopUp = 50;
 
   late NewDriverActivationPhase _phase;
   int _secondsLeft = _reviewSeconds;

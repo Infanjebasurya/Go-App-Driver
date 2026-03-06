@@ -4,6 +4,7 @@ class DriverWalletStore {
   DriverWalletStore._();
 
   static const String _walletBalanceKey = 'driver_wallet_balance_v1';
+  static const double minAllowedNegativeBalance = -50.0;
 
   static Future<double> loadBalance() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -12,7 +13,9 @@ class DriverWalletStore {
 
   static Future<void> saveBalance(double amount) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final double normalized = amount < 0 ? 0.0 : amount;
+    final double normalized = amount < minAllowedNegativeBalance
+        ? minAllowedNegativeBalance
+        : amount;
     await prefs.setDouble(_walletBalanceKey, normalized);
   }
 
@@ -27,8 +30,8 @@ class DriverWalletStore {
   static Future<double?> subtractAmount(double amount) async {
     if (amount <= 0) return loadBalance();
     final double current = await loadBalance();
-    if (amount > current) return null;
     final double next = current - amount;
+    if (next < minAllowedNegativeBalance) return null;
     await saveBalance(next);
     return next;
   }

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 
 enum DriverStatus { offline, online }
-const double kMinimumDutyWalletBalance = 300.0;
+const double kMinimumDutyWalletBalance = -50.0;
 
 @immutable
 class DriverState {
@@ -42,7 +42,10 @@ class DriverState {
   bool get isOffline => status == DriverStatus.offline;
   int get remainingRides => targetRides - completedRides;
   double get progressPercentage => completedRides / targetRides;
-  bool get isWalletBelowDutyThreshold => walletBalance < kMinimumDutyWalletBalance;
+  bool get isWalletBelowDutyThreshold =>
+      walletBalance < kMinimumDutyWalletBalance;
+  bool get isWalletAtOrBelowDutyThreshold =>
+      walletBalance <= kMinimumDutyWalletBalance;
   double get walletShortfall => (kMinimumDutyWalletBalance - walletBalance) > 0
       ? (kMinimumDutyWalletBalance - walletBalance)
       : 0;

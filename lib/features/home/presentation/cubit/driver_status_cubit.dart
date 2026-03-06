@@ -77,7 +77,28 @@ class DriverCubit extends Cubit<DriverState> {
     emit(nextState);
     _updateLowWalletWarning(walletBalance);
 
-    if (nextState.isOnline && walletBalance < _minimumDutyWalletBalance) {
+    if (nextState.isOnline && walletBalance <= _minimumDutyWalletBalance) {
+      goOffline();
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            lowWalletBlockEventId: state.lowWalletBlockEventId + 1,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> syncWalletBalance() async {
+    final double walletBalance = await DriverWalletStore.loadBalance();
+    if (isClosed) return;
+    if ((walletBalance - state.walletBalance).abs() <= 0.0001) return;
+
+    final DriverState nextState = state.copyWith(walletBalance: walletBalance);
+    emit(nextState);
+    _updateLowWalletWarning(walletBalance);
+
+    if (nextState.isOnline && walletBalance <= _minimumDutyWalletBalance) {
       goOffline();
       if (!isClosed) {
         emit(
@@ -102,7 +123,7 @@ class DriverCubit extends Cubit<DriverState> {
     await _bootstrapOnlineHoursIfNeeded();
 
     final double walletBalance = await DriverWalletStore.loadBalance();
-    if (walletBalance < _minimumDutyWalletBalance) {
+    if (walletBalance <= _minimumDutyWalletBalance) {
       emit(
         state.copyWith(
           status: DriverStatus.offline,
@@ -178,7 +199,7 @@ class DriverCubit extends Cubit<DriverState> {
     _ordersNavigationTimer?.cancel();
     _ordersNavigationTimer = Timer(const Duration(seconds: 10), () {
       if (!state.isOnline) return;
-      if (state.walletBalance < _minimumDutyWalletBalance) {
+      if (state.walletBalance <= _minimumDutyWalletBalance) {
         goOffline();
         if (!isClosed) {
           emit(
@@ -245,7 +266,7 @@ class DriverCubit extends Cubit<DriverState> {
   }
 
   void _updateLowWalletWarning(double walletBalance) {
-    if (walletBalance >= _minimumDutyWalletBalance) {
+    if (walletBalance > _minimumDutyWalletBalance) {
       _lowWalletWarningTimer?.cancel();
       _lowWalletWarningTimer = null;
       if (state.showLowWalletWarning) {
@@ -261,7 +282,7 @@ class DriverCubit extends Cubit<DriverState> {
     _lowWalletWarningTimer?.cancel();
     _lowWalletWarningTimer = Timer(const Duration(seconds: 10), () {
       if (isClosed) return;
-      if (state.walletBalance < _minimumDutyWalletBalance &&
+      if (state.walletBalance <= _minimumDutyWalletBalance &&
           state.showLowWalletWarning) {
         emit(state.copyWith(showLowWalletWarning: false));
       }

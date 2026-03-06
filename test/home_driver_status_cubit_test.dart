@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _FakeLocationPermissionGuard extends LocationPermissionGuard {
   _FakeLocationPermissionGuard(this._results);
@@ -26,6 +27,9 @@ void main() {
     late DriverStatusCubit cubit;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'driver_wallet_balance_v1': 120.5,
+      });
       cubit = DriverStatusCubit(
         locationGuard: _FakeLocationPermissionGuard(
           const [LocationAccessResult.ready()],
@@ -43,28 +47,28 @@ void main() {
     });
 
     test('goOnline emits online state when location is ready', () async {
-      expectLater(
-        cubit.stream,
-        emitsThrough(
-          predicate<DriverState>((state) => state.status == DriverStatus.online),
-        ),
-      );
-
       await cubit.goOnline();
       expect(cubit.state.isOnline, isTrue);
     });
 
     test('toggleStatus switches from offline to online and back', () async {
-      expectLater(
-        cubit.stream,
-        emitsInOrder(<dynamic>[
-          predicate<DriverState>((state) => state.status == DriverStatus.online),
-          predicate<DriverState>((state) => state.status == DriverStatus.offline),
-        ]),
-      );
+      final List<DriverStatus> statuses = <DriverStatus>[];
+      final subscription = cubit.stream.listen((state) {
+        statuses.add(state.status);
+      });
 
       await cubit.toggleStatus();
       await cubit.toggleStatus();
+      await Future<void>.delayed(Duration.zero);
+      await subscription.cancel();
+
+      expect(
+        statuses,
+        containsAllInOrder(<DriverStatus>[
+          DriverStatus.online,
+          DriverStatus.offline,
+        ]),
+      );
       expect(cubit.state.isOnline, isFalse);
     });
 

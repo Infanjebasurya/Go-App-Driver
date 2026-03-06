@@ -386,9 +386,9 @@ class _BottomWalletCard extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                if (state.isWalletBelowDutyThreshold)
+                if (state.isWalletAtOrBelowDutyThreshold)
                   Text(
-                    '-Rs ${state.walletShortfall.toStringAsFixed(2)} to Rs ${kMinimumDutyWalletBalance.toInt()} minimum',
+                    'Wallet reached limit (-Rs ${kMinimumDutyWalletBalance.abs().toStringAsFixed(0)}). Add money to continue rides.',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

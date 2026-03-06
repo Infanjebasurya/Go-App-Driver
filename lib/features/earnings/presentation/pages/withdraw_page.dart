@@ -244,11 +244,10 @@ class _WithdrawPageState extends State<WithdrawPage> {
       return 'Enter a valid withdrawal amount';
     }
 
-    const double minimumRetainedBalance = 300;
     final double maxWithdrawable =
-        double.parse((state.snapshot.walletBalance - minimumRetainedBalance).toStringAsFixed(2));
+        double.parse(state.snapshot.walletBalance.toStringAsFixed(2));
     if (maxWithdrawable <= 0) {
-      return 'Minimum balance of Rs 300 must be kept in wallet';
+      return 'No withdrawable wallet balance available';
     }
 
     if ((amount - maxWithdrawable) > 0.0001) {
