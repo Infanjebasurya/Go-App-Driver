@@ -84,7 +84,6 @@ class ExploreScreen extends StatelessWidget {
               ),
             ],
           ),
-          bottomNavigationBar: const HelpLiveChatBar(),
         );
       },
     );

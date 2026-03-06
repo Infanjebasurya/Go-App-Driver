@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/features/driver_activation/presentation/widgets/activation_limited_drawer.dart';
+import 'package:goapp/features/earnings/data/datasources/earnings_wallet_mock_api.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/features/notifications/presentation/pages/notifications_screen.dart';
@@ -26,7 +26,7 @@ class NewDriverActivationScreen extends StatefulWidget {
 
 class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
   static const int _reviewSeconds = 10;
-  static const double _minimumTopUp = 300;
+  static const double _minimumTopUp = 50;
 
   late NewDriverActivationPhase _phase;
   int _secondsLeft = _reviewSeconds;
@@ -88,8 +88,8 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
     await Future<void>.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
 
-    await DriverWalletStore.addAmount(_minimumTopUp);
-    await RegistrationProgressStore.clear();
+    await const EarningsWalletMockApi().rechargeWallet(_minimumTopUp);
+    await RegistrationProgressStore.setStep(RegistrationStep.home);
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(

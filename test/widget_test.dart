@@ -13,6 +13,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("You're Offline"), findsOneWidget);
-    expect(find.text('Wallet Balance'), findsOneWidget);
+    expect(find.text('Total Earnings'), findsOneWidget);
   });
 }
