@@ -83,11 +83,31 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
         ? summary.tripFare
         : _parseCurrency(session?.fareLabel);
     final double incentiveAmount = _deriveIncentive(summary, tripAmount);
-    final double netEarning = _deriveNetEarning(
+    final double grossEarning = _deriveNetEarning(
       summary: summary,
       tripAmount: tripAmount,
       incentiveAmount: incentiveAmount,
     );
+    final double gstAmount = _gstAmount(_collectableSubTotal(summary));
+    final double netEarning = _earningExcludingGst(
+      grossEarning: grossEarning,
+      gstAmount: gstAmount,
+    );
+
+    summary = RideCompletionSummary(
+      totalEarnings: netEarning,
+      distanceKm: summary.distanceKm,
+      tripFare: summary.tripFare,
+      tips: summary.tips,
+      discountPercent: summary.discountPercent,
+      discountAmount: summary.discountAmount,
+      paymentLink: summary.paymentLink,
+      driverName: summary.driverName,
+      driverRating: summary.driverRating,
+      avatarAssetPath: summary.avatarAssetPath,
+    );
+    cubit.setSummary(summary);
+
     await RideHistoryStore.updateLatestCompletedDetails(
       fareLabel: '\u20B9 ${netEarning.toStringAsFixed(2)}',
       distanceLabel: '${summary.distanceKm.toStringAsFixed(1)} km',
@@ -105,6 +125,14 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
       paymentLink: summary.paymentLink,
       method: 'cash',
     );
+  }
+
+  double _earningExcludingGst({
+    required double grossEarning,
+    required double gstAmount,
+  }) {
+    final double next = _round2(grossEarning - gstAmount);
+    return next > 0 ? next : 0;
   }
 
   double _parseCurrency(String? raw) {
