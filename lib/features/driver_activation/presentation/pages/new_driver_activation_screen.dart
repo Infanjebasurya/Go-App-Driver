@@ -89,7 +89,10 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
     if (!mounted) return;
 
     await DriverWalletStore.addAmount(_minimumTopUp);
-    await RegistrationProgressStore.clear();
+    // Keep verified registration flags and move launcher resume target to home.
+    // Clearing progress here makes next cold start look signed-out and wipes
+    // persisted document uploads from AppEntryGate.
+    await RegistrationProgressStore.setStep(RegistrationStep.home);
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
