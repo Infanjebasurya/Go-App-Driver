@@ -13,7 +13,6 @@ class EarningsWalletMockApi {
   static const String _walletOpsKey = 'earnings_wallet_ops_v1';
 
   Future<EarningsSnapshot> fetchSnapshot() async {
-    await Future<void>.delayed(const Duration(milliseconds: 120));
     final List<RideHistoryTrip> history = await RideHistoryStore.loadTrips();
 
     final DateTime now = DateTime.now();
@@ -43,15 +42,14 @@ class EarningsWalletMockApi {
 
     final double walletBalance = await DriverWalletStore.loadBalance();
     return EarningsSnapshot(
-      todaysEarnings: todaysEarnings,
-      totalEarned: totalEarned,
+      todaysEarnings: _round2(todaysEarnings),
+      totalEarned: _round2(totalEarned),
       totalRides: totalRides,
-      walletBalance: walletBalance,
+      walletBalance: _round2(walletBalance),
     );
   }
 
   Future<List<TransactionItem>> fetchTransactions() async {
-    await Future<void>.delayed(const Duration(milliseconds: 120));
     final List<TransactionItem> tripEarnings = await _buildTripEarningTransactions();
     final List<TransactionItem> manualOps = await _loadWalletOperationTransactions();
     final List<TransactionItem> all = <TransactionItem>[...tripEarnings, ...manualOps]
@@ -60,7 +58,6 @@ class EarningsWalletMockApi {
   }
 
   Future<double> rechargeWallet(double amount) async {
-    await Future<void>.delayed(const Duration(milliseconds: 120));
     final double updatedBalance = await DriverWalletStore.addAmount(amount);
     await _appendWalletOperation(
       _WalletOperationRecord(
@@ -71,11 +68,10 @@ class EarningsWalletMockApi {
         eventEpochMs: DateTime.now().millisecondsSinceEpoch,
       ),
     );
-    return updatedBalance;
+    return _round2(updatedBalance);
   }
 
   Future<double?> withdrawWallet(double amount) async {
-    await Future<void>.delayed(const Duration(milliseconds: 120));
     final double? updatedBalance = await DriverWalletStore.subtractAmount(amount);
     if (updatedBalance == null) return null;
     await _appendWalletOperation(
@@ -87,7 +83,7 @@ class EarningsWalletMockApi {
         eventEpochMs: DateTime.now().millisecondsSinceEpoch,
       ),
     );
-    return updatedBalance;
+    return _round2(updatedBalance);
   }
 
   Future<List<TransactionItem>> _buildTripEarningTransactions() async {
@@ -197,6 +193,10 @@ class EarningsWalletMockApi {
     final String minute = dt.minute.toString().padLeft(2, '0');
     final String amPm = dt.hour >= 12 ? 'PM' : 'AM';
     return '$dayLabel, $hour12:$minute $amPm';
+  }
+
+  double _round2(double value) {
+    return double.parse(value.toStringAsFixed(2));
   }
 }
 

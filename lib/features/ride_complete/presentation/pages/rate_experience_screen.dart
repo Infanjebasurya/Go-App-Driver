@@ -79,7 +79,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => BlocProvider<DriverCubit>(
-          create: (_) => DriverCubit(),
+          create: (_) => DriverCubit()..goOnline(),
           child: const HomeScreen(),
         ),
       ),
