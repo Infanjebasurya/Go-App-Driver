@@ -86,7 +86,7 @@ class _MonthViewState extends State<_MonthView> {
                   return _SummaryItem(
                     title: 'Week ${week.weekNo}',
                     subtitle: '${week.trips.length} $rideLabel',
-                    amount: '\u20B9${week.total.toStringAsFixed(0)}',
+                    amount: '\u20B9${week.total.toStringAsFixed(2)}',
                     accent: showCancelled ? AppColors.validationRed : AppColors.emerald,
                     onTap: () {
                       Navigator.push(
@@ -95,7 +95,7 @@ class _MonthViewState extends State<_MonthView> {
                           builder: (_) => _MonthWeekDetailsPage(
                             weekTitle: 'Week ${week.weekNo}',
                             summaryPillText:
-                                '\u20B9${week.total.toStringAsFixed(0)} \u2022 ${week.trips.length} Rides',
+                                '\u20B9${week.total.toStringAsFixed(2)} \u2022 ${week.trips.length} Rides',
                             trips: week.trips,
                             showCancelled: showCancelled,
                           ),
@@ -193,7 +193,7 @@ class _MonthWeekDetailsPage extends StatelessWidget {
                 return TripCard(
                   date: _formatDateLabel(endEpoch),
                   timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
-                  price: '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(0)}',
+                  price: '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
                   statusLine: showCancelled
                       ? 'Canceled by ${_prettyCanceledBy(trip.canceledBy)}'
                       : null,
@@ -449,3 +449,4 @@ List<_MonthWeekGroup> _buildMonthWeekGroups(List<RideHistoryTrip> trips) {
     );
   }).toList(growable: false);
 }
+
