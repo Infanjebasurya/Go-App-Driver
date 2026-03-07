@@ -84,7 +84,7 @@ class _WeekViewState extends State<_WeekView> {
                   return _SummaryItem(
                     title: day.title,
                     subtitle: '${day.trips.length} Rides • Premium Class',
-                    amount: '₹${day.total.toStringAsFixed(0)}',
+                    amount: '₹${day.total.toStringAsFixed(2)}',
                     accent: showCancelled ? AppColors.validationRed : AppColors.emerald,
                     onTap: () {
                       Navigator.push(
@@ -93,7 +93,7 @@ class _WeekViewState extends State<_WeekView> {
                           builder: (_) => _WeekDayDetailsPage(
                             dateTitle: day.title,
                             summaryPillText:
-                                '₹${day.total.toStringAsFixed(0)} • ${day.trips.length} Rides',
+                                '₹${day.total.toStringAsFixed(2)} • ${day.trips.length} Rides',
                             trips: day.trips,
                             showCancelled: showCancelled,
                           ),
@@ -185,7 +185,7 @@ class _WeekDayDetailsPage extends StatelessWidget {
                 return TripCard(
                   date: _formatDateLabel(endEpoch),
                   timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
-                  price: '₹${EarningsCalculator.totalEarning(trip).toStringAsFixed(0)}',
+                  price: '₹${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
                   statusLine: showCancelled
                       ? 'Canceled by ${_prettyCanceledBy(trip.canceledBy)}'
                       : null,
@@ -420,3 +420,4 @@ List<_DaySummary> _buildDaySummary(List<RideHistoryTrip> trips, {required bool c
   result.sort((a, b) => b.dayStart.compareTo(a.dayStart));
   return result;
 }
+

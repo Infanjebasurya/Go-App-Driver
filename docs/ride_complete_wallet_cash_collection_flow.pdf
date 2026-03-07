@@ -1,0 +1,441 @@
+%PDF-1.4
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Count 4 /Kids [ 3 0 R 5 0 R 7 0 R 9 0 R ] >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 11 0 R >> >> /Contents 4 0 R >>endobj
+4 0 obj<< /Length 2412 >>stream
+BT
+/F1 10 Tf
+50 790 Td
+14 TL
+(# Ride Completion, Cash Collection, GST, and Wallet Flow) Tj
+T*
+() Tj
+T*
+(## Scope) Tj
+T*
+(This document explains the current implementation for:) Tj
+T*
+(- Ride completion financial calculations) Tj
+T*
+(- GST extraction logic) Tj
+T*
+(- Cash vs QR collection behavior) Tj
+T*
+(- Wallet updates, constraints, and transaction history) Tj
+T*
+(- Key methods and storage involved in the flow) Tj
+T*
+() Tj
+T*
+(## High-Level Flow) Tj
+T*
+(1. Captain accepts an order.) Tj
+T*
+(2. Trip progresses through pickup, OTP verification, navigation, and trip completion.) Tj
+T*
+(3. `RideCompletedScreen` computes/normalizes monetary values and persists payment details.) Tj
+T*
+(4. Captain collects payment via one of two options:) Tj
+T*
+(   - `Collect Cash`) Tj
+T*
+(   - `Collect via QR`) Tj
+T*
+(5. Wallet is updated differently based on collection mode.) Tj
+T*
+(6. Captain submits rating; session is archived and flow returns to Home.) Tj
+T*
+() Tj
+T*
+(## Lifecycle and Method Trace) Tj
+T*
+() Tj
+T*
+(### 1\) Order accepted) Tj
+T*
+(- File: `lib/features/home/presentation/pages/available_orders_page.dart`) Tj
+T*
+(- Methods:) Tj
+T*
+(  - `RideHistoryStore.startTrip\(...\)`) Tj
+T*
+(  - `TripSessionStore.startSession\(...\)`) Tj
+T*
+(- What gets saved:) Tj
+T*
+(  - Initial fare/distance labels) Tj
+T*
+(  - Pickup/drop addresses) Tj
+T*
+(  - Active trip identifiers) Tj
+T*
+() Tj
+T*
+(### 2\) Trip progression) Tj
+T*
+(- Files:) Tj
+T*
+(  - `ride_arrived_page.dart` -> `RideHistoryStore.markPickedUpNow\(\)`,) Tj
+T*
+(`TripSessionStore.markArrivedAtPickup\(\)`) Tj
+T*
+(  - `enter_ride_code_page.dart` -> `RideHistoryStore.markStartedNow\(\)`,) Tj
+T*
+(`TripSessionStore.markTripStarted\(...\)`) Tj
+T*
+(  - `passenger_onboard_page.dart` -> `TripSessionStore.markNavigationBegan\(...\)`) Tj
+T*
+() Tj
+T*
+(### 3\) Trip completed) Tj
+T*
+(- File: `lib/features/home/presentation/pages/trip_navigation_page.dart`) Tj
+T*
+(- On complete action:) Tj
+T*
+(  - `TripSessionStore.markTripCompleted\(\)`) Tj
+T*
+(  - `RideHistoryStore.markCompletedNowOrCreate\(...\)`) Tj
+T*
+(  - Navigate to `RideCompletedScreen`) Tj
+T*
+() Tj
+T*
+(### 4\) Ride completed calculation sync) Tj
+T*
+(- File: `lib/features/ride_complete/presentation/pages/ride_completed_screen.dart`) Tj
+T*
+(- Startup method: `_syncSummaryAndPersist\(\)`) Tj
+ET
+
+endstream
+endobj
+5 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 11 0 R >> >> /Contents 6 0 R >>endobj
+6 0 obj<< /Length 2449 >>stream
+BT
+/F1 10 Tf
+50 790 Td
+14 TL
+(- It performs:) Tj
+T*
+(  - Summary normalization from active session fare/distance when needed) Tj
+T*
+(  - GST extraction) Tj
+T*
+(  - Net earning recomputation) Tj
+T*
+(  - `RideHistoryStore.updateLatestCompletedDetails\(...\)`) Tj
+T*
+(  - `TripSessionStore.savePaymentDetails\(...\)`) Tj
+T*
+() Tj
+T*
+(### 5\) Collection action \(cash/QR\)) Tj
+T*
+(- Same file: `ride_completed_screen.dart`) Tj
+T*
+(- Method: `_onCollectPaymentTap\({required bool viaQr, ...}\)`) Tj
+T*
+(- Behavior:) Tj
+T*
+(  - `viaQr == true`:) Tj
+T*
+(    - Add full collectable amount to wallet: `DriverWalletStore.addAmount\(totalCollectable\)`) Tj
+T*
+(    - Mark payment received: `TripSessionStore.markPaymentReceived\(method: 'online'\)`) Tj
+T*
+(  - `viaQr == false` \(cash\):) Tj
+T*
+(    - Subtract GST amount from wallet:) Tj
+T*
+(      - `next = currentWallet - gstAmount`) Tj
+T*
+(      - bounded by minimum allowed wallet balance \(`-50.0`\)) Tj
+T*
+(    - Save wallet: `DriverWalletStore.saveBalance\(bounded\)`) Tj
+T*
+(    - Mark payment received: `TripSessionStore.markPaymentReceived\(method: 'cash'\)`) Tj
+T*
+() Tj
+T*
+(### 6\) Feedback and closeout) Tj
+T*
+(- File: `lib/features/ride_complete/presentation/pages/rate_experience_screen.dart`) Tj
+T*
+(- On submit:) Tj
+T*
+(  - `TripSessionStore.savePassengerRating\(...\)` -> stage becomes `rated`, session archived) Tj
+T*
+(  - `RateExperienceCubit.submitFeedback\(\)`) Tj
+T*
+(  - `HomeTripResumeStore.clear\(\)` and navigate Home) Tj
+T*
+() Tj
+T*
+(## Financial Formula Definitions \(Current Implementation\)) Tj
+T*
+() Tj
+T*
+(### A\) Collectable subtotal) Tj
+T*
+(- Method: `_collectableSubTotal\(...\)`) Tj
+T*
+(- Formula:) Tj
+T*
+(  - `collectableSubTotal = tripFare + tips - discountAmount`) Tj
+T*
+(  - If result <= 0, force `0`) Tj
+T*
+(  - Rounded to 2 decimals) Tj
+T*
+() Tj
+T*
+(### B\) GST amount \(inclusive extraction\)) Tj
+T*
+(- Method: `_gstAmount\(...\)`) Tj
+T*
+(- Constants:) Tj
+T*
+(  - `_gstRate = 0.05` \(5%\)) Tj
+T*
+(- Formula used:) Tj
+T*
+(  - `gstAmount = \(collectableSubTotal * 0.05\) / 1.05`) Tj
+T*
+(  - Rounded to 2 decimals) Tj
+T*
+(- Note:) Tj
+T*
+(  - UI shows this as `GST \(5%\) ... \(included\)`) Tj
+T*
+() Tj
+T*
+(### C\) Net earning shown/persisted) Tj
+T*
+(- In `_syncSummaryAndPersist\(\)`:) Tj
+T*
+(  - `grossEarning` is taken from summary or fallback derivation) Tj
+ET
+
+endstream
+endobj
+7 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 11 0 R >> >> /Contents 8 0 R >>endobj
+8 0 obj<< /Length 2334 >>stream
+BT
+/F1 10 Tf
+50 790 Td
+14 TL
+(  - `netEarning = grossEarning - gstAmount`) Tj
+T*
+(  - Floor at `0`) Tj
+T*
+(- Saved to:) Tj
+T*
+(  - `RideHistoryStore.updateLatestCompletedDetails\(... netEarningAmount: netEarning\)`) Tj
+T*
+(  - `TripSessionStore.savePaymentDetails\(totalEarnings: netEarning, ...\)`) Tj
+T*
+() Tj
+T*
+(### D\) Incentive derivation fallback) Tj
+T*
+(- Method: `_deriveIncentive\(...\)`) Tj
+T*
+(- Formula:) Tj
+T*
+(  - `incentive = summary.totalEarnings - tripAmount + discountAmount`) Tj
+T*
+(  - If negative, force `0`) Tj
+T*
+() Tj
+T*
+(### E\) Gross earning fallback derivation) Tj
+T*
+(- Method: `_deriveNetEarning\(...\)` \(name is legacy; it computes gross fallback first\)) Tj
+T*
+(- Formula:) Tj
+T*
+(  - If `summary.totalEarnings > 0`: use it) Tj
+T*
+(  - Else: `tripAmount + incentiveAmount - discountAmount`) Tj
+T*
+(  - If negative, force `0`) Tj
+T*
+() Tj
+T*
+(## Wallet Rules) Tj
+T*
+() Tj
+T*
+(### Wallet store behavior) Tj
+T*
+(- File: `lib/core/storage/driver_wallet_store.dart`) Tj
+T*
+(- Rules:) Tj
+T*
+(  - Key: `driver_wallet_balance_v1`) Tj
+T*
+(  - Minimum allowed balance: `-50.0`) Tj
+T*
+(  - `addAmount\(x\)` adds if `x > 0`) Tj
+T*
+(  - `subtractAmount\(x\)` returns `null` if result would go below `-50.0`) Tj
+T*
+(  - `saveBalance\(amount\)` clamps below `-50.0` to `-50.0`) Tj
+T*
+() Tj
+T*
+(### Duty threshold behavior) Tj
+T*
+(- File: `lib/features/home/presentation/cubit/driver_status_state.dart`) Tj
+T*
+(- Constant: `kMinimumDutyWalletBalance = -50.0`) Tj
+T*
+(- At or below threshold can block going online and trigger warnings.) Tj
+T*
+() Tj
+T*
+(## Earnings and Wallet Reporting) Tj
+T*
+() Tj
+T*
+(### Earnings snapshot source) Tj
+T*
+(- File: `lib/features/earnings/data/datasources/earnings_wallet_mock_api.dart`) Tj
+T*
+(- Snapshot computes:) Tj
+T*
+(  - `todaysEarnings`) Tj
+T*
+(  - `totalEarned`) Tj
+T*
+(  - `totalRides`) Tj
+T*
+(  - `walletBalance`) Tj
+T*
+(- Trip earning uses `EarningsCalculator.totalEarning\(...\)`.) Tj
+T*
+() Tj
+T*
+(### Transaction list source) Tj
+T*
+(- Same file \(`earnings_wallet_mock_api.dart`\):) Tj
+T*
+(  - Trip earnings converted into credit transactions \(`WalletTransactionType.earning`\)) Tj
+T*
+(  - Recharge and withdrawal ops persisted under `earnings_wallet_ops_v1`) Tj
+ET
+
+endstream
+endobj
+9 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 11 0 R >> >> /Contents 10 0 R >>endobj
+10 0 obj<< /Length 2089 >>stream
+BT
+/F1 10 Tf
+50 790 Td
+14 TL
+() Tj
+T*
+(## SharedPreferences Keys Used in This Flow) Tj
+T*
+(- `driver_wallet_balance_v1` \(wallet balance\)) Tj
+T*
+(- `ride_history_items_v1` \(ride history list\)) Tj
+T*
+(- `ride_history_active_trip_id_v1` \(active ride id\)) Tj
+T*
+(- `trip_session_active_v1` \(active trip session\)) Tj
+T*
+(- `trip_session_archive_v1` \(completed session archive\)) Tj
+T*
+(- `home_trip_resume_stage_v1` \(resume stage\)) Tj
+T*
+(- `home_trip_navigation_start_ms_v1` \(trip navigation time anchor\)) Tj
+T*
+(- `earnings_wallet_ops_v1` \(manual wallet recharge/withdraw operations\)) Tj
+T*
+() Tj
+T*
+(## Worked Example \(using current defaults\)) Tj
+T*
+(Given:) Tj
+T*
+(- Trip Fare = 1300) Tj
+T*
+(- Tips = 50) Tj
+T*
+(- Discount = 100) Tj
+T*
+() Tj
+T*
+(Then:) Tj
+T*
+(1. `collectableSubTotal = 1300 + 50 - 100 = 1250`) Tj
+T*
+(2. `gstAmount = \(1250 * 0.05\) / 1.05 = 59.52` \(rounded\)) Tj
+T*
+() Tj
+T*
+(If captain taps:) Tj
+T*
+(- `Collect via QR`:) Tj
+T*
+(  - Wallet increases by `1250.00`) Tj
+T*
+(- `Collect Cash`:) Tj
+T*
+(  - Wallet decreases by `59.52` \(GST component only\)) Tj
+T*
+() Tj
+T*
+(## Important Implementation Notes) Tj
+T*
+(- GST is treated as included in collectable amount and extracted by inclusive formula.) Tj
+T*
+(- Cash and QR paths intentionally have different wallet effects.) Tj
+T*
+(- `RideCompletedScreen` currently owns a significant part of financial orchestration logic.) Tj
+T*
+(- Method naming note: `_deriveNetEarning` currently helps derive gross fallback before GST) Tj
+T*
+(deduction.) Tj
+T*
+() Tj
+T*
+(## Suggested TL Talking Points) Tj
+T*
+(- Flow is fully persisted across app restarts via `RideHistoryStore`, `TripSessionStore`, and) Tj
+T*
+(`HomeTripResumeStore`.) Tj
+T*
+(- Financial logic is deterministic and concentrated in `RideCompletedScreen`.) Tj
+T*
+(- Wallet safety is enforced via minimum bound `-50.0`.) Tj
+T*
+(- Reporting screens \(`Earnings`, `Wallet`\) read computed history + wallet store and remain) Tj
+T*
+(consistent with persisted state.) Tj
+ET
+
+endstream
+endobj
+11 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 12
+0000000000 65535 f 
+0000000010 00000 n 
+0000000058 00000 n 
+0000000134 00000 n 
+0000000260 00000 n 
+0000002723 00000 n 
+0000002849 00000 n 
+0000005349 00000 n 
+0000005475 00000 n 
+0000007860 00000 n 
+0000007987 00000 n 
+0000010128 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+10198
+%%EOF

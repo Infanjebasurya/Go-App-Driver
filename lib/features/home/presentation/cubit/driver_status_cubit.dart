@@ -60,8 +60,9 @@ class DriverCubit extends Cubit<DriverState> {
     for (final RideHistoryTrip trip in settledToday) {
       totalFare += EarningsCalculator.totalEarning(trip);
     }
+    totalFare = _round2(totalFare);
 
-    final double walletBalance = await DriverWalletStore.loadBalance();
+    final double walletBalance = _round2(await DriverWalletStore.loadBalance());
     final int ridesToday = settledToday.where(EarningsCalculator.isCompletedTrip).length;
     final int rewardProgress = ridesToday > state.targetRides
         ? state.targetRides
@@ -90,7 +91,7 @@ class DriverCubit extends Cubit<DriverState> {
   }
 
   Future<void> syncWalletBalance() async {
-    final double walletBalance = await DriverWalletStore.loadBalance();
+    final double walletBalance = _round2(await DriverWalletStore.loadBalance());
     if (isClosed) return;
     if ((walletBalance - state.walletBalance).abs() <= 0.0001) return;
 
@@ -159,6 +160,7 @@ class DriverCubit extends Cubit<DriverState> {
         clearOfflineBlockIssue: true,
       ),
     );
+    await refreshDashboardMetrics();
     _startLocationWatch();
   }
 
@@ -248,7 +250,7 @@ class DriverCubit extends Cubit<DriverState> {
   }
 
   Future<void> addMoney(double amount) async {
-    final double next = await DriverWalletStore.addAmount(amount);
+    final double next = _round2(await DriverWalletStore.addAmount(amount));
     if (isClosed) return;
     emit(state.copyWith(walletBalance: next));
     _updateLowWalletWarning(next);
@@ -258,7 +260,7 @@ class DriverCubit extends Cubit<DriverState> {
     final String normalized = input.replaceAll(RegExp(r'[^0-9.]'), '').trim();
     final double? amount = double.tryParse(normalized);
     if (amount == null || amount <= 0) return false;
-    final double next = state.walletBalance + amount;
+    final double next = _round2(state.walletBalance + amount);
     emit(state.copyWith(walletBalance: next));
     _updateLowWalletWarning(next);
     unawaited(DriverWalletStore.saveBalance(next));
@@ -343,6 +345,10 @@ class DriverCubit extends Cubit<DriverState> {
     final int hours = normalized ~/ 60;
     final int minutes = normalized % 60;
     return '${hours}h ${minutes}m';
+  }
+
+  double _round2(double value) {
+    return double.parse(value.toStringAsFixed(2));
   }
 
   Future<void> _syncOnlineMinutes() async {

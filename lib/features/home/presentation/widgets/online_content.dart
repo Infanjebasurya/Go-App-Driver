@@ -241,7 +241,7 @@ class _EarningsCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '₹ ${state.totalEarnings.toStringAsFixed(0)}',
+                      '₹ ${state.totalEarnings.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -444,6 +444,7 @@ class _GpsButton extends StatelessWidget {
     );
   }
 }
+
 
 
 

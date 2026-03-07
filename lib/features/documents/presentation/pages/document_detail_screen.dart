@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_model.dart'
+    show DocumentType;
 import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/documents/presentation/model/document_model.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
@@ -63,40 +65,88 @@ class DocumentDetailScreen extends StatelessWidget {
   }
 
   Widget _buildContent() {
+    final frontImagePath = _resolvedFrontImagePath();
+    final backImagePath = _resolvedBackImagePath();
+    final documentNumber = _resolvedDocumentNumber();
     switch (document.iconAsset) {
       case 'driving_license':
         return _DrivingLicenseDetail(
-          frontImagePath: document.frontImagePath,
-          backImagePath: document.backImagePath,
-          licenseNumber: document.documentNumber,
+          frontImagePath: frontImagePath,
+          backImagePath: backImagePath,
+          licenseNumber: documentNumber,
         );
       case 'vehicle_rc':
         return _VehicleRCDetail(
-          frontImagePath: document.frontImagePath,
-          backImagePath: document.backImagePath,
-          vehicleNumber: document.documentNumber,
+          frontImagePath: frontImagePath,
+          backImagePath: backImagePath,
+          vehicleNumber: documentNumber,
         );
       case 'aadhaar_card':
         return _AadhaarCardDetail(
-          frontImagePath: document.frontImagePath,
-          backImagePath: document.backImagePath,
-          aadhaarNumber: document.documentNumber,
+          frontImagePath: frontImagePath,
+          backImagePath: backImagePath,
+          aadhaarNumber: documentNumber,
         );
       case 'pan_card':
         return _PanCardDetail(
-          frontImagePath: document.frontImagePath,
-          backImagePath: document.backImagePath,
-          panNumber: document.documentNumber,
+          frontImagePath: frontImagePath,
+          backImagePath: backImagePath,
+          panNumber: documentNumber,
         );
       case 'bank_account':
       case 'add bank account':
-        return _BankAccountDetail(frontImagePath: document.frontImagePath);
+        return _BankAccountDetail(frontImagePath: frontImagePath);
       default:
         return _DrivingLicenseDetail(
-          frontImagePath: document.frontImagePath,
-          backImagePath: document.backImagePath,
+          frontImagePath: frontImagePath,
+          backImagePath: backImagePath,
         );
     }
+  }
+
+  DocumentType? _documentTypeFromAsset() {
+    switch (document.iconAsset) {
+      case 'driving_license':
+        return DocumentType.drivingLicense;
+      case 'vehicle_rc':
+        return DocumentType.vehicleRC;
+      case 'aadhaar_card':
+        return DocumentType.aadhaarCard;
+      case 'pan_card':
+        return DocumentType.panCard;
+      case 'bank_account':
+      case 'add bank account':
+        return DocumentType.bankDetails;
+      default:
+        return null;
+    }
+  }
+
+  String? _resolvedFrontImagePath() {
+    final type = _documentTypeFromAsset();
+    final latest = type == null
+        ? null
+        : DocumentProgressStore.frontImagePath(type);
+    if (latest != null && latest.trim().isNotEmpty) return latest;
+    return document.frontImagePath;
+  }
+
+  String? _resolvedBackImagePath() {
+    final type = _documentTypeFromAsset();
+    final latest = type == null
+        ? null
+        : DocumentProgressStore.backImagePath(type);
+    if (latest != null && latest.trim().isNotEmpty) return latest;
+    return document.backImagePath;
+  }
+
+  String? _resolvedDocumentNumber() {
+    final type = _documentTypeFromAsset();
+    final latest = type == null
+        ? null
+        : DocumentProgressStore.documentNumber(type);
+    if (latest != null && latest.trim().isNotEmpty) return latest;
+    return document.documentNumber;
   }
 }
 

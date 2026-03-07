@@ -477,6 +477,13 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
 
     if (viaQr) {
       await DriverWalletStore.addAmount(totalCollectable);
+      final double updated = await DriverWalletStore.loadBalance();
+      final double next = _round2(updated - gstAmount);
+      final double bounded =
+          next < DriverWalletStore.minAllowedNegativeBalance
+          ? DriverWalletStore.minAllowedNegativeBalance
+          : next;
+      await DriverWalletStore.saveBalance(bounded);
       await TripSessionStore.markPaymentReceived(method: 'online');
     } else {
       final double current = await DriverWalletStore.loadBalance();

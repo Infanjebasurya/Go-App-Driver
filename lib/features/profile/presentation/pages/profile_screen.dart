@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
@@ -105,6 +108,9 @@ class _ProfileView extends StatelessWidget {
   }
 
   Future<void> _clearSessionCache({required bool isDeleteAccount}) async {
+    await RideHistoryStore.clearAll();
+    await HomeTripResumeStore.clear();
+    await TripSessionStore.clearAll();
     if (isDeleteAccount) {
       await UserCacheStore.clear();
     }

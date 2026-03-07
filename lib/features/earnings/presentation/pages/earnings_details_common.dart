@@ -68,7 +68,7 @@ class _RangeSummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '₹${total.toStringAsFixed(0)}',
+                  '₹${total.toStringAsFixed(2)}',
                   style: const TextStyle(fontSize: 36 / 1.3, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -347,3 +347,4 @@ String _formatTimeLabel(int epochMs) {
   final String amPm = dt.hour >= 12 ? 'pm' : 'am';
   return '${hour12.toString().padLeft(2, '0')}:$minute$amPm';
 }
+
