@@ -1,0 +1,189 @@
+part of 'document_upload_cubit.dart';
+
+void _updateDocumentNumber(DocumentUploadCubit cubit, String value) {
+  if (cubit.state.isCurrentStepBank || cubit.state.isCurrentStepProfile) return;
+  final raw = value.trim();
+  final normalized = _normalizeDocumentNumber(cubit.state.currentDocStep.step, raw);
+  final isAadhaarOrPan = cubit.state.currentDocStep.step == DocumentStep.identityAadhaar ||
+      cubit.state.currentDocStep.step == DocumentStep.identityPan;
+  final hasValue = raw.isNotEmpty;
+  final error = isAadhaarOrPan
+      ? null
+      : (hasValue
+          ? _validateDocumentNumber(cubit.state.currentDocStep.step, normalized)
+          : null);
+  final updated = cubit.state.currentDocStep.copyWith(
+    documentNumber: raw,
+    numberError: error,
+    clearError: true,
+  );
+  DocumentProgressStore.setDocumentNumber(
+    cubit._mapStepToDocType(updated.step),
+    normalized,
+  );
+  cubit._emitState(cubit.state.copyWithDocStep(updated));
+}
+
+bool _validateDocStep(DocumentUploadCubit cubit) {
+  final step = cubit.state.currentDocStep;
+  if (step.step == DocumentStep.profilePhoto) {
+    if (step.frontCaptured) {
+      DocumentProgressStore.setProfileImagePath(step.frontPath);
+      return true;
+    }
+    cubit._emitState(
+      cubit.state.copyWithDocStep(
+        step.copyWith(
+          imageError: 'Please upload your profile picture before proceeding.',
+          clearError: true,
+        ),
+      ),
+    );
+    return false;
+  }
+  if (!step.frontCaptured || !step.backCaptured) {
+    final updated = step.copyWith(
+      numberError: 'Please upload both front and back documents',
+      imageError: 'Please upload both front and back documents',
+    );
+    cubit._emitState(cubit.state.copyWithDocStep(updated));
+    DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);
+    return false;
+  }
+
+  final rawValue = step.documentNumber.trim();
+  if (rawValue.isEmpty) {
+    final updated = step.copyWith(numberError: 'Document number is required');
+    cubit._emitState(cubit.state.copyWithDocStep(updated));
+    DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);
+    return false;
+  }
+
+  final normalized = _normalizeDocumentNumber(step.step, rawValue);
+  final error = _validateDocumentNumber(step.step, normalized);
+  if (error != null) {
+    final updated = step.copyWith(numberError: error);
+    cubit._emitState(cubit.state.copyWithDocStep(updated));
+    DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);
+    return false;
+  }
+
+  if (normalized != step.documentNumber) {
+    final updated = step.copyWith(
+      documentNumber: normalized,
+      clearError: true,
+      clearImageError: true,
+    );
+    cubit._emitState(cubit.state.copyWithDocStep(updated));
+  }
+  if (step.imageError != null) {
+    cubit._emitState(cubit.state.copyWithDocStep(step.copyWith(clearImageError: true)));
+  }
+  DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), true);
+  return true;
+}
+
+String _normalizeDocumentNumber(DocumentStep step, String value) {
+  return DocumentNumberRules.normalize(step, value);
+}
+
+String? _validateDocumentNumber(DocumentStep step, String value) {
+  return DocumentNumberRules.validate(step, value);
+}
+
+bool _validateBankStep(DocumentUploadCubit cubit) {
+  final b = cubit.state.bankData;
+  BankAccountData updated = b.copyWith(
+    clearNameError: true,
+    clearBankNameError: true,
+    clearAccountNumberError: true,
+    clearConfirmError: true,
+    clearIfscError: true,
+    clearBankDocumentError: true,
+  );
+  bool valid = true;
+
+  if (b.accountHolderName.trim().isNotEmpty &&
+      !RegExp(r'^[A-Z ]+$').hasMatch(b.accountHolderName.trim().toUpperCase())) {
+    updated = updated.copyWith(nameError: 'Only alphabets are allowed');
+    valid = false;
+  }
+  if (b.bankName.trim().isEmpty) {
+    updated = updated.copyWith(bankNameError: 'Bank name is required');
+    valid = false;
+  } else if (!RegExp(r'^[A-Z ]+$').hasMatch(b.bankName.trim().toUpperCase())) {
+    updated = updated.copyWith(bankNameError: 'Only alphabets are allowed');
+    valid = false;
+  }
+  if (b.accountNumber.trim().isEmpty) {
+    updated = updated.copyWith(accountNumberError: 'Account number is required');
+    valid = false;
+  } else if (!RegExp(r'^[A-Z0-9]+$').hasMatch(b.accountNumber.trim().toUpperCase())) {
+    updated = updated.copyWith(
+      accountNumberError: 'Only alphabets and numbers are allowed',
+    );
+    valid = false;
+  }
+  if (b.confirmAccountNumber.trim().isEmpty) {
+    updated = updated.copyWith(
+      confirmAccountNumberError: 'Please confirm account number',
+    );
+    valid = false;
+  } else if (!RegExp(r'^[A-Z0-9]+$')
+      .hasMatch(b.confirmAccountNumber.trim().toUpperCase())) {
+    updated = updated.copyWith(
+      confirmAccountNumberError: 'Only alphabets and numbers are allowed',
+    );
+    valid = false;
+  } else if (b.confirmAccountNumber != b.accountNumber) {
+    updated = updated.copyWith(
+      confirmAccountNumberError: 'Account numbers do not match',
+    );
+    valid = false;
+  }
+  if (b.ifscCode.trim().isEmpty) {
+    updated = updated.copyWith(ifscError: 'IFSC code is required');
+    valid = false;
+  } else if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$')
+      .hasMatch(b.ifscCode.trim().toUpperCase())) {
+    updated = updated.copyWith(ifscError: 'Enter a valid IFSC code');
+    valid = false;
+  }
+  if (b.bankDocumentPath == null || b.bankDocumentPath!.trim().isEmpty) {
+    updated = updated.copyWith(bankDocumentError: 'Please upload bank document');
+    valid = false;
+  }
+
+  if (updated != b) {
+    cubit._emitState(cubit.state.copyWith(bankData: updated));
+  }
+  return valid;
+}
+
+Future<void> _saveAndNext(DocumentUploadCubit cubit) async {
+  if (cubit.state.isSubmitting || cubit._isPicking || cubit.state.isProfileImageProcessing) {
+    return;
+  }
+  if (cubit.state.isCurrentStepBank) {
+    if (!_validateBankStep(cubit)) return;
+    DocumentProgressStore.setCompleted(
+      DocumentType.bankDetails,
+      cubit.state.bankData.isComplete,
+    );
+    cubit._emitState(cubit.state.copyWith(isSubmitting: true));
+    await Future.delayed(const Duration(seconds: 2));
+    cubit._emitState(cubit.state.copyWith(isSubmitting: false, isAllDone: true));
+  } else {
+    cubit._emitState(cubit.state.copyWith(isSubmitting: true));
+    if (!_validateDocStep(cubit)) {
+      cubit._emitState(cubit.state.copyWith(isSubmitting: false));
+      return;
+    }
+    cubit._emitState(
+      cubit.state.copyWith(
+        isSubmitting: false,
+        currentStepIndex: cubit.state.currentStepIndex + 1,
+      ),
+    );
+  }
+}

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/service/app_cleanup_service.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/user_cache_model.dart';
@@ -12,7 +13,6 @@ import 'package:goapp/features/city_vehicle/vehicle_details/presentation/pages/v
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/pages/vehicle_selection_screen.dart';
 import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
-import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
 import 'package:goapp/features/onboarding/presentation/navigation/onboarding_route_transitions.dart';
@@ -122,16 +122,17 @@ class _AppEntryGateState extends State<AppEntryGate> {
   Future<_EntryBootstrap> _loadBootstrap() async {
     final user = await UserCacheStore.load();
     final progress = await RegistrationProgressStore.load();
+    const cleanupService = AppCleanupService();
     if ((user == null || !progress.otpVerified) && !progress.onboardingSeen) {
       await RideHistoryStore.clearAll();
-      DocumentProgressStore.reset();
+      await cleanupService.clearKycDraftsAndSensitiveFiles();
       return const _EntryBootstrap(
         onboardingSeen: false,
       );
     }
     if (user == null || !progress.otpVerified) {
       await RideHistoryStore.clearAll();
-      DocumentProgressStore.reset();
+      await cleanupService.clearKycDraftsAndSensitiveFiles();
       return const _EntryBootstrap(
         onboardingSeen: true,
       );
