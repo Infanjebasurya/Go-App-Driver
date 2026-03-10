@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/ride_history/presentation/cubit/ride_history_cubit.dart';
 import 'package:goapp/features/ride_history/presentation/cubit/ride_history_state.dart';
 
@@ -40,26 +41,11 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         builder: (context, state) {
           return Scaffold(
             backgroundColor: AppColors.surfaceF5,
-            appBar: AppBar(
+            appBar: AppAppBar(
               backgroundColor: AppColors.white,
               elevation: 0,
               centerTitle: true,
-              leading: IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: AppColors.headingDark,
-                  size: 18,
-                ),
-              ),
-              title: const Text(
-                'Ride History',
-                style: TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.headingDark,
-                ),
-              ),
+              title: const Text('Ride History'),
               actions: <Widget>[
                 PopupMenuButton<RideHistorySort>(
                   icon: const Icon(
@@ -133,3 +119,6 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     );
   }
 }
+
+
+

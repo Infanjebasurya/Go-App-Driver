@@ -7,6 +7,7 @@ import 'package:goapp/features/demand_planner/presentation/cubit/demand_planner_
 import 'package:goapp/features/demand_planner/presentation/cubit/demand_planner_state.dart';
 import 'package:goapp/features/demand_planner/presentation/model/peak_hour_model.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class DemandPlannerScreen extends StatelessWidget {
   const DemandPlannerScreen({super.key});
@@ -26,27 +27,15 @@ class _DemandPlannerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppAppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Color(0xFF1A1A1A)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Demand Planner',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
-            letterSpacing: -0.2,
-          ),
-        ),
+        title: const Text('Demand Planner'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: const Color(0xFFEEEEEE), height: 1),
+          child: Container(color: AppColors.hexFFEEEEEE, height: 1),
         ),
       ),
       body: BlocBuilder<DemandPlannerCubit, DemandPlannerState>(
@@ -107,11 +96,11 @@ class _LoadedViewState extends State<_LoadedView> {
           builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x18000000),
+                    color: AppColors.hex18000000,
                     blurRadius: 24,
                     offset: Offset(0, -4),
                   ),
@@ -127,7 +116,7 @@ class _LoadedViewState extends State<_LoadedView> {
                       width: 38,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDDDDDD),
+                        color: AppColors.hexFFDDDDDD,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -146,7 +135,7 @@ class _LoadedViewState extends State<_LoadedView> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.hexFF1A1A1A,
                         letterSpacing: 1.2,
                       ),
                     ),
@@ -196,11 +185,11 @@ class _SurgeMapWidget extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.12),
+                  color: AppColors.black.withValues(alpha: 0.12),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -208,7 +197,7 @@ class _SurgeMapWidget extends StatelessWidget {
             ),
             child: const Icon(
               Icons.my_location,
-              color: Color(0xFF555555),
+              color: AppColors.hexFF555555,
               size: 18,
             ),
           ),
@@ -257,11 +246,11 @@ class _MapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFE8E8E8)
+      ..color = AppColors.hexFFE8E8E8
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
-    final bgPaint = Paint()..color = const Color(0xFFF5F5F5);
+    final bgPaint = Paint()..color = AppColors.hexFFF5F5F5;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
 
     final rng = math.Random(42);
@@ -280,7 +269,7 @@ class _MapPainter extends CustomPainter {
     }
 
     final blockPaint = Paint()
-      ..color = const Color(0xFFDDDDDD)
+      ..color = AppColors.hexFFDDDDDD
       ..style = PaintingStyle.fill;
     final rng2 = math.Random(7);
     for (int i = 0; i < 12; i++) {
@@ -317,12 +306,12 @@ class _SurgeToggleCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
+        border: Border.all(color: AppColors.hexFFEEEEEE),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -334,7 +323,7 @@ class _SurgeToggleCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFF00A86B).withValues(alpha: 0.10),
+              color: AppColors.hexFF00A86B.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(30),
             ),
             child: Icon(
@@ -343,7 +332,7 @@ class _SurgeToggleCard extends StatelessWidget {
                   : Icons.notifications_off_outlined,
               color: enabled
                   ? AuthUiColors.brandGreen
-                  : const Color(0xFF00A86B),
+                  : AppColors.hexFF00A86B,
               size: 20,
             ),
           ),
@@ -357,13 +346,13 @@ class _SurgeToggleCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.hexFF1A1A1A,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Alerts for >1.2x multipliers',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  style: TextStyle(fontSize: 12, color: AppColors.gray.shade500),
                 ),
               ],
             ),
@@ -377,7 +366,7 @@ class _SurgeToggleCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: enabled
                     ? AuthUiColors.brandGreen
-                    : const Color(0xFFCCCCCC),
+                    : AppColors.hexFFCCCCCC,
                 borderRadius: BorderRadius.circular(13),
               ),
               child: AnimatedAlign(
@@ -391,11 +380,11 @@ class _SurgeToggleCard extends StatelessWidget {
                   width: 20,
                   height: 20,
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0x22000000),
+                        color: AppColors.hex22000000,
                         blurRadius: 4,
                         offset: Offset(0, 1),
                       ),
@@ -421,9 +410,9 @@ class _PeakHourRow extends StatelessWidget {
       case DemandLevel.high:
         return AuthUiColors.brandGreen;
       case DemandLevel.moderate:
-        return const Color(0xFF4CAF50);
+        return AppColors.hexFF4CAF50;
       case DemandLevel.steady:
-        return const Color(0xFFBBBBBB);
+        return AppColors.hexFFBBBBBB;
     }
   }
 
@@ -432,9 +421,9 @@ class _PeakHourRow extends StatelessWidget {
       case DemandLevel.high:
         return AuthUiColors.brandGreen;
       case DemandLevel.moderate:
-        return const Color(0xFF4CAF50);
+        return AppColors.hexFF4CAF50;
       case DemandLevel.steady:
-        return const Color(0xFFBBBBBB);
+        return AppColors.hexFFBBBBBB;
     }
   }
 
@@ -444,12 +433,12 @@ class _PeakHourRow extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: peakHour.isActive
               ? AuthUiColors.brandGreen.withValues(alpha: 0.25)
-              : const Color(0xFFEEEEEE),
+              : AppColors.hexFFEEEEEE,
         ),
         boxShadow: peakHour.isActive
             ? [
@@ -461,7 +450,7 @@ class _PeakHourRow extends StatelessWidget {
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: AppColors.black.withValues(alpha: 0.03),
                   blurRadius: 6,
                   offset: const Offset(0, 2),
                 ),
@@ -480,8 +469,8 @@ class _PeakHourRow extends StatelessWidget {
                     fontSize: 18,
                     fontWeight: FontWeight.w300,
                     color: peakHour.demandLevel == DemandLevel.steady
-                        ? const Color(0xFF888888)
-                        : const Color(0xFF1A1A1A),
+                        ? AppColors.hexFF888888
+                        : AppColors.hexFF1A1A1A,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -501,8 +490,8 @@ class _PeakHourRow extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: peakHour.demandLevel == DemandLevel.steady
-                            ? const Color(0xFFAAAAAA)
-                            : const Color(0xFF555555),
+                            ? AppColors.hexFFAAAAAA
+                            : AppColors.hexFF555555,
                       ),
                     ),
                   ],
@@ -551,4 +540,7 @@ class _LoadingView extends StatelessWidget {
     );
   }
 }
+
+
+
 

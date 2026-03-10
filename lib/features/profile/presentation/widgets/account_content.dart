@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class AccountContent extends StatelessWidget {
   const AccountContent({
@@ -62,12 +63,12 @@ class AccountProfileCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
             BoxShadow(
               blurRadius: 12,
-              color: Color(0x14000000),
+              color: AppColors.hex14000000,
               offset: Offset(0, 6),
             ),
           ],
@@ -76,8 +77,8 @@ class AccountProfileCard extends StatelessWidget {
           children: [
             const CircleAvatar(
               radius: 26,
-              backgroundColor: Color(0xFFE8EBF3),
-              child: Icon(Icons.person, color: Colors.black54),
+              backgroundColor: AppColors.hexFFE8EBF3,
+              child: Icon(Icons.person, color: AppColors.black54),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -95,12 +96,12 @@ class AccountProfileCard extends StatelessWidget {
                     email,
                     style: Theme.of(
                       context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.black54),
+                    ).textTheme.bodySmall?.copyWith(color: AppColors.black54),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.black45),
+            const Icon(Icons.chevron_right, color: AppColors.black45),
           ],
         ),
       ),
@@ -119,7 +120,7 @@ class AccountSectionTitle extends StatelessWidget {
       title,
       style: Theme.of(context).textTheme.labelMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: Colors.black45,
+        color: AppColors.black45,
         letterSpacing: 0.6,
       ),
     );
@@ -135,12 +136,12 @@ class AccountMenuCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
             blurRadius: 10,
-            color: Color(0x11000000),
+            color: AppColors.hex11000000,
             offset: Offset(0, 4),
           ),
         ],
@@ -180,7 +181,7 @@ class _AccountMenuTile extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          leading: Icon(item.icon, color: Colors.black),
+          leading: Icon(item.icon, color: AppColors.black),
           title: Text(item.title, style: const TextStyle(fontSize: 16)),
           subtitle: item.subtitle == null
               ? null
@@ -188,7 +189,7 @@ class _AccountMenuTile extends StatelessWidget {
                   item.subtitle!,
                   style: Theme.of(
                     context,
-                  ).textTheme.labelSmall?.copyWith(color: Colors.black45),
+                  ).textTheme.labelSmall?.copyWith(color: AppColors.black45),
                 ),
           trailing: SizedBox(
             width: 36,
@@ -214,8 +215,11 @@ class _AccountMenuTile extends StatelessWidget {
           },
         ),
         if (showDivider)
-          const Divider(height: 1, thickness: 0.6, color: Colors.black12),
+          const Divider(height: 1, thickness: 0.6, color: AppColors.black12),
       ],
     );
   }
 }
+
+
+

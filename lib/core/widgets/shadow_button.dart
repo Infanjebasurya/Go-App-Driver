@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class ShadowButton extends StatelessWidget {
   const ShadowButton({
@@ -50,13 +51,13 @@ class ShadowButton extends StatelessWidget {
                   offset: const Offset(0, 8),
                   blurRadius: 10,
                   spreadRadius: -6,
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: AppColors.black.withValues(alpha: 0.1),
                 ),
                 BoxShadow(
                   offset: const Offset(0, 20),
                   blurRadius: 25,
                   spreadRadius: -5,
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: AppColors.black.withValues(alpha: 0.1),
                 ),
               ]
             : <BoxShadow>[],
@@ -104,9 +105,9 @@ class ShadowButton extends StatelessWidget {
   ButtonStyle _buildStyle(BorderRadiusGeometry resolvedBorderRadius) {
     final ButtonStyle normalized = (style ?? const ButtonStyle()).copyWith(
       elevation: const WidgetStatePropertyAll<double>(0),
-      shadowColor: const WidgetStatePropertyAll<Color>(Colors.transparent),
+      shadowColor: const WidgetStatePropertyAll<Color>(AppColors.transparent),
       surfaceTintColor:
-          const WidgetStatePropertyAll<Color>(Colors.transparent),
+          const WidgetStatePropertyAll<Color>(AppColors.transparent),
       backgroundColor: backgroundColor != null
           ? WidgetStatePropertyAll<Color>(backgroundColor!)
           : null,
@@ -131,4 +132,6 @@ class ShadowButton extends StatelessWidget {
     return BorderRadius.circular(12);
   }
 }
+
+
 

@@ -38,10 +38,10 @@ class FeaturedCityChip extends StatelessWidget {
         width: 82,
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected ? AppColors.emerald : const Color(0xFFE2E8F0),
+            color: isSelected ? AppColors.emerald : AppColors.hexFFE2E8F0,
             width: isSelected ? 1.5 : 1.0,
           ),
           boxShadow: isSelected
@@ -54,7 +54,7 @@ class FeaturedCityChip extends StatelessWidget {
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: AppColors.black.withValues(alpha: 0.04),
                     blurRadius: 6,
                     offset: const Offset(0, 1),
                   ),
@@ -68,7 +68,7 @@ class FeaturedCityChip extends StatelessWidget {
             Icon(
               _icon,
               size: 28,
-              color: isSelected ? AppColors.emerald : const Color(0xFF8FA0B0),
+              color: isSelected ? AppColors.emerald : AppColors.hexFF8FA0B0,
             ),
             const SizedBox(height: 8),
             Text(
@@ -76,7 +76,7 @@ class FeaturedCityChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: const Color(0xFF3D4F63),
+                color: AppColors.hexFF3D4F63,
                 letterSpacing: -0.1,
               ),
             ),
@@ -86,3 +86,7 @@ class FeaturedCityChip extends StatelessWidget {
     );
   }
 }
+
+
+
+

@@ -1,4 +1,9 @@
 import 'package:get_it/get_it.dart';
+import 'package:goapp/core/network/native_network_service.dart';
+import 'package:goapp/core/network/network_info.dart';
+import 'package:goapp/core/service/network_settings_service.dart';
+import 'package:goapp/core/service/network_settings_service_impl.dart';
+import 'package:goapp/core/network/network_status_cubit.dart';
 import 'package:goapp/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:goapp/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:goapp/features/auth/domain/repositories/auth_repository.dart';
@@ -41,5 +46,15 @@ Future<void> initializeDependencies() async {
     ..registerLazySingleton<GetCaptainProfile>(
       () => GetCaptainProfile(sl<CaptainRepository>()),
     )
-    ..registerFactory<HomeCubit>(() => HomeCubit(sl<GetCaptainProfile>()));
+    ..registerFactory<HomeCubit>(() => HomeCubit(sl<GetCaptainProfile>()))
+    ..registerLazySingleton<NativeNetworkService>(() => NativeNetworkService())
+    ..registerLazySingleton<NetworkInfo>(
+      () => NetworkInfoImpl(sl<NativeNetworkService>()),
+    )
+    ..registerLazySingleton<NetworkSettingsService>(
+      () => NetworkSettingsServiceImpl(),
+    )
+    ..registerFactory<NetworkStatusCubit>(
+      () => NetworkStatusCubit(sl<NetworkInfo>()),
+    );
 }

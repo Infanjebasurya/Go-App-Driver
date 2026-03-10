@@ -490,8 +490,8 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                       Positioned.fill(
                         child: AppGoogleMap(
                           initialCameraPosition: const CameraPosition(
-                            target: LatLng(13.0638, 80.2181),
-                            zoom: 14.6,
+                            target: _driverPoint,
+                            zoom: 15.5,
                           ),
                           style: _mapStyle,
                           polylines: <Polyline>{
@@ -517,7 +517,6 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                           },
                           onMapCreated: (controller) {
                             _mapController = controller;
-                            unawaited(controller.animateTo(_driverPoint, zoom: 15.5));
                           },
                         ),
                       ),
@@ -686,3 +685,6 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     );
   }
 }
+
+
+

@@ -27,21 +27,7 @@ class RechargeWalletPage extends StatelessWidget {
           appBar: AppAppBar(
             backgroundColor: AppColors.surfaceF5,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: AppColors.black,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: const Text(
-              'Recharge Wallet',
-              style: TextStyle(
-                color: AppColors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
+            title: const Text('Recharge Wallet'),
             centerTitle: true,
           ),
           body: Column(
@@ -277,7 +263,7 @@ class _PaymentMethodTile extends StatelessWidget {
                   color: AppColors.emerald.withValues(alpha: 0.5),
                   width: 1.5,
                 )
-              : Border.all(color: Colors.transparent),
+              : Border.all(color: AppColors.transparent),
         ),
         child: Row(
           children: <Widget>[
@@ -333,5 +319,8 @@ class _PaymentMethodTile extends StatelessWidget {
     );
   }
 }
+
+
+
 
 

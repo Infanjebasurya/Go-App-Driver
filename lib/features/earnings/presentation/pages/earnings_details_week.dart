@@ -127,18 +127,11 @@ class _WeekDayDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: AppColors.hexFFF7F7F7,
       appBar: AppAppBar(
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: AppColors.hexFFF7F7F7,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Week',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Week'),
         centerTitle: true,
       ),
       body: Column(
@@ -228,7 +221,7 @@ class _PerformanceCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: Color(0x10000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(color: AppColors.hex10000000, blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -420,4 +413,8 @@ List<_DaySummary> _buildDaySummary(List<RideHistoryTrip> trips, {required bool c
   result.sort((a, b) => b.dayStart.compareTo(a.dayStart));
   return result;
 }
+
+
+
+
 

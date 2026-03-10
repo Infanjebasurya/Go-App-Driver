@@ -34,7 +34,7 @@ class TripCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isCancelled
@@ -43,7 +43,7 @@ class TripCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: AppColors.black.withValues(alpha: 0.02),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -88,7 +88,7 @@ class TripCard extends StatelessWidget {
                         const Icon(
                           Icons.location_on,
                           size: 16,
-                          color: Colors.black,
+                          color: AppColors.black,
                         ),
                       ],
                     ),
@@ -104,7 +104,7 @@ class TripCard extends StatelessWidget {
                                 timeRange,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: AppColors.gray[600],
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -115,7 +115,7 @@ class TripCard extends StatelessWidget {
                                     'Price',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey,
+                                      color: AppColors.gray,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -153,7 +153,7 @@ class TripCard extends StatelessWidget {
                           Text(
                             pickupAddress,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: AppColors.gray[600],
                               fontSize: 12,
                             ),
                           ),
@@ -168,7 +168,7 @@ class TripCard extends StatelessWidget {
                           Text(
                             dropAddress,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: AppColors.gray[600],
                               fontSize: 12,
                             ),
                           ),
@@ -185,3 +185,6 @@ class TripCard extends StatelessWidget {
     );
   }
 }
+
+
+

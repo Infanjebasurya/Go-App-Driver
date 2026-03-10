@@ -62,7 +62,7 @@ class StepProgressBar extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isCompleted || isCurrent
                         ? AppColors.emerald
-                        : const Color(0xFFE2E8F0),
+                        : AppColors.hexFFE2E8F0,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -74,3 +74,7 @@ class StepProgressBar extends StatelessWidget {
     );
   }
 }
+
+
+
+

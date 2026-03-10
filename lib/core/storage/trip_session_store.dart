@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+part 'trip_session_reader.dart';
+part 'trip_session_writer.dart';
+
 // ─── Stage ────────────────────────────────────────────────────────────────────
 
 /// Every distinct phase a trip goes through, in order.
@@ -402,39 +405,6 @@ class TripSession {
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
-/// Persists the active trip's complete data from order acceptance to final
-/// passenger rating, using [SharedPreferences].
-///
-/// One session key holds the current trip; a separate archive key holds the
-/// last [_archiveLimit] completed sessions so they survive restarts.
-///
-/// Call sites:
-/// ```
-/// // 1 – Available orders screen (order accepted)
-/// await TripSessionStore.startSession(pickupLatLng: ..., dropLatLng: ..., ...);
-///
-/// // 2 – Ride arrived screen
-/// await TripSessionStore.markArrivedAtPickup();
-///
-/// // 3 – Enter ride code screen (OTP confirmed, trip starts)
-/// await TripSessionStore.markTripStarted(rideCode: '1234');
-///
-/// // 4 – Passenger onboard screen (navigation begins)
-/// await TripSessionStore.markNavigationBegan(routePoints: [...]);
-///
-/// // 5 – Trip navigation screen (drop reached)
-/// await TripSessionStore.markTripCompleted();
-///
-/// // 6 – Ride complete screen (payment details received)
-/// await TripSessionStore.savePaymentDetails(totalEarnings: ..., ...);
-/// await TripSessionStore.markPaymentReceived();
-///
-/// // 7 – Rate experience screen (rating submitted)
-/// await TripSessionStore.savePassengerRating(stars: 5, tags: [...], comment: '');
-///
-/// // At home screen init (session cleanly ended)
-/// await TripSessionStore.endSession();
-/// ```
 class TripSessionStore {
   TripSessionStore._();
 
@@ -442,57 +412,10 @@ class TripSessionStore {
   static const String _archiveKey = 'trip_session_archive_v1';
   static const int _archiveLimit = 50;
 
-  // ── Read ──────────────────────────────────────────────────────────────────────
+  static Future<TripSession?> loadActive() => _loadActiveImpl();
 
-  /// Returns the currently active [TripSession], or `null` if no trip is running.
-  static Future<TripSession?> loadActive() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? raw = prefs.getString(_activeKey);
-    if (raw == null || raw.isEmpty) return null;
-    try {
-      final dynamic decoded = jsonDecode(raw);
-      if (decoded is! Map) return null;
-      final TripSession session =
-          TripSession.fromJson(Map<String, dynamic>.from(decoded));
-      if (session.id.isEmpty ||
-          session.stage == TripSessionStage.none) {
-        return null;
-      }
-      return session;
-    } catch (_) {
-      return null;
-    }
-  }
+  static Future<List<TripSession>> loadArchive() => _loadArchiveImpl();
 
-  /// Returns the archive of the last [_archiveLimit] completed sessions,
-  /// newest first.
-  static Future<List<TripSession>> loadArchive() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? raw = prefs.getString(_archiveKey);
-    if (raw == null || raw.isEmpty) return const <TripSession>[];
-    try {
-      final dynamic decoded = jsonDecode(raw);
-      if (decoded is! List) return const <TripSession>[];
-      return decoded
-          .whereType<Map>()
-          .map(
-            (dynamic e) =>
-                TripSession.fromJson(Map<String, dynamic>.from(e)),
-          )
-          .where((TripSession s) => s.id.isNotEmpty)
-          .toList(growable: false);
-    } catch (_) {
-      return const <TripSession>[];
-    }
-  }
-
-  // ── Stage 1: Order accepted ───────────────────────────────────────────────────
-
-  /// Creates a fresh session the moment the captain accepts an order.
-  ///
-  /// [pickupLatLng] and [dropLatLng] are the raw coordinates from the order
-  /// card.  They are persisted so that the correct destination is available
-  /// even after a crash and restart.
   static Future<void> startSession({
     required TripLatLng pickupLatLng,
     required TripLatLng dropLatLng,
@@ -500,12 +423,8 @@ class TripSessionStore {
     required String dropAddress,
     required String fareLabel,
     required String distanceLabel,
-  }) async {
-    final int now = DateTime.now().millisecondsSinceEpoch;
-    final TripSession session = TripSession(
-      id: 'trip_$now',
-      stage: TripSessionStage.orderAccepted,
-      acceptedAtEpochMs: now,
+  }) {
+    return _startSessionImpl(
       pickupLatLng: pickupLatLng,
       dropLatLng: dropLatLng,
       pickupAddress: pickupAddress,
@@ -513,88 +432,22 @@ class TripSessionStore {
       fareLabel: fareLabel,
       distanceLabel: distanceLabel,
     );
-    await _saveActive(session);
   }
 
-  // ── Stage 2: Arrived at pickup ────────────────────────────────────────────────
+  static Future<void> markArrivedAtPickup() => _markArrivedAtPickupImpl();
 
-  /// Records the timestamp when the captain reached the passenger pickup point.
-  static Future<void> markArrivedAtPickup() async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    await _saveActive(
-      session.copyWith(
-        stage: TripSessionStage.arrivedAtPickup,
-        arrivedAtPickupEpochMs: DateTime.now().millisecondsSinceEpoch,
-      ),
-    );
+  static Future<void> markTripStarted({required String rideCode}) {
+    return _markTripStartedImpl(rideCode: rideCode);
   }
 
-  // ── Stage 3: Trip started (OTP verified) ─────────────────────────────────────
-
-  /// Records the OTP the passenger gave and marks the trip as started.
-  ///
-  /// [rideCode] is the 4-digit string entered on the [EnterRideCodePage].
-  static Future<void> markTripStarted({required String rideCode}) async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    final int now = DateTime.now().millisecondsSinceEpoch;
-    await _saveActive(
-      session.copyWith(
-        stage: TripSessionStage.tripStarted,
-        rideCode: rideCode,
-        rideCodeEnteredEpochMs: now,
-        tripStartedEpochMs: now,
-      ),
-    );
-  }
-
-  // ── Stage 4: Navigation began ─────────────────────────────────────────────────
-
-  /// Records when the route animation / GPS navigation to the drop point began.
-  ///
-  /// [routePoints] is the list of LatLng coordinates that make up the computed
-  /// route.  Only the count and first/last points are persisted to keep the
-  /// payload small.
   static Future<void> markNavigationBegan({
     List<TripLatLng> routePoints = const <TripLatLng>[],
-  }) async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    await _saveActive(
-      session.copyWith(
-        stage: TripSessionStage.navigating,
-        navigationBeganEpochMs: DateTime.now().millisecondsSinceEpoch,
-        routePointCount: routePoints.length,
-        routeStartPoint:
-            routePoints.isNotEmpty ? routePoints.first : null,
-        routeEndPoint:
-            routePoints.isNotEmpty ? routePoints.last : null,
-      ),
-    );
+  }) {
+    return _markNavigationBeganImpl(routePoints: routePoints);
   }
 
-  // ── Stage 5: Trip completed ───────────────────────────────────────────────────
+  static Future<void> markTripCompleted() => _markTripCompletedImpl();
 
-  /// Records when the captain tapped "Complete Trip" at the drop location.
-  static Future<void> markTripCompleted() async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    await _saveActive(
-      session.copyWith(
-        stage: TripSessionStage.tripCompleted,
-        tripCompletedEpochMs: DateTime.now().millisecondsSinceEpoch,
-      ),
-    );
-  }
-
-  // ── Stage 6: Payment details ──────────────────────────────────────────────────
-
-  /// Caches the full payment breakdown received from the server (or mock).
-  ///
-  /// Call this as soon as [RideCompletionSummary] is available (e.g. in
-  /// [RideCompletedScreen.initState]).  [markPaymentReceived] should be called
-  /// separately when the captain confirms the passenger paid.
   static Future<void> savePaymentDetails({
     required double totalEarnings,
     required double tripFare,
@@ -603,123 +456,41 @@ class TripSessionStore {
     required double discountAmount,
     required String paymentLink,
     String method = 'cash',
-  }) async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    await _saveActive(
-      session.copyWith(
-        payment: TripPaymentDetails(
-          totalEarnings: totalEarnings,
-          tripFare: tripFare,
-          tips: tips,
-          discountPercent: discountPercent,
-          discountAmount: discountAmount,
-          paymentLink: paymentLink,
-          method: method,
-        ),
-      ),
+  }) {
+    return _savePaymentDetailsImpl(
+      totalEarnings: totalEarnings,
+      tripFare: tripFare,
+      tips: tips,
+      discountPercent: discountPercent,
+      discountAmount: discountAmount,
+      paymentLink: paymentLink,
+      method: method,
     );
   }
 
-  /// Marks that the captain has collected / confirmed payment from the passenger.
-  static Future<void> markPaymentReceived({String method = 'cash'}) async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    final int now = DateTime.now().millisecondsSinceEpoch;
-    final TripPaymentDetails updatedPayment =
-        session.payment != null
-            ? session.payment!.copyWith(
-                receivedAtEpochMs: now,
-                method: method,
-              )
-            : TripPaymentDetails(
-                totalEarnings: 0,
-                tripFare: 0,
-                tips: 0,
-                discountPercent: 0,
-                discountAmount: 0,
-                paymentLink: '',
-                method: method,
-                receivedAtEpochMs: now,
-              );
-    await _saveActive(
-      session.copyWith(
-        stage: TripSessionStage.paymentReceived,
-        payment: updatedPayment,
-      ),
-    );
+  static Future<void> markPaymentReceived({String method = 'cash'}) {
+    return _markPaymentReceivedImpl(method: method);
   }
 
-  // ── Stage 7: Passenger rating ─────────────────────────────────────────────────
-
-  /// Stores the captain's rating of the passenger and advances the session to
-  /// the final [TripSessionStage.rated] stage.
-  ///
-  /// After this call the session is automatically archived (moved from the
-  /// active slot into the archive list).
   static Future<void> savePassengerRating({
     required int stars,
     required List<String> tags,
     required String comment,
-  }) async {
-    final TripSession? session = await loadActive();
-    if (session == null) return;
-    final TripSession completed = session.copyWith(
-      stage: TripSessionStage.rated,
-      passengerRating: TripPassengerRating(
-        stars: stars,
-        tags: tags,
-        comment: comment,
-        submittedAtEpochMs: DateTime.now().millisecondsSinceEpoch,
-      ),
+  }) {
+    return _savePassengerRatingImpl(
+      stars: stars,
+      tags: tags,
+      comment: comment,
     );
-    await _saveActive(completed);
-    await _archiveSession(completed);
   }
 
-  // ── Lifecycle helpers ─────────────────────────────────────────────────────────
+  static Future<void> endSession() => _endSessionImpl();
 
-  /// Clears the active session slot.  Call from [HomeScreen.initState] after a
-  /// trip completes and the captain is back on the home screen.
-  static Future<void> endSession() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_activeKey);
-  }
+  static Future<void> clearAll() => _clearAllImpl();
 
-  /// Clears everything — both the active session and the archive.
-  /// Only for testing / dev use.
-  static Future<void> clearAll() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_activeKey);
-    await prefs.remove(_archiveKey);
-  }
+  static Future<void> _saveActive(TripSession session) => _saveActiveImpl(session);
 
-  // ── Private helpers ────────────────────────────────────────────────────────────
-
-  static Future<void> _saveActive(TripSession session) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_activeKey, jsonEncode(session.toJson()));
-  }
-
-  static Future<void> _archiveSession(TripSession session) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<TripSession> archive = (await loadArchive()).toList();
-    // Replace if the same id already exists (e.g. a re-submit), else prepend.
-    final int existing =
-        archive.indexWhere((TripSession s) => s.id == session.id);
-    if (existing == -1) {
-      archive.insert(0, session);
-    } else {
-      archive[existing] = session;
-    }
-    if (archive.length > _archiveLimit) {
-      archive.removeRange(_archiveLimit, archive.length);
-    }
-    await prefs.setString(
-      _archiveKey,
-      jsonEncode(
-        archive.map((TripSession s) => s.toJson()).toList(growable: false),
-      ),
-    );
+  static Future<void> _archiveSession(TripSession session) {
+    return _archiveSessionImpl(session);
   }
 }

@@ -83,7 +83,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: const AppAppBar(
           title: 'GoApp',
           backEnabled: false,
@@ -133,7 +133,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.grey.shade500,
+                            color: AppColors.gray.shade500,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -153,7 +153,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                             state.errors.photo!,
                             style: const TextStyle(
                               fontSize: 11,
-                              color: Color(0xFFE53935),
+                              color: AppColors.hexFFE53935,
                             ),
                           ),
                         ],
@@ -354,7 +354,7 @@ class _ContinueButton extends StatelessWidget {
             20,
       ),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         border: Border(top: BorderSide(color: AppColors.coolwhite)),
       ),
       child: SizedBox(
@@ -364,7 +364,7 @@ class _ContinueButton extends StatelessWidget {
           key: const Key('continue_button'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.emerald,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
@@ -377,7 +377,7 @@ class _ContinueButton extends StatelessWidget {
             height: 22,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
             ),
           )
               : const Text(
@@ -393,4 +393,8 @@ class _ContinueButton extends StatelessWidget {
     );
   }
 }
+
+
+
+
 

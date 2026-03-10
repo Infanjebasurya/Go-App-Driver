@@ -115,7 +115,7 @@ class _RLoginPageState extends State<RLoginPage> {
               );
             }
             return Scaffold(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               body: SafeArea(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
@@ -136,7 +136,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                   style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF111111),
+                                    color: AppColors.hexFF111111,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -229,7 +229,7 @@ class _RLoginPageState extends State<RLoginPage> {
                                     child: Text(
                                       formState.error!,
                                       style: const TextStyle(
-                                        color: Colors.red,
+                                        color: AppColors.red,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -328,3 +328,7 @@ class _RLoginPageState extends State<RLoginPage> {
     SnackBarUtils.show(context, 'Unable to open link');
   }
 }
+
+
+
+

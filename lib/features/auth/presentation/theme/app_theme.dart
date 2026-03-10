@@ -10,13 +10,13 @@ class AppTheme {
   static ThemeData lightTheme({required bool isTest}) {
     final colorScheme = const ColorScheme.light(
       primary: AppColors.emerald,
-      onPrimary: Colors.white,
+      onPrimary: AppColors.white,
       secondary: AppColors.violet,
-      onSecondary: Colors.white,
-      surface: Colors.white,
+      onSecondary: AppColors.white,
+      surface: AppColors.white,
       onSurface: AppColors.black,
       error: AppColors.red,
-      onError: Colors.white,
+      onError: AppColors.white,
     );
 
     final textTheme = ThemeData.light().textTheme.apply(
@@ -27,7 +27,7 @@ class AppTheme {
       fontFamily: AppFonts.saira,
       textTheme: textTheme,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: Colors.white,
+      scaffoldBackgroundColor: AppColors.white,
       useMaterial3: !isTest,
       splashFactory: isTest ? InkRipple.splashFactory : null,
       pageTransitionsTheme: const PageTransitionsTheme(
@@ -40,8 +40,8 @@ class AppTheme {
         },
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.black,
         elevation: 0,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontFamily: AppFonts.saira,
@@ -63,7 +63,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.emerald,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -84,3 +84,6 @@ class AppTheme {
     );
   }
 }
+
+
+

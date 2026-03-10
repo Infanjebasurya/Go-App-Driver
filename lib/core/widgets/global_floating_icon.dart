@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/sos/presentation/cubit/sos_cubit.dart';
 import 'package:goapp/features/sos/presentation/pages/sos_page.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 /// A lightweight in-app floating icon that stays above all pages.
 class GlobalFloatingIcon extends StatefulWidget {
@@ -101,7 +102,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                 child: Material(
                   elevation: 8,
                   borderRadius: BorderRadius.circular(14),
-                  color: Colors.white,
+                  color: AppColors.white,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minWidth: panelWidth,
@@ -119,7 +120,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black87,
+                              color: AppColors.black87,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -181,7 +182,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                     width: 24,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: Colors.black87,
+                      color: AppColors.black87,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(hiddenOnRight ? 16 : 0),
                         bottomLeft: Radius.circular(hiddenOnRight ? 16 : 0),
@@ -191,7 +192,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                     ),
                     child: Icon(
                       hiddenOnRight ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
                 ),
@@ -236,11 +237,11 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                     width: iconSize,
                     height: iconSize,
                     decoration: BoxDecoration(
-                      color: _isExpanded ? Colors.blueAccent : Colors.black87,
+                      color: _isExpanded ? AppColors.blue : AppColors.black87,
                       shape: BoxShape.circle,
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.25),
+                          color: AppColors.black.withValues(alpha: 0.25),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -248,7 +249,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                     ),
                     child: Icon(
                       _isExpanded ? Icons.close_rounded : Icons.open_in_new_rounded,
-                      color: Colors.white,
+                      color: AppColors.white,
                       size: 26,
                     ),
                   ),
@@ -260,3 +261,5 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
     );
   }
 }
+
+

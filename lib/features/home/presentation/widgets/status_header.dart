@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/notifications/presentation/pages/notifications_screen.dart';
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class DriverAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DriverAppBar({super.key});
@@ -18,11 +20,11 @@ class DriverAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DriverCubit, DriverState>(
       builder: (context, state) {
-        return AppBar(
-          backgroundColor: state.isOnline ? Colors.transparent : Colors.white,
+        return AppAppBar(
+          backgroundColor: state.isOnline ? AppColors.transparent : AppColors.white,
           elevation: state.isOnline ? 6 : 6,
-          shadowColor: Colors.black12,
-          surfaceTintColor: Colors.transparent,
+          shadowColor: AppColors.black12,
+          surfaceTintColor: AppColors.transparent,
           leading: Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu),
@@ -35,7 +37,7 @@ class DriverAppBar extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               icon: const Icon(
                 Icons.notifications_outlined,
-                color: Colors.black54,
+                color: AppColors.black54,
               ),
               onPressed: () {
                 Navigator.of(context).push(
@@ -63,7 +65,7 @@ class _ToggleSwitch extends StatelessWidget {
       onTap: () => unawaited(context.read<DriverCubit>().toggleStatus()),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFF0F0F0),
+          color: AppColors.hexFFF0F0F0,
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(3),
@@ -92,13 +94,13 @@ class _Tab extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: isSelected
-            ? (label == 'Online' ? AuthUiColors.brandGreen : Colors.grey)
-            : Colors.transparent,
+            ? (label == 'Online' ? AuthUiColors.brandGreen : AppColors.gray)
+            : AppColors.transparent,
         borderRadius: BorderRadius.circular(16),
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: AppColors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                 ),
               ]
@@ -108,8 +110,8 @@ class _Tab extends StatelessWidget {
         label,
         style: TextStyle(
           color: isSelected
-              ? (label == 'Online' ? Colors.white : Colors.black87)
-              : Colors.black54,
+              ? (label == 'Online' ? AppColors.white : AppColors.black87)
+              : AppColors.black54,
           fontWeight: FontWeight.w600,
           fontSize: 13,
         ),
@@ -117,3 +119,6 @@ class _Tab extends StatelessWidget {
     );
   }
 }
+
+
+

@@ -6,11 +6,12 @@ import '../theme/onboarding_ui_tokens.dart';
 import '../widgets/onboarding_flow_scope.dart';
 import '../widgets/onboarding_common.dart';
 import 'drive_earn_onboarding_page.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class CabAutoOnboardingPage extends StatelessWidget {
   const CabAutoOnboardingPage({super.key});
 
-  static const Color _yellow = Color(0xFFF8C84A);
+  static const Color _yellow = AppColors.hexFFF8C84A;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class CabAutoOnboardingPage extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -49,7 +50,7 @@ class CabAutoOnboardingPage extends StatelessWidget {
                   OnboardingSkipButton(
                     onTap: () => OnboardingFlowScope.finishToLogin(context),
                     topPadding: topPad,
-                    textColor: const Color(0x99111217),
+                    textColor: AppColors.hex99111217,
                   ),
                   Expanded(
                     flex: 8,
@@ -183,3 +184,6 @@ class _CurvedYellowPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
+

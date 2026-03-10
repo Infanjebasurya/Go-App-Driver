@@ -61,25 +61,7 @@ class _RateAppViewState extends State<_RateAppView> {
         backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
-        leading: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: const Padding(
-            padding: EdgeInsets.all(14),
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: AppColors.headingDark,
-              size: 14,
-            ),
-          ),
-        ),
-        title: const Text(
-          'Rate App',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.headingDark,
-          ),
-        ),
+        title: const Text('Rate App'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(color: AppColors.strokeLight, height: 1),
@@ -479,6 +461,9 @@ class _SubmitButton extends StatelessWidget {
     );
   }
 }
+
+
+
 
 
 

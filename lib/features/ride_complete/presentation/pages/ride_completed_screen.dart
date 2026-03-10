@@ -172,7 +172,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     return PopScope<void>(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: AppColors.gray[100],
         body: SafeArea(
           child: BlocBuilder<RideCompletedCubit, RideCompletedState>(
             builder: (BuildContext context, RideCompletedState state) {
@@ -194,12 +194,12 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.1),
+                        color: AppColors.green.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.check_circle,
-                        color: Colors.green,
+                        color: AppColors.green,
                         size: 60,
                       ),
                     ),
@@ -209,7 +209,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppColors.black87,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -217,7 +217,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                       'Total Earnings',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[600],
+                        color: AppColors.gray[600],
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -227,18 +227,18 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                       style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: AppColors.black,
                       ),
                     ),
                     const SizedBox(height: 40),
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: AppColors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -282,11 +282,11 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                     const SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: AppColors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -311,7 +311,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                                 children: [
                                   const Icon(
                                     Icons.qr_code,
-                                    color: Colors.black87,
+                                    color: AppColors.black87,
                                   ),
                                   const SizedBox(width: 12),
                                   Column(
@@ -323,14 +323,14 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
+                                          color: AppColors.black87,
                                         ),
                                       ),
                                       Text(
                                         'Show to Customer',
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: Colors.grey[600],
+                                          color: AppColors.gray[600],
                                         ),
                                       ),
                                     ],
@@ -340,7 +340,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                                     state.isQrExpanded
                                         ? Icons.keyboard_arrow_up
                                         : Icons.keyboard_arrow_down,
-                                    color: Colors.grey[600],
+                                    color: AppColors.gray[600],
                                   ),
                                 ],
                               ),
@@ -356,15 +356,15 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey[200]!),
+                                  border: Border.all(color: AppColors.gray[200]!),
                                 ),
                                 child: QrImageView(
                                   data: state.summary.paymentLink,
                                   version: QrVersions.auto,
                                   size: 200.0,
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: AppColors.white,
                                 ),
                               ),
                             ),
@@ -399,13 +399,13 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                             ),
                             SizedBox(width: 8),
                             Icon(
                               Icons.check_circle,
-                              color: Colors.white,
+                              color: AppColors.white,
                               size: 20,
                             ),
                           ],
@@ -528,7 +528,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
           label,
           style: TextStyle(
             fontSize: 15,
-            color: Colors.grey[600],
+            color: AppColors.gray[600],
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -537,11 +537,14 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: isDiscount ? Colors.red : Colors.black87,
+            color: isDiscount ? AppColors.red : AppColors.black87,
           ),
         ),
       ],
     );
   }
 }
+
+
+
 

@@ -236,7 +236,6 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                 },
                 onMapCreated: (controller) {
                   _mapController = controller;
-                  unawaited(_focusRouteInView());
                 },
               ),
             ),
@@ -246,7 +245,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
               child: const Icon(
                 Icons.location_pin,
                 size: 34,
-                color: Color(0xFFE91E63),
+                color: AppColors.hexFFE91E63,
               ),
             ),
             const Align(
@@ -519,7 +518,7 @@ class _MapCenterMarker extends StatelessWidget {
           width: 84,
           height: 84,
           decoration: const BoxDecoration(
-            color: Color(0x3325C59A),
+            color: AppColors.hex3325C59A,
             shape: BoxShape.circle,
           ),
         ),
@@ -536,4 +535,8 @@ class _MapCenterMarker extends StatelessWidget {
     );
   }
 }
+
+
+
+
 

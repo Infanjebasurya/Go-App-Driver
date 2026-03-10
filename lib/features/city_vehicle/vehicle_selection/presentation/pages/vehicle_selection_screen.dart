@@ -55,7 +55,7 @@ class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: const AppAppBar(
           title: 'GoApp',
           backEnabled: false,
@@ -89,7 +89,7 @@ class _VehicleSelectionViewState extends State<_VehicleSelectionView> {
                         'Select the vehicle you want do drive with',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey.shade500,
+                          color: AppColors.gray.shade500,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -179,7 +179,7 @@ class _ConfirmButton extends StatelessWidget {
             key: const Key('confirm_vehicle_button'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.emerald,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
@@ -202,4 +202,7 @@ class _ConfirmButton extends StatelessWidget {
     );
   }
 }
+
+
+
 

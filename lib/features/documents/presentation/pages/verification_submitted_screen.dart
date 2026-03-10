@@ -124,7 +124,7 @@ class _VerificationSubmittedScreenState
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: AppAppBar(
           title: 'GoApp',
           backEnabled: false,
@@ -147,7 +147,7 @@ class _VerificationSubmittedScreenState
                         const SizedBox(height: 24),
                         Container(
                           width: double.infinity,
-                          decoration: const BoxDecoration(color: Colors.white),
+                          decoration: const BoxDecoration(color: AppColors.white),
                           child: Center(
                             child: Image.asset(
                               'assets/image/register_success.png',
@@ -180,7 +180,7 @@ class _VerificationSubmittedScreenState
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
-                                    color: Colors.grey.shade500,
+                                    color: AppColors.gray.shade500,
                                     height: 1.6,
                                     letterSpacing: 0.1,
                                   ),
@@ -227,7 +227,7 @@ class _GoHomeButton extends StatelessWidget {
             20,
       ),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         border: Border(top: BorderSide(color: AppColors.coolwhite)),
       ),
       child: SizedBox(
@@ -237,7 +237,7 @@ class _GoHomeButton extends StatelessWidget {
           key: const Key('go_home_button'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.emerald,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
@@ -269,4 +269,7 @@ class _GoHomeButton extends StatelessWidget {
     );
   }
 }
+
+
+
 

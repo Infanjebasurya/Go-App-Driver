@@ -64,7 +64,7 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: const AppAppBar(title: 'GoApp', backEnabled: false),
         bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
           builder: (context, state) {
@@ -160,7 +160,7 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: Colors.grey.shade400,
+                          color: AppColors.gray.shade400,
                           letterSpacing: 1.1,
                         ),
                       ),
@@ -230,10 +230,10 @@ class _SearchBar extends StatelessWidget {
           color: AppColors.headingNavy,
         ),
         hint: 'Search for your city...',
-        hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+        hintStyle: TextStyle(fontSize: 14, color: AppColors.gray.shade400),
         leading: Icon(
           Icons.search_rounded,
-          color: Colors.grey.shade400,
+          color: AppColors.gray.shade400,
           size: 20,
         ),
         trailing: controller.text.isNotEmpty
@@ -241,12 +241,12 @@ class _SearchBar extends StatelessWidget {
           onTap: onClear,
           child: Icon(
             Icons.close_rounded,
-            color: Colors.grey.shade400,
+            color: AppColors.gray.shade400,
             size: 18,
           ),
         )
             : null,
-        borderColor: Colors.grey.shade400,
+        borderColor: AppColors.gray.shade400,
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       ),
     );
@@ -266,12 +266,12 @@ class _EmptyState extends StatelessWidget {
           Icon(
             Icons.location_off_rounded,
             size: 44,
-            color: Colors.grey.shade300,
+            color: AppColors.gray.shade300,
           ),
           const SizedBox(height: 12),
           Text(
             'No cities found for "$query"',
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+            style: TextStyle(fontSize: 14, color: AppColors.gray.shade400),
           ),
         ],
       ),
@@ -308,7 +308,7 @@ class _ContinueButton extends StatelessWidget {
             key: const Key('continue_button'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.emerald,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
@@ -329,4 +329,7 @@ class _ContinueButton extends StatelessWidget {
     );
   }
 }
+
+
+
 

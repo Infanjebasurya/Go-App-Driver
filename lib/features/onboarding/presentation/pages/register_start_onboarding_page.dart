@@ -5,18 +5,19 @@ import '../theme/onboarding_ui_tokens.dart';
 import '../widgets/onboarding_flow_scope.dart';
 import '../widgets/onboarding_common.dart';
 import 'upload_documents_onboarding_page.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class BikeTaxiOnboardingPage extends StatelessWidget {
   const BikeTaxiOnboardingPage({super.key});
 
-  static const Color _blue = Color(0xFF0F4CB9);
+  static const Color _blue = AppColors.hexFF0F4CB9;
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         body: SafeArea(
           child: Column(
             children: [
@@ -136,3 +137,6 @@ class _DiagonalBluePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
+

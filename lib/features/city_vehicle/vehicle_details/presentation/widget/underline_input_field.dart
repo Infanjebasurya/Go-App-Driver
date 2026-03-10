@@ -42,7 +42,7 @@ class UnderlineInputField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: hasError ? const Color(0xFFE53935) : const Color(0xFF8FA0B0),
+            color: hasError ? AppColors.hexFFE53935 : AppColors.hexFF8FA0B0,
             letterSpacing: 0.2,
           ),
         ),
@@ -61,42 +61,42 @@ class UnderlineInputField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             hintText: hint,
             hintStyle: TextStyle(
               fontSize: 15,
-              color: Colors.grey.shade400,
+              color: AppColors.gray.shade400,
               fontWeight: FontWeight.w400,
             ),
             suffixIcon: readOnly
                 ? const Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    color: Color(0xFF8FA0B0),
+                    color: AppColors.hexFF8FA0B0,
                     size: 22,
                   )
                 : null,
             suffixText: suffixText,
             errorText: errorText,
-            errorStyle: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+            errorStyle: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: hasError
-                    ? const Color(0xFFE53935)
-                    : const Color(0xFFE2E8F0),
+                    ? AppColors.hexFFE53935
+                    : AppColors.hexFFE2E8F0,
                 width: 1.2,
               ),
             ),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError ? const Color(0xFFE53935) : AppColors.emerald,
+                color: hasError ? AppColors.hexFFE53935 : AppColors.emerald,
                 width: 1.8,
               ),
             ),
             errorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 1.2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 1.2),
             ),
             focusedErrorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 1.8),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 1.8),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -106,3 +106,7 @@ class UnderlineInputField extends StatelessWidget {
     );
   }
 }
+
+
+
+

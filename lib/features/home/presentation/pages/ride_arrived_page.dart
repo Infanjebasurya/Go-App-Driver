@@ -4,13 +4,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/directions_route_service.dart';
+import 'package:goapp/core/service/location_service.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
@@ -54,6 +54,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   final MapStyleLoader _styleLoader = const MapStyleLoader();
   final LocationPermissionGuard _locationGuard =
       const LocationPermissionGuard();
+  final LocationService _locationService = const LocationService();
   final DirectionsRouteService _directionsRouteService =
       DirectionsRouteService();
 
@@ -215,16 +216,13 @@ class _RideArrivedPageState extends State<RideArrivedPage>
         return _fallbackDriverPoint;
       }
 
-      final Position? known = await Geolocator.getLastKnownPosition();
+      final AppLocationPosition? known = await _locationService.getLastKnownPosition();
       if (known != null) {
         return LatLng(known.latitude, known.longitude);
       }
 
-      final Position fresh = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 8),
-        ),
+      final AppLocationPosition fresh = await _locationService.getCurrentPosition(
+        timeLimit: const Duration(seconds: 8),
       );
       return LatLng(fresh.latitude, fresh.longitude);
     } catch (_) {
@@ -395,7 +393,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) => _CancellationReasonSheet(
         customerCancellationFee: customerCancellationFee,
         onConfirm: (String canceledBy, String reason) async {
@@ -495,7 +493,6 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                   myLocationButtonEnabled: false,
                   onMapCreated: (controller) {
                     _mapController = controller;
-                    unawaited(_focusRouteInView());
                   },
                 ),
               ),
@@ -675,3 +672,6 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     }
   }
 }
+
+
+

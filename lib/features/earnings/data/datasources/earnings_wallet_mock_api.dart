@@ -66,6 +66,7 @@ class EarningsWalletMockApi {
         isCredit: true,
         type: WalletTransactionType.recharge,
         eventEpochMs: DateTime.now().millisecondsSinceEpoch,
+        status: WalletTransactionStatus.completed,
       ),
     );
     return _round2(updatedBalance);
@@ -81,6 +82,7 @@ class EarningsWalletMockApi {
         isCredit: false,
         type: WalletTransactionType.withdrawal,
         eventEpochMs: DateTime.now().millisecondsSinceEpoch,
+        status: WalletTransactionStatus.completed,
       ),
     );
     return _round2(updatedBalance);
@@ -115,34 +117,65 @@ class EarningsWalletMockApi {
   Future<List<TransactionItem>> _loadWalletOperationTransactions() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? raw = prefs.getString(_walletOpsKey);
-    if (raw == null || raw.isEmpty) return const <TransactionItem>[];
+    final List<_WalletOperationRecord> mockRecords = _buildMockRechargeStatuses();
+    if (raw == null || raw.isEmpty) {
+      return mockRecords.map(_walletRecordToTransaction).toList(growable: false);
+    }
     try {
       final dynamic decoded = jsonDecode(raw);
-      if (decoded is! List) return const <TransactionItem>[];
-      return decoded
+      if (decoded is! List) {
+        return mockRecords.map(_walletRecordToTransaction).toList(growable: false);
+      }
+      final List<_WalletOperationRecord> stored = decoded
           .whereType<Map>()
           .map(
             (e) => _WalletOperationRecord.fromJson(Map<String, dynamic>.from(e)),
           )
-          .map(
-            (record) => TransactionItem(
-              id: record.id,
-              title: record.type == WalletTransactionType.withdrawal
-                  ? 'Bank Transfer'
-                  : 'Wallet Recharge',
-              subtitle: _formatRelativeTime(record.eventEpochMs),
-              amount:
-                  '${record.isCredit ? '+' : '-'}\u20B9${record.amount.toStringAsFixed(2)}',
-              amountValue: record.amount,
-              isCredit: record.isCredit,
-              type: record.type,
-              eventEpochMs: record.eventEpochMs,
-            ),
-          )
+          .toList(growable: false);
+      return <_WalletOperationRecord>[...stored, ...mockRecords]
+          .map(_walletRecordToTransaction)
           .toList(growable: false);
     } catch (_) {
-      return const <TransactionItem>[];
+      return mockRecords.map(_walletRecordToTransaction).toList(growable: false);
     }
+  }
+
+  TransactionItem _walletRecordToTransaction(_WalletOperationRecord record) {
+    return TransactionItem(
+      id: record.id,
+      title: record.type == WalletTransactionType.withdrawal
+          ? 'Bank Transfer'
+          : 'Wallet Recharge',
+      subtitle: _formatRelativeTime(record.eventEpochMs),
+      amount: '${record.isCredit ? '+' : '-'}\u20B9${record.amount.toStringAsFixed(2)}',
+      amountValue: record.amount,
+      isCredit: record.isCredit,
+      type: record.type,
+      eventEpochMs: record.eventEpochMs,
+      status: record.status,
+    );
+  }
+
+  List<_WalletOperationRecord> _buildMockRechargeStatuses() {
+    final DateTime now = DateTime.now();
+    return <_WalletOperationRecord>[
+      _WalletOperationRecord(
+        id: 'wallet_recharge_pending_mock',
+        amount: 450,
+        isCredit: true,
+        type: WalletTransactionType.recharge,
+        eventEpochMs: now.subtract(const Duration(days: 1, hours: 2)).millisecondsSinceEpoch,
+        status: WalletTransactionStatus.pending,
+      ),
+      _WalletOperationRecord(
+        id: 'wallet_recharge_cancelled_mock',
+        amount: 700,
+        isCredit: true,
+        type: WalletTransactionType.recharge,
+        eventEpochMs: now.subtract(const Duration(days: 2, hours: 4)).millisecondsSinceEpoch,
+        status: WalletTransactionStatus.cancelled,
+      ),
+    ];
   }
 
   Future<void> _appendWalletOperation(_WalletOperationRecord record) async {
@@ -207,6 +240,7 @@ class _WalletOperationRecord {
     required this.isCredit,
     required this.type,
     required this.eventEpochMs,
+    this.status = WalletTransactionStatus.completed,
   });
 
   final String id;
@@ -214,6 +248,7 @@ class _WalletOperationRecord {
   final bool isCredit;
   final WalletTransactionType type;
   final int eventEpochMs;
+  final WalletTransactionStatus status;
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -222,6 +257,7 @@ class _WalletOperationRecord {
       'isCredit': isCredit,
       'type': type.name,
       'eventEpochMs': eventEpochMs,
+      'status': status.name,
     };
   }
 
@@ -231,12 +267,19 @@ class _WalletOperationRecord {
       (value) => value.name == rawType,
       orElse: () => WalletTransactionType.recharge,
     );
+    final String rawStatus =
+        (json['status'] as String?) ?? WalletTransactionStatus.completed.name;
+    final WalletTransactionStatus status = WalletTransactionStatus.values.firstWhere(
+      (value) => value.name == rawStatus,
+      orElse: () => WalletTransactionStatus.completed,
+    );
     return _WalletOperationRecord(
       id: (json['id'] as String?) ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0,
       isCredit: (json['isCredit'] as bool?) ?? true,
       type: type,
       eventEpochMs: (json['eventEpochMs'] as num?)?.toInt() ?? 0,
+      status: status,
     );
   }
 }

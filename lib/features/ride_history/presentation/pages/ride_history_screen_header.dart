@@ -22,7 +22,7 @@ class _SummaryPanel extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[Color(0xFF0EA271), Color(0xFF0C8E64)],
+          colors: <Color>[AppColors.hexFF0EA271, AppColors.hexFF0C8E64],
         ),
       ),
       child: Column(
@@ -271,3 +271,7 @@ class _EmptyResultState extends StatelessWidget {
     );
   }
 }
+
+
+
+

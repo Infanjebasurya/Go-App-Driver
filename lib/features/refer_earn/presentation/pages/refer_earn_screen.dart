@@ -1,14 +1,19 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unused_element
+
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+
 import '../../domain/entities/referral.dart';
 import '../cubit/referral_cubit.dart';
 import '../cubit/referral_state.dart';
 import '../widget/key_star_badge.dart';
-import 'package:goapp/core/widgets/app_app_bar.dart';
-import 'package:goapp/core/widgets/shadow_button.dart';
+import 'refer_earn_screen/referral_components.dart';
+import 'refer_earn_screen/referral_history_list.dart';
 
 class ReferEarnScreen extends StatelessWidget {
   const ReferEarnScreen({super.key});
@@ -31,7 +36,7 @@ class _ReferEarnView extends StatelessWidget {
       builder: (context, state) {
         if (state is ReferralLoading || state is ReferralInitial) {
           return const Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             body: Center(
               child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
             ),
@@ -47,13 +52,14 @@ class _ReferEarnView extends StatelessWidget {
 }
 
 class _MainReferScreen extends StatelessWidget {
-  final ReferralLoaded state;
   const _MainReferScreen({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: _buildAppBar(context, 'Refer & Earn'),
       body: Column(
         children: [
@@ -125,8 +131,9 @@ class _MainReferScreen extends StatelessWidget {
 }
 
 class _BikeReferralDetailScreen extends StatelessWidget {
-  final ReferralLoaded state;
   const _BikeReferralDetailScreen({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +141,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
     final completed = state.completed.length;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: _buildAppBar(context, 'Bike Referral Program'),
       body: Column(
         children: [
@@ -148,11 +155,11 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: AppColors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -175,7 +182,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Colors.grey.shade500,
+                            color: AppColors.gray.shade500,
                             height: 1.5,
                           ),
                         ),
@@ -209,12 +216,12 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(24),
                       //   border: Border.all(color: AppColors.strokeLight),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: AppColors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -338,11 +345,9 @@ class ReferralPendingScreen extends StatelessWidget {
         builder: (context, state) {
           if (state is! ReferralLoaded) {
             return const Scaffold(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               body: Center(
-                child: CircularProgressIndicator(
-                  color: AuthUiColors.brandGreen,
-                ),
+                child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
               ),
             );
           }
@@ -354,19 +359,20 @@ class ReferralPendingScreen extends StatelessWidget {
 }
 
 class _PendingView extends StatelessWidget {
-  final ReferralLoaded state;
   const _PendingView({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surfaceF5,
-      appBar: _buildAppBar(context, 'Pending'),
+      appBar: buildReferEarnAppBar(context, 'Pending'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _EarningsCard(
+            EarningsCard(
               earnings: state.pending.fold<int>(
                 0,
                 (sum, r) => sum + r.estimatedReward,
@@ -374,14 +380,11 @@ class _PendingView extends StatelessWidget {
               label: 'TOTAL EARNINGS',
             ),
             const SizedBox(height: 16),
-            _ReferralSummaryBanner(
-              count: state.pending.length,
+            ReferralHistoryList(
+              people: state.pending,
               label: 'Referrals in Progress',
               subLabel: 'KEEP TRACKING YOUR REWARDS',
-              icon: Icons.pending_actions,
             ),
-            const SizedBox(height: 12),
-            ...state.pending.map((p) => _ReferralPersonCard(person: p)),
           ],
         ),
       ),
@@ -400,11 +403,9 @@ class ReferralCompletedScreen extends StatelessWidget {
         builder: (context, state) {
           if (state is! ReferralLoaded) {
             return const Scaffold(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               body: Center(
-                child: CircularProgressIndicator(
-                  color: AuthUiColors.brandGreen,
-                ),
+                child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
               ),
             );
           }
@@ -416,19 +417,20 @@ class ReferralCompletedScreen extends StatelessWidget {
 }
 
 class _CompletedView extends StatelessWidget {
-  final ReferralLoaded state;
   const _CompletedView({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: _buildAppBar(context, 'Completed'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _EarningsCard(
+            EarningsCard(
               earnings: state.completed.fold<int>(
                 0,
                 (sum, r) => sum + r.estimatedReward,
@@ -436,14 +438,11 @@ class _CompletedView extends StatelessWidget {
               label: 'TOTAL EARNINGS',
             ),
             const SizedBox(height: 24),
-            _ReferralSummaryBanner(
-              count: state.completed.length,
+            ReferralHistoryList(
+              people: state.completed,
               label: 'Referrals in Completed',
               subLabel: 'GETTING YOUR REWARDS',
-              icon: Icons.pending_actions,
             ),
-            const SizedBox(height: 12),
-            ...state.completed.map((p) => _ReferralPersonCard(person: p)),
           ],
         ),
       ),
@@ -453,28 +452,10 @@ class _CompletedView extends StatelessWidget {
 
 PreferredSizeWidget _buildAppBar(BuildContext context, String title) {
   return AppAppBar(
-    backgroundColor: Colors.white,
+    backgroundColor: AppColors.white,
     elevation: 0,
     centerTitle: true,
-    leading: GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
-      child: const Padding(
-        padding: EdgeInsets.all(14),
-        child: Icon(
-          Icons.arrow_back_ios,
-          color: AppColors.headingDark,
-          size: 14,
-        ),
-      ),
-    ),
-    title: Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: AppColors.headingDark,
-      ),
-    ),
+    title: Text(title),
     bottom: PreferredSize(
       preferredSize: const Size.fromHeight(1),
       child: Container(color: AppColors.strokeLight, height: 1),
@@ -492,11 +473,11 @@ class _HeroCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -544,7 +525,7 @@ class _HeroCard extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              const Icon(Icons.chevron_right, color: Colors.grey),
+              const Icon(Icons.chevron_right, color: AppColors.gray),
             ],
           ),
         ],
@@ -577,11 +558,11 @@ class _CampaignRow extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: AppColors.black.withValues(alpha: 0.03),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -618,7 +599,7 @@ class _CampaignRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+            const Icon(Icons.chevron_right, color: AppColors.gray, size: 20),
           ],
         ),
       ),
@@ -641,7 +622,7 @@ class _ReferralCodeBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.strokeLight),
       ),
@@ -706,7 +687,7 @@ class _InviteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: AppColors.white,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
       child: SizedBox(
         height: 54,
@@ -714,7 +695,7 @@ class _InviteButton extends StatelessWidget {
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
             backgroundColor: AuthUiColors.brandGreen,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
@@ -742,11 +723,11 @@ class _EarningsCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 6),
           ),
@@ -814,11 +795,11 @@ class _ReferralSummaryBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 1),
           ),
@@ -871,11 +852,11 @@ class _ReferralPersonCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -889,14 +870,14 @@ class _ReferralPersonCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF2C2C2C),
+                  color: AppColors.hexFF2C2C2C,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Text(
                     person.initials,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
@@ -931,7 +912,7 @@ class _ReferralPersonCard extends StatelessWidget {
                             'Reward Credited',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
+                              color: AppColors.gray,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -942,7 +923,7 @@ class _ReferralPersonCard extends StatelessWidget {
                         person.sentAgo,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: AppColors.gray,
                         ),
                       ),
                     if (person.completedDate != null)
@@ -1043,14 +1024,14 @@ class _ReferralPersonCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: AppColors.hexFFF1F5F9,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
                   const Icon(
                     Icons.shield_moon_outlined,
-                    color: Color(0xFF3B82F6),
+                    color: AppColors.hexFF3B82F6,
                     size: 24,
                   ),
                   const SizedBox(width: 8),
@@ -1201,6 +1182,10 @@ class _StatCol extends StatelessWidget {
     );
   }
 }
+
+
+
+
 
 
 

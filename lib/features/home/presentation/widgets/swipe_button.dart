@@ -103,11 +103,11 @@ class _SwipeToggleButtonState extends State<SwipeToggleButton>
             width: _trackWidth,
             height: _trackHeight,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(_trackHeight / 2),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
+                  color: AppColors.black.withValues(alpha: 0.08),
                   blurRadius: 14,
                   offset: const Offset(0, 4),
                 ),
@@ -170,7 +170,7 @@ class _SwipeToggleButtonState extends State<SwipeToggleButton>
                       widget.isOnline
                           ? Icons.chevron_left
                           : Icons.chevron_right,
-                      color: Colors.white,
+                      color: AppColors.white,
                       size: 28,
                     ),
                   ),
@@ -183,3 +183,6 @@ class _SwipeToggleButtonState extends State<SwipeToggleButton>
     );
   }
 }
+
+
+

@@ -133,7 +133,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFFC5A059),
+                      color: AppColors.hexFFC5A059,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -284,4 +284,8 @@ class _KeypadNumberButton extends StatelessWidget {
     );
   }
 }
+
+
+
+
 
