@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 class LocationPermissionPromptStore {
   LocationPermissionPromptStore._();
@@ -8,7 +8,7 @@ class LocationPermissionPromptStore {
       'location_permission_pending_settings_prompt_v1';
 
   static Future<void> noteDeniedAttempt() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final int nextCount = (prefs.getInt(_denyCountKey) ?? 0) + 1;
     await prefs.setInt(_denyCountKey, nextCount);
     if (nextCount >= 2) {
@@ -17,13 +17,13 @@ class LocationPermissionPromptStore {
   }
 
   static Future<void> clearDeniedHistory() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.remove(_denyCountKey);
     await prefs.setBool(_pendingSettingsPromptKey, false);
   }
 
   static Future<bool> consumePendingSettingsPrompt() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final bool pending = prefs.getBool(_pendingSettingsPromptKey) ?? false;
     if (!pending) return false;
     await prefs.setBool(_pendingSettingsPromptKey, false);

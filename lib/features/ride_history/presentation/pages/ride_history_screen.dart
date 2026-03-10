@@ -5,6 +5,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/ride_history/presentation/cubit/ride_history_cubit.dart';
 import 'package:goapp/features/ride_history/presentation/cubit/ride_history_state.dart';
+import 'package:goapp/core/di/injection.dart';
 
 part 'ride_history_screen_header.dart';
 part 'ride_history_screen_trip_card.dart';
@@ -23,13 +24,14 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _cubit = RideHistoryCubit();
+    _cubit = sl<RideHistoryCubit>();
     _cubit.loadHistory();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _cubit.close();
     super.dispose();
   }
 

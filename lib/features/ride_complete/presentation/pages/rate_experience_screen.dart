@@ -7,27 +7,21 @@ import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
-import 'package:goapp/features/ride_complete/data/repositories/ride_complete_repository_impl.dart';
-import 'package:goapp/features/ride_complete/domain/usecases/get_feedback_tags.dart';
-import 'package:goapp/features/ride_complete/domain/usecases/submit_ride_feedback.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_cubit.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_state.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'dart:io';
+import 'package:goapp/core/di/injection.dart';
 
 class RateExperienceScreen extends StatelessWidget {
   const RateExperienceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final repository = RideCompleteRepositoryImpl();
     return BlocProvider<RateExperienceCubit>(
-      create: (_) => RateExperienceCubit(
-        GetFeedbackTags(repository),
-        SubmitRideFeedback(repository),
-      ),
+      create: (_) => sl<RateExperienceCubit>(),
       child: const _RateExperienceView(),
     );
   }
@@ -79,7 +73,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => BlocProvider<DriverCubit>(
-          create: (_) => DriverCubit()..goOnline(),
+          create: (_) => sl<DriverCubit>()..goOnline(),
           child: const HomeScreen(),
         ),
       ),
@@ -211,22 +205,24 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (int index) {
-                        return GestureDetector(
+                        return InkResponse(
                           onTap: () {
                             context.read<RateExperienceCubit>().selectRating(
                               index + 1,
                             );
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4.0,
-                            ),
-                            child: Icon(
-                              Icons.star,
-                              size: 32,
-                              color: index < state.selectedRating
-                                  ? AppColors.hexFFFFC107
-                                  : AppColors.gray[300],
+                          radius: 28,
+                          child: SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(
+                              child: Icon(
+                                Icons.star,
+                                size: 32,
+                                color: index < state.selectedRating
+                                    ? AppColors.hexFFFFC107
+                                    : AppColors.gray[300],
+                              ),
                             ),
                           ),
                         );
@@ -255,6 +251,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         return FilterChip(
                           label: Text(tag),
                           selected: isSelected,
+                          showCheckmark: false,
                           onSelected: (_) {
                             context.read<RateExperienceCubit>().toggleTag(tag);
                           },
@@ -329,6 +326,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: () async {
                           // TripSessionStore: save the passenger rating.
@@ -344,9 +342,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(28),
                           ),
                           elevation: 0,
                         ),

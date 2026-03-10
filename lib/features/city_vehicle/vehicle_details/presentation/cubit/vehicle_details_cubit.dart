@@ -1,18 +1,26 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/file_picker_service.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/model/vehicle_details_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 
 class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
-  VehicleDetailsCubit({required VehicleType vehicleType})
-      : super(VehicleDetailsState.initial(vehicleType: vehicleType));
+  VehicleDetailsCubit({
+    required VehicleType vehicleType,
+    required ImagePickerService imagePickerService,
+    required FilePickerService filePickerService,
+    required PermissionService permissionService,
+  }) : _imagePickerService = imagePickerService,
+       _filePickerService = filePickerService,
+       _permissionService = permissionService,
+       super(VehicleDetailsState.initial(vehicleType: vehicleType));
 
-  final ImagePicker _picker = ImagePicker();
-  final PermissionService _permissionService = const PermissionService();
+  final ImagePickerService _imagePickerService;
+  final FilePickerService _filePickerService;
+  final PermissionService _permissionService;
 
   void updateModelName(String value) {
     final err = state.errors.copyWith(clearModel: value.trim().isNotEmpty);
@@ -70,7 +78,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     return true;
   }
 
-  Future<void> pickPhoto({required ImageSource source}) async {
+  Future<void> pickPhoto({required AppImageSource source}) async {
     if (state.errors.photo != null) {
       emit(state.copyWith(errors: state.errors.copyWith(clearPhoto: true)));
     }
@@ -80,7 +88,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       emit(
         state.copyWith(
           errors: state.errors.copyWith(
-            photo: source == ImageSource.camera
+            photo: source == AppImageSource.camera
                 ? 'Camera permission is required'
                 : 'Photo library permission is required',
           ),
@@ -90,14 +98,10 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     }
 
 
-    if (source == ImageSource.gallery) {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        withData: false,
-      );
-      if (result == null || result.files.isEmpty) return;
-      final file = result.files.single;
-      if (!_validateFileSize(file.size)) return;
+    if (source == AppImageSource.gallery) {
+      final file = await _filePickerService.pickImage();
+      if (file == null) return;
+      if (!_validateFileSize(file.sizeBytes)) return;
       emit(
         state.copyWith(
           hasPhoto: true,
@@ -109,7 +113,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       );
       return;
     } else {
-      final picked = await _picker.pickImage(
+      final picked = await _imagePickerService.pickImage(
         source: source,
         imageQuality: 100,
       );
@@ -134,14 +138,11 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       emit(state.copyWith(errors: state.errors.copyWith(clearPhoto: true)));
     }
 
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
+    final file = await _filePickerService.pickCustom(
       allowedExtensions: const ['pdf', 'doc', 'docx'],
-      withData: false,
     );
-    if (result == null || result.files.isEmpty) return;
-    final file = result.files.single;
-    if (!_validateFileSize(file.size)) return;
+    if (file == null) return;
+    if (!_validateFileSize(file.sizeBytes)) return;
 
     emit(
       state.copyWith(
@@ -164,12 +165,12 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     );
   }
 
-  Future<bool> _ensurePermission(ImageSource source) async {
-    if (source == ImageSource.gallery && Platform.isAndroid) {
+  Future<bool> _ensurePermission(AppImageSource source) async {
+    if (source == AppImageSource.gallery && Platform.isAndroid) {
       return true;
     }
 
-    final AppPermission permission = source == ImageSource.camera
+    final AppPermission permission = source == AppImageSource.camera
         ? AppPermission.camera
         : AppPermission.photos;
 

@@ -282,18 +282,18 @@ class _LocationLine extends StatelessWidget {
               children: <Widget>[
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.neutral666,
-                  ),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.neutral666,
+                    ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
                   style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.neutral333,
                     height: 1.3,
                   ),
@@ -326,7 +326,7 @@ class _InfoRow extends StatelessWidget {
               label,
               style: const TextStyle(
                 fontSize: 12.5,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: AppColors.neutral666,
               ),
             ),
@@ -337,7 +337,7 @@ class _InfoRow extends StatelessWidget {
               value,
               style: const TextStyle(
                 fontSize: 12.5,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: AppColors.neutral333,
               ),
             ),

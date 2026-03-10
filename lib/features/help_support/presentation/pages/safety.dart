@@ -6,6 +6,7 @@ import 'package:goapp/features/help_support/presentation/cubit/emergency_contact
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class SafetyPage extends StatelessWidget {
   const SafetyPage({super.key});
@@ -13,11 +14,11 @@ class SafetyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SafetyPreferencesCubit(),
+      create: (_) => sl<SafetyPreferencesCubit>(),
       child: BlocBuilder<SafetyPreferencesCubit, SafetyPreferencesState>(
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: AppColors.coolwhite,
+            backgroundColor: AppColors.white,
             appBar: const AppAppBar(
               title: 'Safety',
               titleStyle: TextStyle(
@@ -50,6 +51,10 @@ class SafetyPage extends StatelessWidget {
                           .setAutoShare,
                       inactiveThumbColor: AppColors.white,
                       inactiveTrackColor: AppColors.warmGray,
+                      trackOutlineColor:
+                          const WidgetStatePropertyAll<Color>(AppColors.transparent),
+                      trackOutlineWidth:
+                          const WidgetStatePropertyAll<double>(0),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -65,6 +70,10 @@ class SafetyPage extends StatelessWidget {
                           .setShareAtNight,
                       inactiveThumbColor: AppColors.white,
                       inactiveTrackColor: AppColors.warmGray,
+                      trackOutlineColor:
+                          const WidgetStatePropertyAll<Color>(AppColors.transparent),
+                      trackOutlineWidth:
+                          const WidgetStatePropertyAll<double>(0),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -218,6 +227,7 @@ class AddEmergencyNumberPage extends StatelessWidget {
                         label: 'Delete',
                         backgroundColor: AppColors.dangerDeep,
                         foregroundColor: AppColors.white,
+                        borderRadius: 999,
                         onPressed: () => Navigator.of(context).pop(true),
                       ),
                     ),
@@ -227,6 +237,7 @@ class AddEmergencyNumberPage extends StatelessWidget {
                         label: 'Cancel',
                         backgroundColor: AppColors.warmGray,
                         foregroundColor: AppColors.charcoal,
+                        borderRadius: 999,
                         onPressed: () => Navigator.of(context).pop(false),
                       ),
                     ),
@@ -247,7 +258,7 @@ class AddEmergencyNumberPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => EmergencyContactsCubit(),
+      create: (_) => sl<EmergencyContactsCubit>(),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -354,6 +365,72 @@ class _EmergencyContactsList extends StatelessWidget {
   final ValueChanged<int> onMakePrimary;
   final ValueChanged<int> onDelete;
 
+  Future<void> _showContactMenu(
+    BuildContext context,
+    GlobalKey anchorKey,
+    int index,
+  ) async {
+    final RenderBox? button =
+        anchorKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (button == null || overlay == null) return;
+
+    final Offset topLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
+    final Offset bottomRight = button.localToGlobal(
+      button.size.bottomRight(Offset.zero),
+      ancestor: overlay,
+    );
+
+    final action = await showMenu<_ContactMenuAction>(
+      context: context,
+      color: AppColors.white,
+      elevation: 10,
+      shadowColor: AppColors.black.withValues(alpha: 0.14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      position: RelativeRect.fromLTRB(
+        topLeft.dx - 116,
+        bottomRight.dy + 4,
+        overlay.size.width - bottomRight.dx,
+        overlay.size.height - topLeft.dy,
+      ),
+      items: const [
+        PopupMenuItem(
+          value: _ContactMenuAction.primary,
+          height: 34,
+          child: Text(
+            'Set Primary',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+        PopupMenuItem(
+          value: _ContactMenuAction.delete,
+          height: 34,
+          child: Text(
+            'Delete Contact',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (action == _ContactMenuAction.primary) {
+      onMakePrimary(index);
+      return;
+    }
+    if (action == _ContactMenuAction.delete) {
+      onDelete(index);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
@@ -361,6 +438,7 @@ class _EmergencyContactsList extends StatelessWidget {
       separatorBuilder: (_, index) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final item = items[index];
+        final menuAnchorKey = GlobalKey();
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -422,31 +500,15 @@ class _EmergencyContactsList extends StatelessWidget {
                   ],
                 ),
               ),
-              PopupMenuButton<_ContactMenuAction>(
+              IconButton(
+                key: menuAnchorKey,
+                onPressed: () => _showContactMenu(context, menuAnchorKey, index),
                 icon: const Icon(
                   Icons.more_vert,
                   size: 20,
                   color: AppColors.gray,
                 ),
-                onSelected: (action) {
-                  if (action == _ContactMenuAction.primary) {
-                    onMakePrimary(index);
-                    return;
-                  }
-                  if (action == _ContactMenuAction.delete) {
-                    onDelete(index);
-                  }
-                },
-                itemBuilder: (context) => const [
-                  PopupMenuItem(
-                    value: _ContactMenuAction.primary,
-                    child: Text('Set Primary'),
-                  ),
-                  PopupMenuItem(
-                    value: _ContactMenuAction.delete,
-                    child: Text('Delete Contact'),
-                  ),
-                ],
+                splashRadius: 18,
               ),
             ],
           ),
@@ -587,6 +649,7 @@ class _AddContactSheetState extends State<_AddContactSheet> {
                     leading: const Icon(Icons.close_outlined, size: 18),
                     backgroundColor: AppColors.warmGray,
                     foregroundColor: AppColors.sectionLabel,
+                    borderRadius: 999,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
@@ -595,6 +658,7 @@ class _AddContactSheetState extends State<_AddContactSheet> {
                   child: _AppButton(
                     label: 'Save',
                     leading: const Icon(Icons.save_outlined, size: 18),
+                    borderRadius: 999,
                     onPressed: () {
                       final name = _nameController.text.trim();
                       final number = _numberController.text.trim();
@@ -669,6 +733,7 @@ class _AppButton extends StatelessWidget {
     this.backgroundColor = AppColors.emerald,
     this.foregroundColor = AppColors.white,
     required this.onPressed,
+    this.borderRadius = 12,
   });
 
   final String label;
@@ -676,6 +741,7 @@ class _AppButton extends StatelessWidget {
   final Color backgroundColor;
   final Color foregroundColor;
   final VoidCallback onPressed;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -693,7 +759,9 @@ class _AppButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
         minimumSize: const Size.fromHeight(48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
       ),
     );
   }

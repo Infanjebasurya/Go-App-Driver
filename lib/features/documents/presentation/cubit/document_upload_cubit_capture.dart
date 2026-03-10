@@ -2,7 +2,7 @@ part of 'document_upload_cubit.dart';
 
 Future<void> _captureProfilePhoto(
   DocumentUploadCubit cubit, {
-  required ImageSource source,
+  required AppImageSource source,
 }) async {
   if (cubit.state.isCurrentStepBank || !cubit.state.isCurrentStepProfile) return;
   if (cubit._isPicking) return;
@@ -89,7 +89,7 @@ Future<void> _captureProfilePhoto(
 
 Future<void> _captureFront(
   DocumentUploadCubit cubit, {
-  required ImageSource source,
+  required AppImageSource source,
 }) async {
   if (cubit.state.isCurrentStepBank || cubit.state.isCurrentStepProfile) return;
   if (cubit._isPicking) return;
@@ -172,14 +172,11 @@ Future<void> _captureFrontDocument(DocumentUploadCubit cubit) async {
 
   cubit._isPicking = true;
   try {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
+    final file = await cubit._filePickerService.pickCustom(
       allowedExtensions: const ['pdf', 'doc', 'docx'],
-      withData: false,
     );
-    if (result == null || result.files.isEmpty) return;
-    final file = result.files.single;
-    if (!cubit._fileService.validateFileSize(file.size)) {
+    if (file == null) return;
+    if (!cubit._fileService.validateFileSize(file.sizeBytes)) {
       cubit._emitState(
         cubit.state.copyWithDocStep(
           cubit.state.currentDocStep.copyWith(
@@ -208,7 +205,7 @@ Future<void> _captureFrontDocument(DocumentUploadCubit cubit) async {
 
 Future<void> _captureBack(
   DocumentUploadCubit cubit, {
-  required ImageSource source,
+  required AppImageSource source,
 }) async {
   if (cubit.state.isCurrentStepBank || cubit.state.isCurrentStepProfile) return;
   if (cubit._isPicking) return;
@@ -291,14 +288,11 @@ Future<void> _captureBackDocument(DocumentUploadCubit cubit) async {
 
   cubit._isPicking = true;
   try {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
+    final file = await cubit._filePickerService.pickCustom(
       allowedExtensions: const ['pdf', 'doc', 'docx'],
-      withData: false,
     );
-    if (result == null || result.files.isEmpty) return;
-    final file = result.files.single;
-    if (!cubit._fileService.validateFileSize(file.size)) {
+    if (file == null) return;
+    if (!cubit._fileService.validateFileSize(file.sizeBytes)) {
       cubit._emitState(
         cubit.state.copyWithDocStep(
           cubit.state.currentDocStep.copyWith(
@@ -357,7 +351,7 @@ Future<void> _removeBack(DocumentUploadCubit cubit) async {
 
 Future<void> _captureBankDocument(
   DocumentUploadCubit cubit, {
-  required ImageSource source,
+  required AppImageSource source,
 }) async {
   if (!cubit.state.isCurrentStepBank) return;
   if (cubit._isPicking) return;
@@ -413,14 +407,11 @@ Future<void> _captureBankDocumentFile(DocumentUploadCubit cubit) async {
 
   cubit._isPicking = true;
   try {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
+    final file = await cubit._filePickerService.pickCustom(
       allowedExtensions: const ['pdf', 'doc', 'docx'],
-      withData: false,
     );
-    if (result == null || result.files.isEmpty) return;
-    final file = result.files.single;
-    if (!cubit._fileService.validateFileSize(file.size)) {
+    if (file == null) return;
+    if (!cubit._fileService.validateFileSize(file.sizeBytes)) {
       cubit._emitState(
         cubit.state.copyWith(
           bankData: cubit.state.bankData.copyWith(
@@ -458,12 +449,12 @@ Future<void> _removeBankDocument(DocumentUploadCubit cubit) async {
   cubit._emitState(cubit.state.copyWith(bankData: updated));
 }
 
-Future<XFile?> _pickImageWithOptionalCrop(
+Future<PickedImage?> _pickImageWithOptionalCrop(
   DocumentUploadCubit cubit, {
-  required ImageSource source,
+  required AppImageSource source,
   int imageQuality = 100,
 }) {
-  return cubit._picker.pickImage(
+  return cubit._imagePickerService.pickImage(
     source: source,
     imageQuality: imageQuality,
   );

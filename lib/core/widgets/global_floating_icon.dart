@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/features/sos/presentation/cubit/sos_cubit.dart';
 import 'package:goapp/features/sos/presentation/pages/sos_page.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 
 /// A lightweight in-app floating icon that stays above all pages.
@@ -47,7 +48,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
     await navigator.push(
       MaterialPageRoute<void>(
         builder: (_) => BlocProvider<SosCubit>(
-          create: (_) => SosCubit(),
+          create: (_) => sl<SosCubit>(),
           child: const SOSPage(),
         ),
       ),

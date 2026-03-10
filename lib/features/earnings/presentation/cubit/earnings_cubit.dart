@@ -11,10 +11,10 @@ class EarningsCubit extends Cubit<EarningsState> {
   EarningsCubit({
     required GetEarningsSnapshotUseCase getEarningsSnapshot,
     required GetWalletTransactionsUseCase getWalletTransactions,
-    EarningsWalletMockApi? walletApi,
+    required EarningsWalletMockApi walletApi,
   }) : _getEarningsSnapshot = getEarningsSnapshot,
        _getWalletTransactions = getWalletTransactions,
-       _walletApi = walletApi ?? const EarningsWalletMockApi(),
+       _walletApi = walletApi,
        super(
          EarningsState(
            rechargeAmount:

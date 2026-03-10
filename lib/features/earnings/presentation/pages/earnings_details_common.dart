@@ -1,4 +1,4 @@
-part of 'earnings_details_page.dart';
+﻿part of 'earnings_details_page.dart';
 
 class _PeriodTab extends StatelessWidget {
   const _PeriodTab({
@@ -53,7 +53,11 @@ class _RangeSummaryCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: AppColors.hex14000000, blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+            color: AppColors.hex14000000,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Row(
@@ -64,12 +68,18 @@ class _RangeSummaryCard extends StatelessWidget {
               children: <Widget>[
                 const Text(
                   'Total Earned',
-                  style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: AppColors.neutral666,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '₹${total.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 36 / 1.3, fontWeight: FontWeight.bold),
+                  '\u20B9${total.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 36 / 1.3,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -81,12 +91,18 @@ class _RangeSummaryCard extends StatelessWidget {
               children: <Widget>[
                 const Text(
                   'Rides',
-                  style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: AppColors.neutral666,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   rides.toString().padLeft(2, '0'),
-                  style: const TextStyle(fontSize: 36 / 1.3, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 36 / 1.3,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -104,24 +120,137 @@ class _OrderTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.strokeLight)),
+    return TabBar(
+      controller: tabController,
+      dividerColor: AppColors.transparent,
+      labelColor: AppColors.black,
+      unselectedLabelColor: AppColors.neutral888,
+      indicatorColor: AppColors.emerald,
+      indicatorWeight: 3,
+      labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      tabs: const <Tab>[
+        Tab(text: 'Completed'),
+        Tab(text: 'Cancelled'),
+      ],
+    );
+  }
+}
+
+class _DayDateChips extends StatelessWidget {
+  const _DayDateChips({
+    required this.days,
+    required this.selectedDay,
+    required this.onSelect,
+  });
+
+  final List<DateTime> days;
+  final DateTime selectedDay;
+  final ValueChanged<DateTime> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 82,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: days.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
+        itemBuilder: (context, index) {
+          final day = days[index];
+          final selected = _isSameDay(day, selectedDay);
+          return _DayDateChip(
+            day: day,
+            selected: selected,
+            onTap: () => onSelect(day),
+          );
+        },
       ),
-      child: TabBar(
-        controller: tabController,
-        labelColor: AppColors.black,
-        unselectedLabelColor: AppColors.neutral888,
-        indicatorColor: AppColors.emerald,
-        indicatorWeight: 3,
-        tabs: const <Tab>[Tab(text: 'Completed'), Tab(text: 'Cancelled')],
+    );
+  }
+}
+
+class _DayDateChip extends StatelessWidget {
+  const _DayDateChip({
+    required this.day,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final DateTime day;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color accent = AppColors.emerald;
+    final Color textColor = selected ? accent : AppColors.neutral666;
+    final Color bg = selected ? accent.withValues(alpha: 0.12) : AppColors.white;
+    final BorderSide? borderSide =
+        selected ? BorderSide(color: accent, width: 1.2) : null;
+
+    const List<String> weekdays = <String>[
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thu',
+      'Fri',
+      'Sat',
+      'Sun',
+    ];
+    final String label = weekdays[day.weekday - 1];
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        width: 70,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(18),
+          border: borderSide == null ? null : Border.fromBorderSide(borderSide),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              day.day.toString().padLeft(2, '0'),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _CompletedList extends StatelessWidget {
-  const _CompletedList();
+  const _CompletedList({required this.day});
+
+  final DateTime day;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +261,13 @@ class _CompletedList extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final List<RideHistoryTrip> completed =
-            (snapshot.data ?? const <RideHistoryTrip>[]).where(EarningsCalculator.isCompletedTrip).toList();
+            (snapshot.data ?? const <RideHistoryTrip>[])
+                .where(EarningsCalculator.isCompletedTrip)
+                .where((trip) {
+                  final epoch = trip.completedAtEpochMs ?? 0;
+                  return _isEpochInDay(epoch, day);
+                })
+                .toList();
         if (completed.isEmpty) {
           return const _OrderHistoryEmptyState(message: 'No completed orders');
         }
@@ -143,12 +278,16 @@ class _CompletedList extends StatelessWidget {
           itemBuilder: (context, index) {
             final RideHistoryTrip trip = completed[index];
             final int startEpoch =
-                trip.startedAtEpochMs ?? trip.pickedUpAtEpochMs ?? trip.acceptedAtEpochMs;
+                trip.startedAtEpochMs ??
+                trip.pickedUpAtEpochMs ??
+                trip.acceptedAtEpochMs;
             final int endEpoch = trip.completedAtEpochMs ?? startEpoch;
             return TripCard(
               date: _formatDateLabel(endEpoch),
-              timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
-              price: '₹${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
+              timeRange:
+                  '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
+              price:
+                  '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
               pickupLocation: _locationTitle(trip.pickupLocation),
               pickupAddress: trip.pickupLocation,
               dropLocation: _locationTitle(trip.dropLocation),
@@ -161,8 +300,32 @@ class _CompletedList extends StatelessWidget {
   }
 }
 
+class _TodaysActivityLabel extends StatelessWidget {
+  const _TodaysActivityLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          "Today's Activity",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.neutral666,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CancelledList extends StatelessWidget {
-  const _CancelledList();
+  const _CancelledList({required this.day});
+
+  final DateTime day;
 
   @override
   Widget build(BuildContext context) {
@@ -172,22 +335,31 @@ class _CancelledList extends StatelessWidget {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
         }
-        final List<RideHistoryTrip> canceled =
-            (snapshot.data ?? const <RideHistoryTrip>[]).where(EarningsCalculator.isCanceledTrip).toList();
-        if (canceled.isEmpty) {
+        final List<RideHistoryTrip> cancelled =
+            (snapshot.data ?? const <RideHistoryTrip>[])
+                .where(EarningsCalculator.isCanceledTrip)
+                .where((trip) {
+                  final epoch = trip.canceledAtEpochMs ?? 0;
+                  return _isEpochInDay(epoch, day);
+                })
+                .toList();
+        if (cancelled.isEmpty) {
           return const _OrderHistoryEmptyState(message: 'No cancelled orders');
         }
         return ListView.separated(
           padding: const EdgeInsets.all(20),
-          itemCount: canceled.length,
+          itemCount: cancelled.length,
           separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
-            final RideHistoryTrip trip = canceled[index];
-            final int epoch = trip.canceledAtEpochMs ?? trip.acceptedAtEpochMs;
+            final RideHistoryTrip trip = cancelled[index];
+            final int startEpoch =
+                trip.startedAtEpochMs ?? trip.pickedUpAtEpochMs ?? trip.acceptedAtEpochMs;
+            final int endEpoch = trip.canceledAtEpochMs ?? startEpoch;
             return TripCard(
-              date: _formatDateLabel(epoch),
-              timeRange: _formatTimeLabel(epoch),
-              price: '₹${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
+              date: _formatDateLabel(endEpoch),
+              timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
+              statusLine: 'Cancelled by Customer',
+              price: '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(0)}',
               pickupLocation: _locationTitle(trip.pickupLocation),
               pickupAddress: trip.pickupLocation,
               dropLocation: _locationTitle(trip.dropLocation),
@@ -226,68 +398,59 @@ class _SummaryItem extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 94),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.hexFFE3E3E3),
+          borderRadius: BorderRadius.circular(14),
+          border: Border(left: BorderSide(color: accentColor, width: 4)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: Stack(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+          child: Row(
             children: <Widget>[
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: 3,
-                  color: accentColor,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 16, 16),
-                child: Row(
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 32 / 2,
-                              color: AppColors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            subtitle,
-                            style: const TextStyle(
-                              color: AppColors.neutral666,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
                     Text(
-                      amount,
+                      title,
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
-                        fontSize: 37 / 1.5,
+                        fontSize: 32 / 2,
                         color: AppColors.black,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 18,
-                      color: AppColors.neutralCCC,
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: AppColors.neutral666,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                amount,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 37 / 1.5,
+                  color: AppColors.black,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.chevron_right,
+                size: 18,
+                color: AppColors.neutralCCC,
               ),
             ],
           ),
@@ -307,7 +470,10 @@ class _OrderHistoryEmptyState extends StatelessWidget {
     return Center(
       child: Text(
         message,
-        style: const TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          color: AppColors.neutral666,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -322,7 +488,15 @@ String _locationTitle(String address) {
 
 String _formatDateLabel(int epochMs) {
   final DateTime dt = DateTime.fromMillisecondsSinceEpoch(epochMs);
-  const List<String> weekdays = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const List<String> weekdays = <String>[
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
   const List<String> months = <String>[
     'Jan',
     'Feb',
@@ -348,7 +522,13 @@ String _formatTimeLabel(int epochMs) {
   return '${hour12.toString().padLeft(2, '0')}:$minute$amPm';
 }
 
+bool _isSameDay(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}
 
-
-
+bool _isEpochInDay(int epochMs, DateTime day) {
+  if (epochMs <= 0) return false;
+  final DateTime dt = DateTime.fromMillisecondsSinceEpoch(epochMs);
+  return _isSameDay(dt, day);
+}
 

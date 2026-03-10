@@ -1,7 +1,7 @@
 part of 'trip_session_store.dart';
 
 Future<TripSession?> _loadActiveImpl() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = SharedPreferencesStore.global;
   final String? raw = prefs.getString(TripSessionStore._activeKey);
   if (raw == null || raw.isEmpty) return null;
   try {
@@ -19,7 +19,7 @@ Future<TripSession?> _loadActiveImpl() async {
 }
 
 Future<List<TripSession>> _loadArchiveImpl() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = SharedPreferencesStore.global;
   final String? raw = prefs.getString(TripSessionStore._archiveKey);
   if (raw == null || raw.isEmpty) return const <TripSession>[];
   try {

@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
@@ -16,6 +16,7 @@ import 'package:goapp/features/city_vehicle/vehicle_details/presentation/widget/
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class VehicleDetailsScreen extends StatelessWidget {
   const VehicleDetailsScreen({super.key, required this.vehicleType});
@@ -25,7 +26,7 @@ class VehicleDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => VehicleDetailsCubit(vehicleType: vehicleType),
+      create: (_) => sl<VehicleDetailsCubit>(param1: vehicleType),
       child: _VehicleDetailsView(vehicleType: vehicleType),
     );
   }
@@ -287,7 +288,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                 onTap: () {
                   Navigator.of(ctx).pop();
                   context.read<VehicleDetailsCubit>().pickPhoto(
-                    source: ImageSource.camera,
+                    source: AppImageSource.camera,
                   );
                 },
               ),
@@ -297,7 +298,7 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                 onTap: () {
                   Navigator.of(ctx).pop();
                   context.read<VehicleDetailsCubit>().pickPhoto(
-                    source: ImageSource.gallery,
+                    source: AppImageSource.gallery,
                   );
                 },
               ),

@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import '../../../about/presentation/pages/about_screen.dart';
 import '../../../auth/presentation/theme/auth_ui_tokens.dart';
@@ -184,12 +185,13 @@ class _ProfileHeader extends StatefulWidget {
 
 class _ProfileHeaderState extends State<_ProfileHeader> {
   static const String _photoKey = 'profile.photo.path';
-  final ImagePicker _picker = ImagePicker();
+  late final ImagePickerService _picker;
   ImageProvider? _avatarProvider;
 
   @override
   void initState() {
     super.initState();
+    _picker = sl<ImagePickerService>();
     _loadAvatarFromStore();
   }
 
@@ -218,7 +220,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
   }
 
   Future<void> _pickPhoto() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    final picked = await _picker.pickImage(source: AppImageSource.gallery);
     if (picked == null) return;
     _avatarProvider = _buildAvatarProvider(picked.path);
     await TextFieldStore.write(_photoKey, picked.path);
@@ -396,7 +398,7 @@ class _DrawerItem extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: AppColors.hexFF1A1A1A,
                 ),

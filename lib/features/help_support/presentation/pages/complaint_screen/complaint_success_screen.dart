@@ -6,6 +6,7 @@ import 'package:goapp/features/help_support/domain/entities/help_entities.dart';
 import 'package:goapp/features/help_support/presentation/pages/tickets_screen.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class ComplaintSuccessScreen extends StatelessWidget {
   const ComplaintSuccessScreen({
@@ -130,7 +131,7 @@ class ComplaintSuccessScreen extends StatelessWidget {
               onPressed: () => Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute<void>(
                   builder: (_) => BlocProvider<DriverCubit>(
-                    create: (_) => DriverCubit(),
+                    create: (_) => sl<DriverCubit>(),
                     child: const HomeScreen(),
                   ),
                 ),

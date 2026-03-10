@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 class DriverWalletStore {
   DriverWalletStore._();
@@ -7,12 +7,12 @@ class DriverWalletStore {
   static const double minAllowedNegativeBalance = -50.0;
 
   static Future<double> loadBalance() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     return prefs.getDouble(_walletBalanceKey) ?? 0.0;
   }
 
   static Future<void> saveBalance(double amount) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final double normalized = amount < minAllowedNegativeBalance
         ? minAllowedNegativeBalance
         : amount;

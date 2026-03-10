@@ -13,9 +13,9 @@ class SOSPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: const Color(0xFFF9F9F7),
       appBar: AppAppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: const Color(0xFFF9F9F7),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.neutral333),
@@ -25,8 +25,8 @@ class SOSPage extends StatelessWidget {
           'SOS Security',
           style: TextStyle(
             color: AppColors.neutral333,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
           ),
         ),
         centerTitle: true,
@@ -36,56 +36,63 @@ class SOSPage extends StatelessWidget {
           builder: (context, state) {
             return Column(
               children: <Widget>[
-                const SizedBox(height: 40),
+                const SizedBox(height: 26),
                 Center(
                   child: GestureDetector(
                     onTap: () => SOSBottomSheet.show(context),
                     child: Container(
-                      width: 80,
-                      height: 80,
+                      width: 54,
+                      height: 54,
                       decoration: const BoxDecoration(
                         color: AppColors.earningsAccentSoft,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.shield_outlined,
-                        color: AppColors.emerald,
-                        size: 36,
+                      child: const Center(
+                        child: CircleAvatar(
+                          radius: 17,
+                          backgroundColor: AppColors.emerald,
+                          child: Icon(
+                            Icons.share,
+                            color: AppColors.white,
+                            size: 18,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 const Text(
                   'Trusted Contacts Notified',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.neutral333,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40),
+                  padding: EdgeInsets.symmetric(horizontal: 46),
                   child: Text(
-                    'Driver contact and details have been shared with your emergency circle.',
+                    'Your live location and status have been shared with your emergency circle.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.neutral888,
-                      height: 1.4,
+                      fontSize: 14,
+                      color: AppColors.neutral666,
+                      height: 1.55,
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 28),
                 Expanded(
                   child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
                     itemCount: state.contacts.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    separatorBuilder: (_, _) => const SizedBox(height: 14),
                     itemBuilder: (_, index) {
                       final contact = state.contacts[index];
                       return _ContactCard(
+                        index: index,
                         name: contact.name,
                         status: contact.status,
                       );
@@ -93,34 +100,40 @@ class SOSPage extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.fromLTRB(12, 16, 12, 30),
                   child: Column(
                     children: [
                       SizedBox(
                         width: double.infinity,
                         child: ShadowButton(
-                          onPressed: () => context.read<SosCubit>().markSafe(),
-                          icon: const Icon(Icons.check_circle_outline),
-                          label: Text(
-                            state.isSafe ? 'Alert Ended' : 'I am Safe',
+                          onPressed: () =>
+                              context.read<SosCubit>().sendAlertToAllContacts(),
+                          icon: const Icon(Icons.check_circle, size: 18),
+                          label: const Text(
+                            'Share Live to All',
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.emerald,
                             foregroundColor: AppColors.white,
-                            minimumSize: const Size.fromHeight(56),
+                            elevation: 0,
+                            minimumSize: const Size.fromHeight(52),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(28),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 14),
                       const Text(
                         'Ending the alert will notify all contacts',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: AppColors.neutral888,
-                          letterSpacing: 0.5,
+                          letterSpacing: 1.2,
                         ),
                       ),
                     ],
@@ -136,67 +149,90 @@ class SOSPage extends StatelessWidget {
 }
 
 class _ContactCard extends StatelessWidget {
-  const _ContactCard({required this.name, required this.status});
+  const _ContactCard({
+    required this.index,
+    required this.name,
+    required this.status,
+  });
 
+  final int index;
   final String name;
   final String status;
 
   @override
   Widget build(BuildContext context) {
+    final bool isDelivered = status == 'Sent' || status == 'Sended';
+    final bool isPrimary = index == 0;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: AppColors.strokeLight),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: const Color(0xFFF7F7F5),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: const Color(0xFFD8D8D3)),
       ),
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             decoration: const BoxDecoration(
               color: AppColors.neutralDDD,
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.neutral333,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.neutral333,
+                        ),
+                      ),
+                    ),
+                    if (isPrimary) ...<Widget>[
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Primary',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.neutral888,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: AppColors.neutral888,
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: isDelivered
+                            ? AppColors.emerald
+                            : AppColors.neutral333,
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Text(
-                      status,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.neutral888,
+                      isDelivered ? 'Live Location Received' : 'Not sent',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDelivered
+                            ? AppColors.emerald
+                            : AppColors.neutral666,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -204,18 +240,24 @@ class _ContactCard extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.earningsAccentSoft,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Text(
-              'Send',
-              style: TextStyle(
-                color: AppColors.emerald,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+          InkWell(
+            onTap: isDelivered
+                ? null
+                : () => context.read<SosCubit>().sendAlertToContact(index),
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDDF3E7),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                isDelivered ? 'sended' : 'Send',
+                style: const TextStyle(
+                  color: AppColors.emerald,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),

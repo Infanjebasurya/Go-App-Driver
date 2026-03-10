@@ -9,8 +9,6 @@ import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/auth/presentation/pages/r_login_page.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
-import 'package:goapp/features/profile/data/repositories/local_profile_repository.dart';
-import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_screen/widgets/profile_edit_field_sheet.dart';
@@ -18,28 +16,18 @@ import 'package:goapp/features/profile/presentation/pages/profile_screen/widgets
 import 'package:goapp/features/profile/presentation/pages/profile_screen/widgets/profile_logout_button.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_screen/widgets/profile_menu_section.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_screen/widgets/profile_stats.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
-
-import '../../domain/repositories/profile_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    ProfileRepository repository;
-    try {
-      repository = context.read<ProfileRepository>();
-    } catch (_) {
-      repository = LocalProfileRepository();
-    }
-
     return BlocProvider<ProfileEditCubit>(
-      create: (context) => ProfileEditCubit(
-        getCachedProfileUseCase: GetCachedProfileUseCase(repository),
-      ),
+      create: (_) => sl<ProfileEditCubit>(),
       child: const _ProfileView(),
     );
   }
@@ -96,9 +84,9 @@ class _ProfileView extends StatelessWidget {
     await RideHistoryStore.clearAll();
     await HomeTripResumeStore.clear();
     await TripSessionStore.clearAll();
-    const cleanupService = AppCleanupService();
-    await cleanupService.clearKycDraftsAndSensitiveFiles();
     if (isDeleteAccount) {
+      final cleanupService = sl<AppCleanupService>();
+      await cleanupService.clearKycDraftsAndSensitiveFiles();
       await UserCacheStore.clear();
     }
     await RegistrationProgressStore.resetForSignedOut(
@@ -127,31 +115,11 @@ class _ProfileBody extends StatelessWidget {
           ProfileStatsCard(data: data),
           ProfileMenuSection(
             data: data,
-            onEditName: () => _showEditNameSheet(context, data.fullName),
             onEditEmail: () => _showEditEmailSheet(context, data.email),
             onLogout: () => _showLogoutSheet(context),
             onDelete: () => _showDeleteSheet(context),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showEditNameSheet(BuildContext context, String current) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.transparent,
-      builder: (_) => BlocProvider<ProfileEditCubit>.value(
-        value: context.read<ProfileEditCubit>(),
-        child: ProfileEditFieldSheet(
-          title: 'Enter Your Full Name',
-          icon: Icons.person_outline,
-          initialValue: current,
-          storageKey: 'profile_edit.full_name',
-          keyboardType: TextInputType.name,
-          onSave: (String val) => context.read<ProfileEditCubit>().updateFullName(val),
-        ),
       ),
     );
   }
@@ -182,14 +150,14 @@ class _ProfileBody extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
-        child: ProfileConfirmActionSheet(
-          icon: Icons.logout,
-          title: 'Logout',
-          message: 'Are you sure you want to Logout your account?',
-          actionLabel: 'Logout',
-          actionColor: AppColors.hexFFE53935,
-          onConfirm: () => context.read<ProfileEditCubit>().logout(),
-        ),
+          child: ProfileConfirmActionSheet(
+            icon: Icons.logout,
+            title: 'Logout',
+            message: 'Are you sure you want to Logout your account?',
+            actionLabel: 'Logout',
+            actionColor: AppColors.dangerDeep,
+            onConfirm: () => context.read<ProfileEditCubit>().logout(),
+          ),
       ),
     );
   }
@@ -201,14 +169,14 @@ class _ProfileBody extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
-        child: ProfileConfirmActionSheet(
-          icon: Icons.delete_outline,
-          title: 'Delete Account',
-          message: 'Are you sure you want to Delete your account?',
-          actionLabel: 'Delete',
-          actionColor: AppColors.hexFFE53935,
-          onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
-        ),
+          child: ProfileConfirmActionSheet(
+            icon: Icons.delete_outline,
+            title: 'Delete Account',
+            message: 'Are you sure you want to Delete your account?',
+            actionLabel: 'Delete',
+            actionColor: AppColors.dangerDeep,
+            onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
+          ),
       ),
     );
   }

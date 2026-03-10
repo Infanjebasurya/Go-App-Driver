@@ -2,26 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/wallet_display.dart';
-import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
-import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
-import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/earnings_details_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class EarningsScreen extends StatelessWidget {
   const EarningsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final repository = const EarningsRepositoryImpl();
     return BlocProvider<EarningsCubit>(
-      create: (_) => EarningsCubit(
-        getEarningsSnapshot: GetEarningsSnapshotUseCase(repository),
-        getWalletTransactions: GetWalletTransactionsUseCase(repository),
-      )..load(),
+      create: (_) => sl<EarningsCubit>()..load(),
       child: const _EarningsView(),
     );
   }
@@ -53,7 +47,7 @@ class _EarningsViewState extends State<_EarningsView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surfaceF5,
+      backgroundColor: AppColors.white,
       appBar: AppAppBar(
         title: const Text('Earnings'),
         centerTitle: true,
@@ -261,7 +255,7 @@ class _SummaryCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 48,
                     fontFamily: "Saira",
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.black,
                   ),
                 ),

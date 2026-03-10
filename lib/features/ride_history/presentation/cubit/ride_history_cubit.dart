@@ -1,15 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/utils/earnings_calculator.dart';
-import 'package:goapp/features/ride_history/data/repositories/ride_history_repository_impl.dart';
 import 'package:goapp/features/ride_history/domain/usecases/get_ride_history_usecase.dart';
 import 'package:goapp/features/ride_history/presentation/cubit/ride_history_state.dart';
 
 class RideHistoryCubit extends Cubit<RideHistoryState> {
-  RideHistoryCubit({GetRideHistoryUseCase? getRideHistory})
-    : _getRideHistory =
-          getRideHistory ??
-          GetRideHistoryUseCase(const RideHistoryRepositoryImpl()),
+  RideHistoryCubit({required GetRideHistoryUseCase getRideHistory})
+    : _getRideHistory = getRideHistory,
       super(RideHistoryState.initial());
 
   final GetRideHistoryUseCase _getRideHistory;

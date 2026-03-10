@@ -12,6 +12,7 @@ import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart'
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class VerificationSubmittedScreen extends StatefulWidget {
   final VoidCallback? onGoHome;
@@ -147,7 +148,9 @@ class _VerificationSubmittedScreenState
                         const SizedBox(height: 24),
                         Container(
                           width: double.infinity,
-                          decoration: const BoxDecoration(color: AppColors.white),
+                          decoration: const BoxDecoration(
+                            color: AppColors.white,
+                          ),
                           child: Center(
                             child: Image.asset(
                               'assets/image/register_success.png',
@@ -174,15 +177,25 @@ class _VerificationSubmittedScreenState
                                   ),
                                 ),
                                 const SizedBox(height: 14),
-                                Text(
-                                  'Your credentials are now under review by our\nelite concierge team. Expect a status update\nwithin 24-48 hours..',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.gray.shade500,
-                                    height: 1.6,
-                                    letterSpacing: 0.1,
+                                Center(
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 360,
+                                    ),
+                                    child: Text(
+                                      'Your credentials are now under review by our\nelite concierge team. Expect a status update\nwithin 24-48 hours..',
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.gray.shade500,
+                                        height: 1.6,
+                                        letterSpacing: 0.1,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 32),
@@ -249,7 +262,7 @@ class _GoHomeButton extends StatelessWidget {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
                     builder: (_) => BlocProvider<DriverCubit>(
-                      create: (_) => DriverCubit(),
+                      create: (_) => sl<DriverCubit>(),
                       child: const HomeScreen(),
                     ),
                   ),
@@ -269,7 +282,3 @@ class _GoHomeButton extends StatelessWidget {
     );
   }
 }
-
-
-
-

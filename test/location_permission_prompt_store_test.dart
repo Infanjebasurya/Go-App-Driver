@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/storage/location_permission_prompt_store.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'support/shared_preferences_mock.dart';
 
 void main() {
   group('LocationPermissionPromptStore', () {
-    setUp(() {
-      SharedPreferences.setMockInitialValues(<String, Object>{});
+    setUp(() async {
+      await initMockSharedPreferencesStore();
     });
 
     test('marks pending prompt after two denials and consumes once', () async {

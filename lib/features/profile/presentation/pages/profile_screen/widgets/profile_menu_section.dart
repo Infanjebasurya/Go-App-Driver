@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 
-
 import '../../../cubit/profile_edit_state.dart';
-import 'profile_logout_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class ProfileMenuSection extends StatelessWidget {
   const ProfileMenuSection({
     super.key,
     required this.data,
-    required this.onEditName,
     required this.onEditEmail,
     required this.onLogout,
     required this.onDelete,
   });
 
   final ProfileEditData data;
-  final VoidCallback onEditName;
   final VoidCallback onEditEmail;
   final VoidCallback onLogout;
   final VoidCallback onDelete;
@@ -58,8 +55,6 @@ class ProfileMenuSection extends StatelessWidget {
                 icon: Icons.person_outline,
                 label: 'Full Name',
                 value: data.fullName,
-                editable: true,
-                onEdit: onEditName,
               ),
               _rowDivider(),
               _InfoRow(
@@ -105,18 +100,63 @@ class ProfileMenuSection extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            children: <Widget>[
-              ProfileLogoutButton(onTap: onLogout),
-              _rowDivider(),
-              _ActionRow(
-                icon: Icons.delete_outline,
-                label: 'Delete Account',
-                color: const Color(0xFFE53935),
-                onTap: onDelete,
-                isLast: true,
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: onLogout,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.dangerDeep,
+                      foregroundColor: AppColors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.logout, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'Logout',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                InkWell(
+                  onTap: onDelete,
+                  borderRadius: BorderRadius.circular(999),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      color: AppColors.surfaceF5,
+                    ),
+                    child: Text(
+                      'Delete Account',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.dangerDeep,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -198,52 +238,3 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-class _ActionRow extends StatelessWidget {
-  const _ActionRow({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-    this.isLast = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.vertical(
-        top: isLast ? Radius.zero : const Radius.circular(14),
-        bottom: isLast ? const Radius.circular(14) : Radius.zero,
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(16, 16, 16, isLast ? 16 : 14),
-        child: Row(
-          children: <Widget>[
-            Icon(icon, size: 20, color: color),
-            const SizedBox(width: 18),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
-            ),
-            const Spacer(),
-            Icon(
-              Icons.chevron_right,
-              color: color.withValues(alpha: 0.4),
-              size: 20,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

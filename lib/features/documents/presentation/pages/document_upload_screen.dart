@@ -6,6 +6,7 @@ import 'package:goapp/features/document_verify/presentation/model/document_model
 import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/document_verify/presentation/pages/verification_screen.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import '../cubit/document_upload_cubit.dart';
 import '../model/document_upload_model.dart';
@@ -22,7 +23,7 @@ class DocumentUploadScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DocumentUploadCubit(initialStepIndex: initialStepIndex),
+      create: (_) => sl<DocumentUploadCubit>(param1: initialStepIndex),
       child: const _DocumentUploadView(),
     );
   }

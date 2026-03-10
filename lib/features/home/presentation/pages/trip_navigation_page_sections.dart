@@ -205,10 +205,9 @@ class _ReachedCustomerSheet extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _SlideToCompleteButton(onCompleted: onCompleteTap),
-            const SizedBox(height: 14),
+            const SizedBox(height: 22),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-              color: AppColors.surfaceF0,
               child: Row(
                 children: <Widget>[
                   const Text(

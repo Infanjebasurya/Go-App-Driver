@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import '../../../cubit/profile_edit_state.dart';
 
@@ -55,12 +56,13 @@ class ProfileAvatar extends StatefulWidget {
 
 class _ProfileAvatarState extends State<ProfileAvatar> {
   static const String _photoKey = 'profile.photo.path';
-  final ImagePicker _picker = ImagePicker();
+  late final ImagePickerService _picker;
   ImageProvider? _avatarProvider;
 
   @override
   void initState() {
     super.initState();
+    _picker = sl<ImagePickerService>();
     _loadAvatarFromStore();
   }
 
@@ -88,7 +90,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
     precacheImage(provider, context);
   }
 
-  Future<void> _pickPhoto(ImageSource source) async {
+  Future<void> _pickPhoto(AppImageSource source) async {
     final picked = await _picker.pickImage(
       source: source,
       imageQuality: 85,
@@ -129,7 +131,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                 title: const Text('Camera'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
-                  _pickPhoto(ImageSource.camera);
+                  _pickPhoto(AppImageSource.camera);
                 },
               ),
               ListTile(
@@ -137,7 +139,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                 title: const Text('Gallery'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
-                  _pickPhoto(ImageSource.gallery);
+                  _pickPhoto(AppImageSource.gallery);
                 },
               ),
               const SizedBox(height: 8),

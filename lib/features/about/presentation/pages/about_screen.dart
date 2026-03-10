@@ -4,6 +4,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/about/presentation/cubit/about_cubit.dart';
 import 'package:goapp/features/about/presentation/cubit/about_state.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -12,7 +13,7 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => AboutCubit(), child: const _AboutView());
+    return BlocProvider(create: (_) => sl<AboutCubit>(), child: const _AboutView());
   }
 }
 
@@ -29,7 +30,7 @@ class _AboutView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.surfaceF5,
+        backgroundColor: const Color(0xFFF7F7F7),
         appBar: const _AppBar(title: 'About', returnToDrawer: true),
         body: BlocBuilder<AboutCubit, AboutState>(
           builder: (context, state) {
@@ -74,12 +75,31 @@ class _AboutMenuList extends StatelessWidget {
       ),
     ];
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      itemCount: items.length,
-      separatorBuilder: (_, index) =>
-          const Divider(height: 1, color: AppColors.strokeLight, indent: 58),
-      itemBuilder: (_, i) => items[i],
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Column(
+            children: [
+              for (int i = 0; i < items.length; i++) ...[
+                items[i],
+                if (i != items.length - 1)
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xFFF0F0F0),
+                    indent: 24,
+                    endIndent: 24,
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -139,25 +159,26 @@ class _MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(0),
+      color: AppColors.transparent,
+      borderRadius: BorderRadius.circular(22),
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
         splashColor: AppColors.verifiedMint.withValues(alpha: 0.06),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Row(
             children: [
               SizedBox(
-                width: 26,
-                child: Icon(icon, size: 22, color: AppColors.neutral555),
+                width: 28,
+                child: Icon(icon, size: 24, color: AppColors.neutral555),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 18),
               Expanded(
                 child: Text(
                   label,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.headingDark,
                   ),
@@ -165,8 +186,8 @@ class _MenuItem extends StatelessWidget {
               ),
               const Icon(
                 Icons.chevron_right,
-                color: AppColors.neutralCCC,
-                size: 20,
+                color: Color(0xFFD6D6D6),
+                size: 22,
               ),
             ],
           ),
@@ -303,26 +324,49 @@ class _SkeletonListState extends State<_SkeletonList>
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      itemCount: 3,
-      separatorBuilder: (_, index) =>
-          const Divider(height: 1, color: AppColors.strokeLight, indent: 58),
-      itemBuilder: (_, index) => AnimatedBuilder(
-        animation: _anim,
-        builder: (_, child) => Container(
-          color: AppColors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          child: Row(
-            children: [
-              _shimmerBox(24, 24, radius: 6),
-              const SizedBox(width: 16),
-              Expanded(child: _shimmerBox(14, 140)),
-              _shimmerBox(16, 16, radius: 4),
-            ],
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Column(
+            children: List<Widget>.generate(3, (index) {
+              return Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: _anim,
+                    builder: (_, child) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 28,
+                      ),
+                      child: Row(
+                        children: [
+                          _shimmerBox(24, 24, radius: 6),
+                          const SizedBox(width: 18),
+                          Expanded(child: _shimmerBox(16, 140)),
+                          _shimmerBox(18, 18, radius: 4),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (index != 2)
+                    const Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Color(0xFFF0F0F0),
+                      indent: 24,
+                      endIndent: 24,
+                    ),
+                ],
+              );
+            }),
           ),
         ),
-      ),
+      ],
     );
   }
 

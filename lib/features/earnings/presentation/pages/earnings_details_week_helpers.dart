@@ -99,63 +99,24 @@ class _WeekRangeChip extends StatelessWidget {
 }
 
 class _OrderHistoryTabs extends StatelessWidget {
-  const _OrderHistoryTabs({required this.selectedIndex, required this.onChanged});
+  const _OrderHistoryTabs({required this.controller});
 
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
+  final TabController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: GestureDetector(
-            onTap: () => onChanged(0),
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: selectedIndex == 0 ? AppColors.emerald : AppColors.strokeLight,
-                    width: selectedIndex == 0 ? 2 : 1,
-                  ),
-                ),
-              ),
-              child: Text(
-                'Completed',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: selectedIndex == 0 ? AppColors.black : AppColors.neutral666,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: GestureDetector(
-            onTap: () => onChanged(1),
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: selectedIndex == 1 ? AppColors.emerald : AppColors.strokeLight,
-                    width: selectedIndex == 1 ? 2 : 1,
-                  ),
-                ),
-              ),
-              child: Text(
-                'Cancelled',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: selectedIndex == 1 ? AppColors.black : AppColors.neutral666,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ),
+    return TabBar(
+      controller: controller,
+      dividerColor: AppColors.transparent,
+      labelColor: AppColors.black,
+      unselectedLabelColor: AppColors.neutral888,
+      indicatorColor: AppColors.emerald,
+      indicatorWeight: 3,
+      labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      tabs: const <Tab>[
+        Tab(text: 'Completed'),
+        Tab(text: 'Cancelled'),
       ],
     );
   }

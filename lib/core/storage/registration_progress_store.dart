@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 enum RegistrationStep {
   none,
@@ -95,7 +95,7 @@ class RegistrationProgressStore {
   static const String _key = 'registration_progress_v1';
 
   static Future<RegistrationProgress> load() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final raw = prefs.getString(_key);
     if (raw == null || raw.isEmpty) return RegistrationProgress.empty();
     try {
@@ -108,12 +108,12 @@ class RegistrationProgressStore {
   }
 
   static Future<void> save(RegistrationProgress progress) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.setString(_key, jsonEncode(progress.toJson()));
   }
 
   static Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.remove(_key);
   }
 

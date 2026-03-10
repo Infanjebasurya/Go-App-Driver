@@ -60,7 +60,7 @@ class RechargeWalletPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             const Text(
-                              '₹',
+                              '\u20B9',
                               style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.bold,
@@ -222,7 +222,7 @@ class _QuickAddChip extends StatelessWidget {
           ),
         ),
         child: Text(
-          '+ ₹$amount',
+          '+ \u20B9$amount',
           style: TextStyle(
             color: selected ? AppColors.emerald : AppColors.black,
             fontWeight: FontWeight.bold,

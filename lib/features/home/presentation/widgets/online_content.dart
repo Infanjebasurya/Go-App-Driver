@@ -7,6 +7,7 @@ import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_page.dart';
+import 'package:goapp/core/di/injection.dart';
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
 import 'map_widget.dart';
@@ -116,9 +117,9 @@ class _OnlineContentState extends State<OnlineContent> {
                     issue: _locationIssue!,
                     onActionTap: () {
                       if (_locationIssue == LocationIssue.serviceDisabled) {
-                        const LocationPermissionGuard().openLocationSettings();
+                        sl<LocationPermissionGuard>().openLocationSettings();
                       } else {
-                        const LocationPermissionGuard().openAppSettings();
+                        sl<LocationPermissionGuard>().openAppSettings();
                       }
                     },
                   ),

@@ -1,21 +1,19 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'user_cache_model.dart';
+import 'shared_preferences_store.dart';
 
 class UserCacheStore {
   UserCacheStore._();
 
   static const String _key = 'local_user_cache_v1';
-  static SharedPreferences? _prefs;
   static LocalUserCacheModel? _cached;
   static bool _loaded = false;
 
   static Future<void> init() async {
     if (_loaded) return;
-    _prefs = await SharedPreferences.getInstance();
-    final raw = _prefs!.getString(_key);
+    final prefs = SharedPreferencesStore.global;
+    final raw = prefs.getString(_key);
     if (raw != null && raw.isNotEmpty) {
       try {
         final map = jsonDecode(raw);
@@ -44,7 +42,7 @@ class UserCacheStore {
       await init();
     }
     _cached = user;
-    await _prefs!.setString(_key, jsonEncode(user.toJson()));
+    await SharedPreferencesStore.global.setString(_key, jsonEncode(user.toJson()));
   }
 
   static Future<void> clear() async {
@@ -52,7 +50,7 @@ class UserCacheStore {
       await init();
     }
     _cached = null;
-    await _prefs!.remove(_key);
+    await SharedPreferencesStore.global.remove(_key);
   }
 
   static bool _isValid(LocalUserCacheModel user) {

@@ -8,6 +8,7 @@ import 'package:goapp/features/earnings/data/datasources/earnings_wallet_mock_ap
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 
@@ -90,13 +91,13 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
     await Future<void>.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
 
-    await const EarningsWalletMockApi().rechargeWallet(_minimumTopUp);
+    await sl<EarningsWalletMockApi>().rechargeWallet(_minimumTopUp);
     await RegistrationProgressStore.setStep(RegistrationStep.home);
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => BlocProvider<DriverCubit>(
-          create: (_) => DriverCubit(),
+          create: (_) => sl<DriverCubit>(),
           child: const HomeScreen(),
         ),
       ),

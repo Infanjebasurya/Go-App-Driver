@@ -3,8 +3,8 @@ import 'package:goapp/features/document_verify/presentation/model/document_progr
 import 'package:goapp/features/documents/presentation/services/document_upload_file_service.dart';
 
 class AppCleanupService {
-  const AppCleanupService({DocumentUploadFileService? fileService})
-    : _fileService = fileService ?? const DocumentUploadFileService();
+  AppCleanupService({required DocumentUploadFileService fileService})
+      : _fileService = fileService;
 
   final DocumentUploadFileService _fileService;
 

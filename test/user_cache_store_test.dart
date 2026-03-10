@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goapp/core/storage/user_cache_model.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
+import 'support/shared_preferences_mock.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
-    SharedPreferences.setMockInitialValues(<String, Object>{});
+  setUp(() async {
+    await initMockSharedPreferencesStore();
   });
 
   test('LocalUserCacheModel JSON round-trip works', () {
