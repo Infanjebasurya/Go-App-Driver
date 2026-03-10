@@ -127,31 +127,11 @@ class _ProfileBody extends StatelessWidget {
           ProfileStatsCard(data: data),
           ProfileMenuSection(
             data: data,
-            onEditName: () => _showEditNameSheet(context, data.fullName),
             onEditEmail: () => _showEditEmailSheet(context, data.email),
             onLogout: () => _showLogoutSheet(context),
             onDelete: () => _showDeleteSheet(context),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showEditNameSheet(BuildContext context, String current) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.transparent,
-      builder: (_) => BlocProvider<ProfileEditCubit>.value(
-        value: context.read<ProfileEditCubit>(),
-        child: ProfileEditFieldSheet(
-          title: 'Enter Your Full Name',
-          icon: Icons.person_outline,
-          initialValue: current,
-          storageKey: 'profile_edit.full_name',
-          keyboardType: TextInputType.name,
-          onSave: (String val) => context.read<ProfileEditCubit>().updateFullName(val),
-        ),
       ),
     );
   }
@@ -182,14 +162,14 @@ class _ProfileBody extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
-        child: ProfileConfirmActionSheet(
-          icon: Icons.logout,
-          title: 'Logout',
-          message: 'Are you sure you want to Logout your account?',
-          actionLabel: 'Logout',
-          actionColor: AppColors.hexFFE53935,
-          onConfirm: () => context.read<ProfileEditCubit>().logout(),
-        ),
+          child: ProfileConfirmActionSheet(
+            icon: Icons.logout,
+            title: 'Logout',
+            message: 'Are you sure you want to Logout your account?',
+            actionLabel: 'Logout',
+            actionColor: AppColors.dangerDeep,
+            onConfirm: () => context.read<ProfileEditCubit>().logout(),
+          ),
       ),
     );
   }
@@ -201,14 +181,14 @@ class _ProfileBody extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
-        child: ProfileConfirmActionSheet(
-          icon: Icons.delete_outline,
-          title: 'Delete Account',
-          message: 'Are you sure you want to Delete your account?',
-          actionLabel: 'Delete',
-          actionColor: AppColors.hexFFE53935,
-          onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
-        ),
+          child: ProfileConfirmActionSheet(
+            icon: Icons.delete_outline,
+            title: 'Delete Account',
+            message: 'Are you sure you want to Delete your account?',
+            actionLabel: 'Delete',
+            actionColor: AppColors.dangerDeep,
+            onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
+          ),
       ),
     );
   }

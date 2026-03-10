@@ -578,7 +578,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                             children: <Widget>[
                               SizedBox(
                                 width: double.infinity,
-                                height: 46,
+                                height: 48,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.emerald,

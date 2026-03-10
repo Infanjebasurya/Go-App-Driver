@@ -165,8 +165,8 @@ class _ExpandableComplaintTile extends StatelessWidget {
                         'Make Complaint',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textBody,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.headingDark,
                         ),
                       ),
                     ),
@@ -321,8 +321,8 @@ class _MenuTile extends StatelessWidget {
                     title,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textBody,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.headingDark,
                     ),
                   ),
                 ),

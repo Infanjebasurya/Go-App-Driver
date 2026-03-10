@@ -127,21 +127,12 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                       );
                     }),
                   ),
-                  const SizedBox(height: 26),
-                  const Text(
-                    "Can't find code?",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.hexFFC5A059,
-                    ),
-                  ),
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 48,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,

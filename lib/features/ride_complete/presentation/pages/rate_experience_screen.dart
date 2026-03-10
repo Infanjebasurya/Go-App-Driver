@@ -211,22 +211,24 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (int index) {
-                        return GestureDetector(
+                        return InkResponse(
                           onTap: () {
                             context.read<RateExperienceCubit>().selectRating(
                               index + 1,
                             );
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4.0,
-                            ),
-                            child: Icon(
-                              Icons.star,
-                              size: 32,
-                              color: index < state.selectedRating
-                                  ? AppColors.hexFFFFC107
-                                  : AppColors.gray[300],
+                          radius: 28,
+                          child: SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(
+                              child: Icon(
+                                Icons.star,
+                                size: 32,
+                                color: index < state.selectedRating
+                                    ? AppColors.hexFFFFC107
+                                    : AppColors.gray[300],
+                              ),
                             ),
                           ),
                         );
@@ -255,6 +257,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         return FilterChip(
                           label: Text(tag),
                           selected: isSelected,
+                          showCheckmark: false,
                           onSelected: (_) {
                             context.read<RateExperienceCubit>().toggleTag(tag);
                           },
@@ -329,6 +332,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: () async {
                           // TripSessionStore: save the passenger rating.
@@ -344,9 +348,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(28),
                           ),
                           elevation: 0,
                         ),

@@ -49,7 +49,7 @@ class _SummaryPanel extends StatelessWidget {
             'Estimated Earnings  Rs ${earnings.toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: AppColors.white,
             ),
           ),
@@ -90,7 +90,7 @@ class _MetricTile extends StatelessWidget {
               label,
               style: const TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: AppColors.white,
               ),
             ),
@@ -220,7 +220,7 @@ class _FilterChipItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: selected ? AppColors.white : AppColors.neutral666,
           ),
         ),
@@ -253,7 +253,7 @@ class _EmptyResultState extends StatelessWidget {
             'No trips match this filter',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: AppColors.neutral666,
             ),
           ),

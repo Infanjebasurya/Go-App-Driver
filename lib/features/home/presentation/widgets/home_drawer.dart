@@ -396,7 +396,7 @@ class _DrawerItem extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: AppColors.hexFF1A1A1A,
                 ),

@@ -208,11 +208,12 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                               size: 24,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 14),
                           const Text(
                             'Attach Evidence (Photos/Video/Document)',
                             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                           ),
+                          const SizedBox(height: 6),
                           const Text(
                             'IMAGE/VIDEO/DOCUMENT - UP TO 20MB',
                             style: TextStyle(fontSize: 11, color: AppColors.textSecondary),

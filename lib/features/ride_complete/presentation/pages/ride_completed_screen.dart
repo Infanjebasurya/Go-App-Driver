@@ -374,6 +374,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: () {
                           unawaited(
@@ -385,9 +386,8 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(28),
                           ),
                           elevation: 0,
                         ),

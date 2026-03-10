@@ -11,6 +11,13 @@ class SosCubit extends Cubit<SosState> {
     emit(state.copyWith(contacts: updated));
   }
 
+  void sendAlertToContact(int index) {
+    final updated = List<SosContact>.from(state.contacts);
+    if (index < 0 || index >= updated.length) return;
+    updated[index] = updated[index].copyWith(status: 'Sended');
+    emit(state.copyWith(contacts: updated));
+  }
+
   void markSafe() {
     emit(state.copyWith(isSafe: true));
   }

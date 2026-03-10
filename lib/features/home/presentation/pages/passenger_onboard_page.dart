@@ -370,13 +370,13 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
-                        height: 46,
+                        height: 48,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.emerald,
                             foregroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(26),
+                              borderRadius: BorderRadius.circular(28),
                             ),
                             elevation: 0,
                           ),
@@ -440,7 +440,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                           ),
                         ),
                       ],
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 20),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -448,7 +448,7 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceF5,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(26),
                         ),
                         child: Row(
                           children: <Widget>[

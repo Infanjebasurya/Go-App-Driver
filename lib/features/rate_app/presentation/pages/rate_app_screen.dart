@@ -144,14 +144,6 @@ class _RateAppViewState extends State<_RateAppView> {
                             context.read<RateAppCubit>().updateFeedback(t),
                       ),
                       const SizedBox(height: 32),
-                      Container(
-                        width: 100,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: AppColors.neutralDDD,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
                       const SizedBox(height: 40),
                     ],
                   ),
