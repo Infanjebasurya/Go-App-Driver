@@ -244,10 +244,9 @@ packages:
   file_picker:
     dependency: "direct main"
     description:
-      name: file_picker
-      sha256: ab13ae8ef5580a411c458d6207b6774a6c237d77ac37011b13994879f68a8810
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/file_picker"
+      relative: true
+    source: path
     version: "8.3.7"
   file_selector_linux:
     dependency: transitive
@@ -544,18 +543,16 @@ packages:
   image_picker:
     dependency: "direct main"
     description:
-      name: image_picker
-      sha256: "784210112be18ea55f69d7076e2c656a4e24949fa9e76429fe53af0c0f4fa320"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/image_picker"
+      relative: true
+    source: path
     version: "1.2.1"
   image_picker_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: image_picker_android
-      sha256: eda9b91b7e266d9041084a42d605a74937d996b87083395c5e47835916a86156
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/image_picker_android"
+      relative: true
+    source: path
     version: "0.8.13+14"
   image_picker_for_web:
     dependency: transitive
@@ -734,20 +731,18 @@ packages:
     source: hosted
     version: "1.9.1"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
-      name: path_provider
-      sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/path_provider"
+      relative: true
+    source: path
     version: "2.1.5"
   path_provider_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: path_provider_android
-      sha256: f2c65e21139ce2c3dad46922be8272bb5963516045659e71bb16e151c93b580e
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/path_provider_android"
+      relative: true
+    source: path
     version: "2.2.22"
   path_provider_foundation:
     dependency: transitive
@@ -784,18 +779,16 @@ packages:
   permission_handler:
     dependency: "direct main"
     description:
-      name: permission_handler
-      sha256: "59adad729136f01ea9e35a48f5d1395e25cba6cea552249ddbe9cf950f5d7849"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/permission_handler"
+      relative: true
+    source: path
     version: "11.4.0"
   permission_handler_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: permission_handler_android
-      sha256: d3971dcdd76182a0c198c096b5db2f0884b0d4196723d21a866fc4cdea057ebc
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/permission_handler_android"
+      relative: true
+    source: path
     version: "12.1.0"
   permission_handler_apple:
     dependency: transitive
@@ -904,18 +897,16 @@ packages:
   shared_preferences:
     dependency: "direct main"
     description:
-      name: shared_preferences
-      sha256: "2939ae520c9024cb197fc20dee269cd8cdbf564c8b5746374ec6cacdc5169e64"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/shared_preferences"
+      relative: true
+    source: path
     version: "2.5.4"
   shared_preferences_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: shared_preferences_android
-      sha256: cbc40be9be1c5af4dab4d6e0de4d5d3729e6f3d65b89d21e1815d57705644a6f
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/shared_preferences_android"
+      relative: true
+    source: path
     version: "2.4.20"
   shared_preferences_foundation:
     dependency: transitive
@@ -965,10 +956,9 @@ packages:
   sms_autofill:
     dependency: "direct main"
     description:
-      name: sms_autofill
-      sha256: c65836abe9c1f62ce411bb78d5546a09ece4297558070b1bd871db1db283aaf9
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/sms_autofill"
+      relative: true
+    source: path
     version: "2.4.1"
   source_span:
     dependency: transitive
@@ -1053,18 +1043,16 @@ packages:
   url_launcher:
     dependency: "direct main"
     description:
-      name: url_launcher
-      sha256: f6a7e5c4835bb4e3026a04793a4199ca2d14c739ec378fdfe23fc8075d0439f8
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/url_launcher"
+      relative: true
+    source: path
     version: "6.3.2"
   url_launcher_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: url_launcher_android
-      sha256: "767344bf3063897b5cf0db830e94f904528e6dd50a6dfaf839f0abf509009611"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/plugins/url_launcher_android"
+      relative: true
+    source: path
     version: "6.3.28"
   url_launcher_ios:
     dependency: transitive

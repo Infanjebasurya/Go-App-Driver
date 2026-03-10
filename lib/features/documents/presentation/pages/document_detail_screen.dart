@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
@@ -332,6 +333,7 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
           color: AppColors.hexFF9EC8B0,
           showVerified: true,
           fullWidth: true,
+          preserveOriginalAspect: true,
           imagePath: widget.frontImagePath,
         ),
         const SizedBox(height: 14),
@@ -340,6 +342,7 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
           color: AppColors.hexFFA8C4B8,
           showVerified: true,
           fullWidth: true,
+          preserveOriginalAspect: true,
           imagePath: widget.backImagePath,
         ),
         const SizedBox(height: 20),
@@ -427,6 +430,7 @@ class _PanCardDetailState extends State<_PanCardDetail> {
           color: AppColors.hexFF7FB5C8,
           showVerified: true,
           fullWidth: true,
+          preserveOriginalAspect: true,
           imagePath: widget.frontImagePath,
         ),
         const SizedBox(height: 20),
@@ -572,6 +576,7 @@ class _CardImageBox extends StatelessWidget {
   final Color color;
   final bool showVerified;
   final bool fullWidth;
+  final bool preserveOriginalAspect;
   final String? imagePath;
 
   const _CardImageBox({
@@ -579,6 +584,7 @@ class _CardImageBox extends StatelessWidget {
     required this.color,
     this.showVerified = false,
     this.fullWidth = false,
+    this.preserveOriginalAspect = false,
     this.imagePath,
   });
 
@@ -599,7 +605,12 @@ class _CardImageBox extends StatelessWidget {
         const SizedBox(height: 8),
         Stack(
           children: [
-            _ImageBox(imagePath: imagePath, color: color, fullWidth: fullWidth),
+            _ImageBox(
+              imagePath: imagePath,
+              color: color,
+              fullWidth: fullWidth,
+              preserveOriginalAspect: preserveOriginalAspect,
+            ),
             if (showVerified)
               Positioned(
                 bottom: 10,
@@ -653,11 +664,13 @@ class _ImageBox extends StatelessWidget {
   final String? imagePath;
   final Color color;
   final bool fullWidth;
+  final bool preserveOriginalAspect;
 
   const _ImageBox({
     required this.imagePath,
     required this.color,
     required this.fullWidth,
+    required this.preserveOriginalAspect,
   });
 
   @override
@@ -716,6 +729,31 @@ class _ImageBox extends StatelessWidget {
       );
     }
 
+    if (preserveOriginalAspect) {
+      return FutureBuilder<double>(
+        future: _readAspectRatio(imagePath!),
+        builder: (context, snapshot) {
+          final aspectRatio = snapshot.data ?? 1.58;
+          return AspectRatio(
+            aspectRatio: aspectRatio,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                color: color.withValues(alpha: 0.16),
+                child: Image.file(
+                  File(imagePath!),
+                  width: width,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (_, _, _) => _imageFallback(width, height),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Image.file(
@@ -723,23 +761,42 @@ class _ImageBox extends StatelessWidget {
         width: width,
         height: height,
         fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: Icon(
-              Icons.credit_card,
-              color: AppColors.white.withValues(alpha: 0.3),
-              size: 36,
-            ),
-          ),
+        errorBuilder: (_, _, _) => _imageFallback(width, height),
+      ),
+    );
+  }
+
+  Widget _imageFallback(double? width, double? height) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.credit_card,
+          color: Colors.white.withValues(alpha: 0.3),
+          size: 36,
         ),
       ),
     );
+  }
+
+  Future<double> _readAspectRatio(String path) async {
+    try {
+      final bytes = await File(path).readAsBytes();
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
+      final ratio = image.height == 0 ? 1.58 : image.width / image.height;
+      image.dispose();
+      codec.dispose();
+      return ratio;
+    } catch (_) {
+      return 1.58;
+    }
   }
 
   bool _isDocumentPath(String? path) {

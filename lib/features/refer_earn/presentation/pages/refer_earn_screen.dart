@@ -1,14 +1,19 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unused_element
+
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+
 import '../../domain/entities/referral.dart';
 import '../cubit/referral_cubit.dart';
 import '../cubit/referral_state.dart';
 import '../widget/key_star_badge.dart';
-import 'package:goapp/core/widgets/app_app_bar.dart';
-import 'package:goapp/core/widgets/shadow_button.dart';
+import 'refer_earn_screen/referral_components.dart';
+import 'refer_earn_screen/referral_history_list.dart';
 
 class ReferEarnScreen extends StatelessWidget {
   const ReferEarnScreen({super.key});
@@ -47,8 +52,9 @@ class _ReferEarnView extends StatelessWidget {
 }
 
 class _MainReferScreen extends StatelessWidget {
-  final ReferralLoaded state;
   const _MainReferScreen({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +131,9 @@ class _MainReferScreen extends StatelessWidget {
 }
 
 class _BikeReferralDetailScreen extends StatelessWidget {
-  final ReferralLoaded state;
   const _BikeReferralDetailScreen({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
@@ -340,9 +347,7 @@ class ReferralPendingScreen extends StatelessWidget {
             return const Scaffold(
               backgroundColor: AppColors.white,
               body: Center(
-                child: CircularProgressIndicator(
-                  color: AuthUiColors.brandGreen,
-                ),
+                child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
               ),
             );
           }
@@ -354,19 +359,20 @@ class ReferralPendingScreen extends StatelessWidget {
 }
 
 class _PendingView extends StatelessWidget {
-  final ReferralLoaded state;
   const _PendingView({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surfaceF5,
-      appBar: _buildAppBar(context, 'Pending'),
+      appBar: buildReferEarnAppBar(context, 'Pending'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _EarningsCard(
+            EarningsCard(
               earnings: state.pending.fold<int>(
                 0,
                 (sum, r) => sum + r.estimatedReward,
@@ -374,14 +380,11 @@ class _PendingView extends StatelessWidget {
               label: 'TOTAL EARNINGS',
             ),
             const SizedBox(height: 16),
-            _ReferralSummaryBanner(
-              count: state.pending.length,
+            ReferralHistoryList(
+              people: state.pending,
               label: 'Referrals in Progress',
               subLabel: 'KEEP TRACKING YOUR REWARDS',
-              icon: Icons.pending_actions,
             ),
-            const SizedBox(height: 12),
-            ...state.pending.map((p) => _ReferralPersonCard(person: p)),
           ],
         ),
       ),
@@ -402,9 +405,7 @@ class ReferralCompletedScreen extends StatelessWidget {
             return const Scaffold(
               backgroundColor: AppColors.white,
               body: Center(
-                child: CircularProgressIndicator(
-                  color: AuthUiColors.brandGreen,
-                ),
+                child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
               ),
             );
           }
@@ -416,8 +417,9 @@ class ReferralCompletedScreen extends StatelessWidget {
 }
 
 class _CompletedView extends StatelessWidget {
-  final ReferralLoaded state;
   const _CompletedView({required this.state});
+
+  final ReferralLoaded state;
 
   @override
   Widget build(BuildContext context) {
@@ -428,7 +430,7 @@ class _CompletedView extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _EarningsCard(
+            EarningsCard(
               earnings: state.completed.fold<int>(
                 0,
                 (sum, r) => sum + r.estimatedReward,
@@ -436,14 +438,11 @@ class _CompletedView extends StatelessWidget {
               label: 'TOTAL EARNINGS',
             ),
             const SizedBox(height: 24),
-            _ReferralSummaryBanner(
-              count: state.completed.length,
+            ReferralHistoryList(
+              people: state.completed,
               label: 'Referrals in Completed',
               subLabel: 'GETTING YOUR REWARDS',
-              icon: Icons.pending_actions,
             ),
-            const SizedBox(height: 12),
-            ...state.completed.map((p) => _ReferralPersonCard(person: p)),
           ],
         ),
       ),
