@@ -7,13 +7,12 @@ import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/ride_complete/data/repositories/ride_complete_repository_impl.dart';
 import 'package:goapp/features/ride_complete/domain/entities/ride_completion_summary.dart';
-import 'package:goapp/features/ride_complete/domain/usecases/get_ride_completion_summary.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/ride_completed_cubit.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/ride_completed_state.dart';
 import 'package:goapp/features/ride_complete/presentation/pages/rate_experience_screen.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class RideCompletedScreen extends StatelessWidget {
@@ -21,9 +20,8 @@ class RideCompletedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository = RideCompleteRepositoryImpl();
     return BlocProvider<RideCompletedCubit>(
-      create: (_) => RideCompletedCubit(GetRideCompletionSummary(repository)),
+      create: (_) => sl<RideCompletedCubit>(),
       child: const _RideCompletedView(),
     );
   }

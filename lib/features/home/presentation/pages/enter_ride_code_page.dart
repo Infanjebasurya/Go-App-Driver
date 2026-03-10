@@ -13,6 +13,7 @@ import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
 import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 import 'package:goapp/core/utils/env.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class EnterRideCodePage extends StatelessWidget {
   const EnterRideCodePage({super.key});
@@ -20,7 +21,7 @@ class EnterRideCodePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<EnterRideCodeCubit>(
-      create: (_) => EnterRideCodeCubit(),
+      create: (_) => sl<EnterRideCodeCubit>(),
       child: const _EnterRideCodeView(),
     );
   }

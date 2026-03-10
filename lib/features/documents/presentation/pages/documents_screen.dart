@@ -8,6 +8,7 @@ import 'package:goapp/features/documents/presentation/pages/document_detail_scre
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class DocumentsScreen extends StatelessWidget {
   const DocumentsScreen({super.key});
@@ -15,7 +16,7 @@ class DocumentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DocumentsCubit(),
+      create: (_) => sl<DocumentsCubit>(),
       child: const _DocumentsView(),
     );
   }
@@ -396,7 +397,11 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, color: AppColors.hexFFEF5350, size: 48),
+          const Icon(
+            Icons.error_outline,
+            color: AppColors.hexFFEF5350,
+            size: 48,
+          ),
           const SizedBox(height: 16),
           Text(
             message,
@@ -420,8 +425,3 @@ class _ErrorView extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

@@ -9,11 +9,7 @@ import 'package:goapp/core/storage/user_cache_model.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/pages/city_selection_screen.dart';
-import 'package:goapp/features/profile/data/repositories/local_profile_repository.dart';
 import 'package:goapp/features/profile/domain/entities/profile.dart';
-import 'package:goapp/features/profile/domain/services/profile_validation_service.dart';
-import 'package:goapp/features/profile/domain/usecases/create_profile_usecase.dart';
-import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
 import 'package:goapp/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:goapp/features/profile/presentation/bloc/profile_event.dart';
 import 'package:goapp/features/profile/presentation/bloc/profile_state.dart';
@@ -25,6 +21,7 @@ import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/
 import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/profile_setup_header.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/profile_setup_submit_button.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/profile_vehicle_section.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileSetupPage extends StatefulWidget {
@@ -70,25 +67,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   late final ProfileSetupCubit _cubit;
   late final ProfileBloc _profileBloc;
   late final bool _ownsProfileBloc;
-  LocalProfileRepository? _fallbackRepository;
 
   @override
   void initState() {
     super.initState();
     _termsTap = TapGestureRecognizer()..onTap = _openTermsOfService;
-    _cubit = ProfileSetupCubit(validationService: ProfileValidationService());
-    try {
-      _profileBloc = context.read<ProfileBloc>();
-      _ownsProfileBloc = false;
-    } catch (_) {
-      _fallbackRepository = LocalProfileRepository();
-      _profileBloc = ProfileBloc(
-        CreateProfileUseCase(_fallbackRepository!),
-        GetCachedProfileUseCase(_fallbackRepository!),
-        autoLoad: false,
-      );
-      _ownsProfileBloc = true;
-    }
+    _cubit = sl<ProfileSetupCubit>();
+    _profileBloc = sl<ProfileBloc>();
+    _ownsProfileBloc = true;
     _cubit.setInitial(
       name: '',
       email: '',

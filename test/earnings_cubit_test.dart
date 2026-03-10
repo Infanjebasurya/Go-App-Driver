@@ -1,21 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:goapp/features/earnings/data/datasources/earnings_wallet_mock_api.dart';
 import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
+import 'support/shared_preferences_mock.dart';
 
 void main() {
   group('EarningsCubit', () {
     late EarningsCubit cubit;
 
-    setUp(() {
-      SharedPreferences.setMockInitialValues(<String, Object>{});
-      const repo = EarningsRepositoryImpl();
+    setUp(() async {
+      final prefsStore = await initMockSharedPreferencesStore();
+      final walletApi = EarningsWalletMockApi(prefsStore);
+      final repo = EarningsRepositoryImpl(api: walletApi);
       cubit = EarningsCubit(
         getEarningsSnapshot: GetEarningsSnapshotUseCase(repo),
         getWalletTransactions: GetWalletTransactionsUseCase(repo),
+        walletApi: walletApi,
       );
     });
 

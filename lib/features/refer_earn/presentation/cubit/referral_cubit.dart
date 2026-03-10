@@ -3,8 +3,8 @@ import 'package:goapp/features/refer_earn/data/datasources/referral_mock_api.dar
 import 'package:goapp/features/refer_earn/presentation/cubit/referral_state.dart';
 
 class ReferralCubit extends Cubit<ReferralState> {
-  ReferralCubit({ReferralMockApi? mockApi})
-    : _mockApi = mockApi ?? const ReferralMockApi(),
+  ReferralCubit({required ReferralMockApi mockApi})
+    : _mockApi = mockApi,
       super(const ReferralInitial()) {
     loadData();
   }

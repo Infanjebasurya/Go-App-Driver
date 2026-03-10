@@ -6,6 +6,7 @@ import 'package:goapp/features/help_support/presentation/cubit/emergency_contact
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class SafetyPage extends StatelessWidget {
   const SafetyPage({super.key});
@@ -13,7 +14,7 @@ class SafetyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SafetyPreferencesCubit(),
+      create: (_) => sl<SafetyPreferencesCubit>(),
       child: BlocBuilder<SafetyPreferencesCubit, SafetyPreferencesState>(
         builder: (context, state) {
           return Scaffold(
@@ -257,7 +258,7 @@ class AddEmergencyNumberPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => EmergencyContactsCubit(),
+      create: (_) => sl<EmergencyContactsCubit>(),
       child: Builder(
         builder: (context) {
           return Scaffold(

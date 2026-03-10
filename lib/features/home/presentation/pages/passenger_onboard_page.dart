@@ -16,6 +16,7 @@ import 'package:goapp/core/widgets/location_disabled_banner.dart';
 import 'package:goapp/features/home/presentation/pages/trip_navigation_page.dart';
 import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class PassengerOnboardPage extends StatefulWidget {
   const PassengerOnboardPage({super.key});
@@ -30,10 +31,8 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
   LatLng _dropPoint = const LatLng(13.0744, 80.2241);
   String _dropAddress = '13, vinobaji St, KamarajarNag...';
   final MapStyleLoader _styleLoader = const MapStyleLoader();
-  final LocationPermissionGuard _locationGuard =
-      const LocationPermissionGuard();
-  final DirectionsRouteService _directionsRouteService =
-      DirectionsRouteService();
+  late final LocationPermissionGuard _locationGuard;
+  late final DirectionsRouteService _directionsRouteService;
   String? _mapStyle;
   List<LatLng> _routePoints = const <LatLng>[];
   AppMapController? _mapController;
@@ -43,6 +42,8 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
   @override
   void initState() {
     super.initState();
+    _locationGuard = sl<LocationPermissionGuard>();
+    _directionsRouteService = sl<DirectionsRouteService>();
     unawaited(
       HomeTripResumeStore.setStage(HomeTripResumeStage.passengerOnboard),
     );

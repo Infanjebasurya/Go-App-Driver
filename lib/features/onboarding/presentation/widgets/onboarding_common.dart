@@ -152,4 +152,46 @@ class OnboardingNavigationRow extends StatelessWidget {
   }
 }
 
+class OnboardingSubtitle extends StatelessWidget {
+  const OnboardingSubtitle({
+    super.key,
+    required this.text,
+    required this.fontSize,
+    this.maxLines = 2,
+    this.maxWidth = 340,
+    this.horizontalPadding = 24,
+  });
+
+  final String text;
+  final double fontSize;
+  final int maxLines;
+  final double maxWidth;
+  final double horizontalPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: Text(
+            text,
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: fontSize,
+              height: 1.5,
+              color: OnboardingUiColors.textMuted,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 

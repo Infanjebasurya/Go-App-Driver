@@ -3,12 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/sos/presentation/cubit/sos_cubit.dart';
 import 'package:goapp/features/sos/presentation/pages/sos_page.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class SOSBottomSheet extends StatelessWidget {
   const SOSBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    final SosCubit cubit = SosCubit();
+    final SosCubit cubit = sl<SosCubit>();
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,

@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 enum HomeTripResumeStage {
   none,
@@ -20,7 +20,7 @@ class HomeTripResumeStore {
       'home_force_home_on_next_launch_v1';
 
   static Future<HomeTripResumeStage> loadStage() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final raw = prefs.getString(_key);
     if (raw == null || raw.isEmpty) return HomeTripResumeStage.none;
     return HomeTripResumeStage.values.firstWhere(
@@ -30,24 +30,24 @@ class HomeTripResumeStore {
   }
 
   static Future<void> setStage(HomeTripResumeStage stage) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.setString(_key, stage.name);
   }
 
   static Future<int?> loadTripNavigationStartEpochMs() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final value = prefs.getInt(_tripStartMsKey);
     if (value == null || value <= 0) return null;
     return value;
   }
 
   static Future<void> setTripNavigationStartEpochMs(int epochMs) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.setInt(_tripStartMsKey, epochMs);
   }
 
   static Future<void> clearTripNavigationStartEpochMs() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.remove(_tripStartMsKey);
   }
 
@@ -58,12 +58,12 @@ class HomeTripResumeStore {
   }
 
   static Future<void> markForceHomeOnNextLaunch() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.setBool(_forceHomeOnLaunchKey, true);
   }
 
   static Future<bool> consumeForceHomeOnNextLaunch() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final bool shouldForce = prefs.getBool(_forceHomeOnLaunchKey) ?? false;
     if (!shouldForce) return false;
     await prefs.setBool(_forceHomeOnLaunchKey, false);
@@ -71,7 +71,7 @@ class HomeTripResumeStore {
   }
 
   static Future<void> clearForceHomeOnNextLaunch() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.setBool(_forceHomeOnLaunchKey, false);
   }
 }

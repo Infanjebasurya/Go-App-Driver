@@ -7,27 +7,21 @@ import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
-import 'package:goapp/features/ride_complete/data/repositories/ride_complete_repository_impl.dart';
-import 'package:goapp/features/ride_complete/domain/usecases/get_feedback_tags.dart';
-import 'package:goapp/features/ride_complete/domain/usecases/submit_ride_feedback.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_cubit.dart';
 import 'package:goapp/features/ride_complete/presentation/cubit/rate_experience_state.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/utils/env.dart';
 import 'dart:io';
+import 'package:goapp/core/di/injection.dart';
 
 class RateExperienceScreen extends StatelessWidget {
   const RateExperienceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final repository = RideCompleteRepositoryImpl();
     return BlocProvider<RateExperienceCubit>(
-      create: (_) => RateExperienceCubit(
-        GetFeedbackTags(repository),
-        SubmitRideFeedback(repository),
-      ),
+      create: (_) => sl<RateExperienceCubit>(),
       child: const _RateExperienceView(),
     );
   }
@@ -79,7 +73,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => BlocProvider<DriverCubit>(
-          create: (_) => DriverCubit()..goOnline(),
+          create: (_) => sl<DriverCubit>()..goOnline(),
           child: const HomeScreen(),
         ),
       ),

@@ -1,18 +1,18 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 class TextFieldStore {
   TextFieldStore._();
 
   static const String _prefsKey = 'text_field_store_v1';
   static final Map<String, String> _cache = <String, String>{};
-  static SharedPreferences? _prefs;
+  static SharedPreferencesStore? _prefs;
   static bool _loaded = false;
 
   static Future<void> init() async {
     if (_loaded) return;
-    _prefs = await SharedPreferences.getInstance();
+    _prefs = SharedPreferencesStore.global;
     final raw = _prefs!.getString(_prefsKey);
     if (raw != null && raw.isNotEmpty) {
       try {

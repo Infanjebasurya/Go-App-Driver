@@ -12,6 +12,7 @@ import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/cubit
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/widgets/vehicle_card.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class VehicleSelectionScreen extends StatelessWidget {
   final City selectedCity;
@@ -21,7 +22,7 @@ class VehicleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => VehicleSelectionCubit(),
+      create: (_) => sl<VehicleSelectionCubit>(),
       child: _VehicleSelectionView(selectedCity: selectedCity),
     );
   }

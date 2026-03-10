@@ -4,8 +4,8 @@ import 'package:goapp/features/earnings/domain/entities/transaction_item.dart';
 import 'package:goapp/features/earnings/domain/repositories/earnings_repository.dart';
 
 class EarningsRepositoryImpl implements EarningsRepository {
-  const EarningsRepositoryImpl({EarningsWalletMockApi? api})
-    : _api = api ?? const EarningsWalletMockApi();
+  const EarningsRepositoryImpl({required EarningsWalletMockApi api})
+      : _api = api;
 
   final EarningsWalletMockApi _api;
 

@@ -4,6 +4,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/about/presentation/cubit/about_cubit.dart';
 import 'package:goapp/features/about/presentation/cubit/about_state.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -12,7 +13,7 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => AboutCubit(), child: const _AboutView());
+    return BlocProvider(create: (_) => sl<AboutCubit>(), child: const _AboutView());
   }
 }
 

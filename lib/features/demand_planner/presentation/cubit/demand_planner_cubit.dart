@@ -4,8 +4,8 @@ import 'package:goapp/features/demand_planner/data/datasources/demand_planner_mo
 import 'demand_planner_state.dart';
 
 class DemandPlannerCubit extends Cubit<DemandPlannerState> {
-  DemandPlannerCubit({DemandPlannerMockApi? mockApi})
-    : _mockApi = mockApi ?? const DemandPlannerMockApi(),
+  DemandPlannerCubit({required DemandPlannerMockApi mockApi})
+    : _mockApi = mockApi,
       super(const DemandPlannerInitial()) {
     loadData();
   }

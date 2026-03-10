@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/file_picker_service.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
+import 'package:goapp/core/service/path_provider_service.dart';
 import 'package:goapp/features/document_verify/presentation/cubit/verification_cubit.dart';
 import 'package:goapp/features/document_verify/presentation/model/document_model.dart';
 import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/features/documents/presentation/cubit/document_upload_cubit.dart';
+import 'package:goapp/features/documents/presentation/services/document_upload_file_service.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
 
 void main() {
@@ -63,8 +66,19 @@ void main() {
       DocumentProgressStore.reset();
     });
 
+    DocumentUploadCubit createCubit(int initialStepIndex) {
+      return DocumentUploadCubit(
+        initialStepIndex: initialStepIndex,
+        imagePickerService: ImagePickerService(),
+        filePickerService: const FilePickerService(),
+        fileService: DocumentUploadFileService(
+          pathProvider: PathProviderService(),
+        ),
+      );
+    }
+
     test('profile photo is required on Step 1', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 0);
+      final cubit = createCubit(0);
       addTearDown(cubit.close);
 
       await cubit.saveAndNext();
@@ -76,10 +90,10 @@ void main() {
     });
 
     test('profile photo selection moves to next step', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 0);
+      final cubit = createCubit(0);
       addTearDown(cubit.close);
 
-      await cubit.captureProfilePhoto(source: ImageSource.gallery);
+      await cubit.captureProfilePhoto(source: AppImageSource.gallery);
       await cubit.saveAndNext();
 
       expect(cubit.state.currentStepIndex, 1);
@@ -87,7 +101,7 @@ void main() {
     });
 
     test('does not navigate until front and back are captured', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 1);
+      final cubit = createCubit(1);
       addTearDown(cubit.close);
 
       cubit.updateDocumentNumber('MH1220180012345');
@@ -95,21 +109,21 @@ void main() {
       expect(cubit.state.currentStepIndex, 1);
       expect(cubit.state.currentDocStep.numberError, isNotNull);
 
-      await cubit.captureFront(source: ImageSource.gallery);
+      await cubit.captureFront(source: AppImageSource.gallery);
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 1);
 
-      await cubit.captureBack(source: ImageSource.gallery);
+      await cubit.captureBack(source: AppImageSource.gallery);
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 2);
     });
 
     test('driving license rejects invalid and accepts valid', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 1);
+      final cubit = createCubit(1);
       addTearDown(cubit.close);
 
-      await cubit.captureFront(source: ImageSource.gallery);
-      await cubit.captureBack(source: ImageSource.gallery);
+      await cubit.captureFront(source: AppImageSource.gallery);
+      await cubit.captureBack(source: AppImageSource.gallery);
       cubit.updateDocumentNumber('abc123');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 1);
@@ -121,11 +135,11 @@ void main() {
     });
 
     test('vehicle RC rejects invalid and accepts valid', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 2);
+      final cubit = createCubit(2);
       addTearDown(cubit.close);
 
-      await cubit.captureFront(source: ImageSource.gallery);
-      await cubit.captureBack(source: ImageSource.gallery);
+      await cubit.captureFront(source: AppImageSource.gallery);
+      await cubit.captureBack(source: AppImageSource.gallery);
       cubit.updateDocumentNumber('12345');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 2);
@@ -137,11 +151,11 @@ void main() {
     });
 
     test('aadhaar rejects invalid and accepts 12 digits', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 3);
+      final cubit = createCubit(3);
       addTearDown(cubit.close);
 
-      await cubit.captureFront(source: ImageSource.gallery);
-      await cubit.captureBack(source: ImageSource.gallery);
+      await cubit.captureFront(source: AppImageSource.gallery);
+      await cubit.captureBack(source: AppImageSource.gallery);
       cubit.updateDocumentNumber('1234ABCD5678');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 3);
@@ -153,11 +167,11 @@ void main() {
     });
 
     test('pan rejects invalid and accepts valid format', () async {
-      final cubit = DocumentUploadCubit(initialStepIndex: 4);
+      final cubit = createCubit(4);
       addTearDown(cubit.close);
 
-      await cubit.captureFront(source: ImageSource.gallery);
-      await cubit.captureBack(source: ImageSource.gallery);
+      await cubit.captureFront(source: AppImageSource.gallery);
+      await cubit.captureBack(source: AppImageSource.gallery);
       cubit.updateDocumentNumber('ABCDE12345');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 4);
@@ -172,7 +186,7 @@ void main() {
     test(
       'bank mismatch error clears after correcting account number and re-submitting',
       () async {
-        final cubit = DocumentUploadCubit(initialStepIndex: 5);
+        final cubit = createCubit(5);
         addTearDown(cubit.close);
 
         cubit.updateAccountHolderName('JOHN DOE');
@@ -180,7 +194,7 @@ void main() {
         cubit.updateAccountNumber('1234567890');
         cubit.updateConfirmAccountNumber('0987654321');
         cubit.updateIfscCode('HDFC0000001');
-        await cubit.captureBankDocument(source: ImageSource.gallery);
+        await cubit.captureBankDocument(source: AppImageSource.gallery);
 
         await cubit.saveAndNext();
         expect(
@@ -196,20 +210,20 @@ void main() {
     );
 
     test('normalizes lower-case formatted input for license and RC', () async {
-      final licenseCubit = DocumentUploadCubit(initialStepIndex: 1);
+      final licenseCubit = createCubit(1);
       addTearDown(licenseCubit.close);
 
-      await licenseCubit.captureFront(source: ImageSource.gallery);
-      await licenseCubit.captureBack(source: ImageSource.gallery);
+      await licenseCubit.captureFront(source: AppImageSource.gallery);
+      await licenseCubit.captureBack(source: AppImageSource.gallery);
       licenseCubit.updateDocumentNumber('mh 12-2018 0012345');
       await licenseCubit.saveAndNext();
       expect(licenseCubit.state.steps[1].documentNumber, 'MH1220180012345');
 
-      final rcCubit = DocumentUploadCubit(initialStepIndex: 2);
+      final rcCubit = createCubit(2);
       addTearDown(rcCubit.close);
 
-      await rcCubit.captureFront(source: ImageSource.gallery);
-      await rcCubit.captureBack(source: ImageSource.gallery);
+      await rcCubit.captureFront(source: AppImageSource.gallery);
+      await rcCubit.captureBack(source: AppImageSource.gallery);
       rcCubit.updateDocumentNumber('tn 01 ab 1234');
       await rcCubit.saveAndNext();
       expect(rcCubit.state.steps[2].documentNumber, 'TN01AB1234');
@@ -218,11 +232,11 @@ void main() {
     test(
       'marks driving license completed and shows completed in verification',
       () async {
-        final uploadCubit = DocumentUploadCubit(initialStepIndex: 1);
+        final uploadCubit = createCubit(1);
         addTearDown(uploadCubit.close);
 
-        await uploadCubit.captureFront(source: ImageSource.gallery);
-        await uploadCubit.captureBack(source: ImageSource.gallery);
+        await uploadCubit.captureFront(source: AppImageSource.gallery);
+        await uploadCubit.captureBack(source: AppImageSource.gallery);
         uploadCubit.updateDocumentNumber('MH1220180012345');
         await uploadCubit.saveAndNext();
 

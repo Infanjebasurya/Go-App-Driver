@@ -26,7 +26,6 @@ class ParcelDeliveryOnboardingPage extends StatelessWidget {
               final tight = height < 640;
               final topPad = tight ? 8.0 : 12.0;
               final subtitleSize = tight ? 12.5 : (compact ? 13.0 : 14.0);
-              final subtitlePad = tight ? 38.0 : 46.0;
               final sectionHeight = height * (8 / 13);
               final imageWidthByScreen =
                   screenWidth * (tight ? 0.55 : (compact ? 0.6 : 0.65));
@@ -94,20 +93,13 @@ class ParcelDeliveryOnboardingPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: spaceMid),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: subtitlePad,
-                          ),
-                          child: Text(
-                            'You can earn money by accepting ride\nrequests and completing trips.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: subtitleSize,
-                              height: 1.5,
-                              color: OnboardingUiColors.textMuted,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                        OnboardingSubtitle(
+                          text:
+                              'You can earn money by accepting ride\nrequests and completing trips.',
+                          fontSize: subtitleSize,
+                          maxLines: 2,
+                          maxWidth: 340,
+                          horizontalPadding: 24,
                         ),
                         SizedBox(height: spaceDots),
                         const OnboardingPageDots(activeIndex: 2),

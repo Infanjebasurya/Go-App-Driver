@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'support/shared_preferences_mock.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
-    SharedPreferences.setMockInitialValues(<String, Object>{});
+  setUp(() async {
+    await initMockSharedPreferencesStore();
   });
 
   test('resetForSignedOut keeps onboarding and clears signed-in progress', () async {

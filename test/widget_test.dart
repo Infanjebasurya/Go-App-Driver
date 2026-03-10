@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/app.dart';
-import 'package:goapp/injection.dart';
+import 'package:goapp/core/di/injection.dart';
 
 void main() {
   testWidgets('renders home page shell', (

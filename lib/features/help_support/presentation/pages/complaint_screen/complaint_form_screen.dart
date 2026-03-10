@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/service/file_picker_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
 import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class ComplaintFormScreen extends StatefulWidget {
   const ComplaintFormScreen({super.key, required this.state});
@@ -361,33 +362,24 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
   Future<void> _pickSupportingMedia(BuildContext context) async {
     final cubit = context.read<ComplaintCubit>();
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
+      final file = await sl<FilePickerService>().pickCustom(
         allowedExtensions: <String>[
           ..._imageExtensions,
           ..._videoExtensions,
           ..._documentExtensions,
         ],
       );
-      if (result == null || result.files.isEmpty) return;
-      final file = result.files.single;
-      if (file.size > _maxMediaSizeBytes) {
+      if (file == null) return;
+      if (file.sizeBytes > _maxMediaSizeBytes) {
         cubit.setMediaValidationError('File size must be up to 20MB.');
         return;
       }
-      final path = file.path;
-      if (path == null || path.isEmpty) {
-        cubit.setMediaValidationError('Could not access selected file. Try again.');
-        return;
-      }
-      final extension = (file.extension ?? '').toLowerCase();
-      final mediaType = _resolveMediaType(extension);
+      final mediaType = _resolveMediaType(file.extension);
       if (mediaType == null) {
         cubit.setMediaValidationError('Unsupported file format.');
         return;
       }
-      cubit.attachMedia(path: path, name: file.name, mediaType: mediaType);
+      cubit.attachMedia(path: file.path, name: file.name, mediaType: mediaType);
     } catch (_) {
       cubit.setMediaValidationError('Unable to pick file right now. Please try again.');
     }

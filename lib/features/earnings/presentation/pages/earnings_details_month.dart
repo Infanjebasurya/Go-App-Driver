@@ -7,9 +7,27 @@ class _MonthView extends StatefulWidget {
   State<_MonthView> createState() => _MonthViewState();
 }
 
-class _MonthViewState extends State<_MonthView> {
+class _MonthViewState extends State<_MonthView>
+    with SingleTickerProviderStateMixin {
   int _rangeIndex = 1;
-  int _orderTab = 0; // 0 completed, 1 cancelled
+  late final TabController _orderTabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _orderTabController = TabController(length: 2, vsync: this);
+    _orderTabController.addListener(() {
+      if (!mounted) return;
+      if (_orderTabController.indexIsChanging) return;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _orderTabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +37,12 @@ class _MonthViewState extends State<_MonthView> {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
         }
-        final List<RideHistoryTrip> trips = snapshot.data ?? const <RideHistoryTrip>[];
+        final List<RideHistoryTrip> trips =
+            snapshot.data ?? const <RideHistoryTrip>[];
         final List<_MonthRange> ranges = _buildMonthRanges();
-        final _MonthRange selected = ranges[_rangeIndex.clamp(0, ranges.length - 1)];
-        final bool showCancelled = _orderTab == 1;
+        final _MonthRange selected =
+            ranges[_rangeIndex.clamp(0, ranges.length - 1)];
+        final bool showCancelled = _orderTabController.index == 1;
         final List<RideHistoryTrip> filtered = _filterMonthTrips(
           trips: trips,
           range: selected,
@@ -39,12 +59,13 @@ class _MonthViewState extends State<_MonthView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              const SizedBox(height: 8),
               _MonthRangeChips(
                 ranges: ranges,
                 selectedIndex: _rangeIndex,
                 onSelect: (index) => setState(() => _rangeIndex = index),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 16),
               _RangeSummaryCard(total: total, rides: filtered.length),
               const SizedBox(height: 14),
               _MonthPerformanceCard(values: bars),
@@ -57,37 +78,47 @@ class _MonthViewState extends State<_MonthView> {
                 ),
               ),
               const SizedBox(height: 10),
-              _OrderHistoryTabs(
-                selectedIndex: _orderTab,
-                onChanged: (index) => setState(() => _orderTab = index),
-              ),
+              _OrderHistoryTabs(controller: _orderTabController),
               const SizedBox(height: 10),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Monthly Summary',
-                  style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: AppColors.neutral666,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
               if (weeks.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 24,
+                  ),
                   child: Text(
                     showCancelled
                         ? 'No cancelled rides in this month'
                         : 'No completed rides in this month',
-                    style: const TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      color: AppColors.neutral666,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 )
               else
                 ...weeks.map((week) {
-                  final String rideLabel = showCancelled ? 'Cancelled Rides' : 'Completed Rides';
+                  final String rideLabel = showCancelled
+                      ? 'Cancelled Rides'
+                      : 'Completed Rides';
                   return _SummaryItem(
                     title: 'Week ${week.weekNo}',
                     subtitle: '${week.trips.length} $rideLabel',
                     amount: '\u20B9${week.total.toStringAsFixed(2)}',
-                    accent: showCancelled ? AppColors.validationRed : AppColors.emerald,
+                    accent: showCancelled
+                        ? AppColors.validationRed
+                        : AppColors.emerald,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -145,15 +176,23 @@ class _MonthWeekDetailsPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     weekTitle,
-                    style: const TextStyle(fontSize: 30 / 1.6, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 30 / 1.6,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: showCancelled ? AppColors.rose : AppColors.earningsAccentSoft,
+                      color: showCancelled
+                          ? AppColors.rose
+                          : AppColors.earningsAccentSoft,
                       borderRadius: BorderRadius.circular(18),
                     ),
                     child: FittedBox(
@@ -161,7 +200,9 @@ class _MonthWeekDetailsPage extends StatelessWidget {
                       child: Text(
                         summaryPillText,
                         style: TextStyle(
-                          color: showCancelled ? AppColors.validationRed : AppColors.emerald,
+                          color: showCancelled
+                              ? AppColors.validationRed
+                              : AppColors.emerald,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),
@@ -179,14 +220,18 @@ class _MonthWeekDetailsPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final RideHistoryTrip trip = trips[index];
                 final int startEpoch =
-                    trip.startedAtEpochMs ?? trip.pickedUpAtEpochMs ?? trip.acceptedAtEpochMs;
+                    trip.startedAtEpochMs ??
+                    trip.pickedUpAtEpochMs ??
+                    trip.acceptedAtEpochMs;
                 final int endEpoch = showCancelled
                     ? (trip.canceledAtEpochMs ?? startEpoch)
                     : (trip.completedAtEpochMs ?? startEpoch);
                 return TripCard(
                   date: _formatDateLabel(endEpoch),
-                  timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
-                  price: '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
+                  timeRange:
+                      '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
+                  price:
+                      '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
                   statusLine: showCancelled
                       ? 'Canceled by ${_prettyCanceledBy(trip.canceledBy)}'
                       : null,
@@ -220,7 +265,11 @@ class _MonthPerformanceCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: AppColors.hex10000000, blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+            color: AppColors.hex10000000,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -229,7 +278,11 @@ class _MonthPerformanceCard extends StatelessWidget {
             children: const <Widget>[
               Text(
                 'Performance',
-                style: TextStyle(color: AppColors.neutral888, fontWeight: FontWeight.w700, fontSize: 12),
+                style: TextStyle(
+                  color: AppColors.neutral888,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
               ),
               Spacer(),
               _LegendDot(label: 'Monthly', color: AppColors.emerald),
@@ -243,7 +296,9 @@ class _MonthPerformanceCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List<Widget>.generate(5, (index) {
                 final int count = values[index];
-                final double height = ((count / maxValue) * 78).clamp(0, 78).toDouble();
+                final double height = ((count / maxValue) * 78)
+                    .clamp(0, 78)
+                    .toDouble();
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
@@ -294,16 +349,22 @@ class _MonthRangeChips extends StatelessWidget {
         children: List<Widget>.generate(ranges.length, (index) {
           final bool selected = selectedIndex == index;
           return Padding(
-            padding: EdgeInsets.only(right: index == ranges.length - 1 ? 0 : 10),
+            padding: EdgeInsets.only(
+              right: index == ranges.length - 1 ? 0 : 10,
+            ),
             child: GestureDetector(
               onTap: () => onSelect(index),
               child: Container(
                 height: 40,
                 padding: const EdgeInsets.symmetric(horizontal: 22),
                 decoration: BoxDecoration(
-                  color: selected ? AppColors.hexFFB7D7CC : AppColors.hexFFF3F3F3,
+                  color: selected
+                      ? AppColors.hexFFB7D7CC
+                      : AppColors.hexFFF3F3F3,
                   borderRadius: BorderRadius.circular(20),
-                  border: selected ? Border.all(color: AppColors.emerald) : null,
+                  border: selected
+                      ? Border.all(color: AppColors.emerald)
+                      : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -324,7 +385,11 @@ class _MonthRangeChips extends StatelessWidget {
 }
 
 class _MonthRange {
-  const _MonthRange({required this.start, required this.endExclusive, required this.label});
+  const _MonthRange({
+    required this.start,
+    required this.endExclusive,
+    required this.label,
+  });
 
   final DateTime start;
   final DateTime endExclusive;
@@ -390,16 +455,20 @@ List<RideHistoryTrip> _filterMonthTrips({
   required _MonthRange range,
   required bool cancelled,
 }) {
-  return trips.where((trip) {
-    final int epoch = cancelled ? (trip.canceledAtEpochMs ?? 0) : (trip.completedAtEpochMs ?? 0);
-    if (epoch <= 0) return false;
-    if (cancelled) {
-      if (!EarningsCalculator.isCanceledTrip(trip)) return false;
-    } else if (!EarningsCalculator.isCompletedTrip(trip)) {
-      return false;
-    }
-    return range.containsEpoch(epoch);
-  }).toList(growable: false);
+  return trips
+      .where((trip) {
+        final int epoch = cancelled
+            ? (trip.canceledAtEpochMs ?? 0)
+            : (trip.completedAtEpochMs ?? 0);
+        if (epoch <= 0) return false;
+        if (cancelled) {
+          if (!EarningsCalculator.isCanceledTrip(trip)) return false;
+        } else if (!EarningsCalculator.isCompletedTrip(trip)) {
+          return false;
+        }
+        return range.containsEpoch(epoch);
+      })
+      .toList(growable: false);
 }
 
 List<int> _buildMonthPerformanceBars(List<RideHistoryTrip> trips) {
@@ -415,35 +484,40 @@ List<int> _buildMonthPerformanceBars(List<RideHistoryTrip> trips) {
 }
 
 List<_MonthWeekGroup> _buildMonthWeekGroups(List<RideHistoryTrip> trips) {
-  final Map<int, List<RideHistoryTrip>> grouped = <int, List<RideHistoryTrip>>{};
+  final Map<int, List<RideHistoryTrip>> grouped =
+      <int, List<RideHistoryTrip>>{};
   for (final RideHistoryTrip trip in trips) {
     final int epoch = trip.completedAtEpochMs ?? trip.canceledAtEpochMs ?? 0;
     if (epoch <= 0) continue;
-    final int weekNo = ((DateTime.fromMillisecondsSinceEpoch(epoch).day - 1) ~/ 7) + 1;
+    final int weekNo =
+        ((DateTime.fromMillisecondsSinceEpoch(epoch).day - 1) ~/ 7) + 1;
     grouped.putIfAbsent(weekNo, () => <RideHistoryTrip>[]).add(trip);
   }
 
   final List<int> keys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
-  return keys.map((weekNo) {
-    final List<RideHistoryTrip> weekTrips = grouped[weekNo]!;
-    weekTrips.sort((a, b) {
-      final int aEpoch = a.completedAtEpochMs ?? a.canceledAtEpochMs ?? a.acceptedAtEpochMs;
-      final int bEpoch = b.completedAtEpochMs ?? b.canceledAtEpochMs ?? b.acceptedAtEpochMs;
-      return bEpoch.compareTo(aEpoch);
-    });
-    final double total = weekTrips.fold<double>(
-      0,
-      (sum, trip) => sum + EarningsCalculator.totalEarning(trip),
-    );
-    return _MonthWeekGroup(
-      weekNo: weekNo,
-      trips: List<RideHistoryTrip>.from(weekTrips),
-      total: total,
-    );
-  }).toList(growable: false);
+  return keys
+      .map((weekNo) {
+        final List<RideHistoryTrip> weekTrips = grouped[weekNo]!;
+        weekTrips.sort((a, b) {
+          final int aEpoch =
+              a.completedAtEpochMs ??
+              a.canceledAtEpochMs ??
+              a.acceptedAtEpochMs;
+          final int bEpoch =
+              b.completedAtEpochMs ??
+              b.canceledAtEpochMs ??
+              b.acceptedAtEpochMs;
+          return bEpoch.compareTo(aEpoch);
+        });
+        final double total = weekTrips.fold<double>(
+          0,
+          (sum, trip) => sum + EarningsCalculator.totalEarning(trip),
+        );
+        return _MonthWeekGroup(
+          weekNo: weekNo,
+          trips: List<RideHistoryTrip>.from(weekTrips),
+          total: total,
+        );
+      })
+      .toList(growable: false);
 }
-
-
-
-
-

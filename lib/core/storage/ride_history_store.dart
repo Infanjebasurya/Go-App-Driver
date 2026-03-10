@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 class RideHistoryTrip {
   const RideHistoryTrip({
@@ -130,13 +130,13 @@ class RideHistoryStore {
   static const int _maxItems = 100;
 
   static Future<void> clearAll() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.remove(_historyKey);
     await prefs.remove(_activeTripIdKey);
   }
 
   static Future<List<RideHistoryTrip>> loadTrips() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final String? raw = prefs.getString(_historyKey);
     if (raw == null || raw.isEmpty) return const <RideHistoryTrip>[];
     try {
@@ -348,7 +348,7 @@ class RideHistoryStore {
   }
 
   static Future<String?> _loadActiveTripId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final String? activeId = prefs.getString(_activeTripIdKey);
     if (activeId == null || activeId.isEmpty) return null;
     return activeId;
@@ -380,7 +380,7 @@ class RideHistoryStore {
     bool setAsActive = false,
     bool clearActive = false,
   }) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final List<RideHistoryTrip> trips = (await loadTrips()).toList();
     final int existing = trips.indexWhere((RideHistoryTrip t) => t.id == trip.id);
     if (existing == -1) {
@@ -405,7 +405,7 @@ class RideHistoryStore {
   }
 
   static Future<void> _saveTrips(List<RideHistoryTrip> trips) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final String encoded = jsonEncode(
       trips.map((RideHistoryTrip trip) => trip.toJson()).toList(growable: false),
     );

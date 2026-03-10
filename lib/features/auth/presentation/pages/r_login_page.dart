@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/features/auth/domain/services/phone_number_service.dart';
-import 'package:goapp/features/auth/domain/usecases/resend_otp_usecase.dart';
 import 'package:goapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:goapp/features/auth/presentation/bloc/auth_event.dart';
 import 'package:goapp/features/auth/presentation/bloc/auth_state.dart';
@@ -17,7 +15,7 @@ import 'package:goapp/features/auth/presentation/widgets/app_text_field.dart';
 import 'package:goapp/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
 import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
-import 'package:goapp/injection.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RLoginPage extends StatefulWidget {
@@ -49,7 +47,7 @@ class _RLoginPageState extends State<RLoginPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginFormCubit(phoneNumberService: PhoneNumberService()),
+      create: (_) => sl<LoginFormCubit>(),
       child: MultiBlocListener(
         listeners: [
           BlocListener<AuthBloc, AuthState>(
@@ -66,10 +64,7 @@ class _RLoginPageState extends State<RLoginPage> {
                           value: context.read<AuthBloc>(),
                         ),
                         BlocProvider<OtpCubit>(
-                          // B-08 FIX: Use shared ResendOtpUseCase from get_it.
-                          create: (_) => OtpCubit(
-                            resendOtpUseCase: sl<ResendOtpUseCase>(),
-                          ),
+                          create: (_) => sl<OtpCubit>(),
                         ),
                       ],
                       child: OtpPage(phoneNumber: phone, otpId: state.otpId),

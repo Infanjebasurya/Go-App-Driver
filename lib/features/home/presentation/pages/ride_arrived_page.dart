@@ -26,6 +26,7 @@ import 'package:goapp/features/home/presentation/pages/contact/ride_call_page.da
 import 'package:goapp/features/home/presentation/pages/contact/ride_chat_page.dart';
 import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
+import 'package:goapp/core/di/injection.dart';
 
 part 'ride_arrived_page_sections.dart';
 part 'ride_arrived_page_state_extensions.dart';
@@ -52,11 +53,9 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   static const int _pickupProgressNotificationId = 3001;
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
-  final LocationPermissionGuard _locationGuard =
-      const LocationPermissionGuard();
-  final LocationService _locationService = const LocationService();
-  final DirectionsRouteService _directionsRouteService =
-      DirectionsRouteService();
+  late final LocationPermissionGuard _locationGuard;
+  late final LocationService _locationService;
+  late final DirectionsRouteService _directionsRouteService;
 
   AppMapController? _mapController;
   String? _mapStyle;
@@ -83,6 +82,9 @@ class _RideArrivedPageState extends State<RideArrivedPage>
   @override
   void initState() {
     super.initState();
+    _locationGuard = sl<LocationPermissionGuard>();
+    _locationService = sl<LocationService>();
+    _directionsRouteService = sl<DirectionsRouteService>();
     unawaited(HomeTripResumeStore.setStage(HomeTripResumeStage.rideArrived));
     if (Env.mockApi) {
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
@@ -413,7 +415,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (_) => BlocProvider<DriverCubit>(
-                create: (_) => DriverCubit(),
+                create: (_) => sl<DriverCubit>(),
                 child: const HomeScreen(),
               ),
             ),
