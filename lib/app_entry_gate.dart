@@ -22,6 +22,7 @@ import 'package:goapp/features/profile/presentation/pages/profile_setup_page.dar
 
 import 'features/home/presentation/cubit/driver_status_cubit.dart';
 import 'features/home/presentation/pages/home_page.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class AppEntryGate extends StatefulWidget {
   const AppEntryGate({super.key});
@@ -40,7 +41,7 @@ class _AppEntryGateState extends State<AppEntryGate> {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             body: Center(child: CircularProgressIndicator()),
           );
         }
@@ -155,3 +156,5 @@ class _EntryBootstrap {
   final bool onboardingSeen;
   final RegistrationProgress? progress;
 }
+
+

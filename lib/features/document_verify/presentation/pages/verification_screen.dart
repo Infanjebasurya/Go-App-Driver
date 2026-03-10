@@ -51,13 +51,13 @@ class _VerificationViewState extends State<_VerificationView> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: const AppAppBar(
           title: 'GoApp',
           backEnabled: false,
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(1),
-            child: Divider(height: 1, color: Color(0xFFE8EDF2)),
+            child: Divider(height: 1, color: AppColors.hexFFE8EDF2),
           ),
         ),
         body: BlocConsumer<VerificationCubit, VerificationState>(
@@ -109,7 +109,7 @@ class _VerificationViewState extends State<_VerificationView> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
-                              color: Colors.grey.shade500,
+                              color: AppColors.gray.shade500,
                             ),
                           ),
                         ),
@@ -232,17 +232,17 @@ class _ProfilePictureCard extends StatelessWidget {
         curve: Curves.easeInOut,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isCompleted
                 ? AppColors.emerald.withValues(alpha: 0.3)
-                : const Color(0xFFE8EDF2),
+                : AppColors.hexFFE8EDF2,
             width: isCompleted ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -258,7 +258,7 @@ class _ProfilePictureCard extends StatelessWidget {
                 child: Icon(
                   Icons.person_rounded,
                   color:
-                      isCompleted ? AppColors.emerald : const Color(0xFF8FA0B0),
+                      isCompleted ? AppColors.emerald : AppColors.hexFF8FA0B0,
                   size: 22,
                 ),
               ),
@@ -304,14 +304,14 @@ class _ProfilePictureCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.coolwhite,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFD5DDE5)),
+                    border: Border.all(color: AppColors.hexFFD5DDE5),
                   ),
                   child: const Text(
                     'REQUIRED',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF8FA0B0),
+                      color: AppColors.hexFF8FA0B0,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -343,8 +343,8 @@ class _SubmitSection extends StatelessWidget {
             16,
       ),
       decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFE8EDF2))),
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: AppColors.hexFFE8EDF2)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -356,9 +356,9 @@ class _SubmitSection extends StatelessWidget {
               key: const Key('submit_button'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.emerald,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFFB0D9CC),
-                disabledForegroundColor: Colors.white,
+                foregroundColor: AppColors.white,
+                disabledBackgroundColor: AppColors.hexFFB0D9CC,
+                disabledForegroundColor: AppColors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
@@ -373,7 +373,7 @@ class _SubmitSection extends StatelessWidget {
                 height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                 ),
               )
                   : const Text(
@@ -393,7 +393,7 @@ class _SubmitSection extends StatelessWidget {
               Icon(
                 Icons.lock_outline_rounded,
                 size: 13,
-                color: Colors.grey.shade400,
+                color: AppColors.gray.shade400,
               ),
               const SizedBox(width: 5),
               Text(
@@ -401,7 +401,7 @@ class _SubmitSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade400,
+                  color: AppColors.gray.shade400,
                   letterSpacing: 0.8,
                 ),
               ),
@@ -412,4 +412,8 @@ class _SubmitSection extends StatelessWidget {
     );
   }
 }
+
+
+
+
 

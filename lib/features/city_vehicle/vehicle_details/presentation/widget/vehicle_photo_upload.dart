@@ -37,12 +37,12 @@ class VehiclePhotoUpload extends StatelessWidget {
         decoration: BoxDecoration(
           color: hasPhoto
               ? AppColors.emerald.withValues(alpha: 0.06)
-              : const Color(0xFFF8FAFC),
+              : AppColors.hexFFF8FAFC,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: hasPhoto
                 ? AppColors.emerald.withValues(alpha: 0.4)
-                : const Color(0xFFE2E8F0),
+                : AppColors.hexFFE2E8F0,
             width: hasPhoto ? 1.5 : 1,
             strokeAlign: BorderSide.strokeAlignInside,
           ),
@@ -85,7 +85,7 @@ class _EmptyState extends StatelessWidget {
           width: 52,
           height: 52,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
-          child: Icon(_icon, size: 50, color: const Color(0xFF8FA0B0)),
+          child: Icon(_icon, size: 50, color: AppColors.hexFF8FA0B0),
         ),
         const SizedBox(height: 10),
         const Text(
@@ -177,13 +177,13 @@ class _UploadedState extends StatelessWidget {
                 width: 26,
                 height: 26,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFFFEEEE),
+                  color: AppColors.hexFFFFEEEE,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.close_rounded,
                   size: 14,
-                  color: Color(0xFFE53935),
+                  color: AppColors.hexFFE53935,
                 ),
               ),
             ),
@@ -208,3 +208,7 @@ class _UploadedState extends StatelessWidget {
     );
   }
 }
+
+
+
+

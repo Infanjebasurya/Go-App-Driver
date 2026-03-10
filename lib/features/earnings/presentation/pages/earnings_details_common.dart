@@ -53,7 +53,7 @@ class _RangeSummaryCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(color: AppColors.hex14000000, blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Row(
@@ -227,7 +227,7 @@ class _SummaryItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: const Color(0xFFE3E3E3)),
+          border: Border.all(color: AppColors.hexFFE3E3E3),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
@@ -347,4 +347,8 @@ String _formatTimeLabel(int epochMs) {
   final String amPm = dt.hour >= 12 ? 'pm' : 'am';
   return '${hour12.toString().padLeft(2, '0')}:$minute$amPm';
 }
+
+
+
+
 

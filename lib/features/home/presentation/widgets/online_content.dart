@@ -68,7 +68,7 @@ class _OnlineContentState extends State<OnlineContent> {
               child: Column(
                 children: [
                   Container(
-                    color: Colors.white,
+                    color: AppColors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
@@ -141,7 +141,7 @@ class _OnlineStatusBanner extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [Color(0xFF008051), AppColors.emerald],
+          colors: [AppColors.hexFF008051, AppColors.emerald],
         ),
         color: AppColors.earningsAccentSoft,
         borderRadius: BorderRadius.circular(12),
@@ -152,18 +152,18 @@ class _OnlineStatusBanner extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.3),
+              color: AppColors.white.withValues(alpha: 0.3),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: AppColors.black.withValues(alpha: 0.06),
                   blurRadius: 4,
                 ),
               ],
             ),
             child: const Icon(
               Icons.check_circle_outline,
-              color: Colors.white,
+              color: AppColors.white,
               size: 20,
             ),
           ),
@@ -176,7 +176,7 @@ class _OnlineStatusBanner extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               ),
               Text(
@@ -184,7 +184,7 @@ class _OnlineStatusBanner extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  color: Colors.white70,
+                  color: AppColors.white70,
                 ),
               ),
             ],
@@ -208,11 +208,11 @@ class _EarningsCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: AppColors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 3),
             ),
@@ -225,7 +225,7 @@ class _EarningsCard extends StatelessWidget {
                 const Icon(
                   Icons.payments_outlined,
                   size: 18,
-                  color: Colors.black45,
+                  color: AppColors.black45,
                 ),
                 const SizedBox(width: 8),
                 Column(
@@ -236,7 +236,7 @@ class _EarningsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black45,
+                        color: AppColors.black45,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -245,7 +245,7 @@ class _EarningsCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: AppColors.black87,
                       ),
                     ),
                   ],
@@ -255,7 +255,7 @@ class _EarningsCard extends StatelessWidget {
                   state.isEarningsExpanded
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
-                  color: Colors.black45,
+                  color: AppColors.black45,
                 ),
               ],
             ),
@@ -311,7 +311,7 @@ class _MiniStat extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: AppColors.black87,
               ),
             ),
           ],
@@ -321,7 +321,7 @@ class _MiniStat extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black45,
+            color: AppColors.black45,
           ),
         ),
       ],
@@ -339,11 +339,11 @@ class _BottomWalletCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
+            color: AppColors.black.withValues(alpha: 0.12),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -360,7 +360,7 @@ class _BottomWalletCard extends StatelessWidget {
             child: const Icon(
               Icons.account_balance_wallet_outlined,
               size: 20,
-              color: Colors.black87,
+              color: AppColors.black87,
             ),
           ),
           const SizedBox(width: 12),
@@ -373,7 +373,7 @@ class _BottomWalletCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black45,
+                    color: AppColors.black45,
                   ),
                 ),
                 Text(
@@ -383,7 +383,7 @@ class _BottomWalletCard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
-                    color: Colors.black87,
+                    color: AppColors.black87,
                   ),
                 ),
                 if (state.isWalletAtOrBelowDutyThreshold)
@@ -392,7 +392,7 @@ class _BottomWalletCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.red,
+                      color: AppColors.red,
                     ),
                   ),
               ],
@@ -410,7 +410,7 @@ class _BottomWalletCard extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               shape: RoundedRectangleBorder(
@@ -438,12 +438,16 @@ class _GpsButton extends StatelessWidget {
     return FloatingActionButton.small(
       shape: const CircleBorder(),
       onPressed: onTap,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 4,
-      child: const Icon(Icons.my_location, color: Colors.black54, size: 20),
+      child: const Icon(Icons.my_location, color: AppColors.black54, size: 20),
     );
   }
 }
+
+
+
+
 
 
 

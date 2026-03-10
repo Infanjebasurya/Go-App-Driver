@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/onboarding_ui_tokens.dart';
 import '../widgets/onboarding_primary_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class GetStartedPage extends StatefulWidget {
   const GetStartedPage({
@@ -55,7 +56,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -74,7 +75,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
               flex: 11,
               child: Stack(
                 children: [
-                  Positioned.fill(child: Container(color: Colors.white)),
+                  Positioned.fill(child: Container(color: AppColors.white)),
                   Center(
                     child: Transform.translate(
                       offset: const Offset(0, 10),
@@ -98,7 +99,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [Color(0x00FFFFFF), Color(0xFFFFFFFF)],
+                              colors: [AppColors.hex00FFFFFF, AppColors.hexFFFFFFFF],
                               stops: [0.0, 0.619],
                             ),
                           ),
@@ -114,11 +115,11 @@ class _GetStartedPageState extends State<GetStartedPage> {
                       child: Container(
                         height: 14,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.white,
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: const [
                             BoxShadow(
-                              color: Color(0xB3FFFFFF),
+                              color: AppColors.hexB3FFFFFF,
                               blurRadius: 8,
                               spreadRadius: 1,
                               offset: Offset(0, 2),
@@ -205,3 +206,6 @@ class _GetStartedPageState extends State<GetStartedPage> {
     );
   }
 }
+
+
+

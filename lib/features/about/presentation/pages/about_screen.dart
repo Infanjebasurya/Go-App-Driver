@@ -139,7 +139,7 @@ class _MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: AppColors.white,
       borderRadius: BorderRadius.circular(0),
       child: InkWell(
         onTap: onTap,
@@ -185,7 +185,7 @@ class _ContentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: _AppBar(title: title),
       body: ListView.builder(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
@@ -257,26 +257,11 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppAppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
-      leading: IconButton(
-        onPressed: () =>
-            Navigator.of(context).pop(returnToDrawer ? true : null),
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          color: AppColors.headingDark,
-          size: 14,
-        ),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: AppColors.headingDark,
-        ),
-      ),
+      onBack: () => Navigator.of(context).pop(returnToDrawer ? true : null),
+      title: Text(title),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(color: AppColors.strokeLight, height: 1),
@@ -326,7 +311,7 @@ class _SkeletonListState extends State<_SkeletonList>
       itemBuilder: (_, index) => AnimatedBuilder(
         animation: _anim,
         builder: (_, child) => Container(
-          color: Colors.white,
+          color: AppColors.white,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           child: Row(
             children: [
@@ -363,3 +348,6 @@ class _SkeletonListState extends State<_SkeletonList>
     );
   }
 }
+
+
+

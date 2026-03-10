@@ -136,14 +136,14 @@ class _ExpandableComplaintTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x14000000),
+                color: AppColors.hex14000000,
                 blurRadius: 4,
                 offset: Offset(0, 2),
               ),
             ],
           ),
           child: Material(
-            color: Colors.transparent,
+            color: AppColors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(14),
               onTap: onToggle,
@@ -192,7 +192,7 @@ class _ExpandableComplaintTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x14000000),
+                  color: AppColors.hex14000000,
                   blurRadius: 4,
                   offset: Offset(0, 2),
                 ),
@@ -242,7 +242,7 @@ class _SubMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: grouped ? BorderRadius.zero : BorderRadius.circular(12),
@@ -299,14 +299,14 @@ class _MenuTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x14000000),
+            color: AppColors.hex14000000,
             blurRadius: 4,
             offset: Offset(0, 2),
           ),
         ],
       ),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),
@@ -339,3 +339,7 @@ class _MenuTile extends StatelessWidget {
     );
   }
 }
+
+
+
+

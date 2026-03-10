@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/model/vehicle_details_model.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/model/vehicle_model.dart';
 
@@ -12,6 +12,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       : super(VehicleDetailsState.initial(vehicleType: vehicleType));
 
   final ImagePicker _picker = ImagePicker();
+  final PermissionService _permissionService = const PermissionService();
 
   void updateModelName(String value) {
     final err = state.errors.copyWith(clearModel: value.trim().isNotEmpty);
@@ -168,15 +169,15 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       return true;
     }
 
-    final Permission permission = source == ImageSource.camera
-        ? Permission.camera
-        : Permission.photos;
+    final AppPermission permission = source == ImageSource.camera
+        ? AppPermission.camera
+        : AppPermission.photos;
 
-    final status = await permission.status;
-    if (status.isGranted) return true;
+    final status = await _permissionService.status(permission);
+    if (status == AppPermissionStatus.granted) return true;
 
-    final result = await permission.request();
-    return result.isGranted;
+    final result = await _permissionService.request(permission);
+    return result == AppPermissionStatus.granted;
   }
 
   bool _validate() {

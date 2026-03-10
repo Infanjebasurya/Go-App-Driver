@@ -129,24 +129,24 @@ class _StatusChip extends StatelessWidget {
       case TicketStatus.resolved:
         return const _StatusStyle(
           label: 'Resolved',
-          background: Color(0x1A00A86B),
-          border: Color(0x3300A86B),
-          text: Color(0xFF00A86B),
+          background: AppColors.hex1A00A86B,
+          border: AppColors.hex3300A86B,
+          text: AppColors.hexFF00A86B,
         );
       case TicketStatus.closed:
         return const _StatusStyle(
           label: 'Closed',
-          background: Color(0xFFF5F5F4),
-          border: Color(0xFFE7E5E4),
-          text: Color(0xFF78716C),
+          background: AppColors.hexFFF5F5F4,
+          border: AppColors.hexFFE7E5E4,
+          text: AppColors.hexFF78716C,
         );
       case TicketStatus.open:
       case TicketStatus.pending:
         return const _StatusStyle(
           label: 'Open',
-          background: Color(0x1AF59E0B),
-          border: Color(0x33F59E0B),
-          text: Color(0xFFB45309),
+          background: AppColors.hex1AF59E0B,
+          border: AppColors.hex33F59E0B,
+          text: AppColors.hexFFB45309,
         );
     }
   }
@@ -165,3 +165,7 @@ class _StatusStyle {
   final Color border;
   final Color text;
 }
+
+
+
+

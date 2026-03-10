@@ -1,20 +1,21 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/map_types.dart';
+import 'package:goapp/core/service/audio_service.dart';
+import 'package:goapp/core/service/vibration_service.dart';
 import 'package:goapp/core/storage/home_trip_resume_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
 import 'package:goapp/core/storage/trip_session_store.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/available_orders_state.dart';
 import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
-import 'package:vibration/vibration.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
 
 class AvailableOrdersPage extends StatefulWidget {
@@ -29,7 +30,8 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   static const LatLng _defaultDriverPoint = LatLng(13.0624, 80.2098);
   bool _playedInitialAlert = false;
   bool _acceptedOrder = false;
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioService _audioService = AudioService();
+  final VibrationService _vibrationService = const VibrationService();
   final LocationPermissionGuard _locationGuard =
       const LocationPermissionGuard();
   final AvailableOrdersCubit _ordersCubit = AvailableOrdersCubit();
@@ -51,7 +53,7 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
     if (_acceptedOrder) return;
     _acceptedOrder = true;
     _ordersCubit.stop();
-    unawaited(_audioPlayer.stop());
+    unawaited(_audioService.stop());
     await RideHistoryStore.startTrip(
       pickupLocation: pickupAddress,
       dropLocation: dropAddress,
@@ -110,24 +112,13 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   }
 
   Future<void> _vibrateDevice() async {
-    try {
-      final bool hasVibrator = await Vibration.hasVibrator();
-      if (hasVibrator) {
-        await Vibration.vibrate(duration: 450, amplitude: 255);
-        return;
-      }
-      await HapticFeedback.heavyImpact();
-      await HapticFeedback.vibrate();
-    } catch (_) {}
+    await _vibrationService.vibrateAlert();
   }
 
   Future<void> _playOrderSound() async {
     try {
-      await _audioPlayer.stop();
-      await _audioPlayer.play(
-        AssetSource('Audio/order-sound.mp3'),
-        volume: 1.0,
-      );
+      await _audioService.stop();
+      await _audioService.playAsset('Audio/order-sound.mp3', volume: 1.0);
     } catch (_) {
       await SystemSound.play(SystemSoundType.alert);
     }
@@ -147,7 +138,7 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _ordersCubit.close();
-    unawaited(_audioPlayer.dispose());
+    unawaited(_audioService.dispose());
     super.dispose();
   }
 
@@ -181,7 +172,7 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
     if (nextIssue != null) {
       _ordersCubit.stop();
       _ordersStarted = false;
-      await _audioPlayer.stop();
+      await _audioService.stop();
       return;
     }
 
@@ -294,7 +285,7 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
         },
         child: Scaffold(
           backgroundColor: AppColors.surfaceF5,
-          appBar: AppBar(
+          appBar: AppAppBar(
             backgroundColor: AppColors.white,
             surfaceTintColor: AppColors.white,
             elevation: 0.8,
@@ -802,4 +793,7 @@ class _LocationPoint extends StatelessWidget {
     );
   }
 }
+
+
+
 

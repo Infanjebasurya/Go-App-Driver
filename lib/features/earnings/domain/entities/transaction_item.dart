@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum WalletTransactionType { earning, recharge, withdrawal }
+enum WalletTransactionStatus { completed, pending, cancelled }
 
 class TransactionItem extends Equatable {
   const TransactionItem({
@@ -12,6 +13,7 @@ class TransactionItem extends Equatable {
     required this.isCredit,
     required this.type,
     required this.eventEpochMs,
+    this.status,
   });
 
   final String id;
@@ -22,6 +24,7 @@ class TransactionItem extends Equatable {
   final bool isCredit;
   final WalletTransactionType type;
   final int eventEpochMs;
+  final WalletTransactionStatus? status;
 
   @override
   List<Object> get props => <Object>[
@@ -33,5 +36,6 @@ class TransactionItem extends Equatable {
     isCredit,
     type,
     eventEpochMs,
+    status ?? '',
   ];
 }

@@ -36,7 +36,7 @@ class LocationDisabledBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 12),
@@ -91,3 +91,6 @@ class LocationDisabledBanner extends StatelessWidget {
     );
   }
 }
+
+
+

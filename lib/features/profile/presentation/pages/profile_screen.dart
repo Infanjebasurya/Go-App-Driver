@@ -20,6 +20,7 @@ import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecas
 import '../../domain/repositories/profile_repository.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -48,33 +49,15 @@ class _ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppAppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
-        leading: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: const Padding(
-            padding: EdgeInsets.all(14),
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: Color(0xFF1A1A1A),
-              size: 18,
-            ),
-          ),
-        ),
-        title: const Text(
-          'Profile Details',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
+        title: const Text('Profile Details'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: const Color(0xFFEEEEEE), height: 1),
+          child: Container(color: AppColors.hexFFEEEEEE, height: 1),
         ),
       ),
       body: BlocConsumer<ProfileEditCubit, ProfileEditState>(
@@ -146,7 +129,7 @@ class _ProfileBody extends StatelessWidget {
         children: <Widget>[
           Container(
             width: double.infinity,
-            color: Colors.white,
+            color: AppColors.white,
             padding: const EdgeInsets.symmetric(vertical: 28),
             child: Column(
               children: <Widget>[
@@ -157,7 +140,7 @@ class _ProfileBody extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.hexFF1A1A1A,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -166,7 +149,7 @@ class _ProfileBody extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF888888),
+                    color: AppColors.hexFF888888,
                   ),
                 ),
               ],
@@ -177,11 +160,11 @@ class _ProfileBody extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(14),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
+                  color: AppColors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -193,7 +176,7 @@ class _ProfileBody extends StatelessWidget {
                   label: 'RATING',
                   value: '${data.rating}',
                   suffix: Icons.star,
-                  suffixColor: const Color(0xFFFFB800),
+                  suffixColor: AppColors.hexFFFFB800,
                 ),
                 _divider(),
                 _StatCell(label: 'TOTAL TRIPS', value: '${data.totalTrips}'),
@@ -210,7 +193,7 @@ class _ProfileBody extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.hexFF1A1A1A,
               ),
             ),
           ),
@@ -218,11 +201,11 @@ class _ProfileBody extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(14),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: AppColors.black.withValues(alpha: 0.03),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -271,11 +254,11 @@ class _ProfileBody extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(14),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: AppColors.black.withValues(alpha: 0.03),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -286,14 +269,14 @@ class _ProfileBody extends StatelessWidget {
                 _ActionRow(
                   icon: Icons.logout,
                   label: 'Logout',
-                  color: const Color(0xFFE53935),
+                  color: AppColors.hexFFE53935,
                   onTap: () => _showLogoutSheet(context),
                 ),
                 _rowDivider(),
                 _ActionRow(
                   icon: Icons.delete_outline,
                   label: 'Delete Account',
-                  color: const Color(0xFFE53935),
+                  color: AppColors.hexFFE53935,
                   onTap: () => _showDeleteSheet(context),
                   isLast: true,
                 ),
@@ -306,16 +289,16 @@ class _ProfileBody extends StatelessWidget {
   }
 
   Widget _divider() =>
-      Container(width: 1, height: 40, color: const Color(0xFFF0F0F0));
+      Container(width: 1, height: 40, color: AppColors.hexFFF0F0F0);
 
   Widget _rowDivider() =>
-      const Divider(height: 1, color: Color(0xFFF5F5F5), indent: 54);
+      const Divider(height: 1, color: AppColors.hexFFF5F5F5, indent: 54);
 
   void _showEditNameSheet(BuildContext context, String current) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
         child: _EditFieldSheet(
@@ -335,7 +318,7 @@ class _ProfileBody extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
         child: _EditFieldSheet(
@@ -355,7 +338,7 @@ class _ProfileBody extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
         child: _ConfirmActionSheet(
@@ -363,7 +346,7 @@ class _ProfileBody extends StatelessWidget {
           title: 'Logout',
           message: 'Are you sure you want to Logout your account?',
           actionLabel: 'Logout',
-          actionColor: const Color(0xFFE53935),
+          actionColor: AppColors.hexFFE53935,
           onConfirm: () => context.read<ProfileEditCubit>().logout(),
         ),
       ),
@@ -374,7 +357,7 @@ class _ProfileBody extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
         child: _ConfirmActionSheet(
@@ -382,7 +365,7 @@ class _ProfileBody extends StatelessWidget {
           title: 'Delete Account',
           message: 'Are you sure you want to Delete your account?',
           actionLabel: 'Delete',
-          actionColor: const Color(0xFFE53935),
+          actionColor: AppColors.hexFFE53935,
           onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
         ),
       ),
@@ -413,7 +396,7 @@ class _StatCell extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Color(0xFFAAAAAA),
+              color: AppColors.hexFFAAAAAA,
               letterSpacing: 0.6,
             ),
           ),
@@ -426,7 +409,7 @@ class _StatCell extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.hexFF1A1A1A,
                 ),
               ),
               if (suffix != null) ...<Widget>[
@@ -467,7 +450,7 @@ class _InfoRow extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(icon, size: 20, color: const Color(0xFF888888)),
+            child: Icon(icon, size: 20, color: AppColors.hexFF888888),
           ),
           const SizedBox(width: 18),
           Expanded(
@@ -478,7 +461,7 @@ class _InfoRow extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFAAAAAA),
+                    color: AppColors.hexFFAAAAAA,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -488,7 +471,7 @@ class _InfoRow extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.hexFF1A1A1A,
                   ),
                 ),
               ],
@@ -502,7 +485,7 @@ class _InfoRow extends StatelessWidget {
                 child: Icon(
                   Icons.edit_outlined,
                   size: 18,
-                  color: Color(0xFF888888),
+                  color: AppColors.hexFF888888,
                 ),
               ),
             ),
@@ -626,7 +609,7 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       padding: EdgeInsets.fromLTRB(20, 14, 20, bottom + 28),
@@ -640,7 +623,7 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: const Color(0xFFDDDDDD),
+                color: AppColors.hexFFDDDDDD,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -650,15 +633,15 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.hexFF1A1A1A,
             ),
           ),
           const SizedBox(height: 14),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: AppColors.hexFFF5F5F5,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFEEEEEE)),
+              border: Border.all(color: AppColors.hexFFEEEEEE),
             ),
             child: TextField(
               controller: _ctrl,
@@ -666,14 +649,14 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
               autofocus: true,
               style: const TextStyle(
                 fontSize: 15,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.hexFF1A1A1A,
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
-                fillColor: Colors.white,
+                fillColor: AppColors.white,
                 prefixIcon: Icon(
                   widget.icon,
-                  color: const Color(0xFF888888),
+                  color: AppColors.hexFF888888,
                   size: 20,
                 ),
                 border: InputBorder.none,
@@ -693,9 +676,9 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
                   icon: const Icon(Icons.close, size: 16),
                   label: const Text('Cancel'),
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF2F0ED),
-                    foregroundColor: const Color(0xFF656565),
-                    side: const BorderSide(color: Color(0xFFDDDDDD)),
+                    backgroundColor: AppColors.hexFFF2F0ED,
+                    foregroundColor: AppColors.hexFF656565,
+                    side: const BorderSide(color: AppColors.hexFFDDDDDD),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -712,7 +695,7 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppColors.white,
                             strokeWidth: 2,
                           ),
                         )
@@ -720,7 +703,7 @@ class _EditFieldSheetState extends State<_EditFieldSheet> {
                   label: Text(_saving ? 'Saving...' : 'Save'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AuthUiColors.brandGreen,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -811,7 +794,7 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.hexFF1A1A1A,
                 ),
               ),
               const SizedBox(height: 6),
@@ -852,7 +835,7 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
           ),
           child: ClipOval(
             child: Container(
-              color: const Color(0xFF3A3A3A),
+              color: AppColors.hexFF3A3A3A,
               child: _avatarProvider != null
                   ? Image(
                       image: _avatarProvider!,
@@ -860,7 +843,7 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
                       filterQuality: FilterQuality.low,
                       gaplessPlayback: true,
                     )
-                  : const Icon(Icons.person, size: 52, color: Colors.white54),
+                  : const Icon(Icons.person, size: 52, color: AppColors.white54),
             ),
           ),
         ),
@@ -878,7 +861,7 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
               ),
               child: const Icon(
                 Icons.camera_alt,
-                color: Colors.white,
+                color: AppColors.white,
                 size: 14,
               ),
             ),
@@ -923,7 +906,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       padding: const EdgeInsets.fromLTRB(24, 14, 24, 36),
@@ -935,7 +918,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
             height: 4,
             margin: const EdgeInsets.only(bottom: 28),
             decoration: BoxDecoration(
-              color: const Color(0xFFDDDDDD),
+              color: AppColors.hexFFDDDDDD,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -954,7 +937,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.hexFF1A1A1A,
             ),
           ),
           const SizedBox(height: 8),
@@ -963,7 +946,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 13,
-              color: Color(0xFF888888),
+              color: AppColors.hexFF888888,
               height: 1.5,
             ),
           ),
@@ -975,7 +958,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
                   onPressed: _loading ? null : _confirm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.actionColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -987,7 +970,7 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppColors.white,
                             strokeWidth: 2,
                           ),
                         )
@@ -1007,8 +990,8 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
                       ? null
                       : () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF0F0F0),
-                    foregroundColor: const Color(0xFF444444),
+                    backgroundColor: AppColors.hexFFF0F0F0,
+                    foregroundColor: AppColors.hexFF444444,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -1028,3 +1011,6 @@ class _ConfirmActionSheetState extends State<_ConfirmActionSheet> {
     );
   }
 }
+
+
+

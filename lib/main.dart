@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
+import 'package:goapp/core/network/global_network_dialog_overlay.dart';
+import 'package:goapp/core/network/network_status_cubit.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
@@ -41,15 +43,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // B-08 FIX: AuthBloc now uses the shared repository from get_it.
-    return BlocProvider(
-      create: (_) => AuthBloc(sl<LoginUseCase>(), sl<RequestOtpUseCase>()),
+    return MultiBlocProvider(
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(sl<LoginUseCase>(), sl<RequestOtpUseCase>()),
+        ),
+        BlocProvider<NetworkStatusCubit>(
+          create: (_) => sl<NetworkStatusCubit>(),
+        ),
+      ],
       child: MaterialApp(
         navigatorKey: _rootNavigatorKey,
         title: 'GoApp Captain',
         theme: AppTheme.lightTheme(isTest: false),
         debugShowCheckedModeBanner: false,
         locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
+        builder: (context, child) {
+          final Widget previewChild = DevicePreview.appBuilder(context, child);
+          return Stack(
+            children: <Widget>[
+              previewChild,
+              const GlobalNetworkDialogOverlay(),
+            ],
+          );
+        },
         home: const AppEntryGate(),
       ),
     );

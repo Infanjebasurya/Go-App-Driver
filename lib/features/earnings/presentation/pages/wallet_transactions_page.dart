@@ -21,7 +21,7 @@ class _WalletTransactionsPageState extends State<WalletTransactionsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -33,26 +33,28 @@ class _WalletTransactionsPageState extends State<WalletTransactionsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: AppColors.hexFFF7F7F7,
       appBar: AppAppBar(
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: AppColors.hexFFF7F7F7,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Wallet',
-          style: TextStyle(color: AppColors.black, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Wallet'),
       ),
       body: BlocBuilder<EarningsCubit, EarningsState>(
         builder: (context, state) {
           final List<TransactionItem> all = state.transactions;
-          final List<TransactionItem> earnings = all.where((e) => e.isCredit).toList(growable: false);
-          final List<TransactionItem> withdrawals =
-              all.where((e) => !e.isCredit).toList(growable: false);
+          final List<TransactionItem> earnings = all
+              .where((item) => item.type == WalletTransactionType.earning)
+              .toList(growable: false);
+          final List<TransactionItem> walletOnly = all
+              .where((item) => item.type != WalletTransactionType.earning)
+              .toList(growable: false);
+          final List<TransactionItem> recharges = walletOnly
+              .where((item) => item.type == WalletTransactionType.recharge)
+              .toList(growable: false);
+          final List<TransactionItem> withdrawals = walletOnly
+              .where((item) => item.type == WalletTransactionType.withdrawal)
+              .toList(growable: false);
           return Column(
             children: <Widget>[
               Padding(
@@ -65,6 +67,7 @@ class _WalletTransactionsPageState extends State<WalletTransactionsPage>
                   children: <Widget>[
                     _WalletTransactionsList(items: all),
                     _WalletTransactionsList(items: earnings),
+                    _WalletTransactionsList(items: recharges),
                     _WalletTransactionsList(items: withdrawals),
                   ],
                 ),
@@ -87,7 +90,7 @@ class _WalletTransactionsList extends StatelessWidget {
     if (items.isEmpty) {
       return const Center(
         child: Text(
-          'No transactions found',
+          'No wallet transactions found',
           style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
         ),
       );
@@ -178,3 +181,7 @@ _DateBuckets _bucketByDate(List<TransactionItem> items) {
 
   return _DateBuckets(today: todayItems, yesterday: yesterdayItems, older: olderItems);
 }
+
+
+
+

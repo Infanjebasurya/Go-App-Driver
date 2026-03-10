@@ -52,26 +52,11 @@ class _IncentivesView extends StatelessWidget {
         final double progressFraction = (currentRides / totalTarget).clamp(0, 1);
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.white,
           appBar: AppAppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black,
-                size: 14,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: const Text(
-              'Incentives',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.black,
-              ),
-            ),
+            title: const Text('Incentives'),
             centerTitle: true,
           ),
           body: Column(
@@ -79,7 +64,7 @@ class _IncentivesView extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppColors.gray[100],
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Row(
@@ -131,7 +116,7 @@ class _IncentivesView extends StatelessWidget {
                             Text(
                               _sessionTitle(state.selectedTab),
                               style: const TextStyle(
-                                color: Colors.grey,
+                                color: AppColors.gray,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                                 letterSpacing: 1.0,
@@ -172,7 +157,7 @@ class _IncentivesView extends StatelessWidget {
                               const Text(
                                 'MORNING SESSION \u2022 12:00 PM -4:00PM',
                                 style: TextStyle(
-                                  color: Colors.grey,
+                                  color: AppColors.gray,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                   letterSpacing: 1.0,
@@ -248,7 +233,7 @@ class _IncentivesView extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 8),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.earningsAccentSoft : Colors.white,
+          color: isSelected ? AppColors.earningsAccentSoft : AppColors.white,
           borderRadius: BorderRadius.circular(16),
           border: isSelected
               ? Border.all(color: AppColors.emerald.withValues(alpha: 0.3))
@@ -261,7 +246,7 @@ class _IncentivesView extends StatelessWidget {
               day,
               style: TextStyle(
                 fontSize: 12,
-                color: isSelected ? AppColors.emerald : Colors.grey[600],
+                color: isSelected ? AppColors.emerald : AppColors.gray[600],
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -270,7 +255,7 @@ class _IncentivesView extends StatelessWidget {
               date,
               style: TextStyle(
                 fontSize: 16,
-                color: isSelected ? AppColors.emerald : Colors.black,
+                color: isSelected ? AppColors.emerald : AppColors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -293,7 +278,7 @@ class _IncentivesView extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFB7D7CC) : const Color(0xFFF3F3F3),
+          color: isSelected ? AppColors.hexFFB7D7CC : AppColors.hexFFF3F3F3,
           borderRadius: BorderRadius.circular(20),
           border: isSelected ? Border.all(color: AppColors.emerald) : null,
         ),
@@ -301,7 +286,7 @@ class _IncentivesView extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? AppColors.emerald : Colors.grey[700],
+            color: isSelected ? AppColors.emerald : AppColors.gray[700],
             fontWeight: FontWeight.w700,
             fontSize: 14,
           ),
@@ -323,7 +308,7 @@ class _IncentivesView extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF00A844), Color(0xFF007F33)],
+          colors: [AppColors.hexFF00A844, AppColors.hexFF007F33],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -342,7 +327,7 @@ class _IncentivesView extends StatelessWidget {
           const Text(
             'ACTIVE QUEST',
             style: TextStyle(
-              color: Colors.white70,
+              color: AppColors.white70,
               fontWeight: FontWeight.bold,
               fontSize: 10,
               letterSpacing: 1.0,
@@ -353,12 +338,12 @@ class _IncentivesView extends StatelessWidget {
             children: [
               const Text(
                 'Potential Reward: ',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(color: AppColors.white, fontSize: 16),
               ),
               Text(
                 '\u20B9${_potentialRewardFor(selectedTab)}',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -375,7 +360,7 @@ class _IncentivesView extends StatelessWidget {
                     height: 4,
                     margin: const EdgeInsets.only(top: 6),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: AppColors.black.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -384,7 +369,7 @@ class _IncentivesView extends StatelessWidget {
                     width: width,
                     margin: const EdgeInsets.only(top: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -407,12 +392,12 @@ class _IncentivesView extends StatelessWidget {
               children: [
                 Text(
                   '$achievedDisplay of $currentTarget rides completed',
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  style: const TextStyle(color: AppColors.white70, fontSize: 12),
                 ),
               Text(
                 'TIER ${activeTierIndex + 1}',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -431,9 +416,9 @@ class _IncentivesView extends StatelessWidget {
           width: 16,
           height: 16,
           decoration: BoxDecoration(
-            color: reached ? Colors.white : const Color(0xFF006025),
+            color: reached ? AppColors.white : AppColors.hexFF006025,
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF00A844), width: 2),
+            border: Border.all(color: AppColors.hexFF00A844, width: 2),
           ),
           child: Center(
             child: reached
@@ -442,7 +427,7 @@ class _IncentivesView extends StatelessWidget {
                     width: 6,
                     height: 6,
                     decoration: const BoxDecoration(
-                      color: Colors.white30,
+                      color: AppColors.white30,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -452,7 +437,7 @@ class _IncentivesView extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.7),
+            color: AppColors.white.withValues(alpha: 0.7),
             fontSize: 10,
           ),
         ),
@@ -481,12 +466,12 @@ class _IncentivesView extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: isActive ? AppColors.emerald : Colors.grey[300],
+                    color: isActive ? AppColors.emerald : AppColors.gray[300],
                     shape: BoxShape.circle,
                   ),
                 ),
                 if (!isLast)
-                  Expanded(child: Container(width: 2, color: Colors.grey[200])),
+                  Expanded(child: Container(width: 2, color: AppColors.gray[200])),
               ],
             ),
           ),
@@ -495,11 +480,11 @@ class _IncentivesView extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 20),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
+                    color: AppColors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -510,12 +495,12 @@ class _IncentivesView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isUnlocked ? const Color(0xFFFFF8E1) : Colors.grey[50],
+                      color: isUnlocked ? AppColors.hexFFFFF8E1 : AppColors.gray[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       icon,
-                      color: isUnlocked ? AppColors.gold : Colors.grey[300],
+                      color: isUnlocked ? AppColors.gold : AppColors.gray[300],
                       size: 20,
                     ),
                   ),
@@ -529,14 +514,14 @@ class _IncentivesView extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color: isUnlocked ? Colors.black : Colors.grey[400],
+                            color: isUnlocked ? AppColors.black : AppColors.gray[400],
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           subtitle,
                           style: TextStyle(
-                            color: Colors.grey[500],
+                            color: AppColors.gray[500],
                             fontSize: 12,
                           ),
                         ),
@@ -551,7 +536,7 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: isUnlocked ? AppColors.emerald : Colors.grey[300],
+                          color: isUnlocked ? AppColors.emerald : AppColors.gray[300],
                         ),
                       ),
                       Text(
@@ -559,7 +544,7 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isUnlocked ? AppColors.gold : Colors.grey[300],
+                          color: isUnlocked ? AppColors.gold : AppColors.gray[300],
                         ),
                       ),
                     ],
@@ -590,7 +575,7 @@ class _IncentivesView extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.grey[600],
+              color: isSelected ? AppColors.white : AppColors.gray[600],
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -612,3 +597,7 @@ class _IncentivesView extends StatelessWidget {
     return 'Complete $targetRides rides today';
   }
 }
+
+
+
+

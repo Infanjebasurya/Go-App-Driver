@@ -16,6 +16,7 @@ import '../widgets/app_text_field.dart';
 import '../widgets/auth_primary_button.dart';
 import '../../../profile/presentation/pages/profile_setup_page.dart';
 import 'package:goapp/core/widgets/keyboard_aware_bottom.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class OtpPage extends StatefulWidget {
   const OtpPage({
@@ -185,7 +186,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     return BlocProvider<OtpCubit>.value(
       value: _otpCubit,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         body: SafeArea(
           child: MultiBlocListener(
             listeners: [
@@ -290,7 +291,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Colors.red,
+                              color: AppColors.red,
                             ),
                           ),
                         ],
@@ -332,7 +333,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE4F4ED),
+                                  color: AppColors.hexFFE4F4ED,
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: Text(
@@ -356,7 +357,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Colors.red,
+                              color: AppColors.red,
                             ),
                           ),
                         ],
@@ -429,11 +430,11 @@ class _OtpBox extends StatelessWidget {
       height: 44,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x14000000),
+            color: AppColors.hex14000000,
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -459,3 +460,6 @@ class _OtpBox extends StatelessWidget {
     );
   }
 }
+
+
+

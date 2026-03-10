@@ -50,24 +50,21 @@ class _WalletView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: AppColors.hexFFF7F7F7,
       appBar: AppAppBar(
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: AppColors.hexFFF7F7F7,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Wallet',
-          style: TextStyle(color: AppColors.black, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Wallet'),
       ),
       body: BlocBuilder<EarningsCubit, EarningsState>(
         builder: (context, state) {
           final List<int> performanceBars = _buildWeekBars(state.transactions);
-          final List<TransactionItem> preview = state.transactions.take(3).toList(growable: false);
+          final List<TransactionItem> walletTransactions = state.transactions
+              .where((item) => item.type != WalletTransactionType.earning)
+              .toList(growable: false);
+          final List<TransactionItem> preview =
+              walletTransactions.take(3).toList(growable: false);
           return LayoutBuilder(
             builder: (context, constraints) {
               final bool tablet = constraints.maxWidth >= 700;
@@ -144,7 +141,7 @@ class _WalletView extends StatelessWidget {
                       padding: EdgeInsets.only(top: 24),
                       child: Center(
                         child: Text(
-                          'No wallet transactions yet',
+                          'No wallet history yet',
                           style: TextStyle(
                             color: AppColors.neutral666,
                             fontWeight: FontWeight.w600,
@@ -184,7 +181,7 @@ class _WalletBalanceCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(26),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(color: AppColors.hex14000000, blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Column(
@@ -231,7 +228,7 @@ class _WalletBalanceCard extends StatelessWidget {
                   icon: const Icon(Icons.account_balance_wallet_rounded, size: 16),
                   label: const Text('Withdraw'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF3F3F3),
+                    backgroundColor: AppColors.hexFFF3F3F3,
                     foregroundColor: AppColors.neutral666,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -357,3 +354,7 @@ List<int> _buildWeekBars(List<TransactionItem> transactions) {
   }
   return counts;
 }
+
+
+
+

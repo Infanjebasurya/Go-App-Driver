@@ -350,13 +350,13 @@ class _FormScreenState extends State<_FormScreen> {
                                   width: 26,
                                   height: 26,
                                   decoration: const BoxDecoration(
-                                    color: Color(0xFFFFEEEE),
+                                    color: AppColors.hexFFFFEEEE,
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
                                     Icons.close_rounded,
                                     size: 14,
-                                    color: Color(0xFFE53935),
+                                    color: AppColors.hexFFE53935,
                                   ),
                                 ),
                               ),
@@ -373,7 +373,7 @@ class _FormScreenState extends State<_FormScreen> {
                 widget.state.mediaValidationMessage!,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFEF5350),
+                  color: AppColors.hexFFEF5350,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -597,7 +597,7 @@ class _CategoryTile extends StatelessWidget {
                   color: isSelected ? AppColors.emerald : AppColors.borderSoft,
                   width: 2,
                 ),
-                color: isSelected ? AppColors.emerald : Colors.transparent,
+                color: isSelected ? AppColors.emerald : AppColors.transparent,
               ),
               child: isSelected
                   ? const Icon(Icons.check, size: 12, color: AppColors.white)
@@ -762,5 +762,9 @@ class _SuccessScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
 
 

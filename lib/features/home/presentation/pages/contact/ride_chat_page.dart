@@ -99,7 +99,7 @@ class _RideChatPageState extends State<RideChatPage> {
                                     controller: _messageController,
                                     decoration: const InputDecoration(
                                       filled: true,
-                                      fillColor: Colors.transparent,
+                                      fillColor: AppColors.transparent,
                                       border: InputBorder.none,
                                       hintText: 'Type a message...',
                                       hintStyle: TextStyle(
@@ -170,3 +170,6 @@ class _RoundIconButton extends StatelessWidget {
     );
   }
 }
+
+
+

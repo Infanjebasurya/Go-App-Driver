@@ -129,18 +129,11 @@ class _MonthWeekDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
+      backgroundColor: AppColors.hexFFF7F7F7,
       appBar: AppAppBar(
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: AppColors.hexFFF7F7F7,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Month',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Month'),
         centerTitle: true,
       ),
       body: Column(
@@ -227,7 +220,7 @@ class _MonthPerformanceCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: Color(0x10000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(color: AppColors.hex10000000, blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -308,7 +301,7 @@ class _MonthRangeChips extends StatelessWidget {
                 height: 40,
                 padding: const EdgeInsets.symmetric(horizontal: 22),
                 decoration: BoxDecoration(
-                  color: selected ? const Color(0xFFB7D7CC) : const Color(0xFFF3F3F3),
+                  color: selected ? AppColors.hexFFB7D7CC : AppColors.hexFFF3F3F3,
                   borderRadius: BorderRadius.circular(20),
                   border: selected ? Border.all(color: AppColors.emerald) : null,
                 ),
@@ -449,4 +442,8 @@ List<_MonthWeekGroup> _buildMonthWeekGroups(List<RideHistoryTrip> trips) {
     );
   }).toList(growable: false);
 }
+
+
+
+
 

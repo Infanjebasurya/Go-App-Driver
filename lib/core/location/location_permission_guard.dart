@@ -1,6 +1,5 @@
-import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart'
-    as permission_handler;
+import 'package:goapp/core/service/location_service.dart';
+import 'package:goapp/core/service/permission_service.dart';
 
 enum LocationIssue {
   serviceDisabled,
@@ -23,25 +22,30 @@ class LocationAccessResult {
 class LocationPermissionGuard {
   const LocationPermissionGuard();
 
+  static const LocationService _locationService = LocationService();
+  static const PermissionService _permissionService = PermissionService();
+
   Future<LocationAccessResult> ensureReady({
     bool requestPermission = false,
   }) async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied && requestPermission) {
-      permission = await Geolocator.requestPermission();
+    AppLocationPermissionStatus permission =
+        await _locationService.checkPermission();
+    if (permission == AppLocationPermissionStatus.denied &&
+        requestPermission) {
+      permission = await _locationService.requestPermission();
     }
 
-    if (permission == LocationPermission.denied) {
+    if (permission == AppLocationPermissionStatus.denied) {
       return const LocationAccessResult.blocked(LocationIssue.permissionDenied);
     }
 
-    if (permission == LocationPermission.deniedForever) {
+    if (permission == AppLocationPermissionStatus.deniedForever) {
       return const LocationAccessResult.blocked(
         LocationIssue.permissionDeniedForever,
       );
     }
 
-    final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final bool serviceEnabled = await _locationService.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return const LocationAccessResult.blocked(LocationIssue.serviceDisabled);
     }
@@ -50,14 +54,14 @@ class LocationPermissionGuard {
   }
 
   Future<bool> openLocationSettings() async {
-    final bool opened = await Geolocator.openLocationSettings();
+    final bool opened = await _locationService.openLocationSettings();
     if (opened) return true;
-    return permission_handler.openAppSettings();
+    return _permissionService.openAppSettings();
   }
 
   Future<bool> openAppSettings() async {
-    final bool opened = await Geolocator.openAppSettings();
+    final bool opened = await _locationService.openAppSettings();
     if (opened) return true;
-    return permission_handler.openAppSettings();
+    return _permissionService.openAppSettings();
   }
 }

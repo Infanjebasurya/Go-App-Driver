@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../theme/onboarding_ui_tokens.dart';
 import '../widgets/onboarding_flow_scope.dart';
 import '../widgets/onboarding_common.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class ParcelDeliveryOnboardingPage extends StatelessWidget {
   const ParcelDeliveryOnboardingPage({super.key});
 
-  static const Color _navy = Color(0xFF0F4CB9);
+  static const Color _navy = AppColors.hexFF0F4CB9;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class ParcelDeliveryOnboardingPage extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -46,7 +47,7 @@ class ParcelDeliveryOnboardingPage extends StatelessWidget {
                   OnboardingSkipButton(
                     onTap: () => OnboardingFlowScope.finishToLogin(context),
                     topPadding: topPad,
-                    textColor: const Color(0x99111217),
+                    textColor: AppColors.hex99111217,
                   ),
                   Expanded(
                     flex: 8,
@@ -151,3 +152,6 @@ class _DiagonalNavyPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
+

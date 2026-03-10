@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/auth_ui_tokens.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class AuthPrimaryButton extends StatelessWidget {
   const AuthPrimaryButton({
@@ -20,9 +21,9 @@ class AuthPrimaryButton extends StatelessWidget {
       onPressed: loading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: AuthUiColors.brandGreen,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.white,
         disabledBackgroundColor: AuthUiColors.brandGreen,
-        disabledForegroundColor: Colors.white,
+        disabledForegroundColor: AppColors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         textStyle: AuthUiTextStyles.button,
@@ -33,11 +34,13 @@ class AuthPrimaryButton extends StatelessWidget {
               height: 18,
               child: CircularProgressIndicator(
                 strokeWidth: 2.2,
-                color: Colors.white,
+                color: AppColors.white,
               ),
             )
           : Text(label),
     );
   }
 }
+
+
 

@@ -73,18 +73,11 @@ class _EarningsDetailsBody extends StatelessWidget {
     return BlocBuilder<EarningsCubit, EarningsState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF7F7F7),
+          backgroundColor: AppColors.hexFFF7F7F7,
           appBar: AppAppBar(
-            backgroundColor: const Color(0xFFF7F7F7),
+            backgroundColor: AppColors.hexFFF7F7F7,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: const Text(
-              'Earnings',
-              style: TextStyle(color: AppColors.black, fontWeight: FontWeight.bold),
-            ),
+            title: const Text('Earnings'),
             centerTitle: true,
           ),
           body: Column(
@@ -165,3 +158,7 @@ class _DayView extends StatelessWidget {
     );
   }
 }
+
+
+
+

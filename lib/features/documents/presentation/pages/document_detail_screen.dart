@@ -16,7 +16,7 @@ class DocumentDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: _buildAppBar(context),
       body: Column(
         children: [
@@ -34,29 +34,10 @@ class DocumentDetailScreen extends StatelessWidget {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppAppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
-      leading: GestureDetector(
-        onTap: () => Navigator.of(context).pop(),
-        child: const Padding(
-          padding: EdgeInsets.all(14),
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.headingDark,
-            size: 14,
-          ),
-        ),
-      ),
-      title: Text(
-        document.title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: AppColors.headingDark,
-          letterSpacing: -0.3,
-        ),
-      ),
+      title: Text(document.title),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(color: AppColors.strokeLight, height: 1),
@@ -173,7 +154,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
             Expanded(
               child: _CardImageBox(
                 label: 'FRONT VIEW',
-                color: const Color(0xFF8A9BAE),
+                color: AppColors.hexFF8A9BAE,
                 imagePath: frontImagePath,
               ),
             ),
@@ -181,7 +162,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
             Expanded(
               child: _CardImageBox(
                 label: 'BACK VIEW',
-                color: const Color(0xFF2C3A4A),
+                color: AppColors.hexFF2C3A4A,
                 imagePath: backImagePath,
               ),
             ),
@@ -258,7 +239,7 @@ class _VehicleRCDetail extends StatelessWidget {
             Expanded(
               child: _CardImageBox(
                 label: 'FRONT VIEW',
-                color: const Color(0xFF8A9BAE),
+                color: AppColors.hexFF8A9BAE,
                 imagePath: frontImagePath,
               ),
             ),
@@ -266,7 +247,7 @@ class _VehicleRCDetail extends StatelessWidget {
             Expanded(
               child: _CardImageBox(
                 label: 'BACK VIEW',
-                color: const Color(0xFF2C3A4A),
+                color: AppColors.hexFF2C3A4A,
                 imagePath: backImagePath,
               ),
             ),
@@ -348,7 +329,7 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
       children: [
         _CardImageBox(
           label: 'FRONT VIEW',
-          color: Color(0xFF9EC8B0),
+          color: AppColors.hexFF9EC8B0,
           showVerified: true,
           fullWidth: true,
           imagePath: widget.frontImagePath,
@@ -356,7 +337,7 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
         const SizedBox(height: 14),
         _CardImageBox(
           label: 'BACK VIEW',
-          color: Color(0xFFA8C4B8),
+          color: AppColors.hexFFA8C4B8,
           showVerified: true,
           fullWidth: true,
           imagePath: widget.backImagePath,
@@ -443,7 +424,7 @@ class _PanCardDetailState extends State<_PanCardDetail> {
       children: [
         _CardImageBox(
           label: 'FRONT VIEW',
-          color: Color(0xFF7FB5C8),
+          color: AppColors.hexFF7FB5C8,
           showVerified: true,
           fullWidth: true,
           imagePath: widget.frontImagePath,
@@ -533,7 +514,7 @@ class _BankAccountDetail extends StatelessWidget {
       children: [
         _CardImageBox(
           label: 'BANK DOCUMENT',
-          color: const Color(0xFF8A9BAE),
+          color: AppColors.hexFF8A9BAE,
           fullWidth: true,
           imagePath: frontImagePath,
         ),
@@ -629,11 +610,11 @@ class _CardImageBox extends StatelessWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
+                        color: AppColors.black.withValues(alpha: 0.08),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -695,7 +676,7 @@ class _ImageBox extends StatelessWidget {
         child: Center(
           child: Icon(
             Icons.credit_card,
-            color: Colors.white.withValues(alpha: 0.3),
+            color: AppColors.white.withValues(alpha: 0.3),
             size: 36,
           ),
         ),
@@ -715,7 +696,7 @@ class _ImageBox extends StatelessWidget {
             children: [
               const Icon(
                 Icons.description_rounded,
-                color: Colors.white,
+                color: AppColors.white,
                 size: 36,
               ),
               const SizedBox(height: 6),
@@ -725,7 +706,7 @@ class _ImageBox extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: AppColors.white.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -752,7 +733,7 @@ class _ImageBox extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.credit_card,
-              color: Colors.white.withValues(alpha: 0.3),
+              color: AppColors.white.withValues(alpha: 0.3),
               size: 36,
             ),
           ),
@@ -788,12 +769,12 @@ class _InfoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.strokeLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -893,12 +874,12 @@ class _VerifiedSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.strokeLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -942,12 +923,12 @@ class _LinkedBankSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.strokeLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1009,4 +990,8 @@ class _EncryptionFooter extends StatelessWidget {
     );
   }
 }
+
+
+
+
 

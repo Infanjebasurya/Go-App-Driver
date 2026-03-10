@@ -7,6 +7,7 @@ import 'package:goapp/features/documents/presentation/model/document_model.dart'
 import 'package:goapp/features/documents/presentation/pages/document_detail_screen.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class DocumentsScreen extends StatelessWidget {
   const DocumentsScreen({super.key});
@@ -40,7 +41,7 @@ class _DocumentsViewState extends State<_DocumentsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: _buildAppBar(context),
       body: BlocBuilder<DocumentsCubit, DocumentsState>(
         builder: (context, state) {
@@ -61,28 +62,13 @@ class _DocumentsViewState extends State<_DocumentsView> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppAppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
-      leading: GestureDetector(
-        onTap: () => Navigator.of(context).pop(),
-        child: const Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Icon(Icons.arrow_back_ios, color: Color(0xFF1A1A1A), size: 14),
-        ),
-      ),
-      title: const Text(
-        'Documents',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF1A1A1A),
-          letterSpacing: -0.3,
-        ),
-      ),
+      title: const Text('Documents'),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(color: const Color(0xFFEEEEEE), height: 1),
+        child: Container(color: AppColors.hexFFEEEEEE, height: 1),
       ),
     );
   }
@@ -130,14 +116,14 @@ class _DocumentCard extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border(
             left: BorderSide(color: _borderColor(document.status), width: 4),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -151,12 +137,12 @@ class _DocumentCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
+                  color: AppColors.hexFFF5F5F5,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   _iconData(document.iconAsset),
-                  color: const Color(0xFF444444),
+                  color: AppColors.hexFF444444,
                   size: 22,
                 ),
               ),
@@ -170,7 +156,7 @@ class _DocumentCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.hexFF1A1A1A,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -179,7 +165,7 @@ class _DocumentCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFAAAAAA),
+                        color: AppColors.hexFFAAAAAA,
                         letterSpacing: 0.4,
                       ),
                     ),
@@ -199,11 +185,11 @@ class _DocumentCard extends StatelessWidget {
       case DocumentStatus.verified:
         return AuthUiColors.brandGreen;
       case DocumentStatus.pending:
-        return const Color(0xFFFFA726);
+        return AppColors.hexFFFFA726;
       case DocumentStatus.rejected:
-        return const Color(0xFFEF5350);
+        return AppColors.hexFFEF5350;
       case DocumentStatus.notUploaded:
-        return const Color(0xFFCCCCCC);
+        return AppColors.hexFFCCCCCC;
     }
   }
 
@@ -281,11 +267,11 @@ class _StatusBadge extends StatelessWidget {
       case DocumentStatus.verified:
         return AuthUiColors.brandGreen;
       case DocumentStatus.pending:
-        return const Color(0xFFFFA726);
+        return AppColors.hexFFFFA726;
       case DocumentStatus.rejected:
-        return const Color(0xFFEF5350);
+        return AppColors.hexFFEF5350;
       case DocumentStatus.notUploaded:
-        return const Color(0xFF888888);
+        return AppColors.hexFF888888;
     }
   }
 
@@ -317,7 +303,7 @@ class _VerifiedBanner extends StatelessWidget {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          color: Color(0xFFAAAAAA),
+          color: AppColors.hexFFAAAAAA,
           letterSpacing: 0.3,
           height: 1.6,
         ),
@@ -381,15 +367,15 @@ class _SkeletonCardState extends State<_SkeletonCard>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             border: const Border(
-              left: BorderSide(color: Color(0xFFE0E0E0), width: 4),
+              left: BorderSide(color: AppColors.hexFFE0E0E0, width: 4),
             ),
             gradient: LinearGradient(
               begin: Alignment(_anim.value - 1, 0),
               end: Alignment(_anim.value + 1, 0),
               colors: const [
-                Color(0xFFF0F0F0),
-                Color(0xFFE0E0E0),
-                Color(0xFFF0F0F0),
+                AppColors.hexFFF0F0F0,
+                AppColors.hexFFE0E0E0,
+                AppColors.hexFFF0F0F0,
               ],
             ),
           ),
@@ -410,11 +396,11 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, color: Color(0xFFEF5350), size: 48),
+          const Icon(Icons.error_outline, color: AppColors.hexFFEF5350, size: 48),
           const SizedBox(height: 16),
           Text(
             message,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF888888)),
+            style: const TextStyle(fontSize: 14, color: AppColors.hexFF888888),
           ),
           const SizedBox(height: 20),
           ShadowButton(
@@ -423,7 +409,7 @@ class _ErrorView extends StatelessWidget {
             label: const Text('Retry'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -434,5 +420,8 @@ class _ErrorView extends StatelessWidget {
     );
   }
 }
+
+
+
 
 

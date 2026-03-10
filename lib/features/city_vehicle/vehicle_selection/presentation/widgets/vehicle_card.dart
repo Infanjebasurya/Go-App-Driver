@@ -24,17 +24,17 @@ class VehicleCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.emerald : const Color(0xFFE2E8F0),
+            color: isSelected ? AppColors.emerald : AppColors.hexFFE2E8F0,
             width: isSelected ? 1.8 : 1.0,
           ),
           boxShadow: [
             BoxShadow(
               color: isSelected
                   ? AppColors.emerald.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.04),
+                  : AppColors.black.withValues(alpha: 0.04),
             ),
           ],
         ),
@@ -53,7 +53,7 @@ class VehicleCard extends StatelessWidget {
               child: Icon(
                 vehicle.icon,
                 size: 26,
-                color: isSelected ? AppColors.emerald : const Color(0xFF8FA0B0),
+                color: isSelected ? AppColors.emerald : AppColors.hexFF8FA0B0,
               ),
             ),
             const SizedBox(width: 16),
@@ -76,7 +76,7 @@ class VehicleCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF8FA0B0),
+                      color: AppColors.hexFF8FA0B0,
                       letterSpacing: 0.4,
                     ),
                   ),
@@ -89,3 +89,7 @@ class VehicleCard extends StatelessWidget {
     );
   }
 }
+
+
+
+

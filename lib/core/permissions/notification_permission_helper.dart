@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:goapp/core/service/permission_service.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class NotificationPermissionHelper {
   NotificationPermissionHelper._();
 
   static bool _requested = false;
+  static const PermissionService _permissionService = PermissionService();
 
   static Future<void> ensureRequestedOnce() async {
     if (_requested) return;
@@ -17,9 +19,12 @@ class NotificationPermissionHelper {
 
     _requested = true;
     try {
-      final PermissionStatus status = await Permission.notification.status;
-      if (status.isGranted || status.isPermanentlyDenied) return;
-      await Permission.notification.request();
+      final status = await _permissionService.status(AppPermission.notification);
+      if (status == AppPermissionStatus.granted ||
+          status == AppPermissionStatus.permanentlyDenied) {
+        return;
+      }
+      await _permissionService.request(AppPermission.notification);
     } catch (_) {}
   }
 
@@ -33,18 +38,18 @@ class NotificationPermissionHelper {
 
     _requested = true;
     try {
-      final PermissionStatus status = await Permission.notification.status;
-      if (status.isGranted) return;
+      final status = await _permissionService.status(AppPermission.notification);
+      if (status == AppPermissionStatus.granted) return;
       if (!context.mounted) return;
 
-      if (status.isPermanentlyDenied) {
+      if (status == AppPermissionStatus.permanentlyDenied) {
         await _showEnableSettingsDialog(context);
         return;
       }
 
       final bool allow = await _showPrePermissionDialog(context);
       if (!allow || !context.mounted) return;
-      await Permission.notification.request();
+      await _permissionService.request(AppPermission.notification);
     } catch (_) {}
   }
 
@@ -60,7 +65,7 @@ class NotificationPermissionHelper {
             children: [
               Icon(
                 Icons.notifications_active_outlined,
-                color: Color(0xFF0C9B61),
+                color: AppColors.hexFF0C9B61,
               ),
               SizedBox(width: 8),
               Expanded(child: Text('Enable Notifications')),
@@ -78,7 +83,7 @@ class NotificationPermissionHelper {
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF0C9B61),
+                backgroundColor: AppColors.hexFF0C9B61,
               ),
               child: const Text('Allow'),
             ),
@@ -110,10 +115,10 @@ class NotificationPermissionHelper {
             FilledButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                await openAppSettings();
+                await _permissionService.openAppSettings();
               },
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF0C9B61),
+                backgroundColor: AppColors.hexFF0C9B61,
               ),
               child: const Text('Open settings'),
             ),
@@ -123,3 +128,5 @@ class NotificationPermissionHelper {
     );
   }
 }
+
+

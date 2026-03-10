@@ -18,17 +18,17 @@ class DocumentCard extends StatelessWidget {
         curve: Curves.easeInOut,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: document.isCompleted
                 ? AppColors.emerald.withValues(alpha: 0.3)
-                : const Color(0xFFE8EDF2),
+                : AppColors.hexFFE8EDF2,
             width: document.isCompleted ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -85,7 +85,7 @@ class _DocumentIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = document.isCompleted
         ? AppColors.emerald
-        : const Color(0xFF8FA0B0);
+        : AppColors.hexFF8FA0B0;
 
     return SizedBox(
       width: 42,
@@ -144,17 +144,21 @@ class _StatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.coolwhite,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFD5DDE5)),
+        border: Border.all(color: AppColors.hexFFD5DDE5),
       ),
       child: const Text(
         'REQUIRED',
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF8FA0B0),
+          color: AppColors.hexFF8FA0B0,
           letterSpacing: 0.5,
         ),
       ),
     );
   }
 }
+
+
+
+

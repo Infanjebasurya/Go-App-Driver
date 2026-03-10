@@ -18,6 +18,7 @@ import '../../../rate_app/presentation/pages/rate_app_screen.dart';
 import '../../../refer_earn/presentation/pages/refer_earn_screen.dart';
 import '../../../ride_history/presentation/pages/ride_history_screen.dart';
 import '../cubit/driver_status_cubit.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key, required this.onReopenDrawer});
@@ -27,7 +28,7 @@ class HomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(24),
@@ -42,7 +43,7 @@ class HomeDrawer extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+            const Divider(height: 1, color: AppColors.hexFFF0F0F0),
             const SizedBox(height: 16),
 
             Expanded(
@@ -124,7 +125,7 @@ class HomeDrawer extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 8),
-                    const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                    const Divider(height: 1, color: AppColors.hexFFF0F0F0),
                     const SizedBox(height: 8),
 
                     _DrawerItem(
@@ -262,7 +263,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                         ),
                         child: ClipOval(
                           child: Container(
-                            color: const Color(0xFF3A3A3A),
+                            color: AppColors.hexFF3A3A3A,
                             child: _avatarProvider != null
                                 ? Image(
                                     image: _avatarProvider!,
@@ -273,7 +274,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                                 : const Icon(
                                     Icons.person,
                                     size: 44,
-                                    color: Colors.white54,
+                                    color: AppColors.white54,
                                   ),
                           ),
                         ),
@@ -292,7 +293,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                             ),
                             child: const Icon(
                               Icons.camera_alt,
-                              color: Colors.white,
+                              color: AppColors.white,
                               size: 13,
                             ),
                           ),
@@ -308,7 +309,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.hexFF1A1A1A,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -357,7 +358,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
               alignment: Alignment.bottomRight,
               child: const Icon(
                 Icons.chevron_right,
-                color: Colors.grey,
+                color: AppColors.gray,
                 size: 22,
               ),
             ),
@@ -389,7 +390,7 @@ class _DrawerItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: const Color(0xFF444444)),
+            Icon(icon, size: 22, color: AppColors.hexFF444444),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
@@ -397,14 +398,17 @@ class _DrawerItem extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.hexFF1A1A1A,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+            const Icon(Icons.chevron_right, color: AppColors.gray, size: 20),
           ],
         ),
       ),
     );
   }
 }
+
+
+

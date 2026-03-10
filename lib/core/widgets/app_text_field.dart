@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -59,7 +60,7 @@ class AppTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final outlineBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: borderColor ?? const Color(0xFFDDDDDD)),
+      borderSide: BorderSide(color: borderColor ?? AppColors.hexFFDDDDDD),
     );
 
     return TextField(
@@ -97,14 +98,17 @@ class AppTextField extends StatelessWidget {
             ? InputBorder.none
             : outlineBorder.copyWith(
                 borderSide: BorderSide(
-                  color: borderColor ?? const Color(0xFFDDDDDD),
+                  color: borderColor ?? AppColors.hexFFDDDDDD,
                   width: 1.2,
                 ),
               ),
         filled: filled,
-        fillColor: Colors.transparent
+        fillColor: AppColors.transparent
 
       ),
     );
   }
 }
+
+
+

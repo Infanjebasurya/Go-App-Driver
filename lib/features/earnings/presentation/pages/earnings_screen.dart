@@ -55,17 +55,10 @@ class _EarningsViewState extends State<_EarningsView>
     return Scaffold(
       backgroundColor: AppColors.surfaceF5,
       appBar: AppAppBar(
-        title: const Text(
-          'Earnings',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.black),
-        ),
+        title: const Text('Earnings'),
         centerTitle: true,
         backgroundColor: AppColors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black,size: 14,),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: Column(
         children: <Widget>[
@@ -73,7 +66,7 @@ class _EarningsViewState extends State<_EarningsView>
             color: AppColors.white,
             child: TabBar(
               controller: _tabController,
-              dividerColor: Colors.transparent,
+              dividerColor: AppColors.transparent,
               labelColor: AppColors.black,
               unselectedLabelColor: AppColors.neutral888,
               indicatorColor: AppColors.emerald,
@@ -235,7 +228,7 @@ class _SummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x14000000),
+            color: AppColors.hex14000000,
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -325,14 +318,14 @@ class _MenuItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x0D000000),
+            color: AppColors.hex0D000000,
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
         ],
       ),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
@@ -385,4 +378,8 @@ class _MenuItem extends StatelessWidget {
     );
   }
 }
+
+
+
+
 

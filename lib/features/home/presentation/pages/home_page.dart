@@ -15,6 +15,7 @@ import '../cubit/driver_status_state.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/offline_content.dart';
 import '../widgets/online_content.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -115,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return HomeNoDeviceBack(
           child: Scaffold(
             key: _scaffoldKey,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             drawer: AppDrawer(
               onReopenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
             ),
@@ -193,3 +194,5 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
 }
+
+

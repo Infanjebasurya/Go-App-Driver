@@ -31,25 +31,36 @@ class WalletTransactionTile extends StatelessWidget {
                       width: 34,
                       height: 34,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8F8F8),
+                        color: AppColors.hexFFF8F8F8,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(visual.icon, color: visual.accent, size: 16),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
+                  child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            item.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  item.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: AppColors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              if (item.type == WalletTransactionType.recharge &&
+                                  item.status != null) ...<Widget>[
+                                const SizedBox(width: 8),
+                                _RechargeStatusBadge(status: item.status!),
+                              ],
+                            ],
                           ),
                           const SizedBox(height: 3),
                           Text(
@@ -83,6 +94,49 @@ class WalletTransactionTile extends StatelessWidget {
   }
 }
 
+class _RechargeStatusBadge extends StatelessWidget {
+  const _RechargeStatusBadge({required this.status});
+
+  final WalletTransactionStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final ({Color bg, Color fg, String label}) style = switch (status) {
+      WalletTransactionStatus.completed => (
+        bg: AppColors.hexFFEAF8F1,
+        fg: AppColors.hexFF0C9B61,
+        label: 'Completed',
+      ),
+      WalletTransactionStatus.pending => (
+        bg: AppColors.hexFFFFF8E1,
+        fg: AppColors.hexFFB45309,
+        label: 'Pending',
+      ),
+      WalletTransactionStatus.cancelled => (
+        bg: AppColors.hexFFFFEEEE,
+        fg: AppColors.hexFFE53935,
+        label: 'Cancelled',
+      ),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: style.bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        style.label,
+        style: TextStyle(
+          color: style.fg,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
 class WalletHistoryTabBar extends StatelessWidget {
   const WalletHistoryTabBar({super.key, required this.controller});
 
@@ -92,14 +146,26 @@ class WalletHistoryTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return TabBar(
       controller: controller,
+      isScrollable: true,
+      tabAlignment: TabAlignment.start,
+      labelPadding: const EdgeInsets.symmetric(horizontal: 16),
       labelColor: AppColors.black,
       unselectedLabelColor: AppColors.neutral666,
       indicatorColor: AppColors.emerald,
       indicatorWeight: 2,
-      dividerColor: Colors.transparent,
+      dividerColor: AppColors.transparent,
+      labelStyle: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+      ),
+      unselectedLabelStyle: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+      ),
       tabs: const <Tab>[
         Tab(text: 'All'),
         Tab(text: 'Earnings'),
+        Tab(text: 'Recharge'),
         Tab(text: 'Withdrawals'),
       ],
     );
@@ -129,3 +195,7 @@ class _WalletTxnVisual {
     };
   }
 }
+
+
+
+

@@ -10,6 +10,7 @@ import 'package:goapp/features/help_support/presentation/pages/help_support_scre
 import 'package:goapp/features/profile/presentation/pages/profile_screen.dart';
 import 'package:goapp/features/rate_app/presentation/pages/rate_app_screen.dart';
 import 'package:goapp/features/refer_earn/presentation/pages/refer_earn_screen.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 class ActivationLimitedDrawer extends StatelessWidget {
   const ActivationLimitedDrawer({super.key});
@@ -17,7 +18,7 @@ class ActivationLimitedDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(24),
@@ -30,7 +31,7 @@ class ActivationLimitedDrawer extends StatelessWidget {
           children: [
             _ProfileHeader(),
             const SizedBox(height: 16),
-            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+            const Divider(height: 1, color: AppColors.hexFFF0F0F0),
             const SizedBox(height: 16),
             _DrawerItem(
               icon: Icons.description_outlined,
@@ -55,7 +56,7 @@ class ActivationLimitedDrawer extends StatelessWidget {
               },
             ),
             const SizedBox(height: 8),
-            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+            const Divider(height: 1, color: AppColors.hexFFF0F0F0),
             const SizedBox(height: 8),
             _DrawerItem(
               icon: Icons.info_outline,
@@ -95,15 +96,15 @@ class ActivationLimitedDrawer extends StatelessWidget {
               margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: AppColors.hexFFF8FAFC,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE6ECF3)),
+                border: Border.all(color: AppColors.hexFFE6ECF3),
               ),
               child: const Text(
                 'Demand Planner, Ride History and Incentives will unlock after wallet activation.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF637488),
+                  color: AppColors.hexFF637488,
                   height: 1.4,
                 ),
               ),
@@ -155,13 +156,13 @@ class _ProfileHeader extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: Container(
-                          color: const Color(0xFF3A3A3A),
+                          color: AppColors.hexFF3A3A3A,
                           child: profilePath != null
                               ? Image.file(File(profilePath), fit: BoxFit.cover)
                               : const Icon(
                                   Icons.person,
                                   size: 44,
-                                  color: Colors.white54,
+                                  color: AppColors.white54,
                                 ),
                         ),
                       ),
@@ -178,7 +179,7 @@ class _ProfileHeader extends StatelessWidget {
                         ),
                         child: const Icon(
                           Icons.camera_alt,
-                          color: Colors.white,
+                          color: AppColors.white,
                           size: 13,
                         ),
                       ),
@@ -191,7 +192,7 @@ class _ProfileHeader extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.hexFF1A1A1A,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -232,7 +233,7 @@ class _ProfileHeader extends StatelessWidget {
             ),
             const Align(
               alignment: Alignment.bottomRight,
-              child: Icon(Icons.chevron_right, color: Colors.grey, size: 22),
+              child: Icon(Icons.chevron_right, color: AppColors.gray, size: 22),
             ),
           ],
         ),
@@ -262,7 +263,7 @@ class _DrawerItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: const Color(0xFF444444)),
+            Icon(icon, size: 22, color: AppColors.hexFF444444),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
@@ -270,14 +271,17 @@ class _DrawerItem extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.hexFF1A1A1A,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+            const Icon(Icons.chevron_right, color: AppColors.gray, size: 20),
           ],
         ),
       ),
     );
   }
 }
+
+
+

@@ -49,21 +49,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
           appBar: AppAppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: AppColors.black,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: const Text(
-              'Withdraw',
-              style: TextStyle(
-                color: AppColors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
+            title: const Text('Withdraw'),
             centerTitle: true,
           ),
           body: Column(
@@ -112,7 +98,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.red,
+                                  color: AppColors.red,
                                 ),
                               ),
                             ],
@@ -257,3 +243,6 @@ class _WithdrawPageState extends State<WithdrawPage> {
     return 'Unable to process withdrawal';
   }
 }
+
+
+

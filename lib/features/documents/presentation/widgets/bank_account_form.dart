@@ -98,7 +98,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
             'Securely link your account for direct payouts',
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade500,
+              color: AppColors.gray.shade500,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -150,7 +150,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
                 _obscureAccount
                     ? Icons.visibility_off_rounded
                     : Icons.visibility_rounded,
-                color: const Color(0xFF8FA0B0),
+                color: AppColors.hexFF8FA0B0,
                 size: 20,
               ),
             ),
@@ -212,7 +212,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey.shade500,
+                    color: AppColors.gray.shade500,
                     height: 1.4,
                   ),
                 ),
@@ -263,7 +263,7 @@ class _BankField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: hasError ? const Color(0xFFE53935) : const Color(0xFF8FA0B0),
+            color: hasError ? AppColors.hexFFE53935 : AppColors.hexFF8FA0B0,
             letterSpacing: 0.5,
           ),
         ),
@@ -282,15 +282,15 @@ class _BankField extends StatelessWidget {
             letterSpacing: 0.3,
           ),
           decoration: InputDecoration(
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             hintText: hint,
-            hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade400),
+            hintStyle: TextStyle(fontSize: 15, color: AppColors.gray.shade400),
             suffixIcon: suffixIcon,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: hasError
-                    ? const Color(0xFFE53935)
-                    : const Color(0xFFD5DDE5),
+                    ? AppColors.hexFFE53935
+                    : AppColors.hexFFD5DDE5,
                 width: 1.2,
               ),
             ),
@@ -298,10 +298,10 @@ class _BankField extends StatelessWidget {
               borderSide: BorderSide(color: AppColors.emerald, width: 2),
             ),
             errorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 1.2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 1.2),
             ),
             focusedErrorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 2),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -311,7 +311,7 @@ class _BankField extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             errorText!,
-            style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+            style: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
           ),
         ],
       ],
@@ -328,3 +328,7 @@ class _UpperCaseFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
+
+
+
+

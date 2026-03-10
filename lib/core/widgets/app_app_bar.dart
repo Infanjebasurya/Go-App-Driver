@@ -21,7 +21,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle,
     this.titleSpacing,
     this.automaticallyImplyLeading,
-    this.backIconSize = 14,
+    this.backIconSize = 24,
   });
 
   final Object? title;
@@ -41,6 +41,11 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double? titleSpacing;
   final bool? automaticallyImplyLeading;
   final double? backIconSize;
+  static const TextStyle _commonTitleStyle = TextStyle(
+    fontSize: 18,
+    color: AppColors.black,
+    fontWeight: FontWeight.w500,
+  );
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -49,28 +54,16 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget? resolvedTitle = titleWidget ??
-        switch (title) {
-          String text => Text(
-              text,
-              style: titleStyle ?? const TextStyle(fontSize: 24),
-            ),
-          Widget widget => widget,
-          null => null,
-          _ => Text(
-              title.toString(),
-              style: titleStyle ?? const TextStyle(fontSize: 24),
-            ),
-        };
+    final Widget? resolvedTitle = _resolveTitle();
     final bool resolvedAutoLeading = automaticallyImplyLeading ??
         (leading == null && backEnabled);
     final Widget? resolvedLeading = leading ??
         (resolvedAutoLeading
             ? IconButton(
                 icon: Icon(
+                  Icons.chevron_left,
                   color: AppColors.black,
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 14,
+                  size: backIconSize ?? 24,
                 ),
                 onPressed: onBack ?? () => Navigator.of(context).maybePop(),
               )
@@ -83,12 +76,56 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: resolvedLeading,
       actions: actions,
       bottom: bottom,
-      backgroundColor: backgroundColor,
-      surfaceTintColor: surfaceTintColor,
-      elevation: elevation,
+      backgroundColor: backgroundColor ?? AppColors.white,
+      surfaceTintColor: surfaceTintColor ?? AppColors.white,
+      elevation: elevation ?? 0,
       shadowColor: shadowColor,
       toolbarHeight: toolbarHeight,
       titleSpacing: titleSpacing,
     );
   }
+
+  Widget? _resolveTitle() {
+    final Widget? candidate = titleWidget ??
+        switch (title) {
+          String text => Text(text),
+          Widget widget => widget,
+          null => null,
+          _ => Text(title.toString()),
+        };
+    if (candidate is Text) {
+      final String? plain = candidate.data;
+      if (plain != null) {
+        return Text(
+          plain,
+          style: titleStyle ?? _commonTitleStyle,
+          maxLines: candidate.maxLines,
+          overflow: candidate.overflow,
+          textAlign: candidate.textAlign,
+          textScaler: candidate.textScaler,
+          softWrap: candidate.softWrap,
+          strutStyle: candidate.strutStyle,
+          textWidthBasis: candidate.textWidthBasis,
+        );
+      }
+      final InlineSpan? span = candidate.textSpan;
+      if (span != null) {
+        return Text.rich(
+          span,
+          style: titleStyle ?? _commonTitleStyle,
+          maxLines: candidate.maxLines,
+          overflow: candidate.overflow,
+          textAlign: candidate.textAlign,
+          textScaler: candidate.textScaler,
+          softWrap: candidate.softWrap,
+          strutStyle: candidate.strutStyle,
+          textWidthBasis: candidate.textWidthBasis,
+        );
+      }
+    }
+    return candidate;
+  }
 }
+
+
+

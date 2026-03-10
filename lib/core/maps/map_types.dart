@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 @immutable
 class LatLng {
@@ -127,7 +128,7 @@ class Polyline {
   const Polyline({
     required this.polylineId,
     required this.points,
-    this.color = const Color(0xFF08B56F),
+    this.color = AppColors.hexFF08B56F,
     this.width = 4,
   });
 
@@ -143,3 +144,5 @@ class Polyline {
   @override
   int get hashCode => polylineId.hashCode;
 }
+
+

@@ -36,7 +36,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       child: Column(
@@ -47,7 +47,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
             height: 4,
             margin: const EdgeInsets.only(top: 12, bottom: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFFDDE4EC),
+              color: AppColors.hexFFDDE4EC,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -136,7 +136,7 @@ class _OptionTile extends StatelessWidget {
             ),
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? AppColors.emerald : const Color(0xFFB6C2CF),
+              color: isSelected ? AppColors.emerald : AppColors.hexFFB6C2CF,
             ),
           ],
         ),
@@ -155,7 +155,7 @@ Future<void> showSelectionSheet<T>({
 }) {
   return showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.transparent,
     isScrollControlled: true,
     builder: (_) => SelectionBottomSheet<T>(
       title: title,
@@ -169,3 +169,7 @@ Future<void> showSelectionSheet<T>({
     ),
   );
 }
+
+
+
+

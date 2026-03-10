@@ -12,7 +12,7 @@ class SOSBottomSheet extends StatelessWidget {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) {
         return BlocProvider<SosCubit>.value(
           value: cubit,
@@ -265,3 +265,6 @@ class _SafetyActionCard extends StatelessWidget {
     );
   }
 }
+
+
+

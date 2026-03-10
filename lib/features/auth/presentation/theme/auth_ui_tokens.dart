@@ -4,11 +4,11 @@ import 'app_colors.dart';
 /// Shared visual tokens for auth presentation only.
 abstract final class AuthUiColors {
   static const brandGreen = AppColors.emerald;
-  static const textDark = Color(0xFF111217);
-  static const textDarkAlt = Color(0xFF16181D);
-  static const textMuted = Color(0xFF6E6E6E);
-  static const danger = Color(0xFFE02828);
-  static const dotInactive = Color(0xFFD5D5D5);
+  static const textDark = AppColors.hexFF111217;
+  static const textDarkAlt = AppColors.hexFF16181D;
+  static const textMuted = AppColors.hexFF6E6E6E;
+  static const danger = AppColors.hexFFE02828;
+  static const dotInactive = AppColors.hexFFD5D5D5;
 }
 
 /// Shared text styles to keep Saira usage consistent across auth screens.
@@ -28,3 +28,7 @@ abstract final class AuthUiTextStyles {
 
   static const button = TextStyle(fontSize: 15, fontWeight: FontWeight.w700);
 }
+
+
+
+

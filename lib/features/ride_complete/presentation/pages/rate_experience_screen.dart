@@ -98,7 +98,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
         unawaited(_navigateToHome());
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         body: SafeArea(
           child: BlocBuilder<RateExperienceCubit, RateExperienceState>(
             builder: (BuildContext context, RateExperienceState state) {
@@ -116,7 +116,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppColors.black87,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -125,7 +125,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                       'Passenger Feedback',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: AppColors.gray[600],
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -140,12 +140,12 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   width: 3,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
+                                    color: AppColors.black.withValues(alpha: 0.1),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -166,10 +166,10 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                               bottom: 0,
                               child: CircleAvatar(
                                 radius: 12,
-                                backgroundColor: Colors.white,
+                                backgroundColor: AppColors.white,
                                 child: Icon(
                                   Icons.check_circle,
-                                  color: Colors.green,
+                                  color: AppColors.green,
                                   size: 20,
                                 ),
                               ),
@@ -182,7 +182,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: AppColors.black87,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -191,7 +191,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           children: [
                             const Icon(
                               Icons.star,
-                              color: Color(0xFFFFC107),
+                              color: AppColors.hexFFFFC107,
                               size: 16,
                             ),
                             const SizedBox(width: 4),
@@ -200,7 +200,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.grey[800],
+                                color: AppColors.gray[800],
                               ),
                             ),
                           ],
@@ -225,8 +225,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                               Icons.star,
                               size: 32,
                               color: index < state.selectedRating
-                                  ? const Color(0xFFFFC107)
-                                  : Colors.grey[300],
+                                  ? AppColors.hexFFFFC107
+                                  : AppColors.gray[300],
                             ),
                           ),
                         );
@@ -240,7 +240,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey[700],
+                          color: AppColors.gray[700],
                         ),
                       ),
                     ),
@@ -258,20 +258,20 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           onSelected: (_) {
                             context.read<RateExperienceCubit>().toggleTag(tag);
                           },
-                          backgroundColor: Colors.grey.shade200,
+                          backgroundColor: AppColors.gray.shade200,
                           selectedColor: AppColors.emerald,
-                          checkmarkColor: Colors.white,
+                          checkmarkColor: AppColors.white,
                           labelStyle: TextStyle(
                             fontSize: 14,
-                            color: isSelected ? Colors.white : Colors.black87,
+                            color: isSelected ? AppColors.white : AppColors.black87,
                             fontWeight: FontWeight.w500,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
                               color: isSelected
-                                  ? Colors.transparent
-                                  : Colors.grey[200]!,
+                                  ? AppColors.transparent
+                                  : AppColors.gray[200]!,
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(
@@ -290,14 +290,14 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: AppColors.gray[700],
                           ),
                           children: [
                             TextSpan(
                               text: '(optional)',
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
-                                color: Colors.grey[500],
+                                color: AppColors.gray[500],
                               ),
                             ),
                           ],
@@ -314,7 +314,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                       decoration: InputDecoration(
                         hintText: 'Share more details about your ride...',
                         hintStyle: TextStyle(
-                          color: Colors.grey[400],
+                          color: AppColors.gray[400],
                           fontSize: 14,
                         ),
                         filled: true,
@@ -355,7 +355,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ),
@@ -371,4 +371,8 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     );
   }
 }
+
+
+
+
 

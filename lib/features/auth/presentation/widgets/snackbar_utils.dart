@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 abstract final class SnackBarUtils {
   static const Duration defaultDuration = Duration(seconds: 2);
@@ -23,7 +24,7 @@ abstract final class SnackBarUtils {
       SnackBar(
         content: Text(message),
         duration: duration,
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: AppColors.hexFF1A1A1A,
         behavior: behavior,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -40,10 +41,12 @@ abstract final class SnackBarUtils {
       context,
       message,
       duration: duration,
-      backgroundColor: const Color(0xFFE53935),
+      backgroundColor: AppColors.hexFFE53935,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
     );
   }
 }
+
+

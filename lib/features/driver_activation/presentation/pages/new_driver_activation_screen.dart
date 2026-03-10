@@ -8,6 +8,8 @@ import 'package:goapp/features/earnings/data/datasources/earnings_wallet_mock_ap
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
 import 'package:goapp/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/theme/app_colors.dart';
 
 enum NewDriverActivationPhase { documentReview, walletTopUp }
 
@@ -105,13 +107,13 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FC),
+      backgroundColor: AppColors.hexFFF6F8FC,
       drawer: const ActivationLimitedDrawer(),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
+      appBar: AppAppBar(
+        backgroundColor: AppColors.white,
         elevation: 6,
-        shadowColor: Colors.black12,
-        surfaceTintColor: Colors.transparent,
+        shadowColor: AppColors.black12,
+        surfaceTintColor: AppColors.transparent,
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -123,7 +125,7 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.black87,
           ),
         ),
         centerTitle: true,
@@ -131,7 +133,7 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
           IconButton(
             icon: const Icon(
               Icons.notifications_outlined,
-              color: Colors.black54,
+              color: AppColors.black54,
             ),
             onPressed: () {
               Navigator.of(context).push(
@@ -171,12 +173,12 @@ class _DocumentReviewCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE5EBF3)),
+          border: Border.all(color: AppColors.hexFFE5EBF3),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x14000000),
+              color: AppColors.hex14000000,
               blurRadius: 20,
               offset: Offset(0, 8),
             ),
@@ -201,7 +203,7 @@ class _DocumentReviewCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1B2533),
+                color: AppColors.hexFF1B2533,
                 letterSpacing: -0.2,
               ),
             ),
@@ -211,7 +213,7 @@ class _DocumentReviewCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 14,
-                color: Color(0xFF637488),
+                color: AppColors.hexFF637488,
                 height: 1.5,
               ),
             ),
@@ -219,7 +221,7 @@ class _DocumentReviewCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF8F1),
+                color: AppColors.hexFFEAF8F1,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -227,7 +229,7 @@ class _DocumentReviewCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF0C9B61),
+                  color: AppColors.hexFF0C9B61,
                 ),
               ),
             ),
@@ -237,7 +239,7 @@ class _DocumentReviewCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF0C9B61),
+                color: AppColors.hexFF0C9B61,
               ),
             ),
           ],
@@ -265,12 +267,12 @@ class _WalletActivationCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE5EBF3)),
+          border: Border.all(color: AppColors.hexFFE5EBF3),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x14000000),
+              color: AppColors.hex14000000,
               blurRadius: 20,
               offset: Offset(0, 8),
             ),
@@ -286,13 +288,13 @@ class _WalletActivationCard extends StatelessWidget {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF8F1),
+                    color: AppColors.hexFFEAF8F1,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.account_balance_wallet_outlined,
                     size: 24,
-                    color: Color(0xFF0C9B61),
+                    color: AppColors.hexFF0C9B61,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -302,7 +304,7 @@ class _WalletActivationCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 21,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1B2533),
+                      color: AppColors.hexFF1B2533,
                     ),
                   ),
                 ),
@@ -313,7 +315,7 @@ class _WalletActivationCard extends StatelessWidget {
               'To activate duty access, add a minimum wallet balance of Rs ${minimumTopUp.toInt()}.',
               style: const TextStyle(
                 fontSize: 14,
-                color: Color(0xFF637488),
+                color: AppColors.hexFF637488,
                 height: 1.5,
               ),
             ),
@@ -322,15 +324,15 @@ class _WalletActivationCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: AppColors.hexFFF8FAFC,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE6ECF3)),
+                border: Border.all(color: AppColors.hexFFE6ECF3),
               ),
               child: const Text(
                 'After successful top-up, all drawer menus and offline/online duty controls will be unlocked.',
                 style: TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF506176),
+                  color: AppColors.hexFF506176,
                   height: 1.4,
                 ),
               ),
@@ -342,8 +344,8 @@ class _WalletActivationCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: isLoading ? null : onContinue,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0C9B61),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.hexFF0C9B61,
+                  foregroundColor: AppColors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28),
@@ -356,7 +358,7 @@ class _WalletActivationCard extends StatelessWidget {
                         child: CircularProgressIndicator(
                           strokeWidth: 2.2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+                            AppColors.white,
                           ),
                         ),
                       )
@@ -375,3 +377,6 @@ class _WalletActivationCard extends StatelessWidget {
     );
   }
 }
+
+
+

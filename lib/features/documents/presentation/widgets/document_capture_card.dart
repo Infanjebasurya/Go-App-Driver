@@ -43,7 +43,7 @@ class DocumentCaptureCard extends StatelessWidget {
           border: Border.all(
             color: captured
                 ? AppColors.emerald.withValues(alpha: 0.35)
-                : const Color(0xFFE2E8F0),
+                : AppColors.hexFFE2E8F0,
             width: captured ? 1.5 : 1.0,
           ),
         ),
@@ -80,7 +80,7 @@ class DocumentCaptureCard extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.1,
-                    ).copyWith(color: labelColor ?? const Color(0xFF6B7C93)),
+                    ).copyWith(color: labelColor ?? AppColors.hexFF6B7C93),
                   ),
                 ],
                 if (isDocument && fileName != null) ...[
@@ -110,13 +110,13 @@ class DocumentCaptureCard extends StatelessWidget {
                     width: 26,
                     height: 26,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFFFEEEE),
+                      color: AppColors.hexFFFFEEEE,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.close_rounded,
                       size: 14,
-                      color: Color(0xFFE53935),
+                      color: AppColors.hexFFE53935,
                     ),
                   ),
                 ),
@@ -140,7 +140,7 @@ class DocumentCaptureCard extends StatelessWidget {
       ),
       child: Icon(
         isDocument ? Icons.description_rounded : Icons.smartphone_rounded,
-        color: isDocument ? AppColors.emerald : const Color(0xFFB0BEC5),
+        color: isDocument ? AppColors.emerald : AppColors.hexFFB0BEC5,
         size: 26,
       ),
     );
@@ -189,9 +189,13 @@ class _ImagePreview extends StatelessWidget {
       ),
       child: const Icon(
         Icons.smartphone_rounded,
-        color: Color(0xFFB0BEC5),
+        color: AppColors.hexFFB0BEC5,
         size: 26,
       ),
     );
   }
 }
+
+
+
+

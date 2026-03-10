@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/core/maps/app_google_map.dart';
 import 'package:goapp/core/maps/map_style_loader.dart';
 import 'package:goapp/core/maps/map_types.dart';
+import 'package:goapp/core/service/location_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
 
@@ -43,6 +43,7 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   final MapStyleLoader _styleLoader = const MapStyleLoader();
   final LocationPermissionGuard _locationGuard =
       const LocationPermissionGuard();
+  final LocationService _locationService = const LocationService();
   AppMapController? _mapController;
   String? _mapStyle;
   LatLng _currentPoint = _fallbackPoint;
@@ -107,7 +108,7 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
         return;
       }
 
-      final Position? known = await Geolocator.getLastKnownPosition();
+      final AppLocationPosition? known = await _locationService.getLastKnownPosition();
       if (known != null && mounted) {
         final knownPoint = LatLng(known.latitude, known.longitude);
         setState(() {
@@ -117,12 +118,8 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
         await _mapController?.animateTo(knownPoint, zoom: 16);
       }
 
-      final Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 8),
-        ),
-      );
+      final AppLocationPosition position = await _locationService
+          .getCurrentPosition(timeLimit: const Duration(seconds: 8));
 
       final LatLng point = LatLng(position.latitude, position.longitude);
 
@@ -179,7 +176,6 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
           myLocationButtonEnabled: false,
           onMapCreated: (controller) {
             _mapController = controller;
-            unawaited(_mapController?.animateTo(_currentPoint, zoom: 16));
           },
         ),
         if (_showCaptainArrow)
@@ -211,3 +207,6 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
     );
   }
 }
+
+
+

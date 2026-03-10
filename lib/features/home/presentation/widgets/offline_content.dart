@@ -74,11 +74,11 @@ class _OfflineStatusBanner extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: AppColors.black.withValues(alpha: 0.06),
                   blurRadius: 4,
                 ),
               ],
@@ -101,7 +101,7 @@ class _OfflineStatusBanner extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
-                    color: Colors.black87,
+                    color: AppColors.black87,
                   ),
                 ),
                 SizedBox(height: 2),
@@ -112,7 +112,7 @@ class _OfflineStatusBanner extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Colors.black54,
+                    color: AppColors.black54,
                   ),
                 ),
               ],
@@ -134,12 +134,12 @@ class _EarningsCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: AppColors.gray.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -155,7 +155,7 @@ class _EarningsCard extends StatelessWidget {
                 'TODAY, ${_todayDate()}',
                 style: const TextStyle(
                   fontSize: 14,
-                  color: Colors.black54,
+                  color: AppColors.black54,
                   fontWeight: FontWeight.w400,
                   letterSpacing: 0.5,
                 ),
@@ -163,7 +163,7 @@ class _EarningsCard extends StatelessWidget {
               const Icon(
                 Icons.calendar_today_outlined,
                 size: 18,
-                color: Colors.black45,
+                color: AppColors.black45,
               ),
             ],
           ),
@@ -174,7 +174,7 @@ class _EarningsCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w400,
-                color: Colors.black87,
+                color: AppColors.black87,
               ),
             ),
           ),
@@ -184,7 +184,7 @@ class _EarningsCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black54,
+                color: AppColors.black54,
               ),
             ),
           ),
@@ -262,7 +262,7 @@ class _StatItem extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: AppColors.black87,
               ),
             ),
           ],
@@ -272,7 +272,7 @@ class _StatItem extends StatelessWidget {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black45,
+            color: AppColors.black45,
           ),
         ),
       ],
@@ -290,12 +290,12 @@ class _WalletCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: AppColors.gray.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -312,7 +312,7 @@ class _WalletCard extends StatelessWidget {
             child: const Icon(
               Icons.account_balance_wallet_outlined,
               size: 20,
-              color: Colors.black87,
+              color: AppColors.black87,
             ),
           ),
           const SizedBox(width: 12),
@@ -325,7 +325,7 @@ class _WalletCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black45,
+                    color: AppColors.black45,
                   ),
                 ),
                 Text(
@@ -335,7 +335,7 @@ class _WalletCard extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
-                    color: Colors.black87,
+                    color: AppColors.black87,
                   ),
                 ),
                 if (state.isWalletAtOrBelowDutyThreshold)
@@ -344,7 +344,7 @@ class _WalletCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.red,
+                      color: AppColors.red,
                     ),
                   ),
               ],
@@ -362,7 +362,7 @@ class _WalletCard extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               shape: RoundedRectangleBorder(
@@ -389,12 +389,12 @@ class _RewardCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: AppColors.gray.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -409,7 +409,7 @@ class _RewardCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
+                  color: AppColors.hexFFF0FDF4,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Icon(
@@ -428,7 +428,7 @@ class _RewardCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
-                        color: Colors.black87,
+                        color: AppColors.black87,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -437,7 +437,7 @@ class _RewardCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black45,
+                        color: AppColors.black45,
                       ),
                     ),
                   ],
@@ -450,7 +450,7 @@ class _RewardCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: state.progressPercentage,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: AppColors.gray.shade200,
               valueColor: const AlwaysStoppedAnimation<Color>(
                 AuthUiColors.brandGreen,
               ),
@@ -474,5 +474,9 @@ class _RewardCard extends StatelessWidget {
     );
   }
 }
+
+
+
+
 
 

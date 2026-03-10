@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 
 import '../model/document_upload_model.dart';
@@ -23,6 +23,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }
 
   final ImagePicker _picker = ImagePicker();
+  final PermissionService _permissionService = const PermissionService();
   final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
   bool _isPicking = false;
 
@@ -455,15 +456,15 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       return true;
     }
 
-    final Permission permission = source == ImageSource.camera
-        ? Permission.camera
-        : Permission.photos;
+    final AppPermission permission = source == ImageSource.camera
+        ? AppPermission.camera
+        : AppPermission.photos;
 
-    final status = await permission.status;
-    if (status.isGranted) return true;
+    final status = await _permissionService.status(permission);
+    if (status == AppPermissionStatus.granted) return true;
 
-    final result = await permission.request();
-    return result.isGranted;
+    final result = await _permissionService.request(permission);
+    return result == AppPermissionStatus.granted;
   }
 
   void updateDocumentNumber(String value) {

@@ -491,7 +491,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         child: PopScope(
           canPop: widget.allowBack,
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             appBar: AppAppBar(title: 'GoApp', backEnabled: false, onBack: null),
             body: MultiBlocListener(
               listeners: [
@@ -876,3 +876,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     );
   }
 }
+
+
+

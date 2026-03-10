@@ -19,12 +19,12 @@ class VerificationProgressCard extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8EDF2)),
+        border: Border.all(color: AppColors.hexFFE8EDF2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -45,7 +45,7 @@ class VerificationProgressCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF8FA0B0),
+                      color: AppColors.hexFF8FA0B0,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -54,7 +54,7 @@ class VerificationProgressCard extends StatelessWidget {
                     '$completedCount of $totalCount documents verified',
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF6B7C93),
+                      color: AppColors.hexFF6B7C93,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -89,7 +89,7 @@ class VerificationProgressCard extends StatelessWidget {
                 return LinearProgressIndicator(
                   value: value,
                   minHeight: 2,
-                  backgroundColor: const Color(0xFFE8EDF2),
+                  backgroundColor: AppColors.hexFFE8EDF2,
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.emerald,
                   ),
@@ -102,3 +102,7 @@ class VerificationProgressCard extends StatelessWidget {
     );
   }
 }
+
+
+
+

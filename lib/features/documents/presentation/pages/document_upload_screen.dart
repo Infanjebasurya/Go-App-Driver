@@ -99,7 +99,7 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
             _handleBack(context);
           },
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             appBar: AppAppBar(
               title: 'GoApp',
               onBack: () => _handleBack(context),
@@ -302,7 +302,7 @@ class _SegmentedBar extends StatelessWidget {
             height: 3.5,
             margin: const EdgeInsets.symmetric(horizontal: 2.5),
             decoration: BoxDecoration(
-              color: active ? AppColors.emerald : const Color(0xFFE2E8F0),
+              color: active ? AppColors.emerald : AppColors.hexFFE2E8F0,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -411,7 +411,7 @@ class _DocStepContent extends StatelessWidget {
             config.subtitle,
             style: const TextStyle(
               fontSize: 16,
-              color: Colors.grey,
+              color: AppColors.gray,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -455,7 +455,7 @@ class _DocStepContent extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               stepData.imageError!,
-              style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+              style: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
             ),
           ],
           const SizedBox(height: 28),
@@ -528,7 +528,7 @@ class _ProfilePhotoStepContent extends StatelessWidget {
             'Upload your profile picture',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey.shade500,
+              color: AppColors.gray.shade500,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
@@ -546,7 +546,7 @@ class _ProfilePhotoStepContent extends StatelessWidget {
                   ),
                   child: ClipOval(
                     child: Container(
-                      color: Colors.grey.shade200,
+                      color: AppColors.gray.shade200,
                       child: hasImage
                           ? Image.file(
                               File(stepData.frontPath!),
@@ -555,7 +555,7 @@ class _ProfilePhotoStepContent extends StatelessWidget {
                           : Icon(
                               Icons.person,
                               size: avatarSize * 0.55,
-                              color: Colors.white54,
+                              color: AppColors.white54,
                             ),
                     ),
                   )
@@ -574,7 +574,7 @@ class _ProfilePhotoStepContent extends StatelessWidget {
                       ),
                       child: Icon(
                         Icons.camera_alt,
-                        color: Colors.white,
+                        color: AppColors.white,
                         size: cameraIconSize,
                       ),
                     ),
@@ -597,7 +597,7 @@ class _ProfilePhotoStepContent extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               stepData.imageError!,
-              style: const TextStyle(fontSize: 12, color: Color(0xFFE53935)),
+              style: const TextStyle(fontSize: 12, color: AppColors.hexFFE53935),
               textAlign: TextAlign.center,
             ),
           ],
@@ -637,7 +637,7 @@ class _ActionButton extends StatelessWidget {
         MediaQuery.of(context).padding.bottom + 20,
       ),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         border: Border(top: BorderSide(color: AppColors.coolwhite)),
       ),
       child: SizedBox(
@@ -647,7 +647,7 @@ class _ActionButton extends StatelessWidget {
           key: const Key('save_next_button'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.emerald,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
@@ -660,7 +660,7 @@ class _ActionButton extends StatelessWidget {
             height: 22,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
             ),
           )
               : Text(
@@ -798,7 +798,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
             'Securely link your account for direct payouts',
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade500,
+              color: AppColors.gray.shade500,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -850,7 +850,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
                 _obscureAccount
                     ? Icons.visibility_off_rounded
                     : Icons.visibility_rounded,
-                color: const Color(0xFF8FA0B0),
+                color: AppColors.hexFF8FA0B0,
                 size: 20,
               ),
             ),
@@ -898,7 +898,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
             const SizedBox(height: 8),
             Text(
               data.bankDocumentError!,
-              style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+              style: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
             ),
           ],
           const SizedBox(height: 32),
@@ -929,7 +929,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey.shade500,
+                    color: AppColors.gray.shade500,
                     height: 1.4,
                   ),
                 ),
@@ -980,7 +980,7 @@ class _BankField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: hasError ? const Color(0xFFE53935) : const Color(0xFF8FA0B0),
+            color: hasError ? AppColors.hexFFE53935 : AppColors.hexFF8FA0B0,
             letterSpacing: 0.5,
           ),
         ),
@@ -999,15 +999,15 @@ class _BankField extends StatelessWidget {
             letterSpacing: 0.3,
           ),
           decoration: InputDecoration(
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             hintText: hint,
-            hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade400),
+            hintStyle: TextStyle(fontSize: 15, color: AppColors.gray.shade400),
             suffixIcon: suffixIcon,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: hasError
-                    ? const Color(0xFFE53935)
-                    : const Color(0xFFD5DDE5),
+                    ? AppColors.hexFFE53935
+                    : AppColors.hexFFD5DDE5,
                 width: 1.2,
               ),
             ),
@@ -1015,10 +1015,10 @@ class _BankField extends StatelessWidget {
               borderSide: BorderSide(color: AppColors.emerald, width: 2),
             ),
             errorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 1.2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 1.2),
             ),
             focusedErrorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 2),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -1028,7 +1028,7 @@ class _BankField extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             errorText!,
-            style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+            style: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
           ),
         ],
       ],
@@ -1045,4 +1045,8 @@ class _UpperCaseFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
+
+
+
+
 

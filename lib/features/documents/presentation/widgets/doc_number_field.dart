@@ -38,7 +38,7 @@ class DocNumberField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: hasError ? const Color(0xFFE53935) : const Color(0xFF8FA0B0),
+            color: hasError ? AppColors.hexFFE53935 : AppColors.hexFF8FA0B0,
             letterSpacing: 0.5,
           ),
         ),
@@ -64,32 +64,32 @@ class DocNumberField extends StatelessWidget {
             letterSpacing: 0.3,
           ),
           decoration: InputDecoration(
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             hintText: hint,
             hintStyle: TextStyle(
               fontSize: 16,
-              color: Colors.grey.shade400,
+              color: AppColors.gray.shade400,
               fontWeight: FontWeight.w400,
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: hasError
-                    ? const Color(0xFFE53935)
-                    : const Color(0xFFD5DDE5),
+                    ? AppColors.hexFFE53935
+                    : AppColors.hexFFD5DDE5,
                 width: 1.2,
               ),
             ),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError ? const Color(0xFFE53935) : AppColors.emerald,
+                color: hasError ? AppColors.hexFFE53935 : AppColors.emerald,
                 width: 2,
               ),
             ),
             errorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 1.2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 1.2),
             ),
             focusedErrorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE53935), width: 2),
+              borderSide: BorderSide(color: AppColors.hexFFE53935, width: 2),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -99,7 +99,7 @@ class DocNumberField extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             errorText!,
-            style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+            style: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
           ),
         ] else if (example != null && example!.isNotEmpty) ...[
           const SizedBox(height: 5),
@@ -107,7 +107,7 @@ class DocNumberField extends StatelessWidget {
             example!,
             style: TextStyle(
               fontSize: 11,
-              color: Colors.grey.shade400,
+              color: AppColors.gray.shade400,
               letterSpacing: 0.2,
             ),
           ),
@@ -126,3 +126,7 @@ class _UpperCaseTextFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
+
+
+
+

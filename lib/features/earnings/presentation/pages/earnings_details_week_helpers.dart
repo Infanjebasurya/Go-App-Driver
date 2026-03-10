@@ -77,7 +77,7 @@ class _WeekRangeChip extends StatelessWidget {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFB7D7CC) : const Color(0xFFF3F3F3),
+          color: selected ? AppColors.hexFFB7D7CC : AppColors.hexFFF3F3F3,
           borderRadius: BorderRadius.circular(18),
           border: selected ? Border.all(color: AppColors.emerald) : null,
         ),
@@ -160,3 +160,7 @@ class _OrderHistoryTabs extends StatelessWidget {
     );
   }
 }
+
+
+
+
