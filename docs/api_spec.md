@@ -2,6 +2,7 @@
 
 ## Change Log
 
+- 2026-03-10: Added client-side network_check feature (native connectivity, offline UI, reconnect shimmer). No backend API contract changes.
 - 2026-02-24: Earnings/Wallet navigation and presentation flow refactor to clean architecture (data/domain/presentation). No backend API contract changes.
 - 2026-02-20: Client now fetches Google Directions road polylines for captain map rendering (pickup/drop). No backend API contract changes.
 - 2026-02-19: Home feature architecture refactor only. No backend API contract changes.
