@@ -54,30 +54,6 @@ dependencies:
 
 dependency_overrides:
   google_maps_flutter_android: 2.18.12
-  sms_autofill:
-    path: third_party/plugins/sms_autofill
-  image_picker:
-    path: third_party/plugins/image_picker
-  image_picker_android:
-    path: third_party/plugins/image_picker_android
-  file_picker:
-    path: third_party/plugins/file_picker
-  permission_handler:
-    path: third_party/plugins/permission_handler
-  permission_handler_android:
-    path: third_party/plugins/permission_handler_android
-  path_provider:
-    path: third_party/plugins/path_provider
-  path_provider_android:
-    path: third_party/plugins/path_provider_android
-  shared_preferences:
-    path: third_party/plugins/shared_preferences
-  shared_preferences_android:
-    path: third_party/plugins/shared_preferences_android
-  url_launcher:
-    path: third_party/plugins/url_launcher
-  url_launcher_android:
-    path: third_party/plugins/url_launcher_android
 
 dev_dependencies:
   flutter_test:

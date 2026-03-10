@@ -1,6 +1,6 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/file_picker_service.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 
 import '../model/document_upload_model.dart';
@@ -15,17 +15,26 @@ part 'document_upload_cubit_validation.dart';
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   static const String _profilePhotoStorageKey = 'profile.photo.path';
 
-  DocumentUploadCubit({int initialStepIndex = 0})
-    : super(
-        DocumentUploadState.initial().copyWith(
-          currentStepIndex: initialStepIndex,
-        ),
-      ) {
+  DocumentUploadCubit({
+    int initialStepIndex = 0,
+    required ImagePickerService imagePickerService,
+    required FilePickerService filePickerService,
+    required DocumentUploadFileService fileService,
+  })
+      : _imagePickerService = imagePickerService,
+        _filePickerService = filePickerService,
+        _fileService = fileService,
+        super(
+          DocumentUploadState.initial().copyWith(
+            currentStepIndex: initialStepIndex,
+          ),
+        ) {
     _restoreDraft();
   }
 
-  final ImagePicker _picker = ImagePicker();
-  final DocumentUploadFileService _fileService = const DocumentUploadFileService();
+  final ImagePickerService _imagePickerService;
+  final FilePickerService _filePickerService;
+  final DocumentUploadFileService _fileService;
   final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
   bool _isPicking = false;
 
@@ -110,11 +119,11 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     return DocumentUploadType.image;
   }
 
-  Future<void> captureProfilePhoto({required ImageSource source}) {
+  Future<void> captureProfilePhoto({required AppImageSource source}) {
     return _captureProfilePhoto(this, source: source);
   }
 
-  Future<void> captureFront({required ImageSource source}) {
+  Future<void> captureFront({required AppImageSource source}) {
     return _captureFront(this, source: source);
   }
 
@@ -122,7 +131,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     return _captureFrontDocument(this);
   }
 
-  Future<void> captureBack({required ImageSource source}) {
+  Future<void> captureBack({required AppImageSource source}) {
     return _captureBack(this, source: source);
   }
 
@@ -194,7 +203,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     emit(state.copyWith(bankData: updated));
   }
 
-  Future<void> captureBankDocument({required ImageSource source}) {
+  Future<void> captureBankDocument({required AppImageSource source}) {
     return _captureBankDocument(this, source: source);
   }
 

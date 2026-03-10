@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'support/shared_preferences_mock.dart';
 
 class _FakeLocationPermissionGuard extends LocationPermissionGuard {
   _FakeLocationPermissionGuard(this._results);
@@ -26,10 +26,8 @@ void main() {
   group('DriverStatusCubit', () {
     late DriverStatusCubit cubit;
 
-    setUp(() {
-      SharedPreferences.setMockInitialValues(<String, Object>{
-        'driver_wallet_balance_v1': 120.5,
-      });
+    setUp(() async {
+      await initMockSharedPreferencesStore(<String, Object>{'driver_wallet_balance_v1': 120.5});
       cubit = DriverStatusCubit(
         locationGuard: _FakeLocationPermissionGuard(
           const [LocationAccessResult.ready()],

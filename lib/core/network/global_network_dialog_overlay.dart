@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/service/network_settings_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/injection.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import 'network_status_cubit.dart';
 

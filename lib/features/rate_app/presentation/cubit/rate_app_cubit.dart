@@ -2,15 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
-import 'package:goapp/features/rate_app/data/repositories/rate_app_repository_impl.dart';
 import 'package:goapp/features/rate_app/domain/usecases/submit_rate_app_review_usecase.dart';
 import 'package:goapp/features/rate_app/presentation/cubit/rate_app_state.dart';
 
 class RateAppCubit extends Cubit<RateAppState> {
-  RateAppCubit({SubmitRateAppReviewUseCase? submitRateAppReview})
-    : _submitRateAppReview =
-          submitRateAppReview ??
-          SubmitRateAppReviewUseCase(const RateAppRepositoryImpl()),
+  RateAppCubit({required SubmitRateAppReviewUseCase submitRateAppReview})
+    : _submitRateAppReview = submitRateAppReview,
       super(const RateAppState()) {
     final stored = TextFieldStore.read('rate_app.feedback') ?? '';
     if (stored.isNotEmpty) {

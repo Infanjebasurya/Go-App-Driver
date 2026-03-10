@@ -7,9 +7,26 @@ class _WeekView extends StatefulWidget {
   State<_WeekView> createState() => _WeekViewState();
 }
 
-class _WeekViewState extends State<_WeekView> {
+class _WeekViewState extends State<_WeekView> with SingleTickerProviderStateMixin {
   int _rangeIndex = 1;
-  int _orderTab = 0; // 0 completed, 1 cancelled
+  late final TabController _orderTabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _orderTabController = TabController(length: 2, vsync: this);
+    _orderTabController.addListener(() {
+      if (!mounted) return;
+      if (_orderTabController.indexIsChanging) return;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _orderTabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +36,12 @@ class _WeekViewState extends State<_WeekView> {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
         }
-        final List<RideHistoryTrip> trips = snapshot.data ?? const <RideHistoryTrip>[];
+        final List<RideHistoryTrip> trips =
+            snapshot.data ?? const <RideHistoryTrip>[];
         final List<_WeekRange> ranges = _buildWeekRanges();
-        final _WeekRange selected = ranges[_rangeIndex.clamp(0, ranges.length - 1)];
-        final bool showCancelled = _orderTab == 1;
+        final _WeekRange selected =
+            ranges[_rangeIndex.clamp(0, ranges.length - 1)];
+        final bool showCancelled = _orderTabController.index == 1;
         final List<RideHistoryTrip> filtered = _filterTrips(
           trips: trips,
           range: selected,
@@ -33,19 +52,26 @@ class _WeekViewState extends State<_WeekView> {
           (sum, trip) => sum + EarningsCalculator.totalEarning(trip),
         );
         final int rides = filtered.length;
-        final List<_DaySummary> daySummary = _buildDaySummary(filtered, cancelled: showCancelled);
-        final List<int> bars = _buildPerformanceBars(filtered, cancelled: showCancelled);
+        final List<_DaySummary> daySummary = _buildDaySummary(
+          filtered,
+          cancelled: showCancelled,
+        );
+        final List<int> bars = _buildPerformanceBars(
+          filtered,
+          cancelled: showCancelled,
+        );
 
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              const SizedBox(height: 8),
               _WeekRangeChips(
                 ranges: ranges,
                 selectedIndex: _rangeIndex,
                 onSelect: (index) => setState(() => _rangeIndex = index),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 16),
               _RangeSummaryCard(total: total, rides: rides),
               const SizedBox(height: 14),
               _PerformanceCard(values: bars),
@@ -59,15 +85,17 @@ class _WeekViewState extends State<_WeekView> {
               ),
               const SizedBox(height: 10),
               _OrderHistoryTabs(
-                selectedIndex: _orderTab,
-                onChanged: (index) => setState(() => _orderTab = index),
+                controller: _orderTabController,
               ),
               const SizedBox(height: 10),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Weekly Summary',
-                  style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: AppColors.neutral666,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
@@ -76,7 +104,10 @@ class _WeekViewState extends State<_WeekView> {
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                   child: Text(
                     'No rides in this period',
-                    style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: AppColors.neutral666,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 )
               else
@@ -84,8 +115,10 @@ class _WeekViewState extends State<_WeekView> {
                   return _SummaryItem(
                     title: day.title,
                     subtitle: '${day.trips.length} Rides • Premium Class',
-                    amount: '₹${day.total.toStringAsFixed(2)}',
-                    accent: showCancelled ? AppColors.validationRed : AppColors.emerald,
+                    amount: '\u20B9${day.total.toStringAsFixed(2)}',
+                    accent: showCancelled
+                        ? AppColors.validationRed
+                        : AppColors.emerald,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -93,7 +126,7 @@ class _WeekViewState extends State<_WeekView> {
                           builder: (_) => _WeekDayDetailsPage(
                             dateTitle: day.title,
                             summaryPillText:
-                                '₹${day.total.toStringAsFixed(2)} • ${day.trips.length} Rides',
+                                '\u20B9${day.total.toStringAsFixed(2)} • ${day.trips.length} Rides',
                             trips: day.trips,
                             showCancelled: showCancelled,
                           ),
@@ -143,19 +176,29 @@ class _WeekDayDetailsPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     dateTitle,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: showCancelled ? AppColors.rose : AppColors.earningsAccentSoft,
+                    color: showCancelled
+                        ? AppColors.rose
+                        : AppColors.earningsAccentSoft,
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Text(
                     summaryPillText,
                     style: TextStyle(
-                      color: showCancelled ? AppColors.validationRed : AppColors.emerald,
+                      color: showCancelled
+                          ? AppColors.validationRed
+                          : AppColors.emerald,
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
                     ),
@@ -171,14 +214,18 @@ class _WeekDayDetailsPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final RideHistoryTrip trip = trips[index];
                 final int startEpoch =
-                    trip.startedAtEpochMs ?? trip.pickedUpAtEpochMs ?? trip.acceptedAtEpochMs;
+                    trip.startedAtEpochMs ??
+                    trip.pickedUpAtEpochMs ??
+                    trip.acceptedAtEpochMs;
                 final int endEpoch = showCancelled
                     ? (trip.canceledAtEpochMs ?? startEpoch)
                     : (trip.completedAtEpochMs ?? startEpoch);
                 return TripCard(
                   date: _formatDateLabel(endEpoch),
-                  timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
-                  price: '₹${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
+                  timeRange:
+                      '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
+                  price:
+                      '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(2)}',
                   statusLine: showCancelled
                       ? 'Canceled by ${_prettyCanceledBy(trip.canceledBy)}'
                       : null,
@@ -204,7 +251,6 @@ String _prettyCanceledBy(String? raw) {
   return 'Driver';
 }
 
-
 class _PerformanceCard extends StatelessWidget {
   const _PerformanceCard({required this.values});
 
@@ -221,7 +267,11 @@ class _PerformanceCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: AppColors.hex10000000, blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+            color: AppColors.hex10000000,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -230,7 +280,11 @@ class _PerformanceCard extends StatelessWidget {
             children: const <Widget>[
               Text(
                 'Performance',
-                style: TextStyle(color: AppColors.neutral888, fontWeight: FontWeight.w700, fontSize: 12),
+                style: TextStyle(
+                  color: AppColors.neutral888,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
               ),
               Spacer(),
               _LegendDot(label: 'Weekday', color: AppColors.emerald),
@@ -246,7 +300,10 @@ class _PerformanceCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List<Widget>.generate(values.length, (index) {
                 final bool weekend = index == 5;
-                final double h = ((values[index] / maxValue) * 85).clamp(10, 85);
+                final double h = ((values[index] / maxValue) * 85).clamp(
+                  10,
+                  85,
+                );
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
@@ -288,11 +345,19 @@ class _LegendDot extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(color: AppColors.neutralAAA, fontWeight: FontWeight.w700, fontSize: 10),
+          style: const TextStyle(
+            color: AppColors.neutralAAA,
+            fontWeight: FontWeight.w700,
+            fontSize: 10,
+          ),
         ),
       ],
     );
@@ -300,7 +365,11 @@ class _LegendDot extends StatelessWidget {
 }
 
 class _WeekRange {
-  const _WeekRange({required this.start, required this.endExclusive, required this.label});
+  const _WeekRange({
+    required this.start,
+    required this.endExclusive,
+    required this.label,
+  });
   final DateTime start;
   final DateTime endExclusive;
   final String label;
@@ -312,7 +381,12 @@ class _WeekRange {
 }
 
 class _DaySummary {
-  const _DaySummary({required this.dayStart, required this.trips, required this.total, required this.title});
+  const _DaySummary({
+    required this.dayStart,
+    required this.trips,
+    required this.total,
+    required this.title,
+  });
   final DateTime dayStart;
   final List<RideHistoryTrip> trips;
   final double total;
@@ -322,19 +396,29 @@ class _DaySummary {
 List<_WeekRange> _buildWeekRanges() {
   final DateTime now = DateTime.now();
   final DateTime today = DateTime(now.year, now.month, now.day);
-  final DateTime currentWeekStart = today.subtract(Duration(days: today.weekday - DateTime.monday));
-  final DateTime previousWeekStart = currentWeekStart.subtract(const Duration(days: 7));
+  final DateTime currentWeekStart = today.subtract(
+    Duration(days: today.weekday - DateTime.monday),
+  );
+  final DateTime previousWeekStart = currentWeekStart.subtract(
+    const Duration(days: 7),
+  );
   final DateTime currentWeekEnd = currentWeekStart.add(const Duration(days: 7));
   return <_WeekRange>[
     _WeekRange(
       start: previousWeekStart,
       endExclusive: currentWeekStart,
-      label: _formatRangeLabel(previousWeekStart, currentWeekStart.subtract(const Duration(days: 1))),
+      label: _formatRangeLabel(
+        previousWeekStart,
+        currentWeekStart.subtract(const Duration(days: 1)),
+      ),
     ),
     _WeekRange(
       start: currentWeekStart,
       endExclusive: currentWeekEnd,
-      label: _formatRangeLabel(currentWeekStart, currentWeekEnd.subtract(const Duration(days: 1))),
+      label: _formatRangeLabel(
+        currentWeekStart,
+        currentWeekEnd.subtract(const Duration(days: 1)),
+      ),
     ),
   ];
 }
@@ -362,22 +446,31 @@ List<RideHistoryTrip> _filterTrips({
   required _WeekRange range,
   required bool cancelled,
 }) {
-  return trips.where((trip) {
-    final int epoch = cancelled ? (trip.canceledAtEpochMs ?? 0) : (trip.completedAtEpochMs ?? 0);
-    if (epoch <= 0) return false;
-    if (cancelled) {
-      if (!EarningsCalculator.isCanceledTrip(trip)) return false;
-    } else if (!EarningsCalculator.isCompletedTrip(trip)) {
-      return false;
-    }
-    return range.containsEpoch(epoch);
-  }).toList(growable: false);
+  return trips
+      .where((trip) {
+        final int epoch = cancelled
+            ? (trip.canceledAtEpochMs ?? 0)
+            : (trip.completedAtEpochMs ?? 0);
+        if (epoch <= 0) return false;
+        if (cancelled) {
+          if (!EarningsCalculator.isCanceledTrip(trip)) return false;
+        } else if (!EarningsCalculator.isCompletedTrip(trip)) {
+          return false;
+        }
+        return range.containsEpoch(epoch);
+      })
+      .toList(growable: false);
 }
 
-List<int> _buildPerformanceBars(List<RideHistoryTrip> trips, {required bool cancelled}) {
+List<int> _buildPerformanceBars(
+  List<RideHistoryTrip> trips, {
+  required bool cancelled,
+}) {
   final List<int> counts = List<int>.filled(6, 0);
   for (final trip in trips) {
-    final int epoch = cancelled ? (trip.canceledAtEpochMs ?? 0) : (trip.completedAtEpochMs ?? 0);
+    final int epoch = cancelled
+        ? (trip.canceledAtEpochMs ?? 0)
+        : (trip.completedAtEpochMs ?? 0);
     if (epoch <= 0) continue;
     final int weekday = DateTime.fromMillisecondsSinceEpoch(epoch).weekday;
     if (weekday >= 1 && weekday <= 6) counts[weekday - 1] += 1;
@@ -385,36 +478,53 @@ List<int> _buildPerformanceBars(List<RideHistoryTrip> trips, {required bool canc
   return counts;
 }
 
-List<_DaySummary> _buildDaySummary(List<RideHistoryTrip> trips, {required bool cancelled}) {
-  final Map<String, List<RideHistoryTrip>> grouped = <String, List<RideHistoryTrip>>{};
+List<_DaySummary> _buildDaySummary(
+  List<RideHistoryTrip> trips, {
+  required bool cancelled,
+}) {
+  final Map<String, List<RideHistoryTrip>> grouped =
+      <String, List<RideHistoryTrip>>{};
   for (final trip in trips) {
-    final int epoch = cancelled ? (trip.canceledAtEpochMs ?? 0) : (trip.completedAtEpochMs ?? 0);
+    final int epoch = cancelled
+        ? (trip.canceledAtEpochMs ?? 0)
+        : (trip.completedAtEpochMs ?? 0);
     if (epoch <= 0) continue;
     final DateTime dt = DateTime.fromMillisecondsSinceEpoch(epoch);
     final DateTime day = DateTime(dt.year, dt.month, dt.day);
-    grouped.putIfAbsent('${day.year}-${day.month}-${day.day}', () => <RideHistoryTrip>[]).add(trip);
+    grouped
+        .putIfAbsent(
+          '${day.year}-${day.month}-${day.day}',
+          () => <RideHistoryTrip>[],
+        )
+        .add(trip);
   }
-  final List<_DaySummary> result = grouped.values.map((list) {
-    list.sort((a, b) {
-      final int aEpoch = cancelled ? (a.canceledAtEpochMs ?? 0) : (a.completedAtEpochMs ?? 0);
-      final int bEpoch = cancelled ? (b.canceledAtEpochMs ?? 0) : (b.completedAtEpochMs ?? 0);
-      return bEpoch.compareTo(aEpoch);
-    });
-    final int epoch = cancelled ? (list.first.canceledAtEpochMs ?? 0) : (list.first.completedAtEpochMs ?? 0);
-    final DateTime day = DateTime.fromMillisecondsSinceEpoch(epoch);
-    final double total = list.fold<double>(0, (sum, t) => sum + EarningsCalculator.totalEarning(t));
-    return _DaySummary(
-      dayStart: DateTime(day.year, day.month, day.day),
-      trips: List<RideHistoryTrip>.from(list),
-      total: total,
-      title: _formatDateLabel(epoch),
-    );
-  }).toList(growable: false);
+  final List<_DaySummary> result = grouped.values
+      .map((list) {
+        list.sort((a, b) {
+          final int aEpoch = cancelled
+              ? (a.canceledAtEpochMs ?? 0)
+              : (a.completedAtEpochMs ?? 0);
+          final int bEpoch = cancelled
+              ? (b.canceledAtEpochMs ?? 0)
+              : (b.completedAtEpochMs ?? 0);
+          return bEpoch.compareTo(aEpoch);
+        });
+        final int epoch = cancelled
+            ? (list.first.canceledAtEpochMs ?? 0)
+            : (list.first.completedAtEpochMs ?? 0);
+        final DateTime day = DateTime.fromMillisecondsSinceEpoch(epoch);
+        final double total = list.fold<double>(
+          0,
+          (sum, t) => sum + EarningsCalculator.totalEarning(t),
+        );
+        return _DaySummary(
+          dayStart: DateTime(day.year, day.month, day.day),
+          trips: List<RideHistoryTrip>.from(list),
+          total: total,
+          title: _formatDateLabel(epoch),
+        );
+      })
+      .toList(growable: false);
   result.sort((a, b) => b.dayStart.compareTo(a.dayStart));
   return result;
 }
-
-
-
-
-

@@ -17,6 +17,7 @@ import 'package:goapp/features/home/presentation/cubit/available_orders_cubit.da
 import 'package:goapp/features/home/presentation/cubit/available_orders_state.dart';
 import 'package:goapp/features/home/presentation/pages/ride_arrived_page.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class AvailableOrdersPage extends StatefulWidget {
   const AvailableOrdersPage({super.key});
@@ -30,11 +31,10 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   static const LatLng _defaultDriverPoint = LatLng(13.0624, 80.2098);
   bool _playedInitialAlert = false;
   bool _acceptedOrder = false;
-  final AudioService _audioService = AudioService();
-  final VibrationService _vibrationService = const VibrationService();
-  final LocationPermissionGuard _locationGuard =
-      const LocationPermissionGuard();
-  final AvailableOrdersCubit _ordersCubit = AvailableOrdersCubit();
+  late final AudioService _audioService;
+  late final VibrationService _vibrationService;
+  late final LocationPermissionGuard _locationGuard;
+  late final AvailableOrdersCubit _ordersCubit;
   LocationIssue? _locationIssue;
   bool _ordersStarted = false;
   bool _isLocationDialogVisible = false;
@@ -127,6 +127,10 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   @override
   void initState() {
     super.initState();
+    _audioService = sl<AudioService>();
+    _vibrationService = sl<VibrationService>();
+    _locationGuard = sl<LocationPermissionGuard>();
+    _ordersCubit = sl<AvailableOrdersCubit>();
     unawaited(
       HomeTripResumeStore.setStage(HomeTripResumeStage.availableOrders),
     );
@@ -138,7 +142,7 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _ordersCubit.close();
-    unawaited(_audioService.dispose());
+    unawaited(_audioService.stop());
     super.dispose();
   }
 

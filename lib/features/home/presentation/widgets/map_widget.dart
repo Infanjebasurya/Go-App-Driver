@@ -8,6 +8,7 @@ import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/service/location_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/location_disabled_banner.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class MapWidgetController {
   Future<void> Function()? _recenterAction;
@@ -41,9 +42,8 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   static const LatLng _fallbackPoint = LatLng(12.9716, 77.5946);
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
-  final LocationPermissionGuard _locationGuard =
-      const LocationPermissionGuard();
-  final LocationService _locationService = const LocationService();
+  late final LocationPermissionGuard _locationGuard;
+  late final LocationService _locationService;
   AppMapController? _mapController;
   String? _mapStyle;
   LatLng _currentPoint = _fallbackPoint;
@@ -53,6 +53,8 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _locationGuard = sl<LocationPermissionGuard>();
+    _locationService = sl<LocationService>();
     WidgetsBinding.instance.addObserver(this);
     widget.controller?._recenterAction = _recenter;
     widget.controller?._notifyLocationIssue(_locationIssue);

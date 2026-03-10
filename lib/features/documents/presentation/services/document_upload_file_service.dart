@@ -1,11 +1,14 @@
 import 'dart:io';
 
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
+import 'package:goapp/core/service/path_provider_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class DocumentUploadFileService {
-  const DocumentUploadFileService();
+  DocumentUploadFileService({required PathProviderService pathProvider})
+      : _pathProvider = pathProvider;
+
+  final PathProviderService _pathProvider;
 
   static const int maxBytes = 5 * 1024 * 1024;
 
@@ -23,19 +26,18 @@ class DocumentUploadFileService {
         lower.endsWith('.webp');
   }
 
-  Future<int> resolveImageSizeBytes(XFile picked) async {
+  Future<int> resolveImageSizeBytes(PickedImage picked) async {
     final fileSize = await File(picked.path).length();
-    final pickedSize = await picked.length();
-    final bytes = await picked.readAsBytes();
-    return [fileSize, pickedSize, bytes.length].reduce((a, b) => a > b ? a : b);
+    final bytes = await File(picked.path).readAsBytes();
+    return [fileSize, bytes.length].reduce((a, b) => a > b ? a : b);
   }
 
-  Future<bool> ensurePermission(ImageSource source) async {
-    if (source == ImageSource.gallery && Platform.isAndroid) {
+  Future<bool> ensurePermission(AppImageSource source) async {
+    if (source == AppImageSource.gallery && Platform.isAndroid) {
       return true;
     }
 
-    final Permission permission = source == ImageSource.camera
+    final Permission permission = source == AppImageSource.camera
         ? Permission.camera
         : Permission.photos;
 
@@ -54,7 +56,7 @@ class DocumentUploadFileService {
       final sourceFile = File(sourcePath);
       if (!await sourceFile.exists()) return sourcePath;
 
-      final directory = await getApplicationDocumentsDirectory();
+      final directory = await _pathProvider.getApplicationDocumentsDirectory();
       final uploadsDir = Directory(
         '${directory.path}${Platform.pathSeparator}document_uploads',
       );
@@ -85,7 +87,7 @@ class DocumentUploadFileService {
 
   Future<void> clearManagedUploadsDirectory() async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
+      final directory = await _pathProvider.getApplicationDocumentsDirectory();
       final uploadsDir = Directory(
         '${directory.path}${Platform.pathSeparator}document_uploads',
       );
@@ -97,7 +99,7 @@ class DocumentUploadFileService {
 
   Future<bool> _isManagedUploadPath(String path) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
+      final directory = await _pathProvider.getApplicationDocumentsDirectory();
       final uploadsDir = Directory(
         '${directory.path}${Platform.pathSeparator}document_uploads',
       ).path;

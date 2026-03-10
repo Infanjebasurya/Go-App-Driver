@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'package:goapp/core/storage/driver_wallet_store.dart';
 import 'package:goapp/core/storage/ride_history_store.dart';
+import 'package:goapp/core/storage/shared_preferences_store.dart';
 import 'package:goapp/core/utils/earnings_calculator.dart';
 import 'package:goapp/features/earnings/domain/entities/earnings_snapshot.dart';
 import 'package:goapp/features/earnings/domain/entities/transaction_item.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EarningsWalletMockApi {
-  const EarningsWalletMockApi();
+  const EarningsWalletMockApi(this._prefs);
+
+  final SharedPreferencesStore _prefs;
 
   static const String _walletOpsKey = 'earnings_wallet_ops_v1';
 
@@ -115,8 +117,7 @@ class EarningsWalletMockApi {
   }
 
   Future<List<TransactionItem>> _loadWalletOperationTransactions() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? raw = prefs.getString(_walletOpsKey);
+    final String? raw = _prefs.getString(_walletOpsKey);
     final List<_WalletOperationRecord> mockRecords = _buildMockRechargeStatuses();
     if (raw == null || raw.isEmpty) {
       return mockRecords.map(_walletRecordToTransaction).toList(growable: false);
@@ -179,18 +180,16 @@ class EarningsWalletMockApi {
   }
 
   Future<void> _appendWalletOperation(_WalletOperationRecord record) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final List<_WalletOperationRecord> current = (await _loadWalletOpsRaw()).toList(growable: true);
     current.insert(0, record);
     final String encoded = jsonEncode(
       current.map((item) => item.toJson()).toList(growable: false),
     );
-    await prefs.setString(_walletOpsKey, encoded);
+    await _prefs.setString(_walletOpsKey, encoded);
   }
 
   Future<List<_WalletOperationRecord>> _loadWalletOpsRaw() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? raw = prefs.getString(_walletOpsKey);
+    final String? raw = _prefs.getString(_walletOpsKey);
     if (raw == null || raw.isEmpty) return <_WalletOperationRecord>[];
     try {
       final dynamic decoded = jsonDecode(raw);

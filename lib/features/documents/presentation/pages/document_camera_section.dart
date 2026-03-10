@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
 
 import '../cubit/document_upload_cubit.dart';
@@ -32,7 +32,7 @@ void showProfileImageSourceSheet(BuildContext context) {
               onTap: () {
                 Navigator.of(ctx).pop();
                 context.read<DocumentUploadCubit>().captureProfilePhoto(
-                  source: ImageSource.camera,
+                  source: AppImageSource.camera,
                 );
               },
             ),
@@ -42,7 +42,7 @@ void showProfileImageSourceSheet(BuildContext context) {
               onTap: () {
                 Navigator.of(ctx).pop();
                 context.read<DocumentUploadCubit>().captureProfilePhoto(
-                  source: ImageSource.gallery,
+                  source: AppImageSource.gallery,
                 );
               },
             ),
@@ -56,7 +56,7 @@ void showProfileImageSourceSheet(BuildContext context) {
 
 void showDocumentImageSourceSheet(
   BuildContext context, {
-  required Future<void> Function(ImageSource source) onPick,
+  required Future<void> Function(AppImageSource source) onPick,
   required Future<void> Function() onPickDocument,
 }) {
   showModalBottomSheet<void>(
@@ -84,7 +84,7 @@ void showDocumentImageSourceSheet(
               title: const Text('Camera'),
               onTap: () {
                 Navigator.of(ctx).pop();
-                onPick(ImageSource.camera);
+                onPick(AppImageSource.camera);
               },
             ),
             ListTile(
@@ -92,7 +92,7 @@ void showDocumentImageSourceSheet(
               title: const Text('Gallery'),
               onTap: () {
                 Navigator.of(ctx).pop();
-                onPick(ImageSource.gallery);
+                onPick(AppImageSource.gallery);
               },
             ),
             ListTile(
@@ -138,7 +138,7 @@ void showBankDocumentSourceSheet(BuildContext context) {
               onTap: () {
                 Navigator.of(ctx).pop();
                 context.read<DocumentUploadCubit>().captureBankDocument(
-                  source: ImageSource.camera,
+                  source: AppImageSource.camera,
                 );
               },
             ),
@@ -148,7 +148,7 @@ void showBankDocumentSourceSheet(BuildContext context) {
               onTap: () {
                 Navigator.of(ctx).pop();
                 context.read<DocumentUploadCubit>().captureBankDocument(
-                  source: ImageSource.gallery,
+                  source: AppImageSource.gallery,
                 );
               },
             ),

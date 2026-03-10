@@ -8,6 +8,7 @@ import 'package:goapp/features/demand_planner/presentation/cubit/demand_planner_
 import 'package:goapp/features/demand_planner/presentation/model/peak_hour_model.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class DemandPlannerScreen extends StatelessWidget {
   const DemandPlannerScreen({super.key});
@@ -15,7 +16,7 @@ class DemandPlannerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DemandPlannerCubit(),
+      create: (_) => sl<DemandPlannerCubit>(),
       child: const _DemandPlannerView(),
     );
   }

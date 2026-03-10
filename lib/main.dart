@@ -9,25 +9,22 @@ import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
-import 'package:goapp/injection.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/auth/domain/usecases/login_usecase.dart';
-import 'features/auth/domain/usecases/request_otp_usecase.dart';
 import 'features/auth/presentation/theme/app_theme.dart';
-import 'app_entry_gate.dart';
+import 'core/app/app_entry_gate.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDependencies();
   await LocalNotificationService.initialize();
   await TripBackgroundService.initialize();
   await TextFieldStore.init();
   await DocumentProgressStore.init();
   await UserCacheStore.init();
-  await DocumentProgressStore.init();
-  await initializeDependencies();
 
   runApp(
     DevicePreview(
@@ -46,7 +43,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(sl<LoginUseCase>(), sl<RequestOtpUseCase>()),
+          create: (_) => sl<AuthBloc>(),
         ),
         BlocProvider<NetworkStatusCubit>(
           create: (_) => sl<NetworkStatusCubit>(),

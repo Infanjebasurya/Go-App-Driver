@@ -7,6 +7,7 @@ import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import '../../domain/entities/referral.dart';
 import '../cubit/referral_cubit.dart';
@@ -21,7 +22,7 @@ class ReferEarnScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ReferralCubit(),
+      create: (_) => sl<ReferralCubit>(),
       child: const _ReferEarnView(),
     );
   }
@@ -340,7 +341,7 @@ class ReferralPendingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ReferralCubit(),
+      create: (_) => sl<ReferralCubit>(),
       child: BlocBuilder<ReferralCubit, ReferralState>(
         builder: (context, state) {
           if (state is! ReferralLoaded) {
@@ -398,7 +399,7 @@ class ReferralCompletedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ReferralCubit(),
+      create: (_) => sl<ReferralCubit>(),
       child: BlocBuilder<ReferralCubit, ReferralState>(
         builder: (context, state) {
           if (state is! ReferralLoaded) {

@@ -14,6 +14,7 @@ import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/pages
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class CitySelectionScreen extends StatelessWidget {
   const CitySelectionScreen({super.key});
@@ -21,7 +22,7 @@ class CitySelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CitySelectionCubit(),
+      create: (_) => sl<CitySelectionCubit>(),
       child: const _CitySelectionView(),
     );
   }

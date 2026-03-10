@@ -9,6 +9,7 @@ import 'package:goapp/features/help_support/presentation/pages/safety.dart';
 import 'package:goapp/features/help_support/presentation/pages/tickets_screen.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -23,7 +24,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HelpCubit(),
+      create: (_) => sl<HelpCubit>(),
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
@@ -62,7 +63,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => BlocProvider(
-                          create: (_) => ComplaintCubit(),
+                          create: (_) => sl<ComplaintCubit>(),
                           child: const ComplaintScreen(),
                         ),
                       ),

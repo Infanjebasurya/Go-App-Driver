@@ -4,16 +4,14 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/utils/wallet_display.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
-import 'package:goapp/features/earnings/data/repositories/earnings_repository_impl.dart';
 import 'package:goapp/features/earnings/domain/entities/transaction_item.dart';
-import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
-import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_state.dart';
 import 'package:goapp/features/earnings/presentation/pages/recharge_wallet_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/wallet_transactions_page.dart';
 import 'package:goapp/features/earnings/presentation/pages/withdraw_page.dart';
 import 'package:goapp/features/earnings/presentation/widgets/wallet_common_widgets.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class WalletPage extends StatelessWidget {
   const WalletPage({super.key});
@@ -33,12 +31,8 @@ class WalletPage extends StatelessWidget {
       );
     }
 
-    final repository = const EarningsRepositoryImpl();
     return BlocProvider<EarningsCubit>(
-      create: (_) => EarningsCubit(
-        getEarningsSnapshot: GetEarningsSnapshotUseCase(repository),
-        getWalletTransactions: GetWalletTransactionsUseCase(repository),
-      )..load(),
+      create: (_) => sl<EarningsCubit>()..load(),
       child: const _WalletView(),
     );
   }

@@ -74,18 +74,13 @@ class BikeTaxiOnboardingPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 54),
-                      child: Text(
-                        'The registration process configures the drive\nmemory for safe and optimal operation.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          height: 1.55,
-                          color: OnboardingUiColors.textMuted,
-                        ),
-                      ),
+                    const OnboardingSubtitle(
+                      text:
+                          'The registration process configures the drive\nmemory for safe and optimal operation.',
+                      fontSize: 15,
+                      maxLines: 2,
+                      maxWidth: 340,
+                      horizontalPadding: 24,
                     ),
                     const SizedBox(height: 22),
                     const OnboardingPageDots(activeIndex: 0, activeWidth: 28),

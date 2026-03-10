@@ -70,7 +70,7 @@ class WithdrawalSuccessPage extends StatelessWidget {
                   ),
                   children: <InlineSpan>[
                     TextSpan(
-                      text: '₹$amount',
+                      text: '\u20B9$amount',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.black,

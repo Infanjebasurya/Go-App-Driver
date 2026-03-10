@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_preferences_store.dart';
 
 class OnlineHoursStore {
   OnlineHoursStore._();
@@ -20,7 +20,7 @@ class OnlineHoursStore {
   }
 
   static Future<int> loadTodayMinutes() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final String today = _todayKey();
     final String? storedDate = prefs.getString(_dateKey);
     if (storedDate != today) {
@@ -35,7 +35,7 @@ class OnlineHoursStore {
   }
 
   static Future<void> saveTodayMinutes(int minutes) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final int safeMinutes = minutes < 0 ? 0 : minutes;
     await prefs.setString(_dateKey, _todayKey());
     await prefs.setInt(_minutesKey, safeMinutes);
@@ -49,7 +49,7 @@ class OnlineHoursStore {
 
   static Future<void> saveMinutesForDate(String dateKey, int minutes) async {
     final int safeMinutes = minutes < 0 ? 0 : minutes;
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final Map<String, int> history = await loadDailyMinutesHistory();
     history[dateKey] = safeMinutes;
 
@@ -64,7 +64,7 @@ class OnlineHoursStore {
   }
 
   static Future<Map<String, int>> loadDailyMinutesHistory() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final String? raw = prefs.getString(_historyKey);
     if (raw == null || raw.isEmpty) return <String, int>{};
     final Object? decoded = jsonDecode(raw);
@@ -84,19 +84,19 @@ class OnlineHoursStore {
   }
 
   static Future<int?> loadActiveSessionStartEpochMs() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     final int? value = prefs.getInt(_activeSessionStartMsKey);
     if (value == null || value <= 0) return null;
     return value;
   }
 
   static Future<void> saveActiveSessionStartEpochMs(int epochMs) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.setInt(_activeSessionStartMsKey, epochMs);
   }
 
   static Future<void> clearActiveSessionStartEpochMs() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = SharedPreferencesStore.global;
     await prefs.remove(_activeSessionStartMsKey);
   }
 }

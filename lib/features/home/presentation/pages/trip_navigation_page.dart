@@ -25,6 +25,7 @@ import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dar
 import 'package:goapp/features/notifications/presentation/model/notifications_feed.dart';
 import 'package:goapp/features/ride_complete/presentation/pages/ride_completed_screen.dart';
 import 'package:goapp/features/sos/presentation/widgets/sos_bottom_sheet.dart';
+import 'package:goapp/core/di/injection.dart';
 
 part 'trip_navigation_page_sections.dart';
 
@@ -42,7 +43,7 @@ class TripNavigationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TripNavigationCubit>(
-      create: (_) => TripNavigationCubit(),
+      create: (_) => sl<TripNavigationCubit>(),
       child: _TripNavigationView(
         initialRoutePath: initialRoutePath,
         dropPoint: dropPoint,
@@ -69,10 +70,8 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   static const int _dropProgressNotificationId = 3002;
 
   final MapStyleLoader _styleLoader = const MapStyleLoader();
-  final LocationPermissionGuard _locationGuard =
-      const LocationPermissionGuard();
-  final DirectionsRouteService _directionsRouteService =
-      DirectionsRouteService();
+  late final LocationPermissionGuard _locationGuard;
+  late final DirectionsRouteService _directionsRouteService;
   late List<LatLng> _mapRoutePath = _buildCurvedRoutePath(
     _driverPoint,
     widget.dropPoint,
@@ -96,6 +95,8 @@ class _TripNavigationViewState extends State<_TripNavigationView>
   @override
   void initState() {
     super.initState();
+    _locationGuard = sl<LocationPermissionGuard>();
+    _directionsRouteService = sl<DirectionsRouteService>();
     unawaited(HomeTripResumeStore.setStage(HomeTripResumeStage.tripNavigation));
     if (Env.mockApi) {
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());

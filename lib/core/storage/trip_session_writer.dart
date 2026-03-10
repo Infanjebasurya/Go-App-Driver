@@ -150,18 +150,18 @@ Future<void> _savePassengerRatingImpl({
 }
 
 Future<void> _endSessionImpl() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = SharedPreferencesStore.global;
   await prefs.remove(TripSessionStore._activeKey);
 }
 
 Future<void> _clearAllImpl() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = SharedPreferencesStore.global;
   await prefs.remove(TripSessionStore._activeKey);
   await prefs.remove(TripSessionStore._archiveKey);
 }
 
 Future<void> _saveActiveImpl(TripSession session) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = SharedPreferencesStore.global;
   await prefs.setString(
     TripSessionStore._activeKey,
     jsonEncode(session.toJson()),
@@ -169,7 +169,7 @@ Future<void> _saveActiveImpl(TripSession session) async {
 }
 
 Future<void> _archiveSessionImpl(TripSession session) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final prefs = SharedPreferencesStore.global;
   final List<TripSession> archive = (await TripSessionStore.loadArchive()).toList();
   final int existing = archive.indexWhere((TripSession s) => s.id == session.id);
   if (existing == -1) {

@@ -9,6 +9,7 @@ import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import '../cubit/verification_cubit.dart';
 import '../cubit/verification_state.dart';
@@ -23,7 +24,7 @@ class VerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => VerificationCubit(),
+      create: (_) => sl<VerificationCubit>(),
       child: const _VerificationView(),
     );
   }
@@ -41,9 +42,7 @@ class _VerificationViewState extends State<_VerificationView> {
   @override
   void initState() {
     super.initState();
-    unawaited(
-      RegistrationProgressStore.setStep(RegistrationStep.verification),
-    );
+    unawaited(RegistrationProgressStore.setStep(RegistrationStep.verification));
   }
 
   @override
@@ -126,10 +125,11 @@ class _VerificationViewState extends State<_VerificationView> {
                         ),
                         const SizedBox(height: 8),
                         ...state.documents.map(
-                              (doc) => DocumentCard(
+                          (doc) => DocumentCard(
                             key: ValueKey(doc.type),
                             document: doc,
-                            onTap: () => _handleDocumentTap(context, doc, state),
+                            onTap: () =>
+                                _handleDocumentTap(context, doc, state),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -147,10 +147,10 @@ class _VerificationViewState extends State<_VerificationView> {
   }
 
   void _handleDocumentTap(
-      BuildContext context,
-      Document doc,
-      VerificationState state,
-      ) {
+    BuildContext context,
+    Document doc,
+    VerificationState state,
+  ) {
     final stepIndex = _stepIndexForDoc(doc.type);
     if (stepIndex != null) {
       unawaited(
@@ -161,14 +161,14 @@ class _VerificationViewState extends State<_VerificationView> {
       );
       Navigator.of(context)
           .push(
-        MaterialPageRoute(
-          builder: (_) => DocumentUploadScreen(initialStepIndex: stepIndex),
-        ),
-      )
+            MaterialPageRoute(
+              builder: (_) => DocumentUploadScreen(initialStepIndex: stepIndex),
+            ),
+          )
           .then((_) {
-        if (!context.mounted) return;
-        context.read<VerificationCubit>().syncFromStore();
-      });
+            if (!context.mounted) return;
+            context.read<VerificationCubit>().syncFromStore();
+          });
       return;
     }
   }
@@ -201,24 +201,19 @@ class _VerificationViewState extends State<_VerificationView> {
     );
     Navigator.of(context)
         .push(
-      MaterialPageRoute(
-        builder: (_) => const DocumentUploadScreen(
-          initialStepIndex: 0,
-        ),
-      ),
-    )
+          MaterialPageRoute(
+            builder: (_) => const DocumentUploadScreen(initialStepIndex: 0),
+          ),
+        )
         .then((_) {
-      if (!context.mounted) return;
-      context.read<VerificationCubit>().syncFromStore();
-    });
+          if (!context.mounted) return;
+          context.read<VerificationCubit>().syncFromStore();
+        });
   }
 }
 
 class _ProfilePictureCard extends StatelessWidget {
-  const _ProfilePictureCard({
-    required this.isCompleted,
-    required this.onTap,
-  });
+  const _ProfilePictureCard({required this.isCompleted, required this.onTap});
 
   final bool isCompleted;
   final VoidCallback onTap;
@@ -257,8 +252,9 @@ class _ProfilePictureCard extends StatelessWidget {
                 height: 42,
                 child: Icon(
                   Icons.person_rounded,
-                  color:
-                      isCompleted ? AppColors.emerald : AppColors.hexFF8FA0B0,
+                  color: isCompleted
+                      ? AppColors.emerald
+                      : AppColors.hexFF8FA0B0,
                   size: 22,
                 ),
               ),
@@ -276,7 +272,10 @@ class _ProfilePictureCard extends StatelessWidget {
               ),
               if (isCompleted)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.emerald.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -284,7 +283,11 @@ class _ProfilePictureCard extends StatelessWidget {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.check_circle, size: 13, color: AppColors.emerald),
+                      Icon(
+                        Icons.check_circle,
+                        size: 13,
+                        color: AppColors.emerald,
+                      ),
                       SizedBox(width: 4),
                       Text(
                         'COMPLETED',
@@ -300,7 +303,10 @@ class _ProfilePictureCard extends StatelessWidget {
                 )
               else
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.coolwhite,
                     borderRadius: BorderRadius.circular(20),
@@ -337,9 +343,9 @@ class _SubmitSection extends StatelessWidget {
         12,
         16,
         math.max(
-          MediaQuery.viewInsetsOf(context).bottom,
-          MediaQuery.of(context).padding.bottom,
-        ) +
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
             16,
       ),
       decoration: const BoxDecoration(
@@ -369,21 +375,23 @@ class _SubmitSection extends StatelessWidget {
                   : () => context.read<VerificationCubit>().submitForReview(),
               child: state.isSubmitting
                   ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                ),
-              )
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.white,
+                        ),
+                      ),
+                    )
                   : const Text(
-                'SUBMIT FOR REVIEW',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.0,
-                ),
-              ),
+                      'SUBMIT FOR REVIEW',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 10),
@@ -412,8 +420,3 @@ class _SubmitSection extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

@@ -7,6 +7,7 @@ import 'package:goapp/features/rate_app/presentation/cubit/rate_app_state.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/core/di/injection.dart';
 
 class RateAppScreen extends StatelessWidget {
   const RateAppScreen({super.key});
@@ -14,7 +15,7 @@ class RateAppScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => RateAppCubit(),
+      create: (_) => sl<RateAppCubit>(),
       child: const _RateAppView(),
     );
   }

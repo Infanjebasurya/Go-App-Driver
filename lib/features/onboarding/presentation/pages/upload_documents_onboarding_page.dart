@@ -29,7 +29,6 @@ class CabAutoOnboardingPage extends StatelessWidget {
               final tight = height < 640;
               final topPad = tight ? 8.0 : 12.0;
               final subtitleSize = tight ? 12.5 : (compact ? 13.0 : 14.0);
-              final subtitlePad = tight ? 34.0 : 40.0;
               final sectionHeight = height * (8 / 13);
               final imageWidthByScreen =
                   screenWidth * (tight ? 0.72 : (compact ? 0.78 : 0.85));
@@ -97,20 +96,13 @@ class CabAutoOnboardingPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: spaceMid),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: subtitlePad,
-                          ),
-                          child: Text(
-                            'Uploaded documents are securely stored and\nreviewed to verify driver eligibility.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: subtitleSize,
-                              height: 1.5,
-                              color: OnboardingUiColors.textMuted,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                        OnboardingSubtitle(
+                          text:
+                              'Uploaded documents are securely stored and\nreviewed to verify driver eligibility.',
+                          fontSize: subtitleSize,
+                          maxLines: 2,
+                          maxWidth: 340,
+                          horizontalPadding: 24,
                         ),
                         SizedBox(height: spaceDots),
                         const OnboardingPageDots(activeIndex: 1),

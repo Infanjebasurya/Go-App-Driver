@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_autofill/sms_autofill.dart';
+import 'package:goapp/core/service/sms_autofill_service.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
 import 'package:goapp/core/storage/user_cache_model.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/home/presentation/cubit/driver_status_cubit.dart';
 import 'package:goapp/features/home/presentation/pages/home_page.dart';
+import 'package:goapp/core/di/injection.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -34,7 +35,7 @@ class OtpPage extends StatefulWidget {
   State<OtpPage> createState() => _OtpPageState();
 }
 
-class _OtpPageState extends State<OtpPage> with CodeAutoFill {
+class _OtpPageState extends SmsAutoFillState<OtpPage> {
   static const int _maxOtpLength = 4;
 
   bool _successHandled = false;
@@ -60,16 +61,12 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     }
     _otpCubit.updateCode('');
     _syncBoxesFromCode('');
-    if (!const bool.fromEnvironment('FLUTTER_TEST')) {
-      listenForCode();
-    }
+    startSmsCodeListener();
   }
 
   @override
   void dispose() {
-    if (!const bool.fromEnvironment('FLUTTER_TEST')) {
-      cancel();
-    }
+    stopSmsCodeListener();
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -122,7 +119,7 @@ class _OtpPageState extends State<OtpPage> with CodeAutoFill {
     navigator.pushReplacement(MaterialPageRoute(builder: (_) {
       if (hasCompletedProfile) {
         return BlocProvider<DriverCubit>(
-          create: (_) => DriverCubit(),
+          create: (_) => sl<DriverCubit>(),
           child: const HomeScreen(),
         );
       }

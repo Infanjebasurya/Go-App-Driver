@@ -9,6 +9,7 @@ import 'package:goapp/core/utils/env.dart';
 import 'package:goapp/features/home/presentation/pages/available_orders_page.dart';
 import 'package:goapp/features/home/presentation/widgets/home_no_device_back.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/di/injection.dart';
 
 import '../cubit/driver_status_cubit.dart';
 import '../cubit/driver_status_state.dart';
@@ -29,14 +30,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _lastNavigationToken = 0;
   int _lastShownBlockEventId = -1;
   int _permissionDeniedAttempts = 0;
-  final LocationPermissionGuard _locationGuard =
-      const LocationPermissionGuard();
+  late final LocationPermissionGuard _locationGuard;
   Timer? _locationSyncTimer;
   bool _isLocationDialogVisible = false;
 
   @override
   void initState() {
     super.initState();
+    _locationGuard = sl<LocationPermissionGuard>();
     WidgetsBinding.instance.addObserver(this);
     unawaited(context.read<DriverCubit>().refreshDashboardMetrics());
     // B-13 FIX: Only clear the trip store when no trip is active.
