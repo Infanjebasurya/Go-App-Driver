@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/background/trip_background_service.dart';
-import 'package:goapp/core/network/global_network_dialog_overlay.dart';
-import 'package:goapp/core/network/network_status_cubit.dart';
+import 'package:goapp/features/network_check/presentation/bloc/internet_bloc.dart';
+import 'package:goapp/features/network_check/presentation/bloc/reconnect_overlay_cubit.dart';
+import 'package:goapp/features/network_check/presentation/widgets/global_network_dialog_overlay.dart';
+import 'package:goapp/features/network_check/presentation/widgets/network_reconnect_loader_overlay.dart';
 import 'package:goapp/core/notifications/local_notification_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
@@ -31,7 +33,7 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: kDebugMode,
+      enabled: !kDebugMode,
       builder: (context) => const MyApp(),
     ),
   );
@@ -48,8 +50,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (_) => AuthBloc(sl<LoginUseCase>(), sl<RequestOtpUseCase>()),
         ),
-        BlocProvider<NetworkStatusCubit>(
-          create: (_) => sl<NetworkStatusCubit>(),
+        BlocProvider<InternetBloc>(create: (_) => sl<InternetBloc>()),
+        BlocProvider<ReconnectOverlayCubit>(
+          create: (_) => sl<ReconnectOverlayCubit>(),
         ),
       ],
       child: MaterialApp(
@@ -64,6 +67,7 @@ class MyApp extends StatelessWidget {
             children: <Widget>[
               previewChild,
               const GlobalNetworkDialogOverlay(),
+              const NetworkReconnectLoaderOverlay(),
             ],
           );
         },
