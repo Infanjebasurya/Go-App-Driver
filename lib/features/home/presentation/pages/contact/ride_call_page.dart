@@ -32,10 +32,10 @@ class RideCallPage extends StatelessWidget {
                     decoration: const BoxDecoration(shape: BoxShape.circle),
                     child: ClipOval(
                       child: profilePath != null
-                          ? Image.file(File(profilePath), fit: BoxFit.cover)
+                          ? Image.file(File(profilePath), fit: BoxFit.contain)
                           : Image.asset(
                               'assets/image/profile.png',
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                     ),
                   ),

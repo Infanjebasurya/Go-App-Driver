@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/features/help_support/presentation/pages/complaint_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/help_support_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/tickets_screen.dart';
 
+import 'support/shared_preferences_mock.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    setMockSharedPreferences();
+    await sl.reset();
+    await initializeDependencies();
+  });
 
   Widget buildApp() => const MaterialApp(home: HelpSupportScreen());
 

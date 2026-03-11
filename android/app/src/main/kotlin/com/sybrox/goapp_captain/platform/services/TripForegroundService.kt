@@ -1,4 +1,4 @@
-package com.sybrox.goapp_captain
+package com.sybrox.goapp_captain.platform.services
 
 import android.app.Notification
 import android.app.NotificationChannel

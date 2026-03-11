@@ -15,6 +15,8 @@ import '../cubit/referral_state.dart';
 import '../widget/key_star_badge.dart';
 import 'refer_earn_screen/referral_components.dart';
 import 'refer_earn_screen/referral_history_list.dart';
+import 'invite_friends_screen.dart';
+import 'total_earning_screen.dart';
 
 class ReferEarnScreen extends StatelessWidget {
   const ReferEarnScreen({super.key});
@@ -85,7 +87,10 @@ class _MainReferScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   KeyWithStarBadge(size: 260),
 
-                  _HeroCard(totalEarnings: state.totalEarnings),
+                  _HeroCard(
+                    totalEarnings: state.totalEarnings,
+                    onChevronTap: () => _openTotalEarnings(context),
+                  ),
                   const SizedBox(height: 22),
 
                   const _SectionLabel(text: 'ACTIVE CAMPAIGNS'),
@@ -113,7 +118,28 @@ class _MainReferScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: _InviteButton(
-        onTap: () => _openCampaignDetail(context, state.campaigns.first),
+        onTap: () => _openInviteFriends(context),
+      ),
+    );
+  }
+
+  void _openInviteFriends(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => InviteFriendsScreen(referralCode: state.referralCode),
+      ),
+    );
+  }
+
+  void _openTotalEarnings(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<ReferralCubit>(),
+          child: const TotalEarningScreen(),
+        ),
       ),
     );
   }
@@ -466,7 +492,8 @@ PreferredSizeWidget _buildAppBar(BuildContext context, String title) {
 
 class _HeroCard extends StatelessWidget {
   final int totalEarnings;
-  const _HeroCard({required this.totalEarnings});
+  final VoidCallback onChevronTap;
+  const _HeroCard({required this.totalEarnings, required this.onChevronTap});
 
   @override
   Widget build(BuildContext context) {
@@ -526,7 +553,10 @@ class _HeroCard extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              const Icon(Icons.chevron_right, color: AppColors.gray),
+              IconButton(
+                onPressed: onChevronTap,
+                icon: const Icon(Icons.chevron_right, color: AppColors.gray),
+              ),
             ],
           ),
         ],

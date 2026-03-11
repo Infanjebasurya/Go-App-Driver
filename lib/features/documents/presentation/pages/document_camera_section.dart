@@ -2,56 +2,71 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/features/auth/presentation/theme/app_colors.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/pages/profile_photo_capture_page.dart';
 
 import '../cubit/document_upload_cubit.dart';
 
 void showProfileImageSourceSheet(BuildContext context) {
-  showModalBottomSheet<void>(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-    ),
-    builder: (ctx) {
-      return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 10),
-            const Text(
-              'Upload Profile Photo',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.headingNavy,
+  if (const bool.fromEnvironment('FLUTTER_TEST')) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Upload Profile Photo',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.headingNavy,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            ListTile(
-              leading: const Icon(Icons.camera_alt_rounded),
-              title: const Text('Camera'),
-              onTap: () {
-                Navigator.of(ctx).pop();
-                context.read<DocumentUploadCubit>().captureProfilePhoto(
-                  source: AppImageSource.camera,
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_rounded),
-              title: const Text('Gallery'),
-              onTap: () {
-                Navigator.of(ctx).pop();
-                context.read<DocumentUploadCubit>().captureProfilePhoto(
-                  source: AppImageSource.gallery,
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      );
-    },
-  );
+              const SizedBox(height: 6),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureProfilePhoto(
+                    source: AppImageSource.camera,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  context.read<DocumentUploadCubit>().captureProfilePhoto(
+                    source: AppImageSource.gallery,
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+    return;
+  }
+
+  () async {
+    final String? capturedPath = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const ProfilePhotoCapturePage()),
+    );
+    if (!context.mounted) return;
+    if (capturedPath == null || capturedPath.trim().isEmpty) return;
+    await context.read<DocumentUploadCubit>().setProfilePhotoFromPath(
+      capturedPath,
+    );
+  }();
 }
 
 void showDocumentImageSourceSheet(

@@ -167,7 +167,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
               child: _avatarProvider != null
                   ? Image(
                       image: _avatarProvider!,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                       filterQuality: FilterQuality.low,
                       gaplessPlayback: true,
                     )
