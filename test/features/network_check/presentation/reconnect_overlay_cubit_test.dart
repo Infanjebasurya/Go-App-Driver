@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/features/network_check/domain/repositories/internet_repository.dart';
@@ -12,7 +12,7 @@ class _FakeInternetRepository implements InternetRepository {
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
   bool _connected;
 
-  void emit(bool connected) {
+  void setConnected(bool connected) {
     _connected = connected;
     _controller.add(connected);
   }
@@ -39,7 +39,7 @@ void main() {
     // Wait for initial disconnected propagation.
     await Future<void>.delayed(const Duration(milliseconds: 10));
 
-    repo.emit(true);
+    repo.setConnected(true);
     await Future<void>.delayed(const Duration(milliseconds: 10));
     expect(reconnectCubit.state.visible, true);
 
@@ -57,7 +57,7 @@ void main() {
     final reconnectCubit = ReconnectOverlayCubit(internetBloc);
 
     expect(reconnectCubit.state.visible, false);
-    repo.emit(true);
+    repo.setConnected(true);
     await Future<void>.delayed(const Duration(milliseconds: 10));
     expect(reconnectCubit.state.visible, false);
 
@@ -73,11 +73,11 @@ void main() {
 
     await Future<void>.delayed(const Duration(milliseconds: 10));
 
-    repo.emit(true);
+    repo.setConnected(true);
     await Future<void>.delayed(const Duration(milliseconds: 10));
     expect(reconnectCubit.state.visible, true);
 
-    repo.emit(false);
+    repo.setConnected(false);
     await Future<void>.delayed(const Duration(milliseconds: 10));
     expect(reconnectCubit.state.visible, false);
 

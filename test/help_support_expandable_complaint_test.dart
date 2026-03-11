@@ -1,11 +1,34 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:goapp/core/di/injection.dart';
+import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.dart';
+import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
 import 'package:goapp/features/help_support/presentation/pages/complaint_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/help_support_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/tickets_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    if (sl.isRegistered<HelpCubit>()) {
+      sl.unregister<HelpCubit>();
+    }
+    if (sl.isRegistered<ComplaintCubit>()) {
+      sl.unregister<ComplaintCubit>();
+    }
+    sl.registerFactory<HelpCubit>(() => HelpCubit());
+    sl.registerFactory<ComplaintCubit>(() => ComplaintCubit());
+  });
+
+  tearDown(() {
+    if (sl.isRegistered<HelpCubit>()) {
+      sl.unregister<HelpCubit>();
+    }
+    if (sl.isRegistered<ComplaintCubit>()) {
+      sl.unregister<ComplaintCubit>();
+    }
+  });
 
   Widget buildApp() => const MaterialApp(home: HelpSupportScreen());
 
@@ -43,4 +66,3 @@ void main() {
     expect(find.text('Submit Complaint'), findsOneWidget);
   });
 }
-
