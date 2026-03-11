@@ -662,8 +662,7 @@ class MainActivity : FlutterActivity(), EventChannel.StreamHandler {
         connectivityManager = manager
         val network = manager.activeNetwork ?: return false
         val capabilities = manager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun stopAudio(release: Boolean = false) {
@@ -777,17 +776,19 @@ class MainActivity : FlutterActivity(), EventChannel.StreamHandler {
         networkEventSink = events
         val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager = manager
+
         networkCallback?.let { manager.unregisterNetworkCallback(it) }
+
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 locationHandler.post {
-                    networkEventSink?.success(isConnected())
+                    networkEventSink?.success(true)
                 }
             }
 
             override fun onLost(network: Network) {
                 locationHandler.post {
-                    networkEventSink?.success(isConnected())
+                    networkEventSink?.success(false)
                 }
             }
 
@@ -796,15 +797,27 @@ class MainActivity : FlutterActivity(), EventChannel.StreamHandler {
                 networkCapabilities: NetworkCapabilities
             ) {
                 locationHandler.post {
-                    networkEventSink?.success(isConnected())
+                    val hasInternet =
+                        networkCapabilities.hasCapability(
+                            NetworkCapabilities.NET_CAPABILITY_INTERNET
+                        )
+
+                    networkEventSink?.success(hasInternet)
                 }
             }
         }
+
         networkCallback = callback
-        val request = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
-        manager.registerNetworkCallback(request, callback)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            manager.registerDefaultNetworkCallback(callback)
+        } else {
+            val request = NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build()
+            manager.registerNetworkCallback(request, callback)
+        }
+
         locationHandler.post {
             events?.success(isConnected())
         }

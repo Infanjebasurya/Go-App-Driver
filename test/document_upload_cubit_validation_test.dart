@@ -12,6 +12,7 @@ import 'package:goapp/features/document_verify/presentation/model/document_progr
 import 'package:goapp/features/documents/presentation/cubit/document_upload_cubit.dart';
 import 'package:goapp/features/documents/presentation/services/document_upload_file_service.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
+import 'package:goapp/core/di/injection.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,22 @@ void main() {
   late String fakeImagePath;
 
   setUpAll(() async {
+    if (!sl.isRegistered<DocumentUploadCubit>()) {
+      sl.registerFactoryParam<DocumentUploadCubit, int, void>((
+        initialStepIndex,
+        _,
+      ) {
+        return DocumentUploadCubit(
+          initialStepIndex: initialStepIndex,
+          imagePickerService: ImagePickerService(),
+          filePickerService: const FilePickerService(),
+          fileService: DocumentUploadFileService(
+            pathProvider: PathProviderService(),
+          ),
+        );
+      });
+    }
+
     final tempDir = await Directory.systemTemp.createTemp('goapp_test_');
     final fakeFile = File('${tempDir.path}\\fake_doc.jpg');
     await fakeFile.writeAsBytes(List<int>.filled(1024, 1));
@@ -55,6 +72,10 @@ void main() {
   });
 
   tearDownAll(() {
+    if (sl.isRegistered<DocumentUploadCubit>()) {
+      sl.unregister<DocumentUploadCubit>();
+    }
+
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(permissionChannel, null);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
