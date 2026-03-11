@@ -12,13 +12,15 @@ class CreateProfileUseCase {
     required String name,
     required String email,
     required String gender,
+    required String dob,
     required String refer,
     required String emergencyContact,
   }) {
     return _repository.createProfile(
       name: name,
-      email : email,
+      email: email,
       gender: gender,
+      dob: dob,
       refer: refer,
       emergencyContact: emergencyContact,
     );

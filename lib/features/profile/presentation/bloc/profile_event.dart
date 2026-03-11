@@ -11,6 +11,7 @@ class ProfileSubmitted extends ProfileEvent {
     required this.name,
     required this.email,
     required this.gender,
+    required this.dob,
     required this.refer,
     required this.emergencyContact,
   });
@@ -18,6 +19,7 @@ class ProfileSubmitted extends ProfileEvent {
   final String name;
   final String email;
   final String gender;
+  final String dob;
   final String refer;
   final String emergencyContact;
 }

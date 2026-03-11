@@ -18,6 +18,7 @@ class ShadowButton extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.borderRadius,
+    this.shadowEnabled = true,
   });
 
   final VoidCallback? onPressed;
@@ -34,6 +35,7 @@ class ShadowButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? foregroundColor;
   final BorderRadiusGeometry? borderRadius;
+  final bool shadowEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -45,22 +47,22 @@ class ShadowButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: resolvedBorderRadius,
-        boxShadow: enabled
-            ? <BoxShadow>[
-                BoxShadow(
-                  offset: const Offset(0, 8),
-                  blurRadius: 10,
-                  spreadRadius: -6,
-                  color: AppColors.black.withValues(alpha: 0.1),
-                ),
-                BoxShadow(
-                  offset: const Offset(0, 20),
-                  blurRadius: 25,
-                  spreadRadius: -5,
-                  color: AppColors.black.withValues(alpha: 0.1),
-                ),
-              ]
-            : <BoxShadow>[],
+    boxShadow: (enabled && shadowEnabled)
+        ? <BoxShadow>[
+            BoxShadow(
+              offset: const Offset(0, 8),
+              blurRadius: 10,
+              spreadRadius: -6,
+              color: AppColors.black.withValues(alpha: 0.1),
+            ),
+            BoxShadow(
+              offset: const Offset(0, 20),
+              blurRadius: 25,
+              spreadRadius: -5,
+              color: AppColors.black.withValues(alpha: 0.1),
+            ),
+          ]
+        : <BoxShadow>[],
       ),
       child: ElevatedButton(
         onPressed: onPressed,

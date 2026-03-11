@@ -17,6 +17,35 @@ class ProfileMenuSection extends StatelessWidget {
   final VoidCallback onLogout;
   final VoidCallback onDelete;
 
+  static const List<String> _monthNames = <String>[
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  static const Map<String, int> _monthIndexByName = <String, int>{
+    'january': 1,
+    'february': 2,
+    'march': 3,
+    'april': 4,
+    'may': 5,
+    'june': 6,
+    'july': 7,
+    'august': 8,
+    'september': 9,
+    'october': 10,
+    'november': 11,
+    'december': 12,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -80,7 +109,7 @@ class ProfileMenuSection extends StatelessWidget {
               _InfoRow(
                 icon: Icons.calendar_today_outlined,
                 label: 'Date of Birth',
-                value: data.dateOfBirth,
+                value: _formatDateOfBirth(data.dateOfBirth),
                 isLast: true,
               ),
             ],
@@ -165,6 +194,27 @@ class ProfileMenuSection extends StatelessWidget {
 
   Widget _rowDivider() =>
       const Divider(height: 1, color: Color(0xFFF5F5F5), indent: 54);
+
+  String _formatDateOfBirth(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) {
+      return 'Not provided yet';
+    }
+    final parsed = DateTime.tryParse(trimmed);
+    if (parsed != null) {
+      return '${parsed.day} ${_monthNames[parsed.month - 1]} ${parsed.year}';
+    }
+    final match = RegExp(r'^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$').firstMatch(trimmed);
+    if (match != null) {
+      final day = int.tryParse(match.group(1)!);
+      final monthIndex = _monthIndexByName[match.group(2)!.toLowerCase()];
+      final year = match.group(3);
+      if (day != null && monthIndex != null && year != null) {
+        return '$day ${_monthNames[monthIndex - 1]} $year';
+      }
+    }
+    return trimmed;
+  }
 }
 
 class _InfoRow extends StatelessWidget {

@@ -238,6 +238,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                         name: state.submission!.name,
                         email: state.submission!.email,
                         gender: state.submission!.gender,
+                        dob: state.submission!.dob,
                         refer: state.submission!.refer,
                         emergencyContact: state.submission!.emergencyContact,
                       ),

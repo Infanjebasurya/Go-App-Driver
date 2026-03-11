@@ -41,8 +41,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(const ProfileLoading());
     final result = await _createProfileUseCase.call(
       name: event.name,
-      email:event.email,
+      email: event.email,
       gender: event.gender,
+      dob: event.dob,
       refer: event.refer,
       emergencyContact: event.emergencyContact,
     );

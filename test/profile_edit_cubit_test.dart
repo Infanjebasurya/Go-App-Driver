@@ -31,10 +31,11 @@ class _FakeProfileRepository implements ProfileRepository {
   @override
   Future<Either<Failure, Profile>> createProfile({
     required String name,
+    required String email,
     required String gender,
+    required String dob,
     required String refer,
     required String emergencyContact,
-    required String email,
   }) async {
     return Right(
       Profile(
@@ -44,6 +45,7 @@ class _FakeProfileRepository implements ProfileRepository {
         refer: refer,
         emergencyContact: emergencyContact,
         email: email,
+        dob: dob,
       ),
     );
   }
