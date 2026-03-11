@@ -85,6 +85,16 @@ import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecas
 import 'package:goapp/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_cubit.dart';
+import 'package:goapp/features/profile_photo_capture/data/repositories/profile_photo_repository_impl.dart';
+import 'package:goapp/features/profile_photo_capture/data/services/camera_service_impl.dart';
+import 'package:goapp/features/profile_photo_capture/data/services/face_detection_service_impl.dart';
+import 'package:goapp/features/profile_photo_capture/data/services/profile_photo_image_processing_service_impl.dart';
+import 'package:goapp/features/profile_photo_capture/domain/repositories/profile_photo_repository.dart';
+import 'package:goapp/features/profile_photo_capture/domain/services/face_detection_service.dart';
+import 'package:goapp/features/profile_photo_capture/domain/services/profile_camera_service.dart';
+import 'package:goapp/features/profile_photo_capture/domain/services/profile_photo_image_processing_service.dart';
+import 'package:goapp/features/profile_photo_capture/domain/usecases/save_profile_photo_usecase.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/bloc/profile_photo_bloc.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/cubit/city_selection_cubit.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/cubit/vehicle_details_cubit.dart';
 import 'package:goapp/features/city_vehicle/vehicle_selection/presentation/cubit/vehicle_selection_cubit.dart';
@@ -112,6 +122,7 @@ Future<void> initializeDependencies() async {
   _registerAuth();
   _registerHome();
   _registerProfile();
+  _registerProfilePhotoCapture();
   _registerEarnings();
   _registerIncentives();
   _registerRideHistory();
@@ -226,6 +237,28 @@ void _registerProfile() {
     )
     ..registerFactory<ProfileEditCubit>(
       () => ProfileEditCubit(getCachedProfileUseCase: sl()),
+    );
+}
+
+void _registerProfilePhotoCapture() {
+  sl
+    ..registerFactory<ProfileCameraService>(() => CameraServiceImpl())
+    ..registerFactory<FaceDetectionService>(() => FaceDetectionServiceImpl())
+    ..registerFactory<ProfilePhotoImageProcessingService>(
+      () => ProfilePhotoImageProcessingServiceImpl(),
+    )
+    ..registerLazySingleton<ProfilePhotoRepository>(
+      () => ProfilePhotoRepositoryImpl(pathProvider: sl()),
+    )
+    ..registerLazySingleton<SaveProfilePhotoUseCase>(() => SaveProfilePhotoUseCase(sl()))
+    ..registerFactory<ProfilePhotoBloc>(
+      () => ProfilePhotoBloc(
+        permissionService: sl(),
+        cameraService: sl(),
+        faceDetectionService: sl(),
+        imageProcessingService: sl(),
+        saveUseCase: sl(),
+      ),
     );
 }
 

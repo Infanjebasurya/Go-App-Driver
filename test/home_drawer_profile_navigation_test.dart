@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/di/injection.dart';
+import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/features/home/presentation/widgets/home_drawer.dart';
 import 'package:goapp/features/profile/domain/entities/profile.dart';
@@ -8,6 +9,8 @@ import 'package:goapp/features/profile/domain/repositories/profile_repository.da
 import 'package:goapp/features/profile/domain/usecases/get_cached_profile_usecase.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_screen.dart';
+
+import 'support/shared_preferences_mock.dart';
 import 'package:goapp/features/profile/presentation/widgets/either.dart';
 import 'package:goapp/core/error/failures.dart';
 
@@ -59,6 +62,14 @@ class _FakeProfileRepository implements ProfileRepository {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    setMockSharedPreferences();
+    await sl.reset();
+    await initializeDependencies();
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
@@ -114,6 +125,7 @@ void main() {
     // Ignore any network-image loading exception from drawer avatar in test env.
     tester.takeException();
 
+    await tester.tap(find.text(ProfileDisplayStore.displayName()));
     await tester.tap(find.byIcon(Icons.chevron_right).first);
     await tester.pumpAndSettle();
 

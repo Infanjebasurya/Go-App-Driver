@@ -34,6 +34,8 @@
 	<string>We need camera access to capture your vehicle photo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need photo library access to select your vehicle photo.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We need contacts access so you can invite your friends.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

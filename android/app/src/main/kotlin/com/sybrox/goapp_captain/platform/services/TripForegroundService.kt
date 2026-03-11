@@ -1,4 +1,4 @@
-package com.sybrox.goapp_captain
+package com.sybrox.goapp_captain.platform.services
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.sybrox.goapp_captain.R
 
 class TripForegroundService : Service() {
     private var timer: CountDownTimer? = null

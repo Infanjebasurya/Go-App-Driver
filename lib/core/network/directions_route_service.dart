@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
 import 'package:goapp/core/maps/map_types.dart';
 import 'package:goapp/core/network/google_endpoints.dart';
 
@@ -9,8 +8,6 @@ class DirectionsRouteService {
   DirectionsRouteService({Dio? dio}) : _dio = dio ?? Dio();
 
   final Dio _dio;
-  static String? _cachedAssetDirectionsKey;
-  static bool _assetKeyAttempted = false;
 
   Future<List<LatLng>?> fetchDrivingRoute({
     required LatLng origin,
@@ -18,7 +15,7 @@ class DirectionsRouteService {
     required String apiKey,
     bool preferDetailedSteps = true,
   }) async {
-    final String resolvedApiKey = await _resolveApiKey(apiKey);
+    final String resolvedApiKey = apiKey;
 
     if (resolvedApiKey.isNotEmpty) {
       final List<LatLng>? legacyRoute = await _fetchLegacyDirectionsRoute(
@@ -44,52 +41,6 @@ class DirectionsRouteService {
     );
     if (_isUsableRoute(osrmRoute)) return osrmRoute;
 
-    return null;
-  }
-
-  Future<String> _resolveApiKey(String apiKey) async {
-    if (apiKey.isNotEmpty) return apiKey;
-    final String? fromAsset = await _loadApiKeyFromAssetEnv();
-    return fromAsset ?? '';
-  }
-
-  Future<String?> _loadApiKeyFromAssetEnv() async {
-    if (_cachedAssetDirectionsKey != null) return _cachedAssetDirectionsKey;
-    if (_assetKeyAttempted) return null;
-    _assetKeyAttempted = true;
-
-    try {
-      const String envName = String.fromEnvironment('ENV', defaultValue: 'dev');
-      final String raw = await rootBundle.loadString('assets/env/.env.$envName');
-      final String? mapsKey = _readEnvValue(
-        raw: raw,
-        key: 'GOOGLE_MAPS_API_KEY',
-      );
-      final String? placesKey = _readEnvValue(
-        raw: raw,
-        key: 'GOOGLE_PLACES_API_KEY',
-      );
-      final String? geocodingKey = _readEnvValue(
-        raw: raw,
-        key: 'GOOGLE_GEOCODING_API_KEY',
-      );
-      _cachedAssetDirectionsKey = mapsKey ?? placesKey ?? geocodingKey;
-      return _cachedAssetDirectionsKey;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  String? _readEnvValue({required String raw, required String key}) {
-    final List<String> lines = raw.split('\n');
-    for (final String line in lines) {
-      final String trimmed = line.trim();
-      if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
-      if (!trimmed.startsWith('$key=')) continue;
-      final String value = trimmed.substring(key.length + 1).trim();
-      if (value.isEmpty) return null;
-      return value;
-    }
     return null;
   }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/service/file_picker_service.dart';
 import 'package:goapp/core/service/image_picker_service.dart';
@@ -20,15 +22,14 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     required ImagePickerService imagePickerService,
     required FilePickerService filePickerService,
     required DocumentUploadFileService fileService,
-  })
-      : _imagePickerService = imagePickerService,
-        _filePickerService = filePickerService,
-        _fileService = fileService,
-        super(
-          DocumentUploadState.initial().copyWith(
-            currentStepIndex: initialStepIndex,
-          ),
-        ) {
+  }) : _imagePickerService = imagePickerService,
+       _filePickerService = filePickerService,
+       _fileService = fileService,
+       super(
+         DocumentUploadState.initial().copyWith(
+           currentStepIndex: initialStepIndex,
+         ),
+       ) {
     _restoreDraft();
   }
 
@@ -42,13 +43,16 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     final updatedSteps = state.steps.map((step) {
       if (step.step == DocumentStep.profilePhoto) {
         final profilePath = DocumentProgressStore.profileImagePath();
-        if (profilePath != null && profilePath.trim().isNotEmpty) {
-          DocumentProgressStore.setProfileImagePath(profilePath);
+        final bool hasProfile = profilePath != null &&
+            profilePath.trim().isNotEmpty &&
+            File(profilePath).existsSync();
+        if (profilePath != null && profilePath.trim().isNotEmpty && !hasProfile) {
+          DocumentProgressStore.setProfileImagePath(null);
         }
         return step.copyWith(
-          frontCaptured: profilePath != null && profilePath.trim().isNotEmpty,
-          frontPath: profilePath,
-          frontType: profilePath == null ? null : DocumentUploadType.image,
+          frontCaptured: hasProfile,
+          frontPath: hasProfile ? profilePath : null,
+          frontType: hasProfile ? DocumentUploadType.image : null,
           clearError: true,
           clearImageError: true,
         );
@@ -72,12 +76,18 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       );
     }).toList();
     final restoredBankData = state.bankData.copyWith(
-      accountHolderName: DocumentProgressStore.bankDraftValue('accountHolderName'),
+      accountHolderName: DocumentProgressStore.bankDraftValue(
+        'accountHolderName',
+      ),
       bankName: DocumentProgressStore.bankDraftValue('bankName'),
       accountNumber: DocumentProgressStore.bankDraftValue('accountNumber'),
-      confirmAccountNumber: DocumentProgressStore.bankDraftValue('confirmAccountNumber'),
+      confirmAccountNumber: DocumentProgressStore.bankDraftValue(
+        'confirmAccountNumber',
+      ),
       ifscCode: DocumentProgressStore.bankDraftValue('ifscCode'),
-      bankDocumentPath: DocumentProgressStore.frontImagePath(DocumentType.bankDetails),
+      bankDocumentPath: DocumentProgressStore.frontImagePath(
+        DocumentType.bankDetails,
+      ),
       bankDocumentType: _inferUploadType(
         DocumentProgressStore.frontImagePath(DocumentType.bankDetails),
       ),
@@ -121,6 +131,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
 
   Future<void> captureProfilePhoto({required AppImageSource source}) {
     return _captureProfilePhoto(this, source: source);
+  }
+
+  Future<void> setProfilePhotoFromPath(String path) {
+    return _setProfilePhotoFromPath(this, path: path);
   }
 
   Future<void> captureFront({required AppImageSource source}) {
