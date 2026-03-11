@@ -13,10 +13,13 @@ class LocalProfileRepository implements ProfileRepository {
     required String name,
     required String gender,
     required String email,
+    required String dob,
     required String refer,
     required String emergencyContact,
   }) async {
     final existing = UserCacheStore.read();
+    final trimmedDob = dob.trim();
+    final dobValue = trimmedDob.isEmpty ? existing?.dob : trimmedDob;
     final profile = Profile(
       id: existing?.id.isNotEmpty == true ? existing!.id : 'local-profile',
       name: name,
@@ -25,7 +28,7 @@ class LocalProfileRepository implements ProfileRepository {
       emergencyContact: emergencyContact,
       email: email.isEmpty ? null : email,
       phone: existing?.phone,
-      dob: existing?.dob,
+      dob: dobValue,
       rating: existing?.rating ?? 0.0,
       totalTrips: existing?.totalTrips ?? 0,
       totalYears: existing?.totalYears ?? 0.0,

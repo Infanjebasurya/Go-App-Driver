@@ -228,7 +228,7 @@ class ReferralPersonCard extends StatelessWidget {
                         children: const [
                           Icon(
                             Icons.check_circle_outline,
-                            color: AppColors.gold,
+                            color: AuthUiColors.brandGreen,
                             size: 13,
                           ),
                           SizedBox(width: 4),
@@ -236,7 +236,7 @@ class ReferralPersonCard extends StatelessWidget {
                             'Reward Credited',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
+                              color: AppColors.headingDark,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -270,7 +270,7 @@ class ReferralPersonCard extends StatelessWidget {
                     '₹${person.estimatedReward}',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                       color: person.status == ReferralStatus.completed
                           ? AuthUiColors.brandGreen
                           : AppColors.headingDark,
@@ -278,12 +278,12 @@ class ReferralPersonCard extends StatelessWidget {
                   ),
                   Text(
                     person.status == ReferralStatus.completed
-                        ? 'PAID OUT'
-                        : 'EST. REWARD',
-                    style: const TextStyle(
+                    ? 'PAID OUT'
+                    : 'EST. REWARD',
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.neutralAAA,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.headingDark,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -322,17 +322,17 @@ class ReferralPersonCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: person.progressPercent,
-                          minHeight: 6,
-                          backgroundColor: AppColors.surfaceF0,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.gold,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: person.progressPercent,
+                              minHeight: 6,
+                              backgroundColor: AppColors.surfaceF0,
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                AuthUiColors.brandGreen,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
                     ],
                   ),
                 ),

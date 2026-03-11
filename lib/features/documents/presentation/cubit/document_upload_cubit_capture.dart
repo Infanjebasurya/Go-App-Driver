@@ -1,10 +1,100 @@
 part of 'document_upload_cubit.dart';
 
+Future<void> _setProfilePhotoFromPath(
+  DocumentUploadCubit cubit, {
+  required String path,
+}) async {
+  if (cubit.state.isCurrentStepBank || !cubit.state.isCurrentStepProfile) {
+    return;
+  }
+  if (cubit._isPicking) return;
+
+  final String trimmed = path.trim();
+  if (trimmed.isEmpty) return;
+
+  if (cubit.state.currentDocStep.imageError != null) {
+    cubit._emitState(
+      cubit.state.copyWithDocStep(
+        cubit.state.currentDocStep.copyWith(clearImageError: true),
+      ),
+    );
+  }
+
+  if (cubit._isTest) {
+    DocumentProgressStore.setProfileImagePath(trimmed);
+    await TextFieldStore.write(
+      DocumentUploadCubit._profilePhotoStorageKey,
+      trimmed,
+    );
+    final updated = cubit.state.currentDocStep.copyWith(
+      frontCaptured: true,
+      frontPath: trimmed,
+      frontType: DocumentUploadType.image,
+      clearImageError: true,
+    );
+    cubit._emitState(cubit.state.copyWithDocStep(updated));
+    return;
+  }
+
+  cubit._isPicking = true;
+  cubit._emitState(cubit.state.copyWith(isProfileImageProcessing: true));
+  try {
+    if (!cubit._fileService.isValidImageFormat(trimmed)) {
+      cubit._emitState(
+        cubit.state.copyWithDocStep(
+          cubit.state.currentDocStep.copyWith(
+            imageError:
+                'Only JPG, PNG, HEIC, HEIF, and WEBP images are allowed.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final int sizeBytes = await File(trimmed).length();
+    if (!cubit._fileService.validateFileSize(sizeBytes)) {
+      cubit._emitState(
+        cubit.state.copyWithDocStep(
+          cubit.state.currentDocStep.copyWith(
+            imageError: 'File size must be under 5 MB',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final String persistedPath = await cubit._fileService
+        .persistImageToAppStorage(trimmed, prefix: 'profile_photo');
+    final String? previousPath = cubit.state.currentDocStep.frontPath;
+    if (previousPath != persistedPath) {
+      await cubit._fileService.deleteManagedFileIfExists(previousPath);
+    }
+
+    DocumentProgressStore.setProfileImagePath(persistedPath);
+    await TextFieldStore.write(
+      DocumentUploadCubit._profilePhotoStorageKey,
+      persistedPath,
+    );
+    final StepData updated = cubit.state.currentDocStep.copyWith(
+      frontCaptured: true,
+      frontPath: persistedPath,
+      frontType: DocumentUploadType.image,
+      clearImageError: true,
+    );
+    cubit._emitState(cubit.state.copyWithDocStep(updated));
+  } finally {
+    cubit._isPicking = false;
+    cubit._emitState(cubit.state.copyWith(isProfileImageProcessing: false));
+  }
+}
+
 Future<void> _captureProfilePhoto(
   DocumentUploadCubit cubit, {
   required AppImageSource source,
 }) async {
-  if (cubit.state.isCurrentStepBank || !cubit.state.isCurrentStepProfile) return;
+  if (cubit.state.isCurrentStepBank || !cubit.state.isCurrentStepProfile) {
+    return;
+  }
   if (cubit._isPicking) return;
   if (cubit.state.currentDocStep.imageError != null) {
     cubit._emitState(
@@ -16,7 +106,10 @@ Future<void> _captureProfilePhoto(
   if (cubit._isTest) {
     const testPath = 'test_profile.jpg';
     DocumentProgressStore.setProfileImagePath(testPath);
-    await TextFieldStore.write(DocumentUploadCubit._profilePhotoStorageKey, testPath);
+    await TextFieldStore.write(
+      DocumentUploadCubit._profilePhotoStorageKey,
+      testPath,
+    );
     final updated = cubit.state.currentDocStep.copyWith(
       frontCaptured: true,
       frontPath: testPath,
@@ -42,7 +135,8 @@ Future<void> _captureProfilePhoto(
       cubit._emitState(
         cubit.state.copyWithDocStep(
           cubit.state.currentDocStep.copyWith(
-            imageError: 'Only JPG, PNG, HEIC, HEIF, and WEBP images are allowed.',
+            imageError:
+                'Only JPG, PNG, HEIC, HEIF, and WEBP images are allowed.',
           ),
         ),
       );
@@ -187,7 +281,9 @@ Future<void> _captureFrontDocument(DocumentUploadCubit cubit) async {
       return;
     }
 
-    await cubit._fileService.deleteManagedFileIfExists(cubit.state.currentDocStep.frontPath);
+    await cubit._fileService.deleteManagedFileIfExists(
+      cubit.state.currentDocStep.frontPath,
+    );
     DocumentProgressStore.setFrontImagePath(
       cubit._mapStepToDocType(cubit.state.currentDocStep.step),
       file.path,
@@ -303,7 +399,9 @@ Future<void> _captureBackDocument(DocumentUploadCubit cubit) async {
       return;
     }
 
-    await cubit._fileService.deleteManagedFileIfExists(cubit.state.currentDocStep.backPath);
+    await cubit._fileService.deleteManagedFileIfExists(
+      cubit.state.currentDocStep.backPath,
+    );
     DocumentProgressStore.setBackImagePath(
       cubit._mapStepToDocType(cubit.state.currentDocStep.step),
       file.path,
@@ -321,7 +419,9 @@ Future<void> _captureBackDocument(DocumentUploadCubit cubit) async {
 
 Future<void> _removeFront(DocumentUploadCubit cubit) async {
   if (cubit.state.isCurrentStepBank || cubit.state.isCurrentStepProfile) return;
-  await cubit._fileService.deleteManagedFileIfExists(cubit.state.currentDocStep.frontPath);
+  await cubit._fileService.deleteManagedFileIfExists(
+    cubit.state.currentDocStep.frontPath,
+  );
   DocumentProgressStore.setFrontImagePath(
     cubit._mapStepToDocType(cubit.state.currentDocStep.step),
     null,
@@ -336,7 +436,9 @@ Future<void> _removeFront(DocumentUploadCubit cubit) async {
 
 Future<void> _removeBack(DocumentUploadCubit cubit) async {
   if (cubit.state.isCurrentStepBank || cubit.state.isCurrentStepProfile) return;
-  await cubit._fileService.deleteManagedFileIfExists(cubit.state.currentDocStep.backPath);
+  await cubit._fileService.deleteManagedFileIfExists(
+    cubit.state.currentDocStep.backPath,
+  );
   DocumentProgressStore.setBackImagePath(
     cubit._mapStepToDocType(cubit.state.currentDocStep.step),
     null,
@@ -422,7 +524,9 @@ Future<void> _captureBankDocumentFile(DocumentUploadCubit cubit) async {
       return;
     }
 
-    await cubit._fileService.deleteManagedFileIfExists(cubit.state.bankData.bankDocumentPath);
+    await cubit._fileService.deleteManagedFileIfExists(
+      cubit.state.bankData.bankDocumentPath,
+    );
     DocumentProgressStore.setFrontImagePath(
       DocumentType.bankDetails,
       file.path,
@@ -440,7 +544,9 @@ Future<void> _captureBankDocumentFile(DocumentUploadCubit cubit) async {
 
 Future<void> _removeBankDocument(DocumentUploadCubit cubit) async {
   if (!cubit.state.isCurrentStepBank) return;
-  await cubit._fileService.deleteManagedFileIfExists(cubit.state.bankData.bankDocumentPath);
+  await cubit._fileService.deleteManagedFileIfExists(
+    cubit.state.bankData.bankDocumentPath,
+  );
   DocumentProgressStore.setFrontImagePath(DocumentType.bankDetails, null);
   final updated = cubit.state.bankData.copyWith(
     clearBankDocument: true,

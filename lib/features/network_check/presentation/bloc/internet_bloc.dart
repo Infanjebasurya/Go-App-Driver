@@ -16,6 +16,7 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
 
   final InternetRepository _internetRepository;
   StreamSubscription<bool>? _subscription;
+  Timer? _pollTimer;
 
   Future<void> _onStarted(
     InternetStarted event,
@@ -31,6 +32,8 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
       if (isClosed) return;
       add(InternetConnectionChanged(isConnected: connectedNow));
     });
+
+    _startPolling();
   }
 
   void _onConnectionChanged(
@@ -48,8 +51,22 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
     emit(connected ? InternetState.connected() : InternetState.disconnected());
   }
 
+  void _startPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      final connected = await _internetRepository.isConnected();
+      if (isClosed) return;
+      if (connected && state.status != InternetStatus.connected) {
+        add(const InternetConnectionChanged(isConnected: true));
+      } else if (!connected && state.status != InternetStatus.disconnected) {
+        add(const InternetConnectionChanged(isConnected: false));
+      }
+    });
+  }
+
   @override
   Future<void> close() async {
+    _pollTimer?.cancel();
     await _subscription?.cancel();
     return super.close();
   }

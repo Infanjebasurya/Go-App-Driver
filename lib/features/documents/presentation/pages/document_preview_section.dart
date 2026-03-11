@@ -71,14 +71,14 @@ class ProfilePhotoStepContent extends StatelessWidget {
                   child: ClipOval(
                     child: Container(
                       color: Colors.grey.shade200,
-                      child: hasImage
-                          ? Image.file(
-                              File(stepData.frontPath!),
-                              fit: BoxFit.cover,
-                            )
-                          : Icon(
-                              Icons.person,
-                              size: avatarSize * 0.55,
+                        child: hasImage
+                            ? Image.file(
+                                File(stepData.frontPath!),
+                                fit: BoxFit.contain,
+                              )
+                            : Icon(
+                                Icons.person,
+                                size: avatarSize * 0.55,
                               color: Colors.white54,
                             ),
                     ),

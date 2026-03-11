@@ -41,8 +41,8 @@ class RiderContactHeader extends StatelessWidget {
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: profilePath != null
-                  ? Image.file(File(profilePath), fit: BoxFit.cover)
-                  : Image.asset('assets/image/profile.png', fit: BoxFit.cover),
+                  ? Image.file(File(profilePath), fit: BoxFit.contain)
+                  : Image.asset('assets/image/profile.png', fit: BoxFit.contain),
             ),
           ),
           const SizedBox(width: 10),

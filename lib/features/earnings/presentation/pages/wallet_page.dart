@@ -229,6 +229,7 @@ class _WalletBalanceCard extends StatelessWidget {
                     elevation: 0,
                     textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                   ),
+                  shadowEnabled: false,
                 ),
               ),
             ],
