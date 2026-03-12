@@ -25,11 +25,7 @@ class GlobalNetworkDialogOverlay extends StatelessWidget {
               appBar: AppBar(
                 backgroundColor: AppColors.white,
                 elevation: 0,
-                leading: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 18,
-                  color: AppColors.black87,
-                ),
+                automaticallyImplyLeading: false,
                 title: const Text(
                   'Connection Status',
                   style: TextStyle(
@@ -40,66 +36,104 @@ class GlobalNetworkDialogOverlay extends StatelessWidget {
                 ),
                 centerTitle: true,
               ),
+              // appBar: AppBar(
+              //   backgroundColor: AppColors.white,
+              //   elevation: 0,
+              //   // leading: const Icon(
+              //   //   Icons.arrow_back_ios_new_rounded,
+              //   //   size: 18,
+              //   //   color: AppColors.black87,
+              //   // ),
+              //   title: const Text(
+              //     'Connection Status',
+              //     style: TextStyle(
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.w600,
+              //       color: AppColors.black,
+              //     ),
+              //   ),
+              //   centerTitle: true,
+              // ),
               body: SafeArea(
                 top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 30),
-                      _StatusIcon(),
-                      const SizedBox(height: 25),
-                      const Text(
-                        'No Internet Connection',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.black,
-                        ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        "Oops! It seems you're offline. Please check your internet\nconnection and try again.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          color: AppColors.textMuted,
-                          height: 1.35,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                      ),
-                      const SizedBox(height: 25),
-                      _TipsCard(),
-                      const Spacer(),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.emerald,
-                            foregroundColor: AppColors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 30),
+                              _StatusIcon(),
+                              const SizedBox(height: 25),
+                              const Text(
+                                'No Internet Connection',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                "Oops! It seems you're offline. Please check your internet\nconnection and try again.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  color: AppColors.textMuted,
+                                  height: 1.35,
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              _TipsCard(),
+                              const Spacer(),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.emerald,
+                                    foregroundColor: AppColors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    context.read<InternetBloc>().add(
+                                      const InternetCheckRequested(),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const Text(
+                                    'Try Again',
+                                    style: TextStyle(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                            ],
                           ),
-                          onPressed: () {
-                            context.read<InternetBloc>().add(
-                              const InternetCheckRequested(),
-                            );
-                          },
-                          icon: const Icon(Icons.refresh_rounded, size: 18),
-                          label: const Text(
-                            'Try Again',
-                            style: TextStyle(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
                         ),
                       ),
-                      const SizedBox(height: 18),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),

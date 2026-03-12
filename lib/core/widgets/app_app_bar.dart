@@ -44,7 +44,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   static const TextStyle _commonTitleStyle = TextStyle(
     fontSize: 18,
     color: AppColors.black,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
   );
 
   @override

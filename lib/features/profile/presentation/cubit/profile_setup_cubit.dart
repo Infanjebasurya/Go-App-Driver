@@ -156,6 +156,7 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
           name: state.name.trim(),
           email: state.email.trim(),
           gender: state.gender.trim(),
+          dob: state.dob.trim(),
           refer: state.refer.trim(),
           emergencyContact: state.emergencyContact.trim(),
         ),

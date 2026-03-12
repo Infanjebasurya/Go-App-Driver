@@ -132,6 +132,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
+                                color: AppColors.white,
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: AppColors.white,
@@ -145,13 +146,13 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                                   ),
                                 ],
                                 image: DecorationImage(
-                                  image: profilePath != null
-                                      ? FileImage(File(profilePath))
-                                      : const AssetImage(
-                                              'assets/image/profile.png',
-                                            )
+                                    image: profilePath != null
+                                        ? FileImage(File(profilePath))
+                                        : const AssetImage(
+                                                'assets/image/profile.png',
+                                              )
                                             as ImageProvider,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),

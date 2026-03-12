@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/features/network_check/domain/repositories/internet_repository.dart';
@@ -13,7 +13,7 @@ class _FakeInternetRepository implements InternetRepository {
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
   bool _connected;
 
-  void emit(bool connected) {
+  void setConnected(bool connected) {
     _connected = connected;
     _controller.add(connected);
   }
@@ -40,11 +40,11 @@ void main() {
     expect(states.isNotEmpty, true);
     expect(states.last.status, InternetStatus.disconnected);
 
-    repo.emit(true);
+    repo.setConnected(true);
     await Future<void>.delayed(Duration.zero);
     expect(states.last.status, InternetStatus.connected);
 
-    repo.emit(false);
+    repo.setConnected(false);
     await Future<void>.delayed(Duration.zero);
     expect(states.last.status, InternetStatus.disconnected);
 
@@ -62,7 +62,7 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(states.last.status, InternetStatus.disconnected);
 
-    repo.emit(true);
+    repo.setConnected(true);
     bloc.add(const InternetCheckRequested());
     await Future<void>.delayed(Duration.zero);
     expect(states.last.status, InternetStatus.connected);

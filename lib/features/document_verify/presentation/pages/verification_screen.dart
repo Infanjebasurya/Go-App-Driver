@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -8,8 +9,12 @@ import 'package:goapp/features/auth/presentation/widgets/appbar.dart';
 import 'package:goapp/features/auth/presentation/widgets/snackbar_utils.dart';
 import 'package:goapp/features/documents/presentation/pages/document_upload_screen.dart';
 import 'package:goapp/core/storage/registration_progress_store.dart';
+import 'package:goapp/core/storage/text_field_store.dart';
+import 'package:goapp/features/documents/presentation/services/document_upload_file_service.dart';
 import 'package:goapp/features/documents/presentation/pages/verification_submitted_screen.dart';
 import 'package:goapp/core/di/injection.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/pages/profile_photo_capture_page.dart';
+import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 
 import '../cubit/verification_cubit.dart';
 import '../cubit/verification_state.dart';
@@ -121,7 +126,7 @@ class _VerificationViewState extends State<_VerificationView> {
                         const SizedBox(height: 8),
                         _ProfilePictureCard(
                           isCompleted: state.isProfileImageUploaded,
-                          onTap: () => _openProfileStep(context),
+                          onTap: () => unawaited(_openProfileStep(context)),
                         ),
                         const SizedBox(height: 8),
                         ...state.documents.map(
@@ -151,6 +156,8 @@ class _VerificationViewState extends State<_VerificationView> {
     Document doc,
     VerificationState state,
   ) {
+    final VerificationCubit verificationCubit = context.read<VerificationCubit>();
+    final NavigatorState navigator = Navigator.of(context);
     final stepIndex = _stepIndexForDoc(doc.type);
     if (stepIndex != null) {
       unawaited(
@@ -159,15 +166,15 @@ class _VerificationViewState extends State<_VerificationView> {
           documentStepIndex: stepIndex,
         ),
       );
-      Navigator.of(context)
+      navigator
           .push(
             MaterialPageRoute(
               builder: (_) => DocumentUploadScreen(initialStepIndex: stepIndex),
             ),
           )
           .then((_) {
-            if (!context.mounted) return;
-            context.read<VerificationCubit>().syncFromStore();
+            if (!mounted) return;
+            verificationCubit.syncFromStore();
           });
       return;
     }
@@ -192,22 +199,69 @@ class _VerificationViewState extends State<_VerificationView> {
     SnackBarUtils.showError(context, message);
   }
 
-  void _openProfileStep(BuildContext context) {
+  Future<void> _openProfileStep(BuildContext context) async {
+    final VerificationCubit verificationCubit = context.read<VerificationCubit>();
+    final NavigatorState navigator = Navigator.of(context);
     unawaited(
       RegistrationProgressStore.setStep(
         RegistrationStep.documentUpload,
         documentStepIndex: 0,
       ),
     );
-    Navigator.of(context)
+
+    final String? existingPath = DocumentProgressStore.profileImagePath();
+    if (existingPath != null &&
+        existingPath.trim().isNotEmpty &&
+        File(existingPath).existsSync()) {
+      navigator
+          .push(
+            MaterialPageRoute(
+              builder: (_) => const DocumentUploadScreen(initialStepIndex: 0),
+            ),
+          )
+          .then((_) {
+            if (!mounted) return;
+            verificationCubit.syncFromStore();
+          });
+      return;
+    }
+
+    if (existingPath != null && existingPath.trim().isNotEmpty) {
+      DocumentProgressStore.setProfileImagePath(null);
+      await TextFieldStore.remove('profile.photo.path');
+    }
+
+    if (!mounted) return;
+
+    final String? capturedPath = await navigator.push<String>(
+      MaterialPageRoute(builder: (_) => const ProfilePhotoCapturePage()),
+    );
+    if (!mounted) return;
+    if (capturedPath == null || capturedPath.trim().isEmpty) return;
+
+    final DocumentUploadFileService fileService = sl<DocumentUploadFileService>();
+    final String? previousPath = DocumentProgressStore.profileImagePath();
+    final String persistedPath = await fileService.persistImageToAppStorage(
+      capturedPath,
+      prefix: 'profile_photo',
+    );
+    if (previousPath != persistedPath) {
+      await fileService.deleteManagedFileIfExists(previousPath);
+    }
+
+    DocumentProgressStore.setProfileImagePath(persistedPath);
+    await TextFieldStore.write('profile.photo.path', persistedPath);
+    if (!mounted) return;
+
+    navigator
         .push(
           MaterialPageRoute(
             builder: (_) => const DocumentUploadScreen(initialStepIndex: 0),
           ),
         )
         .then((_) {
-          if (!context.mounted) return;
-          context.read<VerificationCubit>().syncFromStore();
+          if (!mounted) return;
+          verificationCubit.syncFromStore();
         });
   }
 }

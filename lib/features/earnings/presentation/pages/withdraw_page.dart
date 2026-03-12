@@ -148,6 +148,8 @@ class _WithdrawPageState extends State<WithdrawPage> {
                               ),
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
+                                filled: true,
+                                fillColor: Colors.transparent,
                               ),
                             ),
                           ),
