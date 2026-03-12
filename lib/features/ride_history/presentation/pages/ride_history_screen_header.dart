@@ -4,13 +4,13 @@ class _SummaryPanel extends StatelessWidget {
   const _SummaryPanel({
     required this.totalTrips,
     required this.completedTrips,
-    required this.inProgressTrips,
+    required this.canceledTrips,
     required this.earnings,
   });
 
   final int totalTrips;
   final int completedTrips;
-  final int inProgressTrips;
+  final int canceledTrips;
   final double earnings;
 
   @override
@@ -41,7 +41,7 @@ class _SummaryPanel extends StatelessWidget {
             children: <Widget>[
               _MetricTile(label: 'Total', value: '$totalTrips'),
               _MetricTile(label: 'Completed', value: '$completedTrips'),
-              _MetricTile(label: 'In Progress', value: '$inProgressTrips'),
+              _MetricTile(label: 'Canceled', value: '$canceledTrips'),
             ],
           ),
           const SizedBox(height: 12),
@@ -176,11 +176,11 @@ class _FilterChips extends StatelessWidget {
           selected: selected == RideHistoryFilter.completed,
           onTap: () => onSelected(RideHistoryFilter.completed),
         ),
-        _FilterChipItem(
-          label: 'In Progress ($inProgressCount)',
-          selected: selected == RideHistoryFilter.inProgress,
-          onTap: () => onSelected(RideHistoryFilter.inProgress),
-        ),
+        // _FilterChipItem(
+        //   label: 'In Progress ($inProgressCount)',
+        //   selected: selected == RideHistoryFilter.inProgress,
+        //   onTap: () => onSelected(RideHistoryFilter.inProgress),
+        // ),
         _FilterChipItem(
           label: 'Canceled ($canceledCount)',
           selected: selected == RideHistoryFilter.canceled,
