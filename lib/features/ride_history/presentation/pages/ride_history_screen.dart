@@ -83,7 +83,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                         _SummaryPanel(
                           totalTrips: state.allTrips.length,
                           completedTrips: _cubit.completedCount(),
-                          inProgressTrips: _cubit.inProgressCount(),
+                          canceledTrips: _cubit.canceledCount(),
                           earnings: _cubit.totalEarnings(),
                         ),
                         const SizedBox(height: 12),
