@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/service/file_picker_service.dart';
 import 'package:goapp/core/service/image_picker_service.dart';
+import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/core/service/path_provider_service.dart';
 import 'package:goapp/features/document_verify/presentation/cubit/verification_cubit.dart';
 import 'package:goapp/features/document_verify/presentation/model/document_model.dart';
@@ -16,13 +17,11 @@ import 'package:goapp/core/di/injection.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const MethodChannel permissionChannel = MethodChannel(
-    'flutter.baseflow.com/permissions/methods',
-  );
-  const MethodChannel imagePickerChannel = MethodChannel(
-    'plugins.flutter.io/image_picker',
-  );
+  const MethodChannel permissionChannel = MethodChannel('app/permission_service');
+  const MethodChannel imagePickerChannel = MethodChannel('app/image_picker_service');
+  const MethodChannel pathProviderChannel = MethodChannel('app/path_provider_service');
   late String fakeImagePath;
+  late String docsDirPath;
 
   setUpAll(() async {
     if (!sl.isRegistered<DocumentUploadCubit>()) {
@@ -36,12 +35,14 @@ void main() {
           filePickerService: const FilePickerService(),
           fileService: DocumentUploadFileService(
             pathProvider: PathProviderService(),
+            permissionService: const PermissionService(),
           ),
         );
       });
     }
 
     final tempDir = await Directory.systemTemp.createTemp('goapp_test_');
+    docsDirPath = tempDir.path;
     final fakeFile = File('${tempDir.path}\\fake_doc.jpg');
     await fakeFile.writeAsBytes(List<int>.filled(1024, 1));
     fakeImagePath = fakeFile.path;
@@ -49,14 +50,12 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(permissionChannel, (MethodCall call) async {
           switch (call.method) {
-            case 'checkPermissionStatus':
-              return 1; // granted
-            case 'requestPermissions':
-              final permissions =
-                  (call.arguments as List<dynamic>?) ?? <dynamic>[];
-              return <int, int>{
-                for (final p in permissions.whereType<int>()) p: 1,
-              };
+            case 'status':
+              return 'granted';
+            case 'request':
+              return 'granted';
+            case 'openAppSettings':
+              return true;
             default:
               return null;
           }
@@ -65,7 +64,18 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(imagePickerChannel, (MethodCall call) async {
           if (call.method == 'pickImage') {
-            return fakeImagePath;
+            return <String, Object?>{
+              'path': fakeImagePath,
+              'name': 'fake_doc.jpg',
+            };
+          }
+          return null;
+        });
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProviderChannel, (MethodCall call) async {
+          if (call.method == 'getApplicationDocumentsDirectory') {
+            return docsDirPath;
           }
           return null;
         });
@@ -80,6 +90,8 @@ void main() {
         .setMockMethodCallHandler(permissionChannel, null);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(imagePickerChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProviderChannel, null);
   });
 
   group('DocumentUploadCubit document number validation', () {
@@ -94,6 +106,7 @@ void main() {
         filePickerService: const FilePickerService(),
         fileService: DocumentUploadFileService(
           pathProvider: PathProviderService(),
+          permissionService: const PermissionService(),
         ),
       );
     }
@@ -192,7 +205,6 @@ void main() {
       addTearDown(cubit.close);
 
       await cubit.captureFront(source: AppImageSource.gallery);
-      await cubit.captureBack(source: AppImageSource.gallery);
       cubit.updateDocumentNumber('ABCDE12345');
       await cubit.saveAndNext();
       expect(cubit.state.currentStepIndex, 4);

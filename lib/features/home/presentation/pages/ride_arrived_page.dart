@@ -218,14 +218,14 @@ class _RideArrivedPageState extends State<RideArrivedPage>
         return _fallbackDriverPoint;
       }
 
-      final AppLocationPosition? known = await _locationService.getLastKnownPosition();
+      final AppLocationPosition? known = await _locationService
+          .getLastKnownPosition();
       if (known != null) {
         return LatLng(known.latitude, known.longitude);
       }
 
-      final AppLocationPosition fresh = await _locationService.getCurrentPosition(
-        timeLimit: const Duration(seconds: 8),
-      );
+      final AppLocationPosition fresh = await _locationService
+          .getCurrentPosition(timeLimit: const Duration(seconds: 8));
       return LatLng(fresh.latitude, fresh.longitude);
     } catch (_) {
       return _fallbackDriverPoint;
@@ -613,7 +613,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                                   child: const Text(
                                     'I Have Arrived',
                                     style: TextStyle(
-                                      fontSize: 24 / 2,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -647,8 +647,8 @@ class _RideArrivedPageState extends State<RideArrivedPage>
                           'Cancel Ride',
                           style: TextStyle(
                             color: AppColors.validationRed,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -674,6 +674,3 @@ class _RideArrivedPageState extends State<RideArrivedPage>
     }
   }
 }
-
-
-

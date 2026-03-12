@@ -29,7 +29,11 @@ class RideCallPage extends StatelessWidget {
                   Container(
                     width: 110,
                     height: 110,
-                    decoration: const BoxDecoration(shape: BoxShape.circle),
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.emerald, width: 3),
+                    ),
                     child: ClipOval(
                       child: profilePath != null
                           ? Image.file(File(profilePath), fit: BoxFit.contain)

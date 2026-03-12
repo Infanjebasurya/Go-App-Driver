@@ -46,4 +46,10 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // Native replacements for removed Flutter plugins.
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.0.2")
+    implementation("com.google.mlkit:face-detection:16.1.6")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 }

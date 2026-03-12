@@ -233,7 +233,7 @@ class _CancelTypeChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: FontWeight.w700,
             color: selected ? AppColors.white : AppColors.neutral666,
           ),
@@ -264,7 +264,11 @@ class _DriverCard extends StatelessWidget {
           Container(
             width: 54,
             height: 54,
-            decoration: const BoxDecoration(shape: BoxShape.circle),
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.emerald, width: 2),
+            ),
             child: ClipOval(
               child: profilePath != null
                   ? Image.file(File(profilePath), fit: BoxFit.contain)

@@ -11,6 +11,8 @@ import 'package:goapp/core/service/app_cleanup_service.dart';
 import 'package:goapp/core/service/location_service.dart';
 import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/core/service/vibration_service.dart';
+import 'package:goapp/core/service/url_launcher_service.dart';
+import 'package:goapp/core/service/contacts_service.dart';
 import 'package:goapp/core/service/file_picker_service.dart';
 import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/service/path_provider_service.dart';
@@ -86,14 +88,14 @@ import 'package:goapp/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dart';
 import 'package:goapp/features/profile/presentation/cubit/profile_setup_cubit.dart';
 import 'package:goapp/features/profile_photo_capture/data/repositories/profile_photo_repository_impl.dart';
-import 'package:goapp/features/profile_photo_capture/data/services/camera_service_impl.dart';
-import 'package:goapp/features/profile_photo_capture/data/services/face_detection_service_impl.dart';
+import 'package:goapp/features/profile_photo_capture/data/services/mlkit_live_face_detection_service_impl.dart';
 import 'package:goapp/features/profile_photo_capture/data/services/profile_photo_image_processing_service_impl.dart';
+import 'package:goapp/features/profile_photo_capture/domain/services/face_auto_capture_policy.dart';
 import 'package:goapp/features/profile_photo_capture/domain/repositories/profile_photo_repository.dart';
-import 'package:goapp/features/profile_photo_capture/domain/services/face_detection_service.dart';
-import 'package:goapp/features/profile_photo_capture/domain/services/profile_camera_service.dart';
+import 'package:goapp/features/profile_photo_capture/domain/services/live_face_detection_service.dart';
 import 'package:goapp/features/profile_photo_capture/domain/services/profile_photo_image_processing_service.dart';
 import 'package:goapp/features/profile_photo_capture/domain/usecases/save_profile_photo_usecase.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/cubit/face_profile_photo_capture_cubit.dart';
 import 'package:goapp/features/profile_photo_capture/presentation/bloc/profile_photo_bloc.dart';
 import 'package:goapp/features/city_vehicle/city_selection/presentation/cubit/city_selection_cubit.dart';
 import 'package:goapp/features/city_vehicle/vehicle_details/presentation/cubit/vehicle_details_cubit.dart';
@@ -166,12 +168,14 @@ void _registerCore() {
     ..registerLazySingleton<FilePickerService>(() => const FilePickerService())
     ..registerLazySingleton<PathProviderService>(() => const PathProviderService())
     ..registerLazySingleton<DocumentUploadFileService>(
-      () => DocumentUploadFileService(pathProvider: sl()),
+      () => DocumentUploadFileService(pathProvider: sl(), permissionService: sl()),
     )
     ..registerLazySingleton<AppCleanupService>(
       () => AppCleanupService(fileService: sl()),
     )
     ..registerLazySingleton<PermissionService>(() => const PermissionService())
+    ..registerLazySingleton<UrlLauncherService>(() => const UrlLauncherService())
+    ..registerLazySingleton<ContactsService>(() => const ContactsService())
     ..registerLazySingleton<PhoneNumberService>(() => PhoneNumberService())
     ..registerLazySingleton<ProfileValidationService>(
       () => ProfileValidationService(),
@@ -242,8 +246,8 @@ void _registerProfile() {
 
 void _registerProfilePhotoCapture() {
   sl
-    ..registerFactory<ProfileCameraService>(() => CameraServiceImpl())
-    ..registerFactory<FaceDetectionService>(() => FaceDetectionServiceImpl())
+    ..registerLazySingleton<FaceAutoCapturePolicy>(() => const FaceAutoCapturePolicy())
+    ..registerFactory<LiveFaceDetectionService>(() => MlkitLiveFaceDetectionServiceImpl())
     ..registerFactory<ProfilePhotoImageProcessingService>(
       () => ProfilePhotoImageProcessingServiceImpl(),
     )
@@ -251,11 +255,19 @@ void _registerProfilePhotoCapture() {
       () => ProfilePhotoRepositoryImpl(pathProvider: sl()),
     )
     ..registerLazySingleton<SaveProfilePhotoUseCase>(() => SaveProfilePhotoUseCase(sl()))
+    ..registerFactory<FaceProfilePhotoCaptureCubit>(
+      () => FaceProfilePhotoCaptureCubit(
+        permissionService: sl(),
+        faceDetectionService: sl(),
+        policy: sl(),
+        imageProcessingService: sl(),
+        saveUseCase: sl(),
+      ),
+    )
     ..registerFactory<ProfilePhotoBloc>(
       () => ProfilePhotoBloc(
         permissionService: sl(),
-        cameraService: sl(),
-        faceDetectionService: sl(),
+        imagePickerService: sl(),
         imageProcessingService: sl(),
         saveUseCase: sl(),
       ),

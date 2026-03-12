@@ -50,21 +50,6 @@ class ProfileMenuSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Personal Information',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
@@ -149,15 +134,15 @@ class ProfileMenuSection extends StatelessWidget {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.logout, size: 20),
-                        SizedBox(width: 8),
                         Text(
                           'Logout',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                        SizedBox(width: 8),
+                        Icon(Icons.logout, size: 20),
                       ],
                     ),
                   ),
@@ -178,7 +163,7 @@ class ProfileMenuSection extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.dangerDeep,
                       ),
                     ),
@@ -204,7 +189,9 @@ class ProfileMenuSection extends StatelessWidget {
     if (parsed != null) {
       return '${parsed.day} ${_monthNames[parsed.month - 1]} ${parsed.year}';
     }
-    final match = RegExp(r'^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$').firstMatch(trimmed);
+    final match = RegExp(
+      r'^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$',
+    ).firstMatch(trimmed);
     if (match != null) {
       final day = int.tryParse(match.group(1)!);
       final monthIndex = _monthIndexByName[match.group(2)!.toLowerCase()];
@@ -287,4 +274,3 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-

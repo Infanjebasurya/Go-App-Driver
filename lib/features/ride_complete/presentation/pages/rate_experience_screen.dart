@@ -135,22 +135,24 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                                 color: AppColors.white,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppColors.white,
+                                  color: AppColors.green,
                                   width: 3,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.black.withValues(alpha: 0.1),
+                                    color: AppColors.black.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
                                 ],
                                 image: DecorationImage(
-                                    image: profilePath != null
-                                        ? FileImage(File(profilePath))
-                                        : const AssetImage(
-                                                'assets/image/profile.png',
-                                              )
+                                  image: profilePath != null
+                                      ? FileImage(File(profilePath))
+                                      : const AssetImage(
+                                              'assets/image/profile.png',
+                                            )
                                             as ImageProvider,
                                   fit: BoxFit.contain,
                                 ),
@@ -261,7 +263,9 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                           checkmarkColor: AppColors.white,
                           labelStyle: TextStyle(
                             fontSize: 14,
-                            color: isSelected ? AppColors.white : AppColors.black87,
+                            color: isSelected
+                                ? AppColors.white
+                                : AppColors.black87,
                             fontWeight: FontWeight.w500,
                           ),
                           shape: RoundedRectangleBorder(
@@ -286,6 +290,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                         text: TextSpan(
                           text: 'Additional Comments ',
                           style: TextStyle(
+                            fontFamily: "Saira",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppColors.gray[700],
@@ -294,6 +299,7 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
                             TextSpan(
                               text: '(optional)',
                               style: TextStyle(
+                                fontFamily: "Saira",
                                 fontWeight: FontWeight.normal,
                                 color: AppColors.gray[500],
                               ),
@@ -369,8 +375,3 @@ class _RateExperienceViewState extends State<_RateExperienceView> {
     );
   }
 }
-
-
-
-
-

@@ -12,7 +12,17 @@ bool _isFlutterTestEnvironment() {
   if (const bool.fromEnvironment('FLUTTER_TEST')) {
     return true;
   }
-  return Platform.environment['FLUTTER_TEST'] == 'true';
+  if (Platform.environment['FLUTTER_TEST'] == 'true') {
+    return true;
+  }
+
+  try {
+    final typeName = WidgetsBinding.instance.runtimeType.toString();
+    return typeName.contains('TestWidgetsFlutterBinding') ||
+        typeName.contains('AutomatedTestWidgetsFlutterBinding');
+  } catch (_) {
+    return false;
+  }
 }
 
 void showProfileImageSourceSheet(BuildContext context) {
@@ -82,6 +92,7 @@ void showDocumentImageSourceSheet(
   BuildContext context, {
   required Future<void> Function(AppImageSource source) onPick,
   required Future<void> Function() onPickDocument,
+  bool allowDocument = true,
 }) {
   showModalBottomSheet<void>(
     context: context,
@@ -119,14 +130,15 @@ void showDocumentImageSourceSheet(
                 onPick(AppImageSource.gallery);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.description_rounded),
-              title: const Text('Document'),
-              onTap: () {
-                Navigator.of(ctx).pop();
-                onPickDocument();
-              },
-            ),
+            if (allowDocument)
+              ListTile(
+                leading: const Icon(Icons.description_rounded),
+                title: const Text('Document'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  onPickDocument();
+                },
+              ),
             const SizedBox(height: 8),
           ],
         ),

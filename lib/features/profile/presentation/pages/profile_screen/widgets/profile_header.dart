@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
-import 'package:goapp/core/di/injection.dart';
 
 import '../../../cubit/profile_edit_state.dart';
 
@@ -19,7 +17,7 @@ class ProfileHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 28),
+      padding: const EdgeInsets.fromLTRB(0, 28, 0, 0),
       child: Column(
         children: <Widget>[
           const ProfileAvatar(),
@@ -56,13 +54,11 @@ class ProfileAvatar extends StatefulWidget {
 
 class _ProfileAvatarState extends State<ProfileAvatar> {
   static const String _photoKey = 'profile.photo.path';
-  late final ImagePickerService _picker;
   ImageProvider? _avatarProvider;
 
   @override
   void initState() {
     super.initState();
-    _picker = sl<ImagePickerService>();
     _loadAvatarFromStore();
   }
 
@@ -90,66 +86,6 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
     precacheImage(provider, context);
   }
 
-  Future<void> _pickPhoto(AppImageSource source) async {
-    final picked = await _picker.pickImage(
-      source: source,
-      imageQuality: 85,
-      maxWidth: 1200,
-    );
-    if (picked == null) return;
-    _avatarProvider = _buildAvatarProvider(picked.path);
-    await TextFieldStore.write(_photoKey, picked.path);
-    _precacheAvatar();
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  void _showPhotoSourceSheet() {
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const SizedBox(height: 10),
-              const Text(
-                'Upload Profile Photo',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
-                ),
-              ),
-              const SizedBox(height: 6),
-              ListTile(
-                leading: const Icon(Icons.camera_alt_rounded),
-                title: const Text('Camera'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  _pickPhoto(AppImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library_rounded),
-                title: const Text('Gallery'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  _pickPhoto(AppImageSource.gallery);
-                },
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -172,26 +108,6 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                       gaplessPlayback: true,
                     )
                   : const Icon(Icons.person, size: 52, color: Colors.white54),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 2,
-          right: 2,
-          child: GestureDetector(
-            onTap: _showPhotoSourceSheet,
-            child: Container(
-              width: 26,
-              height: 26,
-              decoration: const BoxDecoration(
-                color: AuthUiColors.brandGreen,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.camera_alt,
-                color: Colors.white,
-                size: 14,
-              ),
             ),
           ),
         ),
