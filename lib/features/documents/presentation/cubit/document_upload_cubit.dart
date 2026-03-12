@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/service/file_picker_service.dart';
 import 'package:goapp/core/service/image_picker_service.dart';
@@ -17,6 +18,23 @@ part 'document_upload_cubit_validation.dart';
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   static const String _profilePhotoStorageKey = 'profile.photo.path';
 
+  static bool _isFlutterTestEnvironment() {
+    if (const bool.fromEnvironment('FLUTTER_TEST')) {
+      return true;
+    }
+    if (Platform.environment['FLUTTER_TEST'] == 'true') {
+      return true;
+    }
+
+    try {
+      final typeName = WidgetsBinding.instance.runtimeType.toString();
+      return typeName.contains('TestWidgetsFlutterBinding') ||
+          typeName.contains('AutomatedTestWidgetsFlutterBinding');
+    } catch (_) {
+      return false;
+    }
+  }
+
   DocumentUploadCubit({
     int initialStepIndex = 0,
     required ImagePickerService imagePickerService,
@@ -25,6 +43,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   }) : _imagePickerService = imagePickerService,
        _filePickerService = filePickerService,
        _fileService = fileService,
+       _isTest = _isFlutterTestEnvironment(),
        super(
          DocumentUploadState.initial().copyWith(
            currentStepIndex: initialStepIndex,
@@ -36,7 +55,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   final ImagePickerService _imagePickerService;
   final FilePickerService _filePickerService;
   final DocumentUploadFileService _fileService;
-  final bool _isTest = const bool.fromEnvironment('FLUTTER_TEST');
+  final bool _isTest;
   bool _isPicking = false;
 
   void _restoreDraft() {

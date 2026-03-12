@@ -1,4 +1,4 @@
-import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 
 class PickedFile {
   const PickedFile({
@@ -18,37 +18,35 @@ class PickedFile {
 class FilePickerService {
   const FilePickerService();
 
+  static const MethodChannel _channel =
+      MethodChannel('app/file_picker_service');
+
   Future<PickedFile?> pickImage() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      withData: false,
-      allowMultiple: false,
-    );
-    return _mapSingle(result);
+    final Map<Object?, Object?>? raw =
+        await _channel.invokeMethod<Map<Object?, Object?>>('pickImage');
+    return _mapSingle(raw);
   }
 
   Future<PickedFile?> pickCustom({
     required List<String> allowedExtensions,
   }) async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: allowedExtensions,
-      withData: false,
-      allowMultiple: false,
+    final Map<Object?, Object?>? raw =
+        await _channel.invokeMethod<Map<Object?, Object?>>(
+      'pickCustom',
+      <String, Object>{'allowedExtensions': allowedExtensions},
     );
-    return _mapSingle(result);
+    return _mapSingle(raw);
   }
 
-  PickedFile? _mapSingle(FilePickerResult? result) {
-    if (result == null || result.files.isEmpty) return null;
-    final file = result.files.single;
-    final path = file.path;
+  PickedFile? _mapSingle(Map<Object?, Object?>? raw) {
+    if (raw == null) return null;
+    final String? path = raw['path'] as String?;
     if (path == null || path.isEmpty) return null;
     return PickedFile(
       path: path,
-      name: file.name,
-      sizeBytes: file.size,
-      extension: (file.extension ?? '').toLowerCase(),
+      name: (raw['name'] as String?) ?? '',
+      sizeBytes: (raw['sizeBytes'] as num?)?.toInt() ?? 0,
+      extension: ((raw['extension'] as String?) ?? '').toLowerCase(),
     );
   }
 }

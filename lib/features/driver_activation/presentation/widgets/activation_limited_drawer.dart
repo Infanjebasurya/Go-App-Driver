@@ -167,23 +167,6 @@ class _ProfileHeader extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: AuthUiColors.brandGreen,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: AppColors.white,
-                          size: 13,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 6),

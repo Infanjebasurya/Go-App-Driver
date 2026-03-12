@@ -29,7 +29,7 @@ class DocumentNumberRules {
         }
         return null;
       case DocumentStep.vehicleRC:
-        if (!RegExp(r'^[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}$').hasMatch(value)) {
+        if (!RegExp(r'^[A-Z]{2}[0-9]{2}[A-Z]{2}[0-9]{4}$').hasMatch(value)) {
           return 'Enter valid vehicle number (e.g. TN01AB1234)';
         }
         return null;

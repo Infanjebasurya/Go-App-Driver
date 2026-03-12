@@ -153,7 +153,7 @@ Future<void> showGenderSheet(
                             TextButton(
                               onPressed: () => Navigator.of(sheetContext).pop(),
                               child: const Text(
-                                'Done',
+                                'Close',
                                 style: TextStyle(
                                   color: AppColors.emerald,
                                   fontWeight: FontWeight.w700,
@@ -167,6 +167,7 @@ Future<void> showGenderSheet(
                           InkWell(
                             onTap: () {
                               context.read<ProfileSetupCubit>().updateGender(gender);
+                              Navigator.of(sheetContext).pop();
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 15),

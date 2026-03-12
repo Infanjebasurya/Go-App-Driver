@@ -27,23 +27,38 @@ class VehiclePhotoUpload extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isImage = hasPhoto &&
+        uploadType == VehicleUploadType.image &&
+        uploadPath != null &&
+        uploadPath!.isNotEmpty;
+
+    final backgroundColor = hasPhoto
+        ? AppColors.emerald.withValues(alpha: 0.06)
+        : AppColors.hexFFF8FAFC;
+
+    final borderColor = hasPhoto
+        ? AppColors.emerald.withValues(alpha: 0.4)
+        : AppColors.hexFFE2E8F0;
+
+    final borderWidth = hasPhoto ? 1.5 : 1.0;
+    final borderRadius = BorderRadius.circular(14);
+
     return GestureDetector(
       onTap: hasPhoto ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         width: double.infinity,
-        height: 180,
+        height: 220,
         decoration: BoxDecoration(
-          color: hasPhoto
-              ? AppColors.emerald.withValues(alpha: 0.06)
-              : AppColors.hexFFF8FAFC,
-          borderRadius: BorderRadius.circular(14),
+          color: backgroundColor,
+          borderRadius: borderRadius,
+        ),
+        foregroundDecoration: BoxDecoration(
+          borderRadius: borderRadius,
           border: Border.all(
-            color: hasPhoto
-                ? AppColors.emerald.withValues(alpha: 0.4)
-                : AppColors.hexFFE2E8F0,
-            width: hasPhoto ? 1.5 : 1,
+            color: borderColor,
+            width: borderWidth,
             strokeAlign: BorderSide.strokeAlignInside,
           ),
         ),
@@ -53,6 +68,7 @@ class VehiclePhotoUpload extends StatelessWidget {
                 uploadPath: uploadPath,
                 uploadName: uploadName,
                 uploadType: uploadType,
+                fullBleedImage: isImage,
               )
             : _EmptyState(vehicleType: vehicleType),
       ),
@@ -107,12 +123,14 @@ class _UploadedState extends StatelessWidget {
   final String? uploadPath;
   final String? uploadName;
   final VehicleUploadType? uploadType;
+  final bool fullBleedImage;
 
   const _UploadedState({
     this.onRemove,
     this.uploadPath,
     this.uploadName,
     this.uploadType,
+    required this.fullBleedImage,
   });
 
   @override
@@ -120,6 +138,46 @@ class _UploadedState extends StatelessWidget {
     final isImage = uploadType == VehicleUploadType.image && uploadPath != null;
     final isDocument =
         uploadType == VehicleUploadType.document && uploadPath != null;
+
+    if (fullBleedImage && isImage) {
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Image.file(
+                File(uploadPath!),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Center(
+                  child: _fallbackIcon(),
+                ),
+              ),
+            ),
+          ),
+          if (onRemove != null)
+            Positioned(
+              top: 10,
+              right: 10,
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Container(
+                  width: 26,
+                  height: 26,
+                  decoration: const BoxDecoration(
+                    color: AppColors.hexFFFFEEEE,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    size: 14,
+                    color: AppColors.hexFFE53935,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    }
 
     return Stack(
       children: [

@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:goapp/core/service/image_picker_service.dart';
 import 'package:goapp/core/storage/profile_display_store.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
-import 'package:goapp/core/di/injection.dart';
 
 import '../../../about/presentation/pages/about_screen.dart';
 import '../../../auth/presentation/theme/auth_ui_tokens.dart';
@@ -185,13 +183,11 @@ class _ProfileHeader extends StatefulWidget {
 
 class _ProfileHeaderState extends State<_ProfileHeader> {
   static const String _photoKey = 'profile.photo.path';
-  late final ImagePickerService _picker;
   ImageProvider? _avatarProvider;
 
   @override
   void initState() {
     super.initState();
-    _picker = sl<ImagePickerService>();
     _loadAvatarFromStore();
   }
 
@@ -217,17 +213,6 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
     final provider = _avatarProvider;
     if (provider == null) return;
     precacheImage(provider, context);
-  }
-
-  Future<void> _pickPhoto() async {
-    final picked = await _picker.pickImage(source: AppImageSource.gallery);
-    if (picked == null) return;
-    _avatarProvider = _buildAvatarProvider(picked.path);
-    await TextFieldStore.write(_photoKey, picked.path);
-    _precacheAvatar();
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override
@@ -277,27 +262,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                                     Icons.person,
                                     size: 44,
                                     color: AppColors.white54,
-                                  ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: _pickPhoto,
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            decoration: const BoxDecoration(
-                              color: AuthUiColors.brandGreen,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt,
-                              color: AppColors.white,
-                              size: 13,
-                            ),
+                              ),
                           ),
                         ),
                       ),

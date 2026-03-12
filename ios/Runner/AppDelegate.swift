@@ -15,6 +15,8 @@ import AudioToolbox
   private let notificationChannelName = "app/notification_service"
   private let audioChannelName = "app/audio_service"
   private let backgroundChannelName = "app/background_service"
+  private let imagePickerChannelName = "app/image_picker_service"
+  private let profilePhotoProcessingChannelName = "app/profile_photo_processing_service"
   private let nativeNetworkChannelName = "native_network"
   private let nativeNetworkUpdatesChannelName = "native_network_updates"
   private let nativePermissionsChannelName = "native_permissions"
@@ -24,6 +26,8 @@ import AudioToolbox
   private let audioBridge = NativeAudioBridge()
   private let backgroundBridge = NativeBackgroundBridge()
   private let networkBridge = NativeNetworkBridge()
+  private let imagePickerService = NativeImagePickerService()
+  private let profilePhotoProcessingService = ProfilePhotoProcessingService()
 
   override func application(
     _ application: UIApplication,
@@ -91,6 +95,40 @@ import AudioToolbox
     )
     backgroundChannel.setMethodCallHandler { [weak self] call, result in
       self?.backgroundBridge.handle(call: call, result: result)
+    }
+
+    let imagePickerChannel = FlutterMethodChannel(
+      name: imagePickerChannelName,
+      binaryMessenger: binaryMessenger
+    )
+    imagePickerChannel.setMethodCallHandler { [weak self] call, result in
+      guard let self else {
+        result(FlutterError(code: "unavailable", message: "App not ready", details: nil))
+        return
+      }
+      self.imagePickerService.presenter = { [weak self] in
+        if let vc = self?.window?.rootViewController { return vc }
+        if #available(iOS 13.0, *) {
+          let scenes = UIApplication.shared.connectedScenes
+          let windowScene = scenes.first { $0.activationState == .foregroundActive } as? UIWindowScene
+          let keyWindow = windowScene?.windows.first { $0.isKeyWindow }
+          return keyWindow?.rootViewController
+        }
+        return UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController
+      }
+      self.imagePickerService.handle(call: call, result: result)
+    }
+
+    let profilePhotoProcessingChannel = FlutterMethodChannel(
+      name: profilePhotoProcessingChannelName,
+      binaryMessenger: binaryMessenger
+    )
+    profilePhotoProcessingChannel.setMethodCallHandler { [weak self] call, result in
+      guard let self else {
+        result(FlutterError(code: "unavailable", message: "App not ready", details: nil))
+        return
+      }
+      self.profilePhotoProcessingService.handle(call: call, result: result)
     }
 
     let nativeNetworkChannel = FlutterMethodChannel(

@@ -128,6 +128,15 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                       );
                     }),
                   ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    "Can't find code?",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFFC5A059),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -177,7 +186,10 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                   ),
                   const SizedBox(height: 24),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 34),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 34,
+                      vertical: 10,
+                    ),
                     child: Column(
                       children: <Widget>[
                         _KeypadRow(
@@ -192,7 +204,7 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                           labels: const <String>['7', '8', '9'],
                           onPressed: cubit.addDigit,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 16),
                         Row(
                           children: <Widget>[
                             const Expanded(child: SizedBox()),
@@ -216,7 +228,6 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                     ),
                   ),
                   const SizedBox(height: 24),
-
                 ],
               );
             },
@@ -259,8 +270,9 @@ class _KeypadNumberButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final double buttonHeight =
-        (screenHeight * 0.075).clamp(48.0, 70.0).toDouble();
+    final double buttonHeight = (screenHeight * 0.075)
+        .clamp(48.0, 70.0)
+        .toDouble();
     return SizedBox(
       height: buttonHeight,
       child: TextButton(
@@ -268,16 +280,13 @@ class _KeypadNumberButton extends StatelessWidget {
         style: TextButton.styleFrom(
           foregroundColor: AppColors.neutral333,
           textStyle: const TextStyle(
-              fontFamily: "Saira",
-              fontSize: 24, fontWeight: FontWeight.w500),
+            fontFamily: "Saira",
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         child: Text(label),
       ),
     );
   }
 }
-
-
-
-
-

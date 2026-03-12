@@ -174,6 +174,7 @@ class PermissionService(
     private fun androidPermission(permissionName: String): String? {
         return when (permissionName) {
             "camera" -> Manifest.permission.CAMERA
+            "contacts" -> Manifest.permission.READ_CONTACTS
             "location" -> Manifest.permission.ACCESS_FINE_LOCATION
             "photos" -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
