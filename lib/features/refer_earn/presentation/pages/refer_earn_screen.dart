@@ -150,7 +150,10 @@ class _MainReferScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<ReferralCubit>(),
-          child: _BikeReferralDetailScreen(state: state),
+          child: _BikeReferralDetailScreen(
+            state: state,
+            campaign: campaign,
+          ),
         ),
       ),
     );
@@ -158,9 +161,31 @@ class _MainReferScreen extends StatelessWidget {
 }
 
 class _BikeReferralDetailScreen extends StatelessWidget {
-  const _BikeReferralDetailScreen({required this.state});
+  const _BikeReferralDetailScreen({
+    required this.state,
+    required this.campaign,
+  });
 
   final ReferralLoaded state;
+  final ReferralCampaign campaign;
+
+  String get _campaignTitle {
+    switch (campaign.type) {
+      case CampaignType.bike:
+        return 'Bike Referral Program';
+      case CampaignType.auto:
+        return 'Auto Referral Program';
+      case CampaignType.cab:
+        return 'Cab Referral Program';
+    }
+  }
+
+  static String _formatInrInt(int value) {
+    return value.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +194,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: _buildAppBar(context, 'Bike Referral Program'),
+      appBar: _buildAppBar(context, _campaignTitle),
       body: Column(
         children: [
           Expanded(
@@ -194,9 +219,9 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const Text(
-                          'Earn ₹2,000',
-                          style: TextStyle(
+                        Text(
+                          'Earn ₹${_formatInrInt(campaign.reward)}',
+                          style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
                             color: AppColors.headingDark,
@@ -226,7 +251,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.headingDark,
+                          color: Color(0xFF656565),
                         ),
                       ),
                       const Text(
@@ -315,7 +340,7 @@ class _BikeReferralDetailScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.headingDark,
+                      color: Color(0xFF656565),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -356,7 +381,6 @@ class _BikeReferralDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: _InviteButton(onTap: () {}),
     );
   }
 }
@@ -625,7 +649,7 @@ class _CampaignRow extends StatelessWidget {
               '= ₹${campaign.reward}',
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w600,
                 color: AppColors.headingDark,
               ),
             ),
@@ -1148,7 +1172,7 @@ class _HowItWorksStep extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.headingDark,
                   ),
                 ),

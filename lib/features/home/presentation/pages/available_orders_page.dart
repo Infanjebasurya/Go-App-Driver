@@ -326,13 +326,14 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                 thirdPickup,
               );
               final double fourthTripKm = _distanceKm(fourthPickup, fourthDrop);
-              final double fourthPickupKm = _distanceKm(
-                _defaultDriverPoint,
-                fourthPickup,
-              );
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
-                children: <Widget>[
+               final double fourthPickupKm = _distanceKm(
+                 _defaultDriverPoint,
+                 fourthPickup,
+               );
+              final List<Widget> cards = <Widget>[];
+
+              if (state.showFirstOrder) {
+                cards.add(
                   _OrderCard(
                     fare: '\u20B990',
                     pickupTitle: 'Arumbakkam',
@@ -361,98 +362,112 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                       distanceLabel: _formatDistanceKm(firstTripKm),
                     ),
                   ),
-                  if (state.showSecondOrder) ...<Widget>[
-                    const SizedBox(height: 14),
-                    _OrderCard(
-                      fare: '\u20B9100',
-                      // B-10 FIX: Corrected pickup address (was same as drop).
-                      pickupTitle: 'Arumbakkam',
-                      pickupAddress: '42, MMDA Colony, Arumbakkam,\nch-106',
-                      dropTitle: 'Amjikarai',
+                );
+              }
+
+              if (state.showSecondOrder) {
+                if (cards.isNotEmpty) cards.add(const SizedBox(height: 14));
+                cards.add(
+                  _OrderCard(
+                    fare: '\u20B9100',
+                    // B-10 FIX: Corrected pickup address (was same as drop).
+                    pickupTitle: 'Arumbakkam',
+                    pickupAddress: '42, MMDA Colony, Arumbakkam,\nch-106',
+                    dropTitle: 'Amjikarai',
+                    dropAddress:
+                        '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
+                    progress: _canReceiveOrders ? cubit.progressForOrder(1) : 0,
+                    isEnabled: _canReceiveOrders,
+                    distanceLabel: _formatDistanceKm(secondTripKm),
+                    etaLabel: _estimateEtaLabelFromKm(secondPickupKm),
+                    pickupDistanceLabel: _formatDistanceKm(secondPickupKm),
+                    dropDistanceLabel: _formatDistanceKm(secondTripKm),
+                    onDecline: _canReceiveOrders
+                        ? () {
+                            unawaited(_handleDeclineTap());
+                          }
+                        : null,
+                    onAccept: () async => _goToRideScreen(
+                      pickupPoint: secondPickup,
+                      dropPoint: secondDrop,
+                      // B-10 FIX: Corrected pickup in stored record.
+                      pickupAddress: '42, MMDA Colony, Arumbakkam, ch-106',
                       dropAddress:
-                          '13, vinobaji St, Kamarajar Nagar, NGO\nColonyCholaimedu, Ch-94',
-                      progress: _canReceiveOrders ? cubit.progressForOrder(1) : 0,
-                      isEnabled: _canReceiveOrders,
+                          '13, vinobaji St, Kamarajar Nagar, NGO ColonyCholaimedu, Ch-94',
+                      fareLabel: '\u20B9100',
                       distanceLabel: _formatDistanceKm(secondTripKm),
-                      etaLabel: _estimateEtaLabelFromKm(secondPickupKm),
-                      pickupDistanceLabel: _formatDistanceKm(secondPickupKm),
-                      dropDistanceLabel: _formatDistanceKm(secondTripKm),
-                      onDecline: _canReceiveOrders
-                          ? () {
-                              unawaited(_handleDeclineTap());
-                            }
-                          : null,
-                      onAccept: () async => _goToRideScreen(
-                        pickupPoint: secondPickup,
-                        dropPoint: secondDrop,
-                        // B-10 FIX: Corrected pickup in stored record.
-                        pickupAddress: '42, MMDA Colony, Arumbakkam, ch-106',
-                        dropAddress:
-                            '13, vinobaji St, Kamarajar Nagar, NGO ColonyCholaimedu, Ch-94',
-                        fareLabel: '\u20B9100',
-                        distanceLabel: _formatDistanceKm(secondTripKm),
-                      ),
                     ),
-                  ],
-                  if (state.showThirdOrder) ...<Widget>[
-                    const SizedBox(height: 14),
-                    _OrderCard(
-                      fare: '\u20B91000',
-                      pickupTitle: 'Tiruppur',
+                  ),
+                );
+              }
+
+              if (state.showThirdOrder) {
+                if (cards.isNotEmpty) cards.add(const SizedBox(height: 14));
+                cards.add(
+                  _OrderCard(
+                    fare: '\u20B91000',
+                    pickupTitle: 'Tiruppur',
+                    pickupAddress: 'Tiruppur, Tamil Nadu',
+                    dropTitle: 'Madurai',
+                    dropAddress: 'Madurai, Tamil Nadu',
+                    progress: _canReceiveOrders ? cubit.progressForOrder(2) : 0,
+                    isEnabled: _canReceiveOrders,
+                    distanceLabel: _formatDistanceKm(thirdTripKm),
+                    etaLabel: _estimateEtaLabelFromKm(thirdPickupKm),
+                    pickupDistanceLabel: _formatDistanceKm(thirdPickupKm),
+                    dropDistanceLabel: _formatDistanceKm(thirdTripKm),
+                    onDecline: _canReceiveOrders
+                        ? () {
+                            unawaited(_handleDeclineTap());
+                          }
+                        : null,
+                    onAccept: () async => _goToRideScreen(
+                      pickupPoint: thirdPickup,
+                      dropPoint: thirdDrop,
                       pickupAddress: 'Tiruppur, Tamil Nadu',
-                      dropTitle: 'Madurai',
                       dropAddress: 'Madurai, Tamil Nadu',
-                      progress: _canReceiveOrders ? cubit.progressForOrder(2) : 0,
-                      isEnabled: _canReceiveOrders,
+                      fareLabel: '\u20B91000',
                       distanceLabel: _formatDistanceKm(thirdTripKm),
-                      etaLabel: _estimateEtaLabelFromKm(thirdPickupKm),
-                      pickupDistanceLabel: _formatDistanceKm(thirdPickupKm),
-                      dropDistanceLabel: _formatDistanceKm(thirdTripKm),
-                      onDecline: _canReceiveOrders
-                          ? () {
-                              unawaited(_handleDeclineTap());
-                            }
-                          : null,
-                      onAccept: () async => _goToRideScreen(
-                        pickupPoint: thirdPickup,
-                        dropPoint: thirdDrop,
-                        pickupAddress: 'Tiruppur, Tamil Nadu',
-                        dropAddress: 'Madurai, Tamil Nadu',
-                        fareLabel: '\u20B91000',
-                        distanceLabel: _formatDistanceKm(thirdTripKm),
-                      ),
                     ),
-                  ],
-                  if (state.showFourthOrder) ...<Widget>[
-                    const SizedBox(height: 14),
-                    _OrderCard(
-                      fare: '\u20B9120',
-                      pickupTitle: 'Tiruppur Old Bus Stand',
+                  ),
+                );
+              }
+
+              if (state.showFourthOrder) {
+                if (cards.isNotEmpty) cards.add(const SizedBox(height: 14));
+                cards.add(
+                  _OrderCard(
+                    fare: '\u20B9120',
+                    pickupTitle: 'Tiruppur Old Bus Stand',
+                    pickupAddress: 'Tiruppur Old Bus Stand, Tiruppur',
+                    dropTitle: 'Rayapuram',
+                    dropAddress: 'Rayapuram, Tiruppur',
+                    progress: _canReceiveOrders ? cubit.progressForOrder(3) : 0,
+                    isEnabled: _canReceiveOrders,
+                    distanceLabel: _formatDistanceKm(fourthTripKm),
+                    etaLabel: _estimateEtaLabelFromKm(fourthPickupKm),
+                    pickupDistanceLabel: _formatDistanceKm(fourthPickupKm),
+                    dropDistanceLabel: _formatDistanceKm(fourthTripKm),
+                    onDecline: _canReceiveOrders
+                        ? () {
+                            unawaited(_handleDeclineTap());
+                          }
+                        : null,
+                    onAccept: () async => _goToRideScreen(
+                      pickupPoint: fourthPickup,
+                      dropPoint: fourthDrop,
                       pickupAddress: 'Tiruppur Old Bus Stand, Tiruppur',
-                      dropTitle: 'Rayapuram',
                       dropAddress: 'Rayapuram, Tiruppur',
-                      progress: _canReceiveOrders ? cubit.progressForOrder(3) : 0,
-                      isEnabled: _canReceiveOrders,
+                      fareLabel: '\u20B9120',
                       distanceLabel: _formatDistanceKm(fourthTripKm),
-                      etaLabel: _estimateEtaLabelFromKm(fourthPickupKm),
-                      pickupDistanceLabel: _formatDistanceKm(fourthPickupKm),
-                      dropDistanceLabel: _formatDistanceKm(fourthTripKm),
-                      onDecline: _canReceiveOrders
-                          ? () {
-                              unawaited(_handleDeclineTap());
-                            }
-                          : null,
-                      onAccept: () async => _goToRideScreen(
-                        pickupPoint: fourthPickup,
-                        dropPoint: fourthDrop,
-                        pickupAddress: 'Tiruppur Old Bus Stand, Tiruppur',
-                        dropAddress: 'Rayapuram, Tiruppur',
-                        fareLabel: '\u20B9120',
-                        distanceLabel: _formatDistanceKm(fourthTripKm),
-                      ),
                     ),
-                  ],
-                ],
+                  ),
+                );
+              }
+
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 18),
+                children: cards,
               );
             },
           ),
@@ -483,8 +498,8 @@ class _OrdersAppBarTitle extends StatelessWidget {
         Row(
           children: <Widget>[
             const Expanded(
-              child: Text(
-                'Tap to Accept   |   Auto-expires in 30s',
+                child: Text(
+                'Tap to Accept   |   Auto-expires in 60s',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
