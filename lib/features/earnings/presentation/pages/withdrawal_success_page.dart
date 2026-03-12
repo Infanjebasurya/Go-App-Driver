@@ -97,7 +97,7 @@ class WithdrawalSuccessPage extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.emerald.withOpacity(0.1),
+                  color: AppColors.hex1A00A86B,
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Row(
