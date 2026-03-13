@@ -139,6 +139,7 @@ class NativeMapView(
 
     private fun applyOptions(map: com.google.android.gms.maps.GoogleMap, args: Map<String, Any?>) {
         val myLocationEnabled = args["myLocationEnabled"] as? Boolean ?: false
+        val myLocationButtonEnabled = args["myLocationButtonEnabled"] as? Boolean ?: false
         val zoomControlsEnabled = args["zoomControlsEnabled"] as? Boolean ?: false
         val compassEnabled = args["compassEnabled"] as? Boolean ?: false
         val mapToolbarEnabled = args["mapToolbarEnabled"] as? Boolean ?: false
@@ -148,6 +149,7 @@ class NativeMapView(
         } catch (_: SecurityException) {
         }
 
+        map.uiSettings.isMyLocationButtonEnabled = myLocationButtonEnabled
         map.uiSettings.isZoomControlsEnabled = zoomControlsEnabled
         map.uiSettings.isCompassEnabled = compassEnabled
         map.uiSettings.isMapToolbarEnabled = mapToolbarEnabled

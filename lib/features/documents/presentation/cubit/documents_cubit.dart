@@ -55,6 +55,17 @@ class DocumentsCubit extends Cubit<DocumentsState> {
     emit(const DocumentsLoading());
     await Future.delayed(const Duration(milliseconds: 800));
     final docs = _defaultDocuments.map(_applyProgress).toList();
+    if (!docs.any((d) => d.id == _bankAccountId)) {
+      docs.add(
+        DocumentModel(
+          id: _bankAccountId,
+          title: 'Link Bank Account',
+          subtitle: 'BANK TRANSFER',
+          iconAsset: _bankAccountId,
+          status: DocumentStatus.notUploaded,
+        ),
+      );
+    }
     final allVerified = docs.every((d) => d.status == DocumentStatus.verified);
     emit(DocumentsLoaded(documents: docs, allVerified: allVerified));
   }
@@ -133,7 +144,11 @@ class DocumentsCubit extends Cubit<DocumentsState> {
         final status = completed
             ? DocumentStatus.verified
             : DocumentStatus.notUploaded;
-        return doc.copyWith(
+        return DocumentModel(
+          id: doc.id,
+          title: completed ? 'Linked Bank Account' : 'Link Bank Account',
+          subtitle: doc.subtitle,
+          iconAsset: doc.iconAsset,
           status: status,
           frontImagePath: bankDocPath?.trim().isEmpty ?? true
               ? null

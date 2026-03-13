@@ -177,37 +177,6 @@ class _DrivingLicenseDetail extends StatelessWidget {
               value: licenseNumber?.isNotEmpty == true ? licenseNumber! : '—',
               valueLarge: true,
             ),
-            const SizedBox(height: 16),
-            const Row(
-              children: [
-                Expanded(
-                  child: _InfoField(label: 'HOLDER NAME', value: 'Sam Yogi'),
-                ),
-                Expanded(
-                  child: _InfoField(label: 'VALIDITY', value: '12 Oct 2028'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Divider(color: AppColors.surfaceF0),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: AppColors.surfaceF0,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const _InfoField(
-                  label: 'CLASS OF VEHICLE',
-                  value: 'LMV-NT, MCWG',
-                ),
-              ],
-            ),
           ],
         ),
       ],
@@ -259,40 +228,6 @@ class _VehicleRCDetail extends StatelessWidget {
               label: 'VEHICLE NUMBER',
               value: vehicleNumber?.isNotEmpty == true ? vehicleNumber! : '—',
               valueLarge: true,
-            ),
-            const SizedBox(height: 16),
-            const Row(
-              children: [
-                Expanded(
-                  child: _InfoField(label: 'OWNERSHIP', value: 'Owner'),
-                ),
-                Expanded(
-                  child: _InfoField(
-                    label: 'YEAR OF MANUFACTURE',
-                    value: '2022',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Divider(color: AppColors.surfaceF0),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: AppColors.surfaceF0,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const _InfoField(
-                  label: 'CLASS OF VEHICLE',
-                  value: 'LMV-NT, MCWG',
-                ),
-              ],
             ),
           ],
         ),

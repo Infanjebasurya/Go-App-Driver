@@ -96,7 +96,6 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                           selected: state.filter,
                           totalCount: state.allTrips.length,
                           completedCount: _cubit.completedCount(),
-                          inProgressCount: _cubit.inProgressCount(),
                           canceledCount: _cubit.canceledCount(),
                           onSelected: _cubit.setFilter,
                         ),

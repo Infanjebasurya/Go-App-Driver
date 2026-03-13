@@ -621,13 +621,6 @@ class _TripNavigationViewState extends State<_TripNavigationView>
                         onTap: () => SOSBottomSheet.show(context),
                       ),
                     ),
-                    AnimatedPositioned(
-                      duration: const Duration(milliseconds: 420),
-                      curve: Curves.easeOutCubic,
-                      right: 16,
-                      bottom: showArrivalSheet ? 392 : 58,
-                      child: const _CurrentLocationButton(),
-                    ),
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: AnimatedSlide(

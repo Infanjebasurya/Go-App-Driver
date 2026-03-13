@@ -7,6 +7,6 @@ void main() {
 
   runFeatureStructureTests(
     featureName: 'help_support',
-    expectedTopLevelDirs: <String>['domain', 'presentation'],
+    expectedTopLevelDirs: <String>['data', 'domain', 'presentation'],
   );
 }

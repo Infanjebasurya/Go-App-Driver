@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
+import 'package:goapp/features/help_support/presentation/pages/nearby_demand_location/nearby_demand_location_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/earnings/earnings_help_screen.dart';
+import 'package:goapp/features/help_support/presentation/cubit/earnings_help_cubit.dart';
+import 'package:goapp/features/help_support/presentation/pages/emergency/emergency_screen.dart';
+import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/features/help_support/presentation/pages/new_account_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/new_app_issue_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/ticket_tracking_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -23,6 +32,77 @@ class ExploreScreen extends StatelessWidget {
                         item.title.toLowerCase().contains(query.toLowerCase()),
                   )
                   .toList(growable: false);
+
+        void openComingSoon(String title) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('$title coming soon')));
+        }
+
+        void openIssue(_ExploreIssueItem item) {
+          if (item.title == 'Nearby Demand Locations') {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(
+                  name: HelpSupportRoutes.nearbyDemandLocation,
+                ),
+                builder: (_) => const NearbyDemandLocationScreen(),
+              ),
+            );
+            return;
+          }
+
+          if (item.title == 'Earnings') {
+            ensureEarningsHelpDependenciesRegistered();
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: HelpSupportRoutes.earnings),
+                builder: (_) => BlocProvider(
+                  create: (_) => sl<EarningsHelpCubit>(),
+                  child: const EarningsHelpScreen(),
+                ),
+              ),
+            );
+            return;
+          }
+
+          if (item.title == 'Account') {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: HelpSupportRoutes.account),
+                builder: (_) => const NewAccountScreen(),
+              ),
+            );
+            return;
+          }
+
+          if (item.title == 'App issues') {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(
+                  name: HelpSupportRoutes.appIssues,
+                ),
+                builder: (_) => const NewAppIssueScreen(),
+              ),
+            );
+            return;
+          }
+
+          if (item.title == 'Emergency') {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(
+                  name: HelpSupportRoutes.emergency,
+                ),
+                builder: (_) => const EmergencyScreen(),
+              ),
+            );
+            return;
+          }
+
+          openComingSoon(item.title);
+        }
+
         return Scaffold(
           backgroundColor: AppColors.white,
           appBar: AppAppBar(
@@ -54,7 +134,16 @@ class ExploreScreen extends StatelessWidget {
                     width: 200,
                     height: 44,
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            settings: const RouteSettings(
+                              name: HelpSupportRoutes.ticketTracking,
+                            ),
+                            builder: (_) => const TicketTrackingScreen(),
+                          ),
+                        );
+                      },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textBody,
                         side: const BorderSide(color: AppColors.borderSoft),
@@ -105,10 +194,12 @@ class ExploreScreen extends StatelessWidget {
                             const SizedBox.shrink(),
                         itemBuilder: (context, i) {
                           final item = filteredItems[i];
+                          final bool isAccount = item.title == 'Account';
+                          final bool isAppIssues = item.title == 'App issues';
                           return Material(
                             color: AppColors.transparent,
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () => openIssue(item),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
@@ -131,11 +222,44 @@ class ExploreScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const Icon(
-                                      Icons.chevron_right,
-                                      color: AppColors.textSecondary,
-                                      size: 20,
-                                    ),
+                                    if (isAccount)
+                                      InkWell(
+                                        key: const Key(
+                                          'explore_issue_account_chevron',
+                                        ),
+                                        onTap: () => openIssue(item),
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(6),
+                                          child: Icon(
+                                            Icons.chevron_right,
+                                            color: AppColors.textSecondary,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      )
+                                    else if (isAppIssues)
+                                      InkWell(
+                                        key: const Key(
+                                          'explore_issue_app_issues_chevron',
+                                        ),
+                                        onTap: () => openIssue(item),
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(6),
+                                          child: Icon(
+                                            Icons.chevron_right,
+                                            color: AppColors.textSecondary,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      const Icon(
+                                        Icons.chevron_right,
+                                        color: AppColors.textSecondary,
+                                        size: 20,
+                                      ),
                                   ],
                                 ),
                               ),

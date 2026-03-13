@@ -24,6 +24,7 @@ class _BankAccountFormState extends State<BankAccountForm> {
   late final TextEditingController _confirmCtrl;
   late final TextEditingController _ifscCtrl;
   bool _obscureAccount = true;
+  final GlobalKey _bankDocErrorKey = GlobalKey();
 
   @override
   void initState() {
@@ -45,6 +46,30 @@ class _BankAccountFormState extends State<BankAccountForm> {
     _confirmCtrl.dispose();
     _ifscCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant BankAccountForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final hadError =
+        oldWidget.bankData.bankDocumentError != null &&
+        oldWidget.bankData.bankDocumentError!.trim().isNotEmpty;
+    final hasError =
+        widget.bankData.bankDocumentError != null &&
+        widget.bankData.bankDocumentError!.trim().isNotEmpty;
+
+    if (!hadError && hasError) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ctx = _bankDocErrorKey.currentContext;
+        if (ctx == null) return;
+        Scrollable.ensureVisible(
+          ctx,
+          alignment: 0.2,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+        );
+      });
+    }
   }
 
   @override
@@ -174,9 +199,13 @@ class _BankAccountFormState extends State<BankAccountForm> {
           ),
           if (data.bankDocumentError != null) ...[
             const SizedBox(height: 8),
-            Text(
-              data.bankDocumentError!,
-              style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+            SizedBox(
+              key: _bankDocErrorKey,
+              width: double.infinity,
+              child: Text(
+                data.bankDocumentError!,
+                style: const TextStyle(fontSize: 11, color: Color(0xFFE53935)),
+              ),
             ),
           ],
           const SizedBox(height: 32),

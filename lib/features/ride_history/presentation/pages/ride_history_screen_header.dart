@@ -156,7 +156,6 @@ class _FilterChips extends StatelessWidget {
     required this.onSelected,
     required this.totalCount,
     required this.completedCount,
-    required this.inProgressCount,
     required this.canceledCount,
   });
 
@@ -164,7 +163,6 @@ class _FilterChips extends StatelessWidget {
   final ValueChanged<RideHistoryFilter> onSelected;
   final int totalCount;
   final int completedCount;
-  final int inProgressCount;
   final int canceledCount;
 
   @override
@@ -184,12 +182,6 @@ class _FilterChips extends StatelessWidget {
             label: 'Completed ($completedCount)',
             selected: selected == RideHistoryFilter.completed,
             onTap: () => onSelected(RideHistoryFilter.completed),
-          ),
-          const SizedBox(width: 8),
-          _FilterChipItem(
-            label: 'In Progress ($inProgressCount)',
-            selected: selected == RideHistoryFilter.inProgress,
-            onTap: () => onSelected(RideHistoryFilter.inProgress),
           ),
           const SizedBox(width: 8),
           _FilterChipItem(
