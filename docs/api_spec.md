@@ -2,6 +2,8 @@
 
 ## Change Log
 
+- 2026-03-13: Added Help & Support Earnings help topics screen (client-only, mock content). No backend API contract changes.
+- 2026-03-13: Added Help & Support Support Chat UI flow (client-side mock transcript + feedback submission). Backend API contract not implemented yet; endpoints below are proposed.
 - 2026-03-10: Added client-side network_check feature (native connectivity, offline UI, reconnect shimmer). No backend API contract changes.
 - 2026-02-24: Earnings/Wallet navigation and presentation flow refactor to clean architecture (data/domain/presentation). No backend API contract changes.
 - 2026-02-20: Client now fetches Google Directions road polylines for captain map rendering (pickup/drop). No backend API contract changes.
@@ -182,6 +184,29 @@
 ```json
 {
   "trip_id": "trip-901",
+  "status": "submitted"
+}
+```
+
+## Support Chat Feedback (Proposed)
+
+- Method: `POST`
+- Path: `/v1/support/chat/feedback`
+- Auth: `Bearer <token>`
+
+### Request Body
+
+```json
+{
+  "rating": 4,
+  "resolved": true
+}
+```
+
+### Success Response `200`
+
+```json
+{
   "status": "submitted"
 }
 ```

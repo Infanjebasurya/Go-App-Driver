@@ -48,30 +48,6 @@ class _SosButton extends StatelessWidget {
   }
 }
 
-class _CurrentLocationButton extends StatelessWidget {
-  const _CurrentLocationButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        shape: BoxShape.circle,
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.12),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: const Icon(Icons.my_location, color: AppColors.neutral666),
-    );
-  }
-}
-
 class _ReachedCustomerSheet extends StatelessWidget {
   const _ReachedCustomerSheet({
     required this.onCompleteTap,

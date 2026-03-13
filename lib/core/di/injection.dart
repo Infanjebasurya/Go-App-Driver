@@ -54,6 +54,17 @@ import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.d
 import 'package:goapp/features/help_support/presentation/cubit/emergency_contacts_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
+import 'package:goapp/features/help_support/data/repositories/earnings_help_repository_mock.dart';
+import 'package:goapp/features/help_support/domain/repositories/earnings_help_repository.dart';
+import 'package:goapp/features/help_support/domain/usecases/get_earnings_help_article_usecase.dart';
+import 'package:goapp/features/help_support/domain/usecases/get_earnings_help_faqs_usecase.dart';
+import 'package:goapp/features/help_support/domain/usecases/get_earnings_help_links_usecase.dart';
+import 'package:goapp/features/help_support/presentation/cubit/earnings_help_cubit.dart';
+import 'package:goapp/features/help_support/data/repositories/support_chat_repository_mock.dart';
+import 'package:goapp/features/help_support/domain/repositories/support_chat_repository.dart';
+import 'package:goapp/features/help_support/domain/usecases/get_support_chat_transcript_usecase.dart';
+import 'package:goapp/features/help_support/domain/usecases/submit_support_chat_feedback_usecase.dart';
+import 'package:goapp/features/help_support/presentation/cubit/support_chat_cubit.dart';
 import 'package:goapp/features/incentives/data/datasources/incentives_mock_api.dart';
 import 'package:goapp/features/incentives/data/repositories/incentives_repository_impl.dart';
 import 'package:goapp/features/incentives/domain/repositories/incentives_repository.dart';
@@ -423,7 +434,87 @@ void _registerSupport() {
     ..registerFactory<HelpCubit>(() => HelpCubit())
     ..registerFactory<ComplaintCubit>(() => ComplaintCubit())
     ..registerFactory<SafetyPreferencesCubit>(() => SafetyPreferencesCubit())
-    ..registerFactory<EmergencyContactsCubit>(() => EmergencyContactsCubit());
+    ..registerFactory<EmergencyContactsCubit>(() => EmergencyContactsCubit())
+    ..registerLazySingleton<EarningsHelpRepository>(
+      () => const EarningsHelpRepositoryMock(),
+    )
+    ..registerLazySingleton<GetEarningsHelpLinksUseCase>(
+      () => GetEarningsHelpLinksUseCase(sl()),
+    )
+    ..registerLazySingleton<GetEarningsHelpFaqsUseCase>(
+      () => GetEarningsHelpFaqsUseCase(sl()),
+    )
+    ..registerLazySingleton<GetEarningsHelpArticleUseCase>(
+      () => GetEarningsHelpArticleUseCase(sl()),
+    )
+    ..registerFactory<EarningsHelpCubit>(
+      () => EarningsHelpCubit(getLinks: sl()),
+    )
+    ..registerLazySingleton<SupportChatRepository>(
+      () => const SupportChatRepositoryMock(),
+    )
+    ..registerLazySingleton<GetSupportChatTranscriptUseCase>(
+      () => GetSupportChatTranscriptUseCase(sl()),
+    )
+    ..registerLazySingleton<SubmitSupportChatFeedbackUseCase>(
+      () => SubmitSupportChatFeedbackUseCase(sl()),
+    )
+    ..registerFactory<SupportChatCubit>(
+      () => SupportChatCubit(getTranscript: sl(), submitFeedback: sl()),
+    );
+}
+
+/// Safe for hot-reload: registers Support Chat dependencies if missing.
+void ensureSupportChatDependenciesRegistered() {
+  if (!sl.isRegistered<SupportChatRepository>()) {
+    sl.registerLazySingleton<SupportChatRepository>(
+      () => const SupportChatRepositoryMock(),
+    );
+  }
+  if (!sl.isRegistered<GetSupportChatTranscriptUseCase>()) {
+    sl.registerLazySingleton<GetSupportChatTranscriptUseCase>(
+      () => GetSupportChatTranscriptUseCase(sl()),
+    );
+  }
+  if (!sl.isRegistered<SubmitSupportChatFeedbackUseCase>()) {
+    sl.registerLazySingleton<SubmitSupportChatFeedbackUseCase>(
+      () => SubmitSupportChatFeedbackUseCase(sl()),
+    );
+  }
+  if (!sl.isRegistered<SupportChatCubit>()) {
+    sl.registerFactory<SupportChatCubit>(
+      () => SupportChatCubit(getTranscript: sl(), submitFeedback: sl()),
+    );
+  }
+}
+
+/// Safe for hot-reload: registers Earnings Help dependencies if missing.
+void ensureEarningsHelpDependenciesRegistered() {
+  if (!sl.isRegistered<EarningsHelpRepository>()) {
+    sl.registerLazySingleton<EarningsHelpRepository>(
+      () => const EarningsHelpRepositoryMock(),
+    );
+  }
+  if (!sl.isRegistered<GetEarningsHelpLinksUseCase>()) {
+    sl.registerLazySingleton<GetEarningsHelpLinksUseCase>(
+      () => GetEarningsHelpLinksUseCase(sl()),
+    );
+  }
+  if (!sl.isRegistered<GetEarningsHelpFaqsUseCase>()) {
+    sl.registerLazySingleton<GetEarningsHelpFaqsUseCase>(
+      () => GetEarningsHelpFaqsUseCase(sl()),
+    );
+  }
+  if (!sl.isRegistered<GetEarningsHelpArticleUseCase>()) {
+    sl.registerLazySingleton<GetEarningsHelpArticleUseCase>(
+      () => GetEarningsHelpArticleUseCase(sl()),
+    );
+  }
+  if (!sl.isRegistered<EarningsHelpCubit>()) {
+    sl.registerFactory<EarningsHelpCubit>(
+      () => EarningsHelpCubit(getLinks: sl()),
+    );
+  }
 }
 
 void _registerSos() {

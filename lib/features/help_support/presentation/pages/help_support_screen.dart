@@ -7,6 +7,7 @@ import 'package:goapp/features/help_support/presentation/pages/complaint_screen.
 import 'package:goapp/features/help_support/presentation/pages/explore_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/safety.dart';
 import 'package:goapp/features/help_support/presentation/pages/tickets_screen.dart';
+import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/di/injection.dart';
@@ -83,13 +84,16 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     title: 'Explore all Issue',
                     onTap: () {
                       context.read<HelpCubit>().goToExplore();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BlocProvider.value(
-                            value: context.read<HelpCubit>(),
-                            child: const ExploreScreen(),
-                          ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            settings: const RouteSettings(
+                              name: HelpSupportRoutes.explore,
+                            ),
+                            builder: (_) => BlocProvider.value(
+                              value: context.read<HelpCubit>(),
+                              child: const ExploreScreen(),
+                            ),
                         ),
                       );
                     },

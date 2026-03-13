@@ -96,7 +96,6 @@ class _OnlineContentState extends State<OnlineContent> {
               bottom: MediaQuery.of(context).padding.bottom + 20,
               child: _BottomWalletCard(state: state),
             ),
-
             Positioned(
               bottom: MediaQuery.of(context).padding.bottom + 100,
               right: 16,

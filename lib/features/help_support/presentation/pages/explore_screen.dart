@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/theme/app_colors.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
+import 'package:goapp/features/help_support/presentation/pages/nearby_demand_location/nearby_demand_location_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/earnings/earnings_help_screen.dart';
+import 'package:goapp/features/help_support/presentation/cubit/earnings_help_cubit.dart';
+import 'package:goapp/features/help_support/presentation/pages/emergency/emergency_screen.dart';
+import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 
@@ -42,46 +48,7 @@ class ExploreScreen extends StatelessWidget {
               child: Container(height: 1, color: AppColors.borderSoft),
             ),
           ),
-          bottomNavigationBar: SafeArea(
-            top: false,
-            child: Container(
-              color: AppColors.white,
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 200,
-                    height: 44,
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textBody,
-                        side: const BorderSide(color: AppColors.borderSoft),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      child: const Text('Ticket Tracking'),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Our support team typically responds within 15 minutes.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          bottomNavigationBar: const HelpTicketTrackingFooter(),
           body: Column(
             children: [
               HelpSearchBar(onChanged: cubit.updateSearch),
@@ -108,7 +75,41 @@ class ExploreScreen extends StatelessWidget {
                           return Material(
                             color: AppColors.transparent,
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                if (item.title == 'Nearby Demand Locations') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      settings: const RouteSettings(
+                                        name: HelpSupportRoutes.nearbyDemandLocation,
+                                      ),
+                                      builder: (_) =>
+                                          const NearbyDemandLocationScreen(),
+                                    ),
+                                  );
+                                } else if (item.title == 'Earnings') {
+                                  ensureEarningsHelpDependenciesRegistered();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      settings: const RouteSettings(
+                                        name: HelpSupportRoutes.earnings,
+                                      ),
+                                      builder: (_) => BlocProvider(
+                                        create: (_) => sl<EarningsHelpCubit>(),
+                                        child: const EarningsHelpScreen(),
+                                      ),
+                                    ),
+                                  );
+                                } else if (item.title == 'Emergency') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      settings: const RouteSettings(
+                                        name: HelpSupportRoutes.emergency,
+                                      ),
+                                      builder: (_) => const EmergencyScreen(),
+                                    ),
+                                  );
+                                }
+                              },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
