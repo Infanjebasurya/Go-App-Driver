@@ -13,7 +13,16 @@ class ExploreScreen extends StatelessWidget {
     return BlocBuilder<HelpCubit, HelpState>(
       builder: (context, state) {
         final cubit = context.read<HelpCubit>();
-        final categories = cubit.filteredIssueCategories;
+        final String query = state is HelpExploreState ? state.searchQuery : '';
+        final items = _ExploreIssueItem.defaultItems;
+        final filteredItems = query.trim().isEmpty
+            ? items
+            : items
+                  .where(
+                    (item) =>
+                        item.title.toLowerCase().contains(query.toLowerCase()),
+                  )
+                  .toList(growable: false);
         return Scaffold(
           backgroundColor: AppColors.white,
           appBar: AppAppBar(
@@ -23,7 +32,7 @@ class ExploreScreen extends StatelessWidget {
             ),
             centerTitle: true,
             title: const Text(
-              'Explore all Issue',
+              'Explore all Issues',
               style: TextStyle(fontSize: 18),
             ),
             backgroundColor: AppColors.white,
@@ -33,55 +42,108 @@ class ExploreScreen extends StatelessWidget {
               child: Container(height: 1, color: AppColors.borderSoft),
             ),
           ),
+          bottomNavigationBar: SafeArea(
+            top: false,
+            child: Container(
+              color: AppColors.white,
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    height: 44,
+                    child: OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textBody,
+                        side: const BorderSide(color: AppColors.borderSoft),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: const Text('Ticket Tracking'),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Our support team typically responds within 15 minutes.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           body: Column(
             children: [
               HelpSearchBar(onChanged: cubit.updateSearch),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Expanded(
-                child: ListView.separated(
-                  itemCount: categories.length,
-                  separatorBuilder: (_, _) => const Divider(
-                    height: 1,
-                    color: AppColors.borderSoft,
-                    indent: 22,
-                    endIndent: 22,
-                  ),
-                  itemBuilder: (context, i) {
-                    final cat = categories[i];
-                    return InkWell(
-                      onTap: () {},
-                      child: Container(
-                        color: AppColors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
+                child: filteredItems.isEmpty
+                    ? const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 18, 16, 18),
+                        child: Text(
+                          'No issues found. Try a different search.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(cat.icon, size: 22, color: AppColors.textBody),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Text(
-                                cat.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textBody,
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        itemCount: filteredItems.length,
+                        separatorBuilder: (_, __) => const SizedBox.shrink(),
+                        itemBuilder: (context, i) {
+                          final item = filteredItems[i];
+                          return Material(
+                            color: AppColors.transparent,
+                            child: InkWell(
+                              onTap: () {},
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      item.icon,
+                                      size: 22,
+                                      color: AppColors.textBody,
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Text(
+                                        item.title,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textBody,
+                                        ),
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.chevron_right,
+                                      color: AppColors.textSecondary,
+                                      size: 20,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            const Icon(
-                              Icons.chevron_right,
-                              color: AppColors.textSecondary,
-                              size: 20,
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
+              const SizedBox(height: 12),
             ],
           ),
         );
@@ -90,6 +152,28 @@ class ExploreScreen extends StatelessWidget {
   }
 }
 
+class _ExploreIssueItem {
+  const _ExploreIssueItem({required this.icon, required this.title});
 
+  final IconData icon;
+  final String title;
 
-
+  static const List<_ExploreIssueItem> defaultItems = <_ExploreIssueItem>[
+    _ExploreIssueItem(
+      icon: Icons.location_on_outlined,
+      title: 'Nearby Demand Locations',
+    ),
+    _ExploreIssueItem(
+      icon: Icons.account_balance_wallet_outlined,
+      title: 'Earnings',
+    ),
+    _ExploreIssueItem(icon: Icons.settings_outlined, title: 'Account'),
+    _ExploreIssueItem(icon: Icons.phone_android_outlined, title: 'App issues'),
+    _ExploreIssueItem(icon: Icons.warning_amber_rounded, title: 'Emergency'),
+    _ExploreIssueItem(
+      icon: Icons.shield_outlined,
+      title: 'Accidental Insurance',
+    ),
+    _ExploreIssueItem(icon: Icons.bolt_outlined, title: 'Getting Started'),
+  ];
+}

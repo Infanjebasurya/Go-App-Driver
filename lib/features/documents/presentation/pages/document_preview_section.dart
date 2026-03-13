@@ -54,9 +54,9 @@ class ProfilePhotoStepContent extends StatelessWidget {
                 fontSize: 16,
                 color: Colors.grey.shade500,
                 fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
             const SizedBox(height: 24),
             Center(
               child: SizedBox(
@@ -67,6 +67,7 @@ class ProfilePhotoStepContent extends StatelessWidget {
                     children: [
                       Positioned.fill(
                         child: GestureDetector(
+                          key: const Key('profile_photo_frame_tap_area'),
                           onTap: (isProcessing || hasImage) ? null : onCameraTap,
                           child: Container(
                             decoration: BoxDecoration(
@@ -88,38 +89,6 @@ class ProfilePhotoStepContent extends StatelessWidget {
                                     size: frameWidth * 0.42,
                                     color: Colors.white54,
                                   ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 10,
-                        bottom: 10,
-                        child: GestureDetector(
-                          onTap: isProcessing ? null : onCameraTap,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.white,
-                              border: Border.all(
-                                color: AppColors.emerald,
-                                width: 1.6,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color:
-                                  isProcessing ? Colors.black26 : AppColors.emerald,
-                              size: 20,
-                            ),
                           ),
                         ),
                       ),
