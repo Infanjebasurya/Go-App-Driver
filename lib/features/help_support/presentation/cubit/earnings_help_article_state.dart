@@ -12,4 +12,3 @@ class EarningsHelpArticleState {
     return EarningsHelpArticleState(content: content);
   }
 }
-

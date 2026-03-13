@@ -13,4 +13,3 @@ class GetEarningsHelpArticleUseCase {
     return _repo.getEarningsHelpArticle(linkId: linkId, faqTitle: faqTitle);
   }
 }
-

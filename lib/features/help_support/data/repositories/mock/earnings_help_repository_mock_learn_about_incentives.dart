@@ -62,7 +62,9 @@ HelpArticleContent? _learnAboutIncentivesArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('Open '),
             HelpTextRun('Menu → Incentives', bold: true),
-            HelpTextRun(' to see the available incentive\nprograms and details.'),
+            HelpTextRun(
+              ' to see the available incentive\nprograms and details.',
+            ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -148,7 +150,10 @@ HelpArticleContent? _learnAboutIncentivesArticle(String faqTitle) {
             HelpTextRun('Open '),
             HelpTextRun('Menu → Incentives', bold: true),
             HelpTextRun(' to view your '),
-            HelpTextRun('daily, weekly,\nor bonus incentive progress', bold: true),
+            HelpTextRun(
+              'daily, weekly,\nor bonus incentive progress',
+              bold: true,
+            ),
             HelpTextRun('.'),
           ]),
         ],
@@ -157,4 +162,3 @@ HelpArticleContent? _learnAboutIncentivesArticle(String faqTitle) {
       return null;
   }
 }
-

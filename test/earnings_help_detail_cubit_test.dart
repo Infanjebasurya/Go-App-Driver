@@ -13,16 +13,14 @@ class _FakeEarningsHelpRepo implements EarningsHelpRepository {
   }
 
   @override
-  Future<List<HelpFaqItem>> getEarningsHelpFaqs({required String linkId}) async {
+  Future<List<HelpFaqItem>> getEarningsHelpFaqs({
+    required String linkId,
+  }) async {
     if (linkId == 'learn_about_earnings') {
-      return const <HelpFaqItem>[
-        HelpFaqItem(title: 'What is the rate card?'),
-      ];
+      return const <HelpFaqItem>[HelpFaqItem(title: 'What is the rate card?')];
     }
     if (linkId == 'learn_about_incentives') {
-      return const <HelpFaqItem>[
-        HelpFaqItem(title: 'What are incentives?'),
-      ];
+      return const <HelpFaqItem>[HelpFaqItem(title: 'What are incentives?')];
     }
     return const <HelpFaqItem>[];
   }

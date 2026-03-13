@@ -21,7 +21,8 @@ class EarningsHelpDetailScreen extends StatefulWidget {
   final String linkId;
 
   @override
-  State<EarningsHelpDetailScreen> createState() => _EarningsHelpDetailScreenState();
+  State<EarningsHelpDetailScreen> createState() =>
+      _EarningsHelpDetailScreenState();
 }
 
 class _EarningsHelpDetailScreenState extends State<EarningsHelpDetailScreen> {
@@ -63,21 +64,21 @@ class _EarningsHelpDetailScreenState extends State<EarningsHelpDetailScreen> {
                     color: AppColors.transparent,
                     child: InkWell(
                       onTap: () {
-                  final String displayTitle = switch (item.title) {
-                    'Money was deducted after a cash payment' =>
-                      'Money deducted after a cash payment',
-                    'Customer asked to drop at a different location' =>
-                      'Customer asked to drop different location',
-                    'How do I transfer money to my bank account?' =>
-                      'Transfer money to my bank account?',
-                    'Transfer request is initiated but not\ncompleted' =>
-                      'Transfer request is initiated',
-                    'Money is credited but not showing in my\nbank account' =>
-                      'Money not showing in my bank account',
-                    "Why wasn't my incentive added after\nreaching the target?" =>
-                      "Why wasn't my incentive added",
-                    _ => item.title,
-                  };
+                        final String displayTitle = switch (item.title) {
+                          'Money was deducted after a cash payment' =>
+                            'Money deducted after a cash payment',
+                          'Customer asked to drop at a different location' =>
+                            'Customer asked to drop different location',
+                          'How do I transfer money to my bank account?' =>
+                            'Transfer money to my bank account?',
+                          'Transfer request is initiated but not\ncompleted' =>
+                            'Transfer request is initiated',
+                          'Money is credited but not showing in my\nbank account' =>
+                            'Money not showing in my bank account',
+                          "Why wasn't my incentive added after\nreaching the target?" =>
+                            "Why wasn't my incentive added",
+                          _ => item.title,
+                        };
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
                             builder: (_) => BlocProvider(
@@ -86,7 +87,9 @@ class _EarningsHelpDetailScreenState extends State<EarningsHelpDetailScreen> {
                                 linkId: widget.linkId,
                                 faqTitle: item.title,
                               ),
-                              child: EarningsHelpArticleScreen(title: displayTitle),
+                              child: EarningsHelpArticleScreen(
+                                title: displayTitle,
+                              ),
                             ),
                           ),
                         );

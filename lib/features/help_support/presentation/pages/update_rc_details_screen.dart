@@ -20,11 +20,14 @@ class UpdateRcDetailsScreen extends StatelessWidget {
           items: [
             [
               TextSpan(text: 'Open '),
-              TextSpan(text: 'Menu', style: ArticleText.bold,),
+              TextSpan(text: 'Menu', style: ArticleText.bold),
             ],
             [
               TextSpan(text: 'Tap '),
-              TextSpan(text: 'Documents & Details → RC', style: ArticleText.bold),
+              TextSpan(
+                text: 'Documents & Details → RC',
+                style: ArticleText.bold,
+              ),
             ],
             [
               TextSpan(text: 'Enter the '),

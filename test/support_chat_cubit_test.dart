@@ -22,7 +22,10 @@ class _FakeSupportChatRepo implements SupportChatRepository {
   Future<List<SupportChatMessage>> getInitialTranscript() async => transcript;
 
   @override
-  Future<void> submitFeedback({required int rating, required bool? resolved}) async {
+  Future<void> submitFeedback({
+    required int rating,
+    required bool? resolved,
+  }) async {
     lastRating = rating;
     lastResolved = resolved;
   }
@@ -79,4 +82,3 @@ void main() {
     });
   });
 }
-

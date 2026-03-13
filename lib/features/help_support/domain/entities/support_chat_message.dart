@@ -11,4 +11,3 @@ class SupportChatMessage {
   final String text;
   final String timeLabel;
 }
-

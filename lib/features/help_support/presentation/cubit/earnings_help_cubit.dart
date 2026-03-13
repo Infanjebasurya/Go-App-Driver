@@ -4,8 +4,8 @@ import 'package:goapp/features/help_support/presentation/cubit/earnings_help_sta
 
 class EarningsHelpCubit extends Cubit<EarningsHelpState> {
   EarningsHelpCubit({required GetEarningsHelpLinksUseCase getLinks})
-      : _getLinks = getLinks,
-        super(EarningsHelpState.initial());
+    : _getLinks = getLinks,
+      super(EarningsHelpState.initial());
 
   final GetEarningsHelpLinksUseCase _getLinks;
 
@@ -14,4 +14,3 @@ class EarningsHelpCubit extends Cubit<EarningsHelpState> {
     emit(state.copyWith(links: links));
   }
 }
-

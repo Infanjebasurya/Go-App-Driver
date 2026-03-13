@@ -13,15 +13,17 @@ class _FakeRepo implements EarningsHelpRepository {
   Future<List<HelpArticleLink>> getEarningsHelpLinks() async => const [];
 
   @override
-  Future<List<HelpFaqItem>> getEarningsHelpFaqs({required String linkId}) async =>
-      const [];
+  Future<List<HelpFaqItem>> getEarningsHelpFaqs({
+    required String linkId,
+  }) async => const [];
 
   @override
   Future<HelpArticleContent?> getEarningsHelpArticle({
     required String linkId,
     required String faqTitle,
   }) async {
-    if (linkId == 'learn_about_earnings' && faqTitle == 'What is the rate card?') {
+    if (linkId == 'learn_about_earnings' &&
+        faqTitle == 'What is the rate card?') {
       return const HelpArticleContent(
         title: 'What is the rate card?',
         showBottomActions: false,
@@ -51,4 +53,3 @@ void main() {
     });
   });
 }
-

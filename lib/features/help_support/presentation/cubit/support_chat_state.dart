@@ -13,13 +13,13 @@ class SupportChatState {
   });
 
   factory SupportChatState.initial() => const SupportChatState(
-        messages: <SupportChatMessage>[],
-        showQuickActions: true,
-        showFeedback: false,
-        rating: 4,
-        resolved: null,
-        navAction: null,
-      );
+    messages: <SupportChatMessage>[],
+    showQuickActions: true,
+    showFeedback: false,
+    rating: 4,
+    resolved: null,
+    navAction: null,
+  );
 
   final List<SupportChatMessage> messages;
   final bool showQuickActions;

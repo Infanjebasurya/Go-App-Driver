@@ -11,4 +11,3 @@ class HelpArticleContent {
   final List<HelpContentBlock> blocks;
   final bool showBottomActions;
 }
-

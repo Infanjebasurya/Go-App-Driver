@@ -57,7 +57,8 @@ class _EarningsHelpScreenState extends State<EarningsHelpScreen> {
                     child: InkWell(
                       onTap: () {
                         final String detailTitle = switch (item.id) {
-                          'learn_about_incentives' => 'Learn More About Incentives',
+                          'learn_about_incentives' =>
+                            'Learn More About Incentives',
                           'transfer_earnings_to_bank' =>
                             'Transfer Earnings to Bank',
                           _ => item.title,

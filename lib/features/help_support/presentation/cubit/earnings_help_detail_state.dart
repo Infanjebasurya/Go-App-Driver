@@ -12,4 +12,3 @@ class EarningsHelpDetailState {
     return EarningsHelpDetailState(items: items ?? this.items);
   }
 }
-

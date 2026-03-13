@@ -34,9 +34,9 @@ class ExploreScreen extends StatelessWidget {
                   .toList(growable: false);
 
         void openComingSoon(String title) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$title coming soon')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('$title coming soon')));
         }
 
         void openIssue(_ExploreIssueItem item) {
@@ -79,7 +79,9 @@ class ExploreScreen extends StatelessWidget {
           if (item.title == 'App issues') {
             Navigator.of(context).push(
               MaterialPageRoute<void>(
-                settings: const RouteSettings(name: HelpSupportRoutes.appIssues),
+                settings: const RouteSettings(
+                  name: HelpSupportRoutes.appIssues,
+                ),
                 builder: (_) => const NewAppIssueScreen(),
               ),
             );
@@ -89,7 +91,9 @@ class ExploreScreen extends StatelessWidget {
           if (item.title == 'Emergency') {
             Navigator.of(context).push(
               MaterialPageRoute<void>(
-                settings: const RouteSettings(name: HelpSupportRoutes.emergency),
+                settings: const RouteSettings(
+                  name: HelpSupportRoutes.emergency,
+                ),
                 builder: (_) => const EmergencyScreen(),
               ),
             );
@@ -98,6 +102,7 @@ class ExploreScreen extends StatelessWidget {
 
           openComingSoon(item.title);
         }
+
         return Scaffold(
           backgroundColor: AppColors.white,
           appBar: AppAppBar(

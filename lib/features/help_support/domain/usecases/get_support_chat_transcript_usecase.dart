@@ -8,4 +8,3 @@ class GetSupportChatTranscriptUseCase {
 
   Future<List<SupportChatMessage>> call() => _repo.getInitialTranscript();
 }
-

@@ -10,4 +10,3 @@ class GetEarningsHelpFaqsUseCase {
     return _repo.getEarningsHelpFaqs(linkId: linkId);
   }
 }
-

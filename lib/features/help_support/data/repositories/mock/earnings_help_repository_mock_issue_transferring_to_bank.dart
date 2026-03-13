@@ -16,7 +16,9 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('This process may take '),
             HelpTextRun('up to 24 hours', bold: true),
-            HelpTextRun('. Once approved,\nthe amount will be transferred to your bank account.'),
+            HelpTextRun(
+              '. Once approved,\nthe amount will be transferred to your bank account.',
+            ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -37,12 +39,17 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
             HelpTextRun('Your money transfer request may be placed '),
             HelpTextRun('on hold', bold: true),
             HelpTextRun(' if\nthe system detects '),
-            HelpTextRun('unusual activity or verification is\nrequired', bold: true),
+            HelpTextRun(
+              'unusual activity or verification is\nrequired',
+              bold: true,
+            ),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('In such cases, the request will be reviewed by our\nteam. This process may take '),
+            HelpTextRun(
+              'In such cases, the request will be reviewed by our\nteam. This process may take ',
+            ),
             HelpTextRun('up to 48 hours', bold: true),
             HelpTextRun('.'),
           ]),
@@ -68,7 +75,9 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('In some cases, deductions or penalties may apply if\n'),
+            HelpTextRun(
+              'In some cases, deductions or penalties may apply if\n',
+            ),
             HelpTextRun(
               'policy violations or suspicious activity are detected',
               bold: true,
@@ -93,9 +102,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('Your transfer request has been '),
             HelpTextRun('successfully initiated', bold: true),
-            HelpTextRun(
-              '\nand is currently being processed by the bank.',
-            ),
+            HelpTextRun('\nand is currently being processed by the bank.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -121,7 +128,9 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('If the incentive is still not credited after the day ends,\nplease contact '),
+            HelpTextRun(
+              'If the incentive is still not credited after the day ends,\nplease contact ',
+            ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by\ntapping '),
             HelpTextRun('Get Help', bold: true),
@@ -136,7 +145,10 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('This can happen if there is an '),
-            HelpTextRun('issue with the bank or a\ntechnical problem during the transaction', bold: true),
+            HelpTextRun(
+              'issue with the bank or a\ntechnical problem during the transaction',
+              bold: true,
+            ),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
@@ -147,11 +159,15 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('You can try transferring the amount again after some\ntime.'),
+            HelpTextRun(
+              'You can try transferring the amount again after some\ntime.',
+            ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('If the incentive is still not credited after the day ends,\nplease contact '),
+            HelpTextRun(
+              'If the incentive is still not credited after the day ends,\nplease contact ',
+            ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by\ntapping '),
             HelpTextRun('Get Help', bold: true),
@@ -169,7 +185,9 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('The amount should reflect in your bank account within\n'),
+            HelpTextRun(
+              'The amount should reflect in your bank account within\n',
+            ),
             HelpTextRun('4-7 working days', bold: true),
             HelpTextRun('.'),
           ]),
@@ -183,7 +201,9 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('If the incentive is still not credited after the day ends,\nplease contact '),
+            HelpTextRun(
+              'If the incentive is still not credited after the day ends,\nplease contact ',
+            ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by\ntapping '),
             HelpTextRun('Get Help', bold: true),

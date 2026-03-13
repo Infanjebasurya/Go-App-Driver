@@ -97,7 +97,9 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('Eligibility for the cancellation fare depends on the\n'),
+            HelpTextRun(
+              'Eligibility for the cancellation fare depends on the\n',
+            ),
             HelpTextRun(
               'distance traveled towards the pickup location',
               bold: true,
@@ -139,9 +141,7 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
               'If the customer refuses to pay or there is any issue,\nplease contact ',
             ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
-            HelpTextRun(
-              ' immediately while the customer is still present.',
-            ),
+            HelpTextRun(' immediately while the customer is still present.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([

@@ -141,10 +141,7 @@ class HelpTicketTrackingFooter extends StatelessWidget {
             const Text(
               'Our support team typically responds within 15 minutes.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),

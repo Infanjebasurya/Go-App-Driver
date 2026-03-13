@@ -6,9 +6,9 @@ class EarningsHelpDetailCubit extends Cubit<EarningsHelpDetailState> {
   EarningsHelpDetailCubit({
     required GetEarningsHelpFaqsUseCase getFaqs,
     required String linkId,
-  })  : _getFaqs = getFaqs,
-        _linkId = linkId,
-        super(EarningsHelpDetailState.initial());
+  }) : _getFaqs = getFaqs,
+       _linkId = linkId,
+       super(EarningsHelpDetailState.initial());
 
   final GetEarningsHelpFaqsUseCase _getFaqs;
   final String _linkId;
@@ -18,4 +18,3 @@ class EarningsHelpDetailCubit extends Cubit<EarningsHelpDetailState> {
     emit(state.copyWith(items: items));
   }
 }
-

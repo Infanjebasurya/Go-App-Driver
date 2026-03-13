@@ -113,7 +113,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       if (lastRoute == HelpSupportRoutes.ticketTracking) {
         Navigator.of(context).push(
           MaterialPageRoute<void>(
-            settings: const RouteSettings(name: HelpSupportRoutes.ticketTracking),
+            settings: const RouteSettings(
+              name: HelpSupportRoutes.ticketTracking,
+            ),
             builder: (_) => const TicketTrackingScreen(),
           ),
         );
@@ -181,16 +183,16 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     title: 'Explore all Issue',
                     onTap: () {
                       context.read<HelpCubit>().goToExplore();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            settings: const RouteSettings(
-                              name: HelpSupportRoutes.explore,
-                            ),
-                            builder: (_) => BlocProvider.value(
-                              value: context.read<HelpCubit>(),
-                              child: const ExploreScreen(),
-                            ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          settings: const RouteSettings(
+                            name: HelpSupportRoutes.explore,
+                          ),
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<HelpCubit>(),
+                            child: const ExploreScreen(),
+                          ),
                         ),
                       );
                     },

@@ -30,8 +30,10 @@ class SupportChatRepositoryMock implements SupportChatRepository {
   }
 
   @override
-  Future<void> submitFeedback({required int rating, required bool? resolved}) async {
+  Future<void> submitFeedback({
+    required int rating,
+    required bool? resolved,
+  }) async {
     return;
   }
 }
-

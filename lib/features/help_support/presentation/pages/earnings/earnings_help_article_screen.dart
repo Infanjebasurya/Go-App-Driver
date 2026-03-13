@@ -68,9 +68,7 @@ class _EarningsHelpArticleScreenState extends State<EarningsHelpArticleScreen> {
             ),
           ),
           bottomNavigationBar: content?.showBottomActions == true
-              ? HelpCustomerCareSupportChatBar(
-                  onSupportChat: _openSupportChat,
-                )
+              ? HelpCustomerCareSupportChatBar(onSupportChat: _openSupportChat)
               : null,
           body: content == null
               ? const SizedBox.shrink()
@@ -98,13 +96,13 @@ class _HelpContentRenderer extends StatelessWidget {
           switch (block) {
             HelpSpacerBlock(:final height) => SizedBox(height: height),
             HelpHeadingBlock(:final text) => Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textBody,
-                ),
+              text,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textBody,
               ),
+            ),
             HelpParagraphBlock(:final runs) => _HelpRichText(runs: runs),
             HelpBulletsBlock(:final items) => _HelpBullets(items: items),
           },

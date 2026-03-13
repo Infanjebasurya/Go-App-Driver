@@ -37,21 +37,21 @@ class NearbyDemandLocationDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
           child: SizedBox(
             height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  ensureSupportChatDependenciesRegistered();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      settings: const RouteSettings(
-                        name: HelpSupportRoutes.supportChat,
-                      ),
-                      builder: (_) => BlocProvider(
-                        create: (_) => sl<SupportChatCubit>(),
-                        child: const SupportChatScreen(),
-                      ),
+            child: ElevatedButton(
+              onPressed: () {
+                ensureSupportChatDependenciesRegistered();
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    settings: const RouteSettings(
+                      name: HelpSupportRoutes.supportChat,
                     ),
-                  );
-                },
+                    builder: (_) => BlocProvider(
+                      create: (_) => sl<SupportChatCubit>(),
+                      child: const SupportChatScreen(),
+                    ),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.emerald,
                 foregroundColor: AppColors.white,
@@ -211,7 +211,10 @@ class NearbyDemandLocationDetailScreen extends StatelessWidget {
                                   color: AppColors.textSecondary,
                                 ),
                                 children: [
-                                  TextSpan(text: 'Zoom in or out on the\nmap, or tap on any\n'),
+                                  TextSpan(
+                                    text:
+                                        'Zoom in or out on the\nmap, or tap on any\n',
+                                  ),
                                   TextSpan(
                                     text: 'highlighted area',
                                     style: TextStyle(

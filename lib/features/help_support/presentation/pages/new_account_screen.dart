@@ -48,10 +48,7 @@ class NewAccountScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         centerTitle: true,
-        title: const Text(
-          'Account',
-          style: TextStyle(fontSize: 18),
-        ),
+        title: const Text('Account', style: TextStyle(fontSize: 18)),
         backgroundColor: AppColors.white,
         elevation: 0,
         bottom: PreferredSize(
@@ -71,7 +68,10 @@ class NewAccountScreen extends StatelessWidget {
               onTap: null,
               borderRadius: BorderRadius.circular(12),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     Expanded(

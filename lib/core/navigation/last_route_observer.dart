@@ -41,4 +41,3 @@ class LastRouteObserver extends NavigatorObserver {
     _persist(previousRoute);
   }
 }
-

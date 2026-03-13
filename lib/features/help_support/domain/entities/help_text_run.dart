@@ -4,4 +4,3 @@ class HelpTextRun {
   final String text;
   final bool bold;
 }
-

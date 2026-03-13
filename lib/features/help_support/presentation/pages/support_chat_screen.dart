@@ -390,7 +390,10 @@ class _MessageBubble extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.emerald.withValues(alpha: 0.75),
                   borderRadius: BorderRadius.circular(16),
@@ -407,14 +410,21 @@ class _MessageBubble extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Icon(Icons.done_all, size: 16, color: AppColors.white),
+                    const Icon(
+                      Icons.done_all,
+                      size: 16,
+                      color: AppColors.white,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 message.timeLabel,
-                style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
@@ -446,7 +456,10 @@ class _MessageBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.strokeLight,
                     borderRadius: BorderRadius.circular(16),
@@ -463,7 +476,10 @@ class _MessageBubble extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   message.timeLabel,
-                  style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -490,7 +506,9 @@ class _QuickActionButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: AppColors.emerald.withValues(alpha: 0.35)),
           foregroundColor: AppColors.emerald,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
         ),
         child: Text(label),
@@ -498,4 +516,3 @@ class _QuickActionButton extends StatelessWidget {
     );
   }
 }
-

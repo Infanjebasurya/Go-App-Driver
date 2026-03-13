@@ -192,7 +192,8 @@ class _TicketCard extends StatelessWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => TicketTrackingDetailScreen(model: ticket.details),
+                builder: (_) =>
+                    TicketTrackingDetailScreen(model: ticket.details),
               ),
             );
           },

@@ -44,7 +44,9 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('Your earnings will be calculated based on the final\n'),
+            HelpTextRun(
+              'Your earnings will be calculated based on the final\n',
+            ),
             HelpTextRun('drop location', bold: true),
             HelpTextRun('.'),
           ]),

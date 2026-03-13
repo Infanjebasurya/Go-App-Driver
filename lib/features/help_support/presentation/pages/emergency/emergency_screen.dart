@@ -34,10 +34,8 @@ class EmergencyScreen extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         itemCount: items.length,
-        separatorBuilder: (context, index) => const Divider(
-          height: 1,
-          color: AppColors.borderSoft,
-        ),
+        separatorBuilder: (context, index) =>
+            const Divider(height: 1, color: AppColors.borderSoft),
         itemBuilder: (context, index) {
           final item = items[index];
           return Material(
@@ -171,7 +169,8 @@ class _EmergencyIssue {
       body: TextSpan(
         children: [
           TextSpan(
-            text: 'Please avoid getting into an argument with the customer.\n\n',
+            text:
+                'Please avoid getting into an argument with the customer.\n\n',
           ),
           TextSpan(
             text:

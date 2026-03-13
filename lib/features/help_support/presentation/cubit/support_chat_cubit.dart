@@ -9,10 +9,10 @@ class SupportChatCubit extends Cubit<SupportChatState> {
     required GetSupportChatTranscriptUseCase getTranscript,
     required SubmitSupportChatFeedbackUseCase submitFeedback,
     Duration feedbackDelay = const Duration(milliseconds: 600),
-  })  : _getTranscript = getTranscript,
-        _submitFeedback = submitFeedback,
-        _feedbackDelay = feedbackDelay,
-        super(SupportChatState.initial());
+  }) : _getTranscript = getTranscript,
+       _submitFeedback = submitFeedback,
+       _feedbackDelay = feedbackDelay,
+       super(SupportChatState.initial());
 
   final GetSupportChatTranscriptUseCase _getTranscript;
   final SubmitSupportChatFeedbackUseCase _submitFeedback;
@@ -83,4 +83,3 @@ class SupportChatCubit extends Cubit<SupportChatState> {
     emit(state.copyWith(navAction: null));
   }
 }
-

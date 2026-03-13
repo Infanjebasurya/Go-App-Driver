@@ -8,7 +8,9 @@ HelpArticleContent? _transferEarningsToBankArticle(String faqTitle) {
         showBottomActions: true,
         blocks: [
           HelpParagraphBlock([
-            HelpTextRun('Money Transfer is the process of transferring money\nfrom your '),
+            HelpTextRun(
+              'Money Transfer is the process of transferring money\nfrom your ',
+            ),
             HelpTextRun('GoApp Wallet', bold: true),
             HelpTextRun(' to your '),
             HelpTextRun('bank account', bold: true),
@@ -132,7 +134,10 @@ HelpArticleContent? _transferEarningsToBankArticle(String faqTitle) {
               HelpTextRun('Documents section from the menu.', bold: true),
             ],
             [HelpTextRun('Tap on '), HelpTextRun('Bank Details.', bold: true)],
-            [HelpTextRun('Select '), HelpTextRun('Add Bank details.', bold: true)],
+            [
+              HelpTextRun('Select '),
+              HelpTextRun('Add Bank details.', bold: true),
+            ],
             [
               HelpTextRun('Enter your updated '),
               HelpTextRun('bank account details.', bold: true),
@@ -146,7 +151,9 @@ HelpArticleContent? _transferEarningsToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun('Your bank account details will be updated successfully.'),
+            HelpTextRun(
+              'Your bank account details will be updated successfully.',
+            ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -179,7 +186,10 @@ HelpArticleContent? _transferEarningsToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('You will see how many money '),
-            HelpTextRun('transfers are available\nfor the day or week.', bold: true),
+            HelpTextRun(
+              'transfers are available\nfor the day or week.',
+              bold: true,
+            ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -193,4 +203,3 @@ HelpArticleContent? _transferEarningsToBankArticle(String faqTitle) {
       return null;
   }
 }
-

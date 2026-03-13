@@ -18,7 +18,10 @@ class EarningsHelpRepositoryMock implements EarningsHelpRepository {
   @override
   Future<List<HelpArticleLink>> getEarningsHelpLinks() async {
     return const <HelpArticleLink>[
-      HelpArticleLink(id: 'learn_about_earnings', title: 'Learn about earnings'),
+      HelpArticleLink(
+        id: 'learn_about_earnings',
+        title: 'Learn about earnings',
+      ),
       HelpArticleLink(
         id: 'issue_with_order_earnings',
         title: 'Issue with order earnings',
@@ -43,7 +46,9 @@ class EarningsHelpRepositoryMock implements EarningsHelpRepository {
   }
 
   @override
-  Future<List<HelpFaqItem>> getEarningsHelpFaqs({required String linkId}) async {
+  Future<List<HelpFaqItem>> getEarningsHelpFaqs({
+    required String linkId,
+  }) async {
     switch (linkId) {
       case 'learn_about_earnings':
         return const <HelpFaqItem>[
@@ -94,9 +99,13 @@ class EarningsHelpRepositoryMock implements EarningsHelpRepository {
           HelpFaqItem(title: 'Transfer request is awaiting approval'),
           HelpFaqItem(title: 'Transfer request is on hold'),
           HelpFaqItem(title: 'Transfer request was rejected'),
-          HelpFaqItem(title: 'Transfer request is initiated but not\ncompleted'),
+          HelpFaqItem(
+            title: 'Transfer request is initiated but not\ncompleted',
+          ),
           HelpFaqItem(title: 'Transfer request failed'),
-          HelpFaqItem(title: 'Money is credited but not showing in my\nbank account'),
+          HelpFaqItem(
+            title: 'Money is credited but not showing in my\nbank account',
+          ),
         ];
       default:
         return const <HelpFaqItem>[];

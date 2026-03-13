@@ -12,4 +12,3 @@ class EarningsHelpState {
     return EarningsHelpState(links: links ?? this.links);
   }
 }
-

@@ -74,7 +74,7 @@ class NewAppIssueScreen extends StatelessWidget {
               SizedBox(
                 width: 200,
                 height: 44,
-                  child: OutlinedButton(
+                child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -82,10 +82,10 @@ class NewAppIssueScreen extends StatelessWidget {
                       ),
                     );
                   },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textBody,
-                      side: const BorderSide(color: AppColors.borderSoft),
-                      shape: RoundedRectangleBorder(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textBody,
+                    side: const BorderSide(color: AppColors.borderSoft),
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     textStyle: const TextStyle(
@@ -100,10 +100,7 @@ class NewAppIssueScreen extends StatelessWidget {
               const Text(
                 'Our support team typically responds within 15 minutes.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -121,7 +118,10 @@ class NewAppIssueScreen extends StatelessWidget {
               onTap: null,
               borderRadius: BorderRadius.circular(12),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -173,4 +173,3 @@ class _AppIssueItem {
     required this.chevronKey,
   });
 }
-

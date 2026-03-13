@@ -3,4 +3,3 @@ class HelpFaqItem {
 
   final String title;
 }
-

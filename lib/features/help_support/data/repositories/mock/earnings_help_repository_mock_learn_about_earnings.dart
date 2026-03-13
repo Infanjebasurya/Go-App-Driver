@@ -155,7 +155,10 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If applicable, this amount will be '),
-            HelpTextRun('automatically added\nto your order earnings', bold: true),
+            HelpTextRun(
+              'automatically added\nto your order earnings',
+              bold: true,
+            ),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
@@ -177,10 +180,7 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
               HelpTextRun('Minimum distance', bold: true),
               HelpTextRun(' for long pickup eligibility'),
             ],
-            [
-              HelpTextRun('The '),
-              HelpTextRun('Fare per km', bold: true),
-            ],
+            [HelpTextRun('The '), HelpTextRun('Fare per km', bold: true)],
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -228,4 +228,3 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
       return null;
   }
 }
-

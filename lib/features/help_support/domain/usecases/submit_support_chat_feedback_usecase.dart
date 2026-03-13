@@ -9,4 +9,3 @@ class SubmitSupportChatFeedbackUseCase {
     return _repo.submitFeedback(rating: rating, resolved: resolved);
   }
 }
-

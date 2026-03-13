@@ -8,4 +8,3 @@ class GetEarningsHelpLinksUseCase {
 
   Future<List<HelpArticleLink>> call() => _repo.getEarningsHelpLinks();
 }
-
