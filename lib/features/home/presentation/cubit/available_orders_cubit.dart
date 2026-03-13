@@ -7,7 +7,7 @@ class AvailableOrdersCubit extends Cubit<AvailableOrdersState> {
   AvailableOrdersCubit() : super(const AvailableOrdersState());
 
   static const Duration _tickDuration = Duration(milliseconds: 100);
-  static const Duration _perOrderDuration = Duration(seconds: 60);
+  static const Duration _perOrderDuration = Duration(seconds: 15);
   Timer? _timer;
 
   void start() {
@@ -70,12 +70,14 @@ class AvailableOrdersCubit extends Cubit<AvailableOrdersState> {
       case 3:
         emit(
           state.copyWith(
+            showFirstOrder: true,
+            showSecondOrder: false,
+            showThirdOrder: false,
             showFourthOrder: false,
-            activeOrderIndex: 4,
+            activeOrderIndex: 0,
             progress: 0,
           ),
         );
-        _timer?.cancel();
         return;
       default:
         _timer?.cancel();

@@ -87,6 +87,10 @@ class BitmapDescriptor {
     return BitmapDescriptor._(hue: hue);
   }
 
+  static BitmapDescriptor fromAssetName(String assetName) {
+    return BitmapDescriptor._(assetName: assetName);
+  }
+
   static Future<BitmapDescriptor> asset(
     ImageConfiguration configuration,
     String assetName,

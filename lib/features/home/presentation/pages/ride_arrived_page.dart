@@ -90,6 +90,7 @@ class _RideArrivedPageState extends State<RideArrivedPage>
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
     WidgetsBinding.instance.addObserver(this);
+    _driverMarkerIcon = BitmapDescriptor.fromAssetName(AppAssets.mapBike);
     _loadMapStyle();
     _loadDriverMarkerIcon();
     unawaited(_refreshLocationState(requestPermission: true));

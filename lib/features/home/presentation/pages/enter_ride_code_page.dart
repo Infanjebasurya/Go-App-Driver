@@ -128,15 +128,6 @@ class _EnterRideCodeViewState extends State<_EnterRideCodeView> {
                       );
                     }),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Can't find code?",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFC5A059),
-                    ),
-                  ),
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),

@@ -1,20 +1,25 @@
 package com.sybrox.goapp_captain.platform.views
 
 import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.view.View
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import io.flutter.FlutterInjector
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
+import kotlin.math.roundToInt
 
 class NativeMapView(
     private val activity: Activity,
@@ -26,6 +31,7 @@ class NativeMapView(
     private val channel: MethodChannel = MethodChannel(messenger, "app/native_map_view_$viewId")
 
     private var googleMap: com.google.android.gms.maps.GoogleMap? = null
+    private val markerIconCache: MutableMap<String, BitmapDescriptor> = mutableMapOf()
 
     init {
         MapsInitializer.initialize(activity, MapsInitializer.Renderer.LATEST) {}
@@ -167,17 +173,39 @@ class NativeMapView(
             val title = marker["title"] as? String
             val snippet = marker["snippet"] as? String
             val hue = (marker["hue"] as? Number)?.toFloat()
+            val assetName = marker["assetName"] as? String
 
             val options = MarkerOptions()
                 .position(LatLng(lat, lng))
                 .title(title)
                 .snippet(snippet)
 
-            if (hue != null) {
+            val assetIcon = assetName?.let { loadMarkerIcon(it) }
+            if (assetIcon != null) {
+                options.icon(assetIcon)
+            } else if (hue != null) {
                 options.icon(BitmapDescriptorFactory.defaultMarker(hue))
             }
 
             map.addMarker(options)
+        }
+    }
+
+    private fun loadMarkerIcon(assetName: String): BitmapDescriptor? {
+        if (assetName.isBlank()) return null
+        markerIconCache[assetName]?.let { return it }
+        return try {
+            val lookupKey = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(assetName)
+            activity.assets.open(lookupKey).use { input ->
+                val bitmap = BitmapFactory.decodeStream(input) ?: return null
+                val sizePx = (44f * activity.resources.displayMetrics.density).roundToInt()
+                val scaled: Bitmap = Bitmap.createScaledBitmap(bitmap, sizePx, sizePx, true)
+                val descriptor = BitmapDescriptorFactory.fromBitmap(scaled)
+                markerIconCache[assetName] = descriptor
+                descriptor
+            }
+        } catch (_: Exception) {
+            null
         }
     }
 

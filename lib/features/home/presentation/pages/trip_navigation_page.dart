@@ -102,6 +102,7 @@ class _TripNavigationViewState extends State<_TripNavigationView>
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
     WidgetsBinding.instance.addObserver(this);
+    _bikeMarkerIcon = BitmapDescriptor.fromAssetName(AppAssets.mapBike);
     _loadMapStyle();
     _loadBikeIcon();
     unawaited(_loadTripSessionUiData());

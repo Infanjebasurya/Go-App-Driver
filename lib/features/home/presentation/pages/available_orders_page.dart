@@ -497,13 +497,13 @@ class _OrdersAppBarTitle extends StatelessWidget {
         const SizedBox(height: 6),
         Row(
           children: <Widget>[
-            const Expanded(
-                child: Text(
-                'Tap to Accept   |   Auto-expires in 60s',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 13,
+              const Expanded(
+                  child: Text(
+                 'Tap to Accept   |   Auto-expires in 15s',
+                 maxLines: 1,
+                 overflow: TextOverflow.ellipsis,
+                 style: TextStyle(
+                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.neutral555,
                 ),
