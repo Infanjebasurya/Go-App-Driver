@@ -137,7 +137,7 @@ class DocumentStepContent extends StatelessWidget {
                   .captureFront(source: source),
               onPickDocument: () =>
                   context.read<DocumentUploadCubit>().captureFrontDocument(),
-              allowDocument: !isCardCaptureStep,
+              allowDocument: true,
             ),
             onRemove: () => context.read<DocumentUploadCubit>().removeFront(),
             filePath: stepData.frontPath,
@@ -157,7 +157,7 @@ class DocumentStepContent extends StatelessWidget {
                     .captureBack(source: source),
                 onPickDocument: () =>
                     context.read<DocumentUploadCubit>().captureBackDocument(),
-                allowDocument: !isCardCaptureStep,
+                allowDocument: true,
               ),
               onRemove: () => context.read<DocumentUploadCubit>().removeBack(),
               filePath: stepData.backPath,

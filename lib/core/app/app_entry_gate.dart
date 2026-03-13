@@ -20,6 +20,8 @@ import 'package:goapp/features/onboarding/presentation/pages/get_started_page.da
 import 'package:goapp/features/onboarding/presentation/pages/register_start_onboarding_page.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_setup_page.dart';
 import 'package:goapp/core/di/injection.dart';
+import 'package:goapp/core/navigation/last_route_observer.dart';
+import 'package:goapp/features/help_support/presentation/pages/help_support_screen.dart';
 
 import '../../features/home/presentation/cubit/driver_status_cubit.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -88,9 +90,11 @@ class _AppEntryGateState extends State<AppEntryGate> {
         return const VerificationSubmittedScreen();
       case RegistrationStep.home:
       case RegistrationStep.none:
-        return BlocProvider<DriverCubit>(
-          create: (_) => sl<DriverCubit>(),
-          child: const HomeScreen(),
+        return _ResumeLastHelpSupportOnStart(
+          child: BlocProvider<DriverCubit>(
+            create: (_) => sl<DriverCubit>(),
+            child: const HomeScreen(),
+          ),
         );
     }
   }
@@ -157,4 +161,40 @@ class _EntryBootstrap {
   final LocalUserCacheModel? user;
   final bool onboardingSeen;
   final RegistrationProgress? progress;
+}
+
+class _ResumeLastHelpSupportOnStart extends StatefulWidget {
+  const _ResumeLastHelpSupportOnStart({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ResumeLastHelpSupportOnStart> createState() =>
+      _ResumeLastHelpSupportOnStartState();
+}
+
+class _ResumeLastHelpSupportOnStartState
+    extends State<_ResumeLastHelpSupportOnStart> {
+  bool _attempted = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_attempted) return;
+    _attempted = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final String? lastRoute = LastRouteStore.read();
+      if (lastRoute == null || !lastRoute.startsWith('/help_support/')) {
+        return;
+      }
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const HelpSupportScreen()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

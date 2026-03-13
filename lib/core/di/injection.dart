@@ -50,7 +50,6 @@ import 'package:goapp/features/earnings/domain/repositories/earnings_repository.
 import 'package:goapp/features/earnings/domain/usecases/get_earnings_snapshot_usecase.dart';
 import 'package:goapp/features/earnings/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:goapp/features/earnings/presentation/cubit/earnings_cubit.dart';
-import 'package:goapp/features/help_support/presentation/cubit/complaint_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/emergency_contacts_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
@@ -432,7 +431,6 @@ void _registerCityVehicle() {
 void _registerSupport() {
   sl
     ..registerFactory<HelpCubit>(() => HelpCubit())
-    ..registerFactory<ComplaintCubit>(() => ComplaintCubit())
     ..registerFactory<SafetyPreferencesCubit>(() => SafetyPreferencesCubit())
     ..registerFactory<EmergencyContactsCubit>(() => EmergencyContactsCubit())
     ..registerLazySingleton<EarningsHelpRepository>(

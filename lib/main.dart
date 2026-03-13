@@ -10,6 +10,7 @@ import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/storage/user_cache_store.dart';
 import 'package:goapp/features/document_verify/presentation/model/document_progress_store.dart';
 import 'package:goapp/core/di/injection.dart';
+import 'package:goapp/core/navigation/last_route_observer.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/theme/app_theme.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         navigatorKey: _rootNavigatorKey,
+        navigatorObservers: <NavigatorObserver>[LastRouteObserver()],
         title: 'GoApp Captain',
         theme: AppTheme.lightTheme(isTest: false),
         debugShowCheckedModeBanner: false,
