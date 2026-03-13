@@ -98,7 +98,7 @@ class CampaignRow extends StatelessWidget {
               '= ₹${campaign.reward}',
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w600,
                 color: AppColors.headingDark,
               ),
             ),

@@ -4,6 +4,7 @@ class AvailableOrdersState extends Equatable {
   const AvailableOrdersState({
     this.activeOrderIndex = 0,
     this.progress = 0,
+    this.showFirstOrder = true,
     this.showSecondOrder = false,
     this.showThirdOrder = false,
     this.showFourthOrder = false,
@@ -11,6 +12,7 @@ class AvailableOrdersState extends Equatable {
 
   final int activeOrderIndex;
   final double progress;
+  final bool showFirstOrder;
   final bool showSecondOrder;
   final bool showThirdOrder;
   final bool showFourthOrder;
@@ -18,6 +20,7 @@ class AvailableOrdersState extends Equatable {
   AvailableOrdersState copyWith({
     int? activeOrderIndex,
     double? progress,
+    bool? showFirstOrder,
     bool? showSecondOrder,
     bool? showThirdOrder,
     bool? showFourthOrder,
@@ -25,6 +28,7 @@ class AvailableOrdersState extends Equatable {
     return AvailableOrdersState(
       activeOrderIndex: activeOrderIndex ?? this.activeOrderIndex,
       progress: progress ?? this.progress,
+      showFirstOrder: showFirstOrder ?? this.showFirstOrder,
       showSecondOrder: showSecondOrder ?? this.showSecondOrder,
       showThirdOrder: showThirdOrder ?? this.showThirdOrder,
       showFourthOrder: showFourthOrder ?? this.showFourthOrder,
@@ -35,6 +39,7 @@ class AvailableOrdersState extends Equatable {
   List<Object> get props => <Object>[
     activeOrderIndex,
     progress,
+    showFirstOrder,
     showSecondOrder,
     showThirdOrder,
     showFourthOrder,

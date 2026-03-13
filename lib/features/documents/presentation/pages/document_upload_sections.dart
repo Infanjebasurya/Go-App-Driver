@@ -83,6 +83,7 @@ class DocumentStepContent extends StatelessWidget {
         config.step == DocumentStep.vehicleRC ||
         config.step == DocumentStep.identityAadhaar ||
         config.step == DocumentStep.identityPan;
+    final requiresBackSide = config.step != DocumentStep.identityPan;
     final isAadhaarStep = config.step == DocumentStep.identityAadhaar;
     final isPanStep = config.step == DocumentStep.identityPan;
     final isVehicleStep = config.step == DocumentStep.vehicleRC;
@@ -135,30 +136,34 @@ class DocumentStepContent extends StatelessWidget {
                   .captureFront(source: source),
               onPickDocument: () =>
                   context.read<DocumentUploadCubit>().captureFrontDocument(),
+              allowDocument: !isCardCaptureStep,
             ),
             onRemove: () => context.read<DocumentUploadCubit>().removeFront(),
             filePath: stepData.frontPath,
             uploadType: stepData.frontType,
             showCardGuide: isCardCaptureStep,
           ),
-          const SizedBox(height: 14),
-          DocumentCaptureCard(
-            key: ValueKey('back_${config.step.name}'),
-            label: config.backLabel,
-            captured: stepData.backCaptured,
-            onTap: () => showDocumentImageSourceSheet(
-              context,
-              onPick: (source) => context
-                  .read<DocumentUploadCubit>()
-                  .captureBack(source: source),
-              onPickDocument: () =>
-                  context.read<DocumentUploadCubit>().captureBackDocument(),
+          if (requiresBackSide) ...[
+            const SizedBox(height: 14),
+            DocumentCaptureCard(
+              key: ValueKey('back_${config.step.name}'),
+              label: config.backLabel,
+              captured: stepData.backCaptured,
+              onTap: () => showDocumentImageSourceSheet(
+                context,
+                onPick: (source) => context
+                    .read<DocumentUploadCubit>()
+                    .captureBack(source: source),
+                onPickDocument: () =>
+                    context.read<DocumentUploadCubit>().captureBackDocument(),
+                allowDocument: !isCardCaptureStep,
+              ),
+              onRemove: () => context.read<DocumentUploadCubit>().removeBack(),
+              filePath: stepData.backPath,
+              uploadType: stepData.backType,
+              showCardGuide: isCardCaptureStep,
             ),
-            onRemove: () => context.read<DocumentUploadCubit>().removeBack(),
-            filePath: stepData.backPath,
-            uploadType: stepData.backType,
-            showCardGuide: isCardCaptureStep,
-          ),
+          ],
           if (stepData.imageError != null) ...[
             const SizedBox(height: 10),
             Text(

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:goapp/core/service/contacts_service.dart';
+import 'package:goapp/core/service/permission_service.dart';
+import 'package:goapp/core/service/url_launcher_service.dart';
 
 class InviteContact extends Equatable {
   const InviteContact({
@@ -87,27 +87,36 @@ class InviteFriendsLoaded extends InviteFriendsState {
 }
 
 class InviteFriendsCubit extends Cubit<InviteFriendsState> {
-  InviteFriendsCubit({required String referralCode})
-    : _referralCode = referralCode,
+  InviteFriendsCubit({
+    required String referralCode,
+    required PermissionService permissionService,
+    required ContactsService contactsService,
+    required UrlLauncherService urlLauncherService,
+  })  : _referralCode = referralCode,
+        _permissionService = permissionService,
+        _contactsService = contactsService,
+        _urlLauncherService = urlLauncherService,
       super(const InviteFriendsLoading());
 
   final String _referralCode;
+  final PermissionService _permissionService;
+  final ContactsService _contactsService;
+  final UrlLauncherService _urlLauncherService;
   List<InviteContact> _all = const [];
 
   Future<void> initialize() async {
     emit(const InviteFriendsLoading());
 
-    final PermissionStatus status = await Permission.contacts.status;
-    if (status.isGranted) {
-      await _loadContacts();
-      return;
-    }
+    final AppPermissionStatus current =
+        await _permissionService.status(AppPermission.contacts);
+    final AppPermissionStatus resolved = current == AppPermissionStatus.granted
+        ? current
+        : await _permissionService.request(AppPermission.contacts);
 
-    final PermissionStatus requested = await Permission.contacts.request();
-    if (!requested.isGranted) {
+    if (resolved != AppPermissionStatus.granted) {
       emit(
         InviteFriendsPermissionDenied(
-          permanentlyDenied: requested.isPermanentlyDenied,
+          permanentlyDenied: resolved == AppPermissionStatus.permanentlyDenied,
         ),
       );
       return;
@@ -137,10 +146,7 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
         'whatsapp://send?phone=$waPhoneDigits&text=${Uri.encodeComponent(message)}',
       );
 
-      final bool waLaunched = await launchUrl(
-        waUri,
-        mode: LaunchMode.externalApplication,
-      );
+      final bool waLaunched = await _urlLauncherService.launch(waUri.toString());
 
       if (waLaunched) return;
 
@@ -149,14 +155,14 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
         path: contact.phone,
         queryParameters: <String, String>{'body': message},
       );
-      await launchUrl(smsUri, mode: LaunchMode.externalApplication);
+      await _urlLauncherService.launch(smsUri.toString());
     } catch (_) {
       final Uri smsUri = Uri(
         scheme: 'sms',
         path: contact.phone,
         queryParameters: <String, String>{'body': _inviteMessage()},
       );
-      await launchUrl(smsUri, mode: LaunchMode.externalApplication);
+      await _urlLauncherService.launch(smsUri.toString());
     } finally {
       final InviteFriendsState updated = state;
       if (updated is InviteFriendsLoaded) {
@@ -167,13 +173,9 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
 
   Future<void> _loadContacts() async {
     try {
-      final bool permissionOk = await FlutterContacts.requestPermission(readonly: true);
-      if (!permissionOk) {
-        emit(const InviteFriendsPermissionDenied(permanentlyDenied: false));
-        return;
-      }
-
-      final List<Contact> contacts = await FlutterContacts.getContacts(withProperties: true);
+      final List<AppContact> contacts = await _contactsService.getContacts(
+        withProperties: true,
+      );
 
       final List<InviteContact> mapped = contacts
           .where((c) => c.phones.isNotEmpty)

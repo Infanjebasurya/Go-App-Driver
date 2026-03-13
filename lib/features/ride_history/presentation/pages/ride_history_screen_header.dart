@@ -4,13 +4,13 @@ class _SummaryPanel extends StatelessWidget {
   const _SummaryPanel({
     required this.totalTrips,
     required this.completedTrips,
-    required this.inProgressTrips,
+    required this.canceledTrips,
     required this.earnings,
   });
 
   final int totalTrips;
   final int completedTrips;
-  final int inProgressTrips;
+  final int canceledTrips;
   final double earnings;
 
   @override
@@ -20,9 +20,9 @@ class _SummaryPanel extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: <Color>[AppColors.hexFF0EA271, AppColors.hexFF0C8E64],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: <Color>[AppColors.hexFF008051, Color(0xFF00A86B)],
         ),
       ),
       child: Column(
@@ -41,7 +41,7 @@ class _SummaryPanel extends StatelessWidget {
             children: <Widget>[
               _MetricTile(label: 'Total', value: '$totalTrips'),
               _MetricTile(label: 'Completed', value: '$completedTrips'),
-              _MetricTile(label: 'In Progress', value: '$inProgressTrips'),
+              _MetricTile(label: 'Canceled', value: '$canceledTrips'),
             ],
           ),
           const SizedBox(height: 12),
@@ -163,30 +163,36 @@ class _FilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      children: <Widget>[
-        _FilterChipItem(
-          label: 'All ($totalCount)',
-          selected: selected == RideHistoryFilter.all,
-          onTap: () => onSelected(RideHistoryFilter.all),
-        ),
-        _FilterChipItem(
-          label: 'Completed ($completedCount)',
-          selected: selected == RideHistoryFilter.completed,
-          onTap: () => onSelected(RideHistoryFilter.completed),
-        ),
-        _FilterChipItem(
-          label: 'In Progress ($inProgressCount)',
-          selected: selected == RideHistoryFilter.inProgress,
-          onTap: () => onSelected(RideHistoryFilter.inProgress),
-        ),
-        _FilterChipItem(
-          label: 'Canceled ($canceledCount)',
-          selected: selected == RideHistoryFilter.canceled,
-          onTap: () => onSelected(RideHistoryFilter.canceled),
-        ),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: <Widget>[
+          _FilterChipItem(
+            label: 'All ($totalCount)',
+            selected: selected == RideHistoryFilter.all,
+            onTap: () => onSelected(RideHistoryFilter.all),
+          ),
+          const SizedBox(width: 8),
+          _FilterChipItem(
+            label: 'Completed ($completedCount)',
+            selected: selected == RideHistoryFilter.completed,
+            onTap: () => onSelected(RideHistoryFilter.completed),
+          ),
+          const SizedBox(width: 8),
+          _FilterChipItem(
+            label: 'In Progress ($inProgressCount)',
+            selected: selected == RideHistoryFilter.inProgress,
+            onTap: () => onSelected(RideHistoryFilter.inProgress),
+          ),
+          const SizedBox(width: 8),
+          _FilterChipItem(
+            label: 'Canceled ($canceledCount)',
+            selected: selected == RideHistoryFilter.canceled,
+            onTap: () => onSelected(RideHistoryFilter.canceled),
+          ),
+        ],
+      ),
     );
   }
 }

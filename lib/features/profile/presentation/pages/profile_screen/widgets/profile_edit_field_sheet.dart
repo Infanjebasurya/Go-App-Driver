@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
-import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 
 class ProfileEditFieldSheet extends StatefulWidget {
   const ProfileEditFieldSheet({
@@ -96,33 +95,36 @@ class _ProfileEditFieldSheetState extends State<ProfileEditFieldSheet> {
             ),
           ),
           const SizedBox(height: 14),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFEEEEEE)),
+          TextField(
+            controller: _ctrl,
+            keyboardType: widget.keyboardType,
+            autofocus: true,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Color(0xFF1A1A1A),
+              fontWeight: FontWeight.w500,
             ),
-            child: TextField(
-              controller: _ctrl,
-              keyboardType: widget.keyboardType,
-              autofocus: true,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xFF1A1A1A),
-                fontWeight: FontWeight.w500,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              prefixIcon: Icon(
+                widget.icon,
+                color: const Color(0xFF888888),
+                size: 20,
               ),
-              decoration: InputDecoration(
-                fillColor: Colors.white,
-                prefixIcon: Icon(
-                  widget.icon,
-                  color: const Color(0xFF888888),
-                  size: 20,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
-                ),
+              prefixIconConstraints: const BoxConstraints(minWidth: 48),
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(999),
+                borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1.2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(999),
+                borderSide: const BorderSide(color: Color(0xFF00A86B), width: 1.6),
               ),
             ),
           ),
@@ -137,9 +139,9 @@ class _ProfileEditFieldSheetState extends State<ProfileEditFieldSheet> {
                   style: OutlinedButton.styleFrom(
                     backgroundColor: const Color(0xFFF2F0ED),
                     foregroundColor: const Color(0xFF656565),
-                    side: const BorderSide(color: Color(0xFFDDDDDD)),
+                    side: BorderSide(color: Colors.black.withValues(alpha: 0.06)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -161,11 +163,11 @@ class _ProfileEditFieldSheetState extends State<ProfileEditFieldSheet> {
                       : const Icon(Icons.save_outlined, size: 16),
                   label: Text(_saving ? 'Saving...' : 'Save'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AuthUiColors.brandGreen,
+                    backgroundColor: const Color(0xFF00A86B),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),

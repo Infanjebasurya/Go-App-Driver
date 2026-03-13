@@ -320,7 +320,11 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                       Container(
                         width: 92,
                         height: 92,
-                        decoration: const BoxDecoration(shape: BoxShape.circle),
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.emerald, width: 2),
+                        ),
                         child: ClipOval(
                           child: profilePath != null
                               ? Image.file(File(profilePath), fit: BoxFit.contain)

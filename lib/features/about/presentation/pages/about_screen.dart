@@ -5,7 +5,7 @@ import 'package:goapp/features/about/presentation/cubit/about_cubit.dart';
 import 'package:goapp/features/about/presentation/cubit/about_state.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/core/di/injection.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:goapp/core/service/url_launcher_service.dart';
 
 
 class AboutScreen extends StatelessWidget {
@@ -122,10 +122,7 @@ class _AboutMenuList extends StatelessWidget {
   }
 
   Future<void> _openTermsOfService(BuildContext context) async {
-    final launched = await launchUrl(
-      _termsUri,
-      mode: LaunchMode.externalApplication,
-    );
+    final launched = await sl<UrlLauncherService>().launch(_termsUri.toString());
     if (!context.mounted || launched) return;
     ScaffoldMessenger.of(
       context,
@@ -133,9 +130,7 @@ class _AboutMenuList extends StatelessWidget {
   }
 
   void _openExternalAbout(BuildContext context) {
-    launchUrl(_aboutExternalUri, mode: LaunchMode.externalApplication).then((
-      launched,
-    ) {
+    sl<UrlLauncherService>().launch(_aboutExternalUri.toString()).then((launched) {
       if (!launched && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unable to open link')),

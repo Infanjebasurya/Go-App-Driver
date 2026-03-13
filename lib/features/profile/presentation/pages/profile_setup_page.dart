@@ -22,7 +22,7 @@ import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/
 import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/profile_setup_submit_button.dart';
 import 'package:goapp/features/profile/presentation/pages/profile_setup/widgets/profile_vehicle_section.dart';
 import 'package:goapp/core/di/injection.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:goapp/core/service/url_launcher_service.dart';
 
 class ProfileSetupPage extends StatefulWidget {
   const ProfileSetupPage({super.key, this.allowBack = false});
@@ -109,10 +109,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _openTermsOfService() async {
-    final launched = await launchUrl(
-      _termsUri,
-      mode: LaunchMode.externalApplication,
-    );
+    final launched = await sl<UrlLauncherService>().launch(_termsUri.toString());
     if (!mounted || launched) return;
     ScaffoldMessenger.of(
       context,

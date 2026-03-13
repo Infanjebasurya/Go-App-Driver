@@ -111,8 +111,11 @@ class _ProfileBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           ProfileHeader(data: data),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           ProfileStatsCard(data: data),
+          const SizedBox(height: 18),
+          const Divider(height: 1, color: Color(0xFFF0F0F0)),
+          const SizedBox(height: 18),
           ProfileMenuSection(
             data: data,
             onEditEmail: () => _showEditEmailSheet(context, data.email),

@@ -41,10 +41,16 @@ bool _validateDocStep(DocumentUploadCubit cubit) {
     );
     return false;
   }
-  if (!step.frontCaptured || !step.backCaptured) {
+
+  final bool requiresBackSide = step.step != DocumentStep.identityPan;
+  if (!step.frontCaptured || (requiresBackSide && !step.backCaptured)) {
     final updated = step.copyWith(
-      numberError: 'Please upload both front and back documents',
-      imageError: 'Please upload both front and back documents',
+      numberError: requiresBackSide
+          ? 'Please upload both front and back documents'
+          : 'Please upload the document image',
+      imageError: requiresBackSide
+          ? 'Please upload both front and back documents'
+          : 'Please upload the document image',
     );
     cubit._emitState(cubit.state.copyWithDocStep(updated));
     DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);

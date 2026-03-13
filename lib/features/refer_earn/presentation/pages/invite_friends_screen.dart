@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/di/injection.dart';
+import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 import 'package:goapp/features/refer_earn/presentation/cubit/invite_friends_cubit.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class InviteFriendsScreen extends StatelessWidget {
   const InviteFriendsScreen({super.key, required this.referralCode});
@@ -14,7 +15,12 @@ class InviteFriendsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          InviteFriendsCubit(referralCode: referralCode)..initialize(),
+          InviteFriendsCubit(
+            referralCode: referralCode,
+            permissionService: sl(),
+            contactsService: sl(),
+            urlLauncherService: sl(),
+          )..initialize(),
       child: const _InviteFriendsView(),
     );
   }
@@ -147,7 +153,7 @@ class _PermissionView extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 if (permanentlyDenied) {
-                  await openAppSettings();
+                  await sl<PermissionService>().openAppSettings();
                 } else {
                   await context.read<InviteFriendsCubit>().initialize();
                 }

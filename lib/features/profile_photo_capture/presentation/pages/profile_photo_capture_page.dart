@@ -1,23 +1,22 @@
 import 'dart:io';
-
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/core/service/permission_service.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/profile_photo_capture/presentation/bloc/profile_photo_bloc.dart';
-import 'package:goapp/features/profile_photo_capture/presentation/bloc/profile_photo_event.dart';
-import 'package:goapp/features/profile_photo_capture/presentation/bloc/profile_photo_state.dart';
-import 'package:goapp/features/profile_photo_capture/presentation/widgets/face_overlay.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/cubit/face_profile_photo_capture_cubit.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/cubit/face_profile_photo_capture_state.dart';
+import 'package:goapp/features/profile_photo_capture/presentation/widgets/face_guide_overlay.dart';
 
 class ProfilePhotoCapturePage extends StatelessWidget {
   const ProfilePhotoCapturePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ProfilePhotoBloc>(
-      create: (_) => sl<ProfilePhotoBloc>()..add(const ProfilePhotoStarted()),
+    return BlocProvider<FaceProfilePhotoCaptureCubit>(
+      create: (_) => sl<FaceProfilePhotoCaptureCubit>()..start(),
       child: const _ProfilePhotoCaptureView(),
     );
   }
@@ -35,39 +34,48 @@ class _ProfilePhotoCaptureView extends StatelessWidget {
         foregroundColor: AppColors.white,
         title: const Text('Capture Profile Photo'),
       ),
-      body: BlocConsumer<ProfilePhotoBloc, ProfilePhotoState>(
-        listenWhen: (ProfilePhotoState prev, ProfilePhotoState next) =>
-            prev.errorMessage != next.errorMessage && next.errorMessage != null,
-        listener: (BuildContext context, ProfilePhotoState state) {
-          final String? msg = state.errorMessage;
-          if (msg == null) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(msg)));
+      body: BlocConsumer<FaceProfilePhotoCaptureCubit, FaceProfilePhotoCaptureState>(
+        listener: (context, state) {
+          if (state.status == FaceProfileCaptureStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
         },
-        builder: (BuildContext context, ProfilePhotoState state) {
+        builder: (context, state) {
           return switch (state.status) {
-            ProfilePhotoCaptureStatus.permissionDenied => _PermissionDeniedView(
-              onOpenSettings: () => sl<PermissionService>().openAppSettings(),
-              onRetry: () => context.read<ProfilePhotoBloc>().add(
-                const ProfilePhotoStarted(),
+            FaceProfileCaptureStatus.permissionDenied => _PermissionDeniedView(
+                onOpenSettings: () => sl<PermissionService>().openAppSettings(),
+                onRetry: () => context.read<FaceProfilePhotoCaptureCubit>().start(),
               ),
-            ),
-            ProfilePhotoCaptureStatus.preview => _PreviewView(
-              path: state.photo?.path,
-              onRetake: () => context.read<ProfilePhotoBloc>().add(
-                const ProfilePhotoRetakeRequested(),
+            FaceProfileCaptureStatus.preview => _PreviewView(
+                path: state.photo?.path,
+                onRetake: () => context.read<FaceProfilePhotoCaptureCubit>().retake(),
+                onConfirm: () {
+                  final String? path = state.photo?.path;
+                  if (path != null) Navigator.of(context).pop<String>(path);
+                },
               ),
-              onConfirm: () {
-                final String? path = state.photo?.path;
-                if (path != null) Navigator.of(context).pop<String>(path);
-              },
-            ),
-            _ => _CameraView(
-              guidanceText: state.guidanceText ?? 'Align your face',
-              isAutoCapturing: state.isAutoCapturing,
-              controller: state.cameraController,
-            ),
+            FaceProfileCaptureStatus.capturing => const _BusyView(
+                title: 'Auto capturing...',
+              ),
+            FaceProfileCaptureStatus.processing => const _BusyView(
+                title: 'Processing photo...',
+              ),
+            FaceProfileCaptureStatus.failure => _FailureView(
+                message: state.message,
+                onRetry: () => context.read<FaceProfilePhotoCaptureCubit>().start(),
+              ),
+            FaceProfileCaptureStatus.timeout => _TimeoutView(
+                message: state.message,
+                onRetry: () => context.read<FaceProfilePhotoCaptureCubit>().retake(),
+              ),
+            FaceProfileCaptureStatus.scanning || FaceProfileCaptureStatus.initializing => _LiveCameraView(
+                statusText: state.message,
+                progress: state.stabilityProgress,
+                debugFaceBox: state.debugFaceBox,
+                cameraReadyNonce: state.cameraReadyNonce,
+              ),
           };
         },
       ),
@@ -75,65 +83,139 @@ class _ProfilePhotoCaptureView extends StatelessWidget {
   }
 }
 
-class _CameraView extends StatelessWidget {
-  const _CameraView({
-    required this.guidanceText,
-    required this.isAutoCapturing,
-    required this.controller,
-  });
+class _BusyView extends StatelessWidget {
+  const _BusyView({required this.title});
 
-  final String guidanceText;
-  final bool isAutoCapturing;
-  final CameraController? controller;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
-    final CameraController? camera = controller;
-    final bool ready = camera?.value.isInitialized ?? false;
-    return Stack(
-      children: <Widget>[
-        Positioned.fill(
-          child: ready && camera != null
-              ? LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    final Size? previewSize = camera.value.previewSize;
-                    if (previewSize == null) {
-                      return Center(
-                        child: AspectRatio(
-                          aspectRatio: camera.value.aspectRatio,
-                          child: CameraPreview(camera),
-                        ),
-                      );
-                    }
-
-                    return ClipRect(
-                      child: OverflowBox(
-                        alignment: Alignment.center,
-                        minWidth: constraints.maxWidth,
-                        minHeight: constraints.maxHeight,
-                        maxWidth: double.infinity,
-                        maxHeight: double.infinity,
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: SizedBox(
-                            width: previewSize.height,
-                            height: previewSize.width,
-                            child: CameraPreview(camera),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                )
-              : const Center(
-                  child: CircularProgressIndicator(color: AppColors.white),
-                ),
-        ),
-        Positioned.fill(
-          child: FaceOverlay(
-            guidanceText: guidanceText,
-            isAutoCapturing: isAutoCapturing,
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.white),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FailureView extends StatelessWidget {
+  const _FailureView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.emerald,
+                foregroundColor: AppColors.white,
+              ),
+              child: const Text('Try again'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TimeoutView extends StatelessWidget {
+  const _TimeoutView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.emerald,
+                foregroundColor: AppColors.white,
+              ),
+              child: const Text('Retake'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LiveCameraView extends StatelessWidget {
+  const _LiveCameraView({
+    required this.statusText,
+    required this.progress,
+    required this.debugFaceBox,
+    required this.cameraReadyNonce,
+  });
+
+  final String statusText;
+  final double progress;
+  final Rect? debugFaceBox;
+  final int cameraReadyNonce;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<FaceProfilePhotoCaptureCubit>();
+    final CameraController? controller = cubit.controller;
+
+    if (controller == null || !controller.value.isInitialized) {
+      return const _BusyView(title: 'Opening camera...');
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        CameraPreview(controller, key: ValueKey('camera_$cameraReadyNonce')),
+        FaceGuideOverlay(
+          showDebugBox: kDebugMode && const bool.fromEnvironment('FACE_DEBUG'),
+          normalizedDebugBox: debugFaceBox,
+          statusText: statusText,
+          progress: progress,
         ),
       ],
     );
@@ -155,10 +237,10 @@ class _PreviewView extends StatelessWidget {
   Widget build(BuildContext context) {
     final String? localPath = path;
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.all(16),
+    return SafeArea(
       child: Column(
-        children: <Widget>[
+        children: [
+          const SizedBox(height: 16),
           Text(
             'Preview',
             style: textTheme.titleLarge?.copyWith(color: AppColors.white),
@@ -166,18 +248,31 @@ class _PreviewView extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: Center(
-              child: AspectRatio(
-                aspectRatio: 3.5 / 4.5,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.black87,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.white30),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: AspectRatio(
+                  aspectRatio: 3.5 / 4.5,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.black87,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.white24),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (localPath == null)
+                          const ColoredBox(color: Colors.black)
+                        else
+                          Image.file(
+                            File(localPath),
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                          ),
+                      ],
+                    ),
                   ),
-                  clipBehavior: Clip.antiAlias,
-                  child: localPath == null
-                      ? const SizedBox.shrink()
-                      : Image.file(File(localPath), fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -186,30 +281,42 @@ class _PreviewView extends StatelessWidget {
           Row(
             children: <Widget>[
               Expanded(
-                child: OutlinedButton(
+                child: ElevatedButton.icon(
                   onPressed: onRetake,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.white,
-                    side: const BorderSide(color: AppColors.white30),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  icon: const Icon(Icons.close_rounded, size: 20),
+                  label: const Text('Retake'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF2F0ED),
+                    foregroundColor: const Color(0xFF1F2937),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(999),
+                      side: BorderSide(color: Colors.black.withValues(alpha: 0.08)),
+                    ),
                   ),
-                  child: const Text('Retake'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: onConfirm,
+                  icon: const Icon(Icons.check_rounded, size: 20),
+                  label: const Text('Confirm & Continue'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.emerald,
+                    backgroundColor: const Color(0xFF00A86B),
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(999),
+                    ),
                   ),
-                  child: const Text('Confirm & Continue'),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );

@@ -3,47 +3,46 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:goapp/core/maps/map_types.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 
 abstract class AppMapController {
   Future<void> animateTo(LatLng target, {double zoom = 14});
   Future<void> animateToBounds(LatLngBounds bounds, {double padding = 0});
 }
 
-class _GoogleMapControllerAdapter implements AppMapController {
-  _GoogleMapControllerAdapter(this._controller);
+class _NativeMapControllerAdapter implements AppMapController {
+  _NativeMapControllerAdapter(this._channel);
 
-  final gmap.GoogleMapController _controller;
+  final MethodChannel _channel;
 
   @override
   Future<void> animateTo(LatLng target, {double zoom = 14}) async {
-    await _controller.animateCamera(
-      gmap.CameraUpdate.newCameraPosition(
-        gmap.CameraPosition(
-          target: gmap.LatLng(target.latitude, target.longitude),
-          zoom: zoom,
-        ),
-      ),
+    await _channel.invokeMethod<void>(
+      'animateTo',
+      <String, Object>{
+        'latitude': target.latitude,
+        'longitude': target.longitude,
+        'zoom': zoom,
+      },
     );
   }
 
   @override
   Future<void> animateToBounds(LatLngBounds bounds, {double padding = 0}) async {
-    await _controller.animateCamera(
-      gmap.CameraUpdate.newLatLngBounds(
-        gmap.LatLngBounds(
-          southwest: gmap.LatLng(
-            bounds.southwest.latitude,
-            bounds.southwest.longitude,
-          ),
-          northeast: gmap.LatLng(
-            bounds.northeast.latitude,
-            bounds.northeast.longitude,
-          ),
-        ),
-        padding,
-      ),
+    await _channel.invokeMethod<void>(
+      'animateToBounds',
+      <String, Object>{
+        'southwest': <String, Object>{
+          'latitude': bounds.southwest.latitude,
+          'longitude': bounds.southwest.longitude,
+        },
+        'northeast': <String, Object>{
+          'latitude': bounds.northeast.latitude,
+          'longitude': bounds.northeast.longitude,
+        },
+        'padding': padding,
+      },
     );
   }
 }
@@ -97,10 +96,9 @@ class AppGoogleMap extends StatefulWidget {
 }
 
 class _AppGoogleMapState extends State<AppGoogleMap> {
-  gmap.GoogleMapController? _controller;
-  final Map<String, gmap.BitmapDescriptor> _iconCache =
-      <String, gmap.BitmapDescriptor>{};
-  final Set<String> _loadingAssetIcons = <String>{};
+  int? _viewId;
+  MethodChannel? _channel;
+  AppMapController? _controllerAdapter;
 
   bool get _isTest =>
       widget.isTestOverride ?? const bool.fromEnvironment('FLUTTER_TEST');
@@ -108,11 +106,15 @@ class _AppGoogleMapState extends State<AppGoogleMap> {
   @override
   void didUpdateWidget(covariant AppGoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    unawaited(_syncToNative());
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _channel?.setMethodCallHandler(null);
+    _channel = null;
+    _viewId = null;
+    _controllerAdapter = null;
     super.dispose();
   }
 
@@ -127,132 +129,157 @@ class _AppGoogleMapState extends State<AppGoogleMap> {
       );
     }
 
-    if (defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
-      return const Center(
-        child: Text('Google Map supported on Android/iOS/Web'),
-      );
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return const Center(child: Text('Map supported on Android'));
     }
 
-    return gmap.GoogleMap(
-      initialCameraPosition: gmap.CameraPosition(
-        target: gmap.LatLng(
-          widget.initialCameraPosition.target.latitude,
-          widget.initialCameraPosition.target.longitude,
-        ),
-        zoom: widget.initialCameraPosition.zoom,
-      ),
-      myLocationEnabled: widget.myLocationEnabled,
-      myLocationButtonEnabled: widget.myLocationButtonEnabled,
-      zoomControlsEnabled: widget.zoomControlsEnabled,
-      mapToolbarEnabled: widget.mapToolbarEnabled,
-      compassEnabled: widget.compassEnabled,
-      style: widget.style,
-      padding: widget.padding ?? EdgeInsets.zero,
-      gestureRecognizers: widget.gestureRecognizers ?? const {},
-      markers: _buildMarkers(),
-      polylines: _buildPolylines(),
-      onMapCreated: (controller) {
-        _controller = controller;
-        widget.onMapCreated?.call(_GoogleMapControllerAdapter(controller));
+    return AndroidView(
+      viewType: 'app/native_map_view',
+      onPlatformViewCreated: _onPlatformViewCreated,
+      creationParams: _creationParams(),
+      creationParamsCodec: const StandardMessageCodec(),
+      gestureRecognizers: widget.gestureRecognizers,
+    );
+  }
+
+  Map<String, Object?> _creationParams() {
+    return <String, Object?>{
+      'initialCameraPosition': <String, Object>{
+        'target': <String, Object>{
+          'latitude': widget.initialCameraPosition.target.latitude,
+          'longitude': widget.initialCameraPosition.target.longitude,
+        },
+        'zoom': widget.initialCameraPosition.zoom,
       },
-      onTap: widget.onTap == null
-          ? null
-          : (point) => widget.onTap!(LatLng(point.latitude, point.longitude)),
-      onCameraMove: widget.onCameraMove == null
-          ? null
-          : (camera) => widget.onCameraMove!(
-              CameraPosition(
-                target: LatLng(
-                  camera.target.latitude,
-                  camera.target.longitude,
-                ),
-                zoom: camera.zoom,
-              ),
-            ),
-      onCameraIdle: widget.onCameraIdle,
-    );
+      'myLocationEnabled': widget.myLocationEnabled,
+      'myLocationButtonEnabled': widget.myLocationButtonEnabled,
+      'zoomControlsEnabled': widget.zoomControlsEnabled,
+      'mapToolbarEnabled': widget.mapToolbarEnabled,
+      'compassEnabled': widget.compassEnabled,
+      'style': widget.style,
+      'padding': _encodePadding(widget.padding),
+      'markers': _encodeMarkers(widget.markers),
+      'polylines': _encodePolylines(widget.polylines),
+    };
   }
 
-  Set<gmap.Marker> _buildMarkers() {
-    return widget.markers
+  Future<void> _onPlatformViewCreated(int id) async {
+    _viewId = id;
+    final MethodChannel channel = MethodChannel('app/native_map_view_$id');
+    _channel = channel;
+    channel.setMethodCallHandler(_handleNativeCall);
+    _controllerAdapter = _NativeMapControllerAdapter(channel);
+    widget.onMapCreated?.call(_controllerAdapter!);
+    await _syncToNative();
+  }
+
+  Future<Object?> _handleNativeCall(MethodCall call) async {
+    switch (call.method) {
+      case 'onTap':
+        final Map<Object?, Object?>? args =
+            call.arguments as Map<Object?, Object?>?;
+        final double? lat = (args?['latitude'] as num?)?.toDouble();
+        final double? lng = (args?['longitude'] as num?)?.toDouble();
+        if (lat != null && lng != null) {
+          widget.onTap?.call(LatLng(lat, lng));
+        }
+        return null;
+      case 'onCameraMove':
+        final Map<Object?, Object?>? args =
+            call.arguments as Map<Object?, Object?>?;
+        final Map<Object?, Object?>? target =
+            args?['target'] as Map<Object?, Object?>?;
+        final double? lat = (target?['latitude'] as num?)?.toDouble();
+        final double? lng = (target?['longitude'] as num?)?.toDouble();
+        final double? zoom = (args?['zoom'] as num?)?.toDouble();
+        if (lat != null && lng != null && zoom != null) {
+          widget.onCameraMove?.call(
+            CameraPosition(target: LatLng(lat, lng), zoom: zoom),
+          );
+        }
+        return null;
+      case 'onCameraIdle':
+        widget.onCameraIdle?.call();
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  Future<void> _syncToNative() async {
+    final MethodChannel? channel = _channel;
+    if (channel == null || _viewId == null) return;
+    try {
+      await channel.invokeMethod<void>(
+        'updateOptions',
+        <String, Object?>{
+          'myLocationEnabled': widget.myLocationEnabled,
+          'myLocationButtonEnabled': widget.myLocationButtonEnabled,
+          'zoomControlsEnabled': widget.zoomControlsEnabled,
+          'mapToolbarEnabled': widget.mapToolbarEnabled,
+          'compassEnabled': widget.compassEnabled,
+          'style': widget.style,
+          'padding': _encodePadding(widget.padding),
+        },
+      );
+      await channel.invokeMethod<void>(
+        'setMarkers',
+        <String, Object?>{'markers': _encodeMarkers(widget.markers)},
+      );
+      await channel.invokeMethod<void>(
+        'setPolylines',
+        <String, Object?>{'polylines': _encodePolylines(widget.polylines)},
+      );
+    } catch (_) {}
+  }
+
+  static Map<String, Object> _encodePadding(EdgeInsets? padding) {
+    return <String, Object>{
+      'left': (padding?.left ?? 0.0),
+      'top': (padding?.top ?? 0.0),
+      'right': (padding?.right ?? 0.0),
+      'bottom': (padding?.bottom ?? 0.0),
+    };
+  }
+
+  static List<Map<String, Object?>> _encodeMarkers(Set<Marker> markers) {
+    if (markers.isEmpty) return const <Map<String, Object?>>[];
+    return markers
         .map(
-          (marker) => gmap.Marker(
-            markerId: gmap.MarkerId(marker.markerId.value),
-            position: gmap.LatLng(
-              marker.position.latitude,
-              marker.position.longitude,
-            ),
-            icon: _resolveMarkerIcon(marker.icon),
-            infoWindow: gmap.InfoWindow(
-              title: marker.infoWindow.title,
-              snippet: marker.infoWindow.snippet,
-            ),
-            draggable: marker.draggable,
-            onTap: marker.onTap,
-            onDragEnd: marker.onDragEnd == null
-                ? null
-                : (position) => marker.onDragEnd!(
-                    LatLng(position.latitude, position.longitude),
-                  ),
-          ),
+          (m) => <String, Object?>{
+            'id': m.markerId.value,
+            'position': <String, Object>{
+              'latitude': m.position.latitude,
+              'longitude': m.position.longitude,
+            },
+            'title': m.infoWindow.title,
+            'snippet': m.infoWindow.snippet,
+            'draggable': m.draggable,
+            'hue': m.icon?.hue,
+            'assetName': m.icon?.assetName,
+          },
         )
-        .toSet();
+        .toList(growable: false);
   }
 
-  gmap.BitmapDescriptor _resolveMarkerIcon(BitmapDescriptor? icon) {
-    if (icon == null) {
-      return gmap.BitmapDescriptor.defaultMarker;
-    }
-
-    final String? assetName = icon.assetName;
-    if (assetName != null && assetName.isNotEmpty) {
-      final String key = 'asset:$assetName';
-      final gmap.BitmapDescriptor? cached = _iconCache[key];
-      if (cached != null) {
-        return cached;
-      }
-      _loadAssetIcon(assetName, key);
-      return gmap.BitmapDescriptor.defaultMarker;
-    }
-
-    final double hue = icon.hue ?? 0;
-    final String hueKey = 'hue:$hue';
-    return _iconCache.putIfAbsent(
-      hueKey,
-      () => gmap.BitmapDescriptor.defaultMarkerWithHue(hue),
-    );
-  }
-
-  void _loadAssetIcon(String assetName, String key) {
-    if (_loadingAssetIcons.contains(key)) return;
-    _loadingAssetIcons.add(key);
-
-    gmap.BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(44, 44)),
-      assetName,
-    ).then((descriptor) {
-      if (!mounted) return;
-      setState(() => _iconCache[key] = descriptor);
-    }).catchError((_) {}).whenComplete(() {
-      _loadingAssetIcons.remove(key);
-    });
-  }
-
-  Set<gmap.Polyline> _buildPolylines() {
-    return widget.polylines
+  static List<Map<String, Object?>> _encodePolylines(Set<Polyline> polylines) {
+    if (polylines.isEmpty) return const <Map<String, Object?>>[];
+    return polylines
         .map(
-          (polyline) => gmap.Polyline(
-            polylineId: gmap.PolylineId(polyline.polylineId.value),
-            points: polyline.points
-                .map((p) => gmap.LatLng(p.latitude, p.longitude))
+          (p) => <String, Object?>{
+            'id': p.polylineId.value,
+            'color': p.color.toARGB32(),
+            'width': p.width,
+            'points': p.points
+                .map(
+                  (pt) => <String, Object>{
+                    'latitude': pt.latitude,
+                    'longitude': pt.longitude,
+                  },
+                )
                 .toList(growable: false),
-            color: polyline.color,
-            width: polyline.width,
-          ),
+          },
         )
-        .toSet();
+        .toList(growable: false);
   }
-
 }

@@ -89,6 +89,34 @@ class WithdrawalSuccessPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.hex1A00A86B,
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.watch_later_outlined,
+                      size: 20,
+                      color: AppColors.emerald,
+                    ),
+                    const SizedBox(width: 5),
+                    const Text(
+                      'Arrival within 24 hours.',
+                      style: TextStyle(fontSize: 14, color: AppColors.emerald),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const Spacer(flex: 3),
             Padding(
               padding: const EdgeInsets.all(24),
@@ -121,7 +149,3 @@ class WithdrawalSuccessPage extends StatelessWidget {
     );
   }
 }
-
-
-
-

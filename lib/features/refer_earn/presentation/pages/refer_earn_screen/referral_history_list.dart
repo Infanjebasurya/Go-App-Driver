@@ -173,6 +173,8 @@ class ReferralPersonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCompleted = person.status == ReferralStatus.completed;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -218,7 +220,7 @@ class ReferralPersonCard extends StatelessWidget {
                       person.name,
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.headingDark,
                       ),
                     ),
@@ -270,20 +272,18 @@ class ReferralPersonCard extends StatelessWidget {
                     '₹${person.estimatedReward}',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: person.status == ReferralStatus.completed
+                      fontWeight: FontWeight.w600,
+                      color: isCompleted
                           ? AuthUiColors.brandGreen
                           : AppColors.headingDark,
                     ),
                   ),
                   Text(
-                    person.status == ReferralStatus.completed
-                    ? 'PAID OUT'
-                    : 'EST. REWARD',
+                    isCompleted ? 'PAID OUT' : 'EST. REWARD',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.headingDark,
-                      fontWeight: FontWeight.w700,
+                      color: isCompleted ? AppColors.headingDark : AppColors.neutralAAA,
+                      fontWeight: isCompleted ? FontWeight.w700 : FontWeight.w500,
                       letterSpacing: 0.5,
                     ),
                   ),

@@ -110,78 +110,95 @@ class TripCard extends StatelessWidget {
               ],
             ),
 
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 3),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 15,
-                        height: 15,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.white,
-                          border: Border.all(color: accentColor, width: 3.5),
-                        ),
-                      ),
-                      Container(width: 2, height: 44, color: accentColor),
-                      const Icon(
-                        Icons.location_on,
-                        size: 18,
-                        color: AppColors.black,
-                      ),
-                    ],
+            _LocationLine(
+              icon: Icons.trip_origin_rounded,
+              iconColor: accentColor,
+              accentColor: accentColor,
+              label: pickupLocation,
+              value: pickupAddress,
+              showConnector: true,
+            ),
+            _LocationLine(
+              icon: Icons.location_on,
+              iconColor: AppColors.black,
+              accentColor: accentColor,
+              label: dropLocation,
+              value: dropAddress,
+              showConnector: false,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocationLine extends StatelessWidget {
+  const _LocationLine({
+    required this.icon,
+    required this.iconColor,
+    required this.accentColor,
+    required this.label,
+    required this.value,
+    required this.showConnector,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final Color accentColor;
+  final String label;
+  final String value;
+  final bool showConnector;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+            child: Column(
+              children: <Widget>[
+                Icon(icon, size: 16, color: iconColor),
+                if (showConnector)
+                  Container(
+                    width: 1.2,
+                    height: 26,
+                    margin: const EdgeInsets.only(top: 3),
+                    color: accentColor,
                   ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  label,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.black,
+                    ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pickupLocation,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                          color: AppColors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        pickupAddress,
-                        style: TextStyle(
-                          color: AppColors.gray[600],
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        dropLocation,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                          color: AppColors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        dropAddress,
-                        style: TextStyle(
-                          color: AppColors.gray[600],
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.neutral333,
+                    height: 1.3,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -205,10 +205,29 @@ class _VehicleNumberTextFormatter extends TextInputFormatter {
       TextEditingValue oldValue,
       TextEditingValue newValue,
       ) {
-    final formatted = newValue.text
-        .toUpperCase()
-        .replaceAll(' ', '')
-        .replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    final raw = newValue.text.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    final buffer = StringBuffer();
+
+    for (var i = 0; i < raw.length; i++) {
+      final char = raw[i];
+      final index = buffer.length;
+      if (index >= 10) break;
+
+      final isAlphabet = RegExp(r'[A-Z]').hasMatch(char);
+      final isDigit = RegExp(r'[0-9]').hasMatch(char);
+
+      if (index < 2 && isAlphabet) {
+        buffer.write(char);
+      } else if (index >= 2 && index < 4 && isDigit) {
+        buffer.write(char);
+      } else if (index >= 4 && index < 6 && isAlphabet) {
+        buffer.write(char);
+      } else if (index >= 6 && index < 10 && isDigit) {
+        buffer.write(char);
+      }
+    }
+
+    final formatted = buffer.toString();
     return TextEditingValue(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),

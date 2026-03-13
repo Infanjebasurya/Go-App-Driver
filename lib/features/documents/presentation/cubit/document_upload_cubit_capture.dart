@@ -1,5 +1,17 @@
 part of 'document_upload_cubit.dart';
 
+bool _requiresCr80CardAspect(DocumentStep step) {
+  switch (step) {
+    case DocumentStep.drivingLicense:
+    case DocumentStep.vehicleRC:
+    case DocumentStep.identityAadhaar:
+    case DocumentStep.identityPan:
+      return true;
+    default:
+      return false;
+  }
+}
+
 Future<void> _setProfilePhotoFromPath(
   DocumentUploadCubit cubit, {
   required String path,
@@ -222,6 +234,19 @@ Future<void> _captureFront(
       return;
     }
 
+    if (_requiresCr80CardAspect(cubit.state.currentDocStep.step)) {
+      final String? ratioError =
+          await cubit._fileService.validateCr80CardImage(picked.path);
+      if (ratioError != null) {
+        cubit._emitState(
+          cubit.state.copyWithDocStep(
+            cubit.state.currentDocStep.copyWith(imageError: ratioError),
+          ),
+        );
+        return;
+      }
+    }
+
     final persistedPath = await cubit._fileService.persistImageToAppStorage(
       picked.path,
       prefix: '${cubit.state.currentDocStep.step.name}_front',
@@ -266,6 +291,16 @@ Future<void> _captureFrontDocument(DocumentUploadCubit cubit) async {
 
   cubit._isPicking = true;
   try {
+    if (_requiresCr80CardAspect(cubit.state.currentDocStep.step)) {
+      cubit._emitState(
+        cubit.state.copyWithDocStep(
+          cubit.state.currentDocStep.copyWith(
+            imageError: 'Please upload a card photo (image only) for this document.',
+          ),
+        ),
+      );
+      return;
+    }
     final file = await cubit._filePickerService.pickCustom(
       allowedExtensions: const ['pdf', 'doc', 'docx'],
     );
@@ -340,6 +375,19 @@ Future<void> _captureBack(
       return;
     }
 
+    if (_requiresCr80CardAspect(cubit.state.currentDocStep.step)) {
+      final String? ratioError =
+          await cubit._fileService.validateCr80CardImage(picked.path);
+      if (ratioError != null) {
+        cubit._emitState(
+          cubit.state.copyWithDocStep(
+            cubit.state.currentDocStep.copyWith(imageError: ratioError),
+          ),
+        );
+        return;
+      }
+    }
+
     final persistedPath = await cubit._fileService.persistImageToAppStorage(
       picked.path,
       prefix: '${cubit.state.currentDocStep.step.name}_back',
@@ -384,6 +432,16 @@ Future<void> _captureBackDocument(DocumentUploadCubit cubit) async {
 
   cubit._isPicking = true;
   try {
+    if (_requiresCr80CardAspect(cubit.state.currentDocStep.step)) {
+      cubit._emitState(
+        cubit.state.copyWithDocStep(
+          cubit.state.currentDocStep.copyWith(
+            imageError: 'Please upload a card photo (image only) for this document.',
+          ),
+        ),
+      );
+      return;
+    }
     final file = await cubit._filePickerService.pickCustom(
       allowedExtensions: const ['pdf', 'doc', 'docx'],
     );

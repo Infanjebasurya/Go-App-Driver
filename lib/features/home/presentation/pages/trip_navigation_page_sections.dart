@@ -129,16 +129,20 @@ class _ReachedCustomerSheet extends StatelessWidget {
                 Container(
                   width: 56,
                   height: 56,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                    child: ClipOval(
-                      child: profilePath != null
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.emerald, width: 2),
+                  ),
+                  child: ClipOval(
+                    child: profilePath != null
                         ? Image.file(File(profilePath), fit: BoxFit.contain)
                         : Image.asset(
                             'assets/image/profile.png',
                             fit: BoxFit.contain,
                           ),
-                    ),
                   ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
