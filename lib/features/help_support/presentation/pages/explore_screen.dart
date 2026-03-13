@@ -101,7 +101,8 @@ class ExploreScreen extends StatelessWidget {
                     : ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         itemCount: filteredItems.length,
-                        separatorBuilder: (_, __) => const SizedBox.shrink(),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox.shrink(),
                         itemBuilder: (context, i) {
                           final item = filteredItems[i];
                           return Material(
