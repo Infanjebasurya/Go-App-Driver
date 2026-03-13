@@ -63,7 +63,9 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
           : (summary.totalEarnings > 0 ? summary.totalEarnings : nextTripFare);
       summary = RideCompletionSummary(
         totalEarnings: nextTotalEarnings,
-        distanceKm: acceptedDistance > 0 ? acceptedDistance : summary.distanceKm,
+        distanceKm: acceptedDistance > 0
+            ? acceptedDistance
+            : summary.distanceKm,
         tripFare: nextTripFare,
         tips: shouldUseAcceptedFare ? 0 : summary.tips,
         discountPercent: shouldUseAcceptedFare ? 0 : summary.discountPercent,
@@ -188,269 +190,281 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
                         final double totalCollectable = subTotal;
                         return Column(
                           children: [
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.green.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check_circle,
-                        color: AppColors.green,
-                        size: 60,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Ride Completed',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Total Earnings',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.gray[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '\u20B9 ${state.summary.totalEarnings.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          _buildFareRow(
-                            'Distance',
-                            '${state.summary.distanceKm.toStringAsFixed(1)} km',
-                          ),
-                          const SizedBox(height: 16),
-                          _buildFareRow(
-                            'Trip Fare',
-                            state.summary.tripFare.toStringAsFixed(2),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildFareRow(
-                            'Tips',
-                            '\u20B9${state.summary.tips.toStringAsFixed(2)}',
-                          ),
-                          const SizedBox(height: 16),
-                          _buildFareRow(
-                            'Discount ${state.summary.discountPercent.toStringAsFixed(0)}%',
-                            '-\u20B9${state.summary.discountAmount.toStringAsFixed(2)}',
-                            isDiscount: true,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildFareRow(
-                            'GST (5%)',
-                            '\u20B9${gstAmount.toStringAsFixed(2)} (included)',
-                          ),
-                          const SizedBox(height: 16),
-                          _buildFareRow(
-                            'Total Collectable',
-                            '\u20B9${totalCollectable.toStringAsFixed(2)}',
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              context
-                                  .read<RideCompletedCubit>()
-                                  .toggleQrExpanded();
-                            },
-                            borderRadius: state.isQrExpanded
-                                ? const BorderRadius.vertical(
-                                    top: Radius.circular(16),
-                                  )
-                                : BorderRadius.circular(16),
-                            child: Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Row(
+                            const SizedBox(height: 20),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.green.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.check_circle,
+                                color: AppColors.green,
+                                size: 60,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Ride Completed',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Total Earnings',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.gray[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              '\u20B9 ${state.summary.totalEarnings.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 40),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.black.withValues(
+                                      alpha: 0.05,
+                                    ),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
                                 children: [
-                                  const Icon(
-                                    Icons.qr_code,
-                                    color: AppColors.black87,
+                                  _buildFareRow(
+                                    'Distance',
+                                    '${state.summary.distanceKm.toStringAsFixed(1)} km',
                                   ),
-                                  const SizedBox(width: 12),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Generate QR Code',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.black87,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Show to Customer',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.gray[600],
-                                        ),
-                                      ),
-                                    ],
+                                  const SizedBox(height: 16),
+                                  _buildFareRow(
+                                    'Trip Fare',
+                                    state.summary.tripFare.toStringAsFixed(2),
                                   ),
-                                  const Spacer(),
-                                  Icon(
-                                    state.isQrExpanded
-                                        ? Icons.keyboard_arrow_up
-                                        : Icons.keyboard_arrow_down,
-                                    color: AppColors.gray[600],
+                                  const SizedBox(height: 16),
+                                  _buildFareRow(
+                                    'Tips',
+                                    '\u20B9${state.summary.tips.toStringAsFixed(2)}',
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _buildFareRow(
+                                    'Discount ${state.summary.discountPercent.toStringAsFixed(0)}%',
+                                    '-\u20B9${state.summary.discountAmount.toStringAsFixed(2)}',
+                                    isDiscount: true,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _buildFareRow(
+                                    'GST (5%)',
+                                    '\u20B9${gstAmount.toStringAsFixed(2)} (included)',
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _buildFareRow(
+                                    'Total Collectable',
+                                    '\u20B9${totalCollectable.toStringAsFixed(2)}',
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          if (state.isQrExpanded)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 24.0,
-                                left: 24.0,
-                                right: 24.0,
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: AppColors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: AppColors.gray[200]!),
-                                ),
-                                child: QrImageView(
-                                  data: state.summary.paymentLink,
-                                  version: QrVersions.auto,
-                                  size: 200.0,
-                                  backgroundColor: AppColors.white,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          unawaited(
-                            _onCollectPaymentTap(
-                              viaQr: false,
-                              summary: state.summary,
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.emerald,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Collect Cash',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                            const SizedBox(height: 20),
+                            Container(
+                              decoration: BoxDecoration(
                                 color: AppColors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.black.withValues(
+                                      alpha: 0.05,
+                                    ),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      context
+                                          .read<RideCompletedCubit>()
+                                          .toggleQrExpanded();
+                                    },
+                                    borderRadius: state.isQrExpanded
+                                        ? const BorderRadius.vertical(
+                                            top: Radius.circular(16),
+                                          )
+                                        : BorderRadius.circular(16),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.qr_code,
+                                            color: AppColors.black87,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                'Generate QR Code',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.black87,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Show to Customer',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: AppColors.gray[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const Spacer(),
+                                          Icon(
+                                            state.isQrExpanded
+                                                ? Icons.keyboard_arrow_up
+                                                : Icons.keyboard_arrow_down,
+                                            color: AppColors.gray[600],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (state.isQrExpanded)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 24.0,
+                                        left: 24.0,
+                                        right: 24.0,
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: AppColors.gray[200]!,
+                                          ),
+                                        ),
+                                        child: QrImageView(
+                                          data: state.summary.paymentLink,
+                                          version: QrVersions.auto,
+                                          size: 200.0,
+                                          backgroundColor: AppColors.white,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.check_circle,
-                              color: AppColors.white,
-                              size: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          unawaited(
-                            _onCollectPaymentTap(
-                              viaQr: true,
-                              summary: state.summary,
-                            ),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.emerald),
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Collect via QR',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.emerald,
+                            const SizedBox(height: 40),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  unawaited(
+                                    _onCollectPaymentTap(
+                                      viaQr: false,
+                                      summary: state.summary,
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.emerald,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(28),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Collect Cash',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: AppColors.white,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.qr_code_scanner,
-                              color: AppColors.emerald,
-                              size: 20,
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  unawaited(
+                                    _onCollectPaymentTap(
+                                      viaQr: true,
+                                      summary: state.summary,
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: AppColors.emerald,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 18,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Collect via QR',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.emerald,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(
+                                      Icons.qr_code_scanner,
+                                      color: AppColors.emerald,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                            const SizedBox(height: 20),
                           ],
                         );
                       },
@@ -477,8 +491,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
       await DriverWalletStore.addAmount(totalCollectable);
       final double updated = await DriverWalletStore.loadBalance();
       final double next = _round2(updated - gstAmount);
-      final double bounded =
-          next < DriverWalletStore.minAllowedNegativeBalance
+      final double bounded = next < DriverWalletStore.minAllowedNegativeBalance
           ? DriverWalletStore.minAllowedNegativeBalance
           : next;
       await DriverWalletStore.saveBalance(bounded);
@@ -486,8 +499,7 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     } else {
       final double current = await DriverWalletStore.loadBalance();
       final double next = _round2(current - gstAmount);
-      final double bounded =
-          next < DriverWalletStore.minAllowedNegativeBalance
+      final double bounded = next < DriverWalletStore.minAllowedNegativeBalance
           ? DriverWalletStore.minAllowedNegativeBalance
           : next;
       await DriverWalletStore.saveBalance(bounded);
@@ -542,7 +554,3 @@ class _RideCompletedViewState extends State<_RideCompletedView> {
     );
   }
 }
-
-
-
-

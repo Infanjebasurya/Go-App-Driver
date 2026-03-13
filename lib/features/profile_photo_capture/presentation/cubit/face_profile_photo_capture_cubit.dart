@@ -21,12 +21,12 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
     required FaceAutoCapturePolicy policy,
     required ProfilePhotoImageProcessingService imageProcessingService,
     required SaveProfilePhotoUseCase saveUseCase,
-  })  : _permissionService = permissionService,
-        _faceDetectionService = faceDetectionService,
-        _policy = policy,
-        _imageProcessingService = imageProcessingService,
-        _saveUseCase = saveUseCase,
-        super(FaceProfilePhotoCaptureState.initial());
+  }) : _permissionService = permissionService,
+       _faceDetectionService = faceDetectionService,
+       _policy = policy,
+       _imageProcessingService = imageProcessingService,
+       _saveUseCase = saveUseCase,
+       super(FaceProfilePhotoCaptureState.initial());
 
   final PermissionService _permissionService;
   final LiveFaceDetectionService _faceDetectionService;
@@ -51,26 +51,46 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
   CameraController? get controller => _controller;
 
   Future<void> start() async {
-    emit(state.copyWith(status: FaceProfileCaptureStatus.initializing, message: 'Initializing camera...'));
+    emit(
+      state.copyWith(
+        status: FaceProfileCaptureStatus.initializing,
+        message: 'Initializing camera...',
+      ),
+    );
 
-    final AppPermissionStatus current =
-        await _permissionService.status(AppPermission.camera);
+    final AppPermissionStatus current = await _permissionService.status(
+      AppPermission.camera,
+    );
     final AppPermissionStatus resolved = current == AppPermissionStatus.granted
         ? current
         : await _permissionService.request(AppPermission.camera);
 
     if (resolved != AppPermissionStatus.granted) {
-      emit(state.copyWith(status: FaceProfileCaptureStatus.permissionDenied, message: 'Camera permission required'));
+      emit(
+        state.copyWith(
+          status: FaceProfileCaptureStatus.permissionDenied,
+          message: 'Camera permission required',
+        ),
+      );
       return;
     }
 
     try {
       final cams = await availableCameras();
-      final CameraDescription? front =
-          cams.cast<CameraDescription?>().firstWhere((c) => c?.lensDirection == CameraLensDirection.front, orElse: () => null);
+      final CameraDescription? front = cams
+          .cast<CameraDescription?>()
+          .firstWhere(
+            (c) => c?.lensDirection == CameraLensDirection.front,
+            orElse: () => null,
+          );
       _camera = front ?? (cams.isNotEmpty ? cams.first : null);
       if (_camera == null) {
-        emit(state.copyWith(status: FaceProfileCaptureStatus.failure, message: 'No camera available'));
+        emit(
+          state.copyWith(
+            status: FaceProfileCaptureStatus.failure,
+            message: 'No camera available',
+          ),
+        );
         return;
       }
 
@@ -78,7 +98,9 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
         _camera!,
         ResolutionPreset.medium,
         enableAudio: false,
-        imageFormatGroup: Platform.isIOS ? ImageFormatGroup.bgra8888 : ImageFormatGroup.nv21,
+        imageFormatGroup: Platform.isIOS
+            ? ImageFormatGroup.bgra8888
+            : ImageFormatGroup.nv21,
       );
       await _controller!.initialize();
       _scanStartedAt = DateTime.now();
@@ -97,7 +119,12 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
 
       await _controller!.startImageStream(_onCameraImage);
     } catch (e) {
-      emit(state.copyWith(status: FaceProfileCaptureStatus.failure, message: 'Failed to start camera: $e'));
+      emit(
+        state.copyWith(
+          status: FaceProfileCaptureStatus.failure,
+          message: 'Failed to start camera: $e',
+        ),
+      );
     }
   }
 
@@ -120,7 +147,12 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
         await _controller!.startImageStream(_onCameraImage);
       }
     } catch (e) {
-      emit(state.copyWith(status: FaceProfileCaptureStatus.failure, message: 'Failed to restart camera: $e'));
+      emit(
+        state.copyWith(
+          status: FaceProfileCaptureStatus.failure,
+          message: 'Failed to restart camera: $e',
+        ),
+      );
     }
   }
 
@@ -140,22 +172,38 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
       if (state.status != FaceProfileCaptureStatus.scanning) return;
       final DateTime startedAt = _scanStartedAt ?? DateTime.now();
       if (DateTime.now().difference(startedAt) > _scanTimeout) {
-        emit(state.copyWith(status: FaceProfileCaptureStatus.timeout, message: 'Timed out. Tap Retake to try again.'));
+        emit(
+          state.copyWith(
+            status: FaceProfileCaptureStatus.timeout,
+            message: 'Timed out. Tap Retake to try again.',
+          ),
+        );
         await _stopStreamIfNeeded();
         return;
       }
 
       final CameraController? controller = _controller;
       final CameraDescription? camera = _camera;
-      if (controller == null || camera == null || !controller.value.isInitialized) return;
+      if (controller == null ||
+          camera == null ||
+          !controller.value.isInitialized) {
+        return;
+      }
 
       final InputImage? inputImage = _toInputImage(image, camera);
-      if (inputImage == null) return;
+      if (inputImage == null) {
+        return;
+      }
       final faces = await _faceDetectionService.detect(inputImage);
       final Size imageSize = inputImage.metadata?.size ?? const Size(0, 0);
-      final Size effectiveSize =
-          _effectiveImageSize(imageSize, inputImage.metadata?.rotation);
-      final evaluation = _policy.evaluate(faces: faces, imageSize: effectiveSize);
+      final Size effectiveSize = _effectiveImageSize(
+        imageSize,
+        inputImage.metadata?.rotation,
+      );
+      final evaluation = _policy.evaluate(
+        faces: faces,
+        imageSize: effectiveSize,
+      );
       final Rect? normalizedBox = evaluation.normalizedFaceBox;
 
       emit(
@@ -184,7 +232,10 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
       _stableSince ??= DateTime.now();
       final Duration stableFor = DateTime.now().difference(_stableSince!);
       final double progress =
-          (stableFor.inMilliseconds / _stabilityRequired.inMilliseconds).clamp(0.0, 1.0);
+          (stableFor.inMilliseconds / _stabilityRequired.inMilliseconds).clamp(
+            0.0,
+            1.0,
+          );
       emit(state.copyWith(stabilityProgress: progress));
 
       if (stableFor >= _stabilityRequired) {
@@ -221,20 +272,35 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
   Future<void> _autoCapture() async {
     if (_didCapture) return;
     _didCapture = true;
-    emit(state.copyWith(status: FaceProfileCaptureStatus.capturing, message: 'Auto capturing...'));
+    emit(
+      state.copyWith(
+        status: FaceProfileCaptureStatus.capturing,
+        message: 'Auto capturing...',
+      ),
+    );
     await _stopStreamIfNeeded();
 
     try {
       final CameraController? controller = _controller;
       if (controller == null || !controller.value.isInitialized) {
-        emit(state.copyWith(status: FaceProfileCaptureStatus.failure, message: 'Camera not ready'));
+        emit(
+          state.copyWith(
+            status: FaceProfileCaptureStatus.failure,
+            message: 'Camera not ready',
+          ),
+        );
         return;
       }
       final XFile raw = await controller.takePicture();
-      emit(state.copyWith(status: FaceProfileCaptureStatus.processing, message: 'Processing photo...'));
+      emit(
+        state.copyWith(
+          status: FaceProfileCaptureStatus.processing,
+          message: 'Processing photo...',
+        ),
+      );
 
-      final ProcessedJpegImage processed =
-          await _imageProcessingService.processCapturedImage(raw.path);
+      final ProcessedJpegImage processed = await _imageProcessingService
+          .processCapturedImage(raw.path);
       final saved = await _saveUseCase(processed);
 
       emit(
@@ -248,12 +314,21 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
 
       unawaited(_bestEffortDelete(raw.path));
     } catch (e) {
-      emit(state.copyWith(status: FaceProfileCaptureStatus.failure, message: 'Capture failed: $e'));
+      emit(
+        state.copyWith(
+          status: FaceProfileCaptureStatus.failure,
+          message: 'Capture failed: $e',
+        ),
+      );
     }
   }
+
   InputImage? _toInputImage(CameraImage image, CameraDescription camera) {
     try {
-      final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
+      final Size imageSize = Size(
+        image.width.toDouble(),
+        image.height.toDouble(),
+      );
       final InputImageRotation rotation = _inputImageRotation(camera);
 
       final Uint8List bytes;
@@ -263,14 +338,17 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
       if (Platform.isAndroid) {
         bytesPerRow = image.planes.first.bytesPerRow;
         format = InputImageFormat.nv21;
-        bytes = image.planes.length == 1 ? image.planes.first.bytes : _yuv420ToNv21(image);
+        bytes = image.planes.length == 1
+            ? image.planes.first.bytes
+            : _yuv420ToNv21(image);
       } else {
         // iOS typically provides BGRA8888.
         final Plane plane = image.planes.first;
         bytesPerRow = plane.bytesPerRow;
         bytes = plane.bytes;
         format =
-            InputImageFormatValue.fromRawValue(image.format.raw) ?? InputImageFormat.bgra8888;
+            InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.bgra8888;
       }
       final InputImageMetadata metadata = InputImageMetadata(
         size: imageSize,
@@ -378,4 +456,3 @@ class FaceProfilePhotoCaptureCubit extends Cubit<FaceProfilePhotoCaptureState> {
     return super.close();
   }
 }
-

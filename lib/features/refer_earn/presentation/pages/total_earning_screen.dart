@@ -89,13 +89,10 @@ class _TotalEarningView extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: s.activities.length,
-                    separatorBuilder: (_, _) => const Divider(
-                      height: 18,
-                      color: Color(0xFFF1F1F1),
-                    ),
-                    itemBuilder: (_, i) => _ActivityRow(
-                      activity: s.activities[i],
-                    ),
+                    separatorBuilder: (_, _) =>
+                        const Divider(height: 18, color: Color(0xFFF1F1F1)),
+                    itemBuilder: (_, i) =>
+                        _ActivityRow(activity: s.activities[i]),
                   ),
               ],
             ),
@@ -274,7 +271,9 @@ class _InitialAvatar extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Text(
-        text.length > 2 ? text.substring(0, 2).toUpperCase() : text.toUpperCase(),
+        text.length > 2
+            ? text.substring(0, 2).toUpperCase()
+            : text.toUpperCase(),
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w800,

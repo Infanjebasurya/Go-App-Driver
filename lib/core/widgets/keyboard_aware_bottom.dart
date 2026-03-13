@@ -30,10 +30,7 @@ class KeyboardAwareBottom extends StatelessWidget {
       child: SafeArea(
         top: false,
         bottom: false,
-        child: Padding(
-          padding: padding,
-          child: child,
-        ),
+        child: Padding(padding: padding, child: child),
       ),
     );
   }

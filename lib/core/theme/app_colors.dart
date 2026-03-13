@@ -208,4 +208,3 @@ class AppFonts {
   static const String saira = 'Saira';
   static const String inter = 'Inter';
 }
-

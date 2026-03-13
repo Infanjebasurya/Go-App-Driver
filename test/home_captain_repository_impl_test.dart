@@ -36,17 +36,23 @@ void main() {
       verify(() => remoteDataSource.fetchCaptainProfile()).called(1);
     });
 
-    test('returns Left(ServerFailure) when remote data source throws', () async {
-      when(
-        () => remoteDataSource.fetchCaptainProfile(),
-      ).thenThrow(Exception('network error'));
+    test(
+      'returns Left(ServerFailure) when remote data source throws',
+      () async {
+        when(
+          () => remoteDataSource.fetchCaptainProfile(),
+        ).thenThrow(Exception('network error'));
 
-      final result = await repository.getCaptainProfile();
+        final result = await repository.getCaptainProfile();
 
-      expect(result.isLeft(), isTrue);
-      final failure = result.fold((l) => l, (_) => throw Exception('unexpected'));
-      expect(failure, isA<ServerFailure>());
-      expect(failure.message, contains('network error'));
-    });
+        expect(result.isLeft(), isTrue);
+        final failure = result.fold(
+          (l) => l,
+          (_) => throw Exception('unexpected'),
+        );
+        expect(failure, isA<ServerFailure>());
+        expect(failure.message, contains('network error'));
+      },
+    );
   });
 }

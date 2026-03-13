@@ -91,6 +91,3 @@ class LocationDisabledBanner extends StatelessWidget {
     );
   }
 }
-
-
-

@@ -21,10 +21,12 @@ class ProfilePhotoStepContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final shortestSide = MediaQuery.of(context).size.shortestSide;
     const double passportAspectRatio = 3.5 / 4.5;
-    final double frameWidth =
-        (shortestSide * 0.52).clamp(210.0, 260.0).toDouble();
+    final double frameWidth = (shortestSide * 0.52)
+        .clamp(210.0, 260.0)
+        .toDouble();
     const double borderRadius = 16;
-    final hasImage = stepData.frontCaptured &&
+    final hasImage =
+        stepData.frontCaptured &&
         stepData.frontPath != null &&
         stepData.frontPath!.isNotEmpty &&
         File(stepData.frontPath!).existsSync();
@@ -68,7 +70,9 @@ class ProfilePhotoStepContent extends StatelessWidget {
                       Positioned.fill(
                         child: GestureDetector(
                           key: const Key('profile_photo_frame_tap_area'),
-                          onTap: (isProcessing || hasImage) ? null : onCameraTap,
+                          onTap: (isProcessing || hasImage)
+                              ? null
+                              : onCameraTap,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.grey.shade200,

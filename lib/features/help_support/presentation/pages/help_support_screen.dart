@@ -251,11 +251,7 @@ class _SubMenuTile extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
           child: Row(
             children: [
-              Icon(
-                icon,
-                size: 18,
-                color: AppColors.textBody,
-              ),
+              Icon(icon, size: 18, color: AppColors.textBody),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
@@ -340,7 +336,3 @@ class _MenuTile extends StatelessWidget {
     );
   }
 }
-
-
-
-

@@ -26,5 +26,3 @@ class GoApp extends StatelessWidget {
     );
   }
 }
-
-

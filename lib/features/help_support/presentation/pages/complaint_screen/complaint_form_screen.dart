@@ -36,11 +36,7 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
     'm4v',
     'webm',
   };
-  static const Set<String> _documentExtensions = <String>{
-    'pdf',
-    'doc',
-    'docx',
-  };
+  static const Set<String> _documentExtensions = <String>{'pdf', 'doc', 'docx'};
 
   late final TextEditingController _descController;
 
@@ -99,7 +95,10 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
             GestureDetector(
               onTap: cubit.openCategoryPicker,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -110,7 +109,9 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                     Expanded(
                       child: BlocBuilder<ComplaintCubit, ComplaintState>(
                         builder: (context, state) {
-                          final s = state is ComplaintFormState ? state : widget.state;
+                          final s = state is ComplaintFormState
+                              ? state
+                              : widget.state;
                           return Text(
                             s.categoryName,
                             style: TextStyle(
@@ -166,7 +167,10 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.emerald, width: 1.5),
+                  borderSide: const BorderSide(
+                    color: AppColors.emerald,
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -191,7 +195,10 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.borderSoft, style: BorderStyle.solid),
+                  border: Border.all(
+                    color: AppColors.borderSoft,
+                    style: BorderStyle.solid,
+                  ),
                 ),
                 child: widget.state.mediaName == null
                     ? Column(
@@ -212,17 +219,26 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                           const SizedBox(height: 14),
                           const Text(
                             'Attach Evidence (Photos/Video/Document)',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           const Text(
                             'IMAGE/VIDEO/DOCUMENT - UP TO 20MB',
-                            style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ],
                       )
                     : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         child: Stack(
                           children: [
                             Center(
@@ -230,7 +246,8 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  if (widget.state.mediaType == ComplaintMediaType.image &&
+                                  if (widget.state.mediaType ==
+                                          ComplaintMediaType.image &&
                                       widget.state.mediaPath != null)
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
@@ -239,14 +256,18 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
                                         width: 96,
                                         height: 68,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => const Icon(
-                                          Icons.image_outlined,
-                                          color: AppColors.textSecondary,
-                                          size: 32,
-                                        ),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(
+                                                  Icons.image_outlined,
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                  size: 32,
+                                                ),
                                       ),
                                     )
-                                  else if (widget.state.mediaType == ComplaintMediaType.document)
+                                  else if (widget.state.mediaType ==
+                                      ComplaintMediaType.document)
                                     const Icon(
                                       Icons.description_rounded,
                                       color: AppColors.textSecondary,
@@ -381,14 +402,22 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
       }
       cubit.attachMedia(path: file.path, name: file.name, mediaType: mediaType);
     } catch (_) {
-      cubit.setMediaValidationError('Unable to pick file right now. Please try again.');
+      cubit.setMediaValidationError(
+        'Unable to pick file right now. Please try again.',
+      );
     }
   }
 
   ComplaintMediaType? _resolveMediaType(String extension) {
-    if (_imageExtensions.contains(extension)) return ComplaintMediaType.image;
-    if (_videoExtensions.contains(extension)) return ComplaintMediaType.video;
-    if (_documentExtensions.contains(extension)) return ComplaintMediaType.document;
+    if (_imageExtensions.contains(extension)) {
+      return ComplaintMediaType.image;
+    }
+    if (_videoExtensions.contains(extension)) {
+      return ComplaintMediaType.video;
+    }
+    if (_documentExtensions.contains(extension)) {
+      return ComplaintMediaType.document;
+    }
     return null;
   }
 }

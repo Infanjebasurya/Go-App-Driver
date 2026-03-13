@@ -83,7 +83,3 @@ class SummaryDetailsPage extends StatelessWidget {
     );
   }
 }
-
-
-
-

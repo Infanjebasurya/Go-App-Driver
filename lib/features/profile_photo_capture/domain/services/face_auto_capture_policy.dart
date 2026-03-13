@@ -108,7 +108,8 @@ class FaceAutoCapturePolicy {
 
     final Offset c = normalized.center;
     final bool centered =
-        (c.dx - 0.5).abs() <= centerTolerance && (c.dy - 0.5).abs() <= centerTolerance;
+        (c.dx - 0.5).abs() <= centerTolerance &&
+        (c.dy - 0.5).abs() <= centerTolerance;
     if (!centered) {
       return FaceFrameEvaluation(
         status: FaceFrameStatus.offCenter,

@@ -150,10 +150,7 @@ class _MainReferScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<ReferralCubit>(),
-          child: _BikeReferralDetailScreen(
-            state: state,
-            campaign: campaign,
-          ),
+          child: _BikeReferralDetailScreen(state: state, campaign: campaign),
         ),
       ),
     );
@@ -398,7 +395,9 @@ class ReferralPendingScreen extends StatelessWidget {
             return const Scaffold(
               backgroundColor: AppColors.white,
               body: Center(
-                child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
+                child: CircularProgressIndicator(
+                  color: AuthUiColors.brandGreen,
+                ),
               ),
             );
           }
@@ -456,7 +455,9 @@ class ReferralCompletedScreen extends StatelessWidget {
             return const Scaffold(
               backgroundColor: AppColors.white,
               body: Center(
-                child: CircularProgressIndicator(color: AuthUiColors.brandGreen),
+                child: CircularProgressIndicator(
+                  color: AuthUiColors.brandGreen,
+                ),
               ),
             );
           }
@@ -1237,10 +1238,3 @@ class _StatCol extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-

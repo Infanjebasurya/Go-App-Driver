@@ -24,7 +24,10 @@ class WalletTransactionTile extends StatelessWidget {
             Container(width: 2.4, height: 98, color: visual.accent),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: <Widget>[
                     Container(
@@ -38,7 +41,7 @@ class WalletTransactionTile extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                  child: Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Row(
@@ -154,10 +157,7 @@ class WalletHistoryTabBar extends StatelessWidget {
       indicatorColor: AppColors.emerald,
       indicatorWeight: 2,
       dividerColor: AppColors.transparent,
-      labelStyle: const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-      ),
+      labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
       unselectedLabelStyle: const TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
@@ -195,7 +195,3 @@ class _WalletTxnVisual {
     };
   }
 }
-
-
-
-

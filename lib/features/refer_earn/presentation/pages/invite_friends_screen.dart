@@ -14,13 +14,12 @@ class InviteFriendsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          InviteFriendsCubit(
-            referralCode: referralCode,
-            permissionService: sl(),
-            contactsService: sl(),
-            urlLauncherService: sl(),
-          )..initialize(),
+      create: (_) => InviteFriendsCubit(
+        referralCode: referralCode,
+        permissionService: sl(),
+        contactsService: sl(),
+        urlLauncherService: sl(),
+      )..initialize(),
       child: const _InviteFriendsView(),
     );
   }

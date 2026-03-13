@@ -18,23 +18,23 @@ class PickedFile {
 class FilePickerService {
   const FilePickerService();
 
-  static const MethodChannel _channel =
-      MethodChannel('app/file_picker_service');
+  static const MethodChannel _channel = MethodChannel(
+    'app/file_picker_service',
+  );
 
   Future<PickedFile?> pickImage() async {
-    final Map<Object?, Object?>? raw =
-        await _channel.invokeMethod<Map<Object?, Object?>>('pickImage');
+    final Map<Object?, Object?>? raw = await _channel
+        .invokeMethod<Map<Object?, Object?>>('pickImage');
     return _mapSingle(raw);
   }
 
   Future<PickedFile?> pickCustom({
     required List<String> allowedExtensions,
   }) async {
-    final Map<Object?, Object?>? raw =
-        await _channel.invokeMethod<Map<Object?, Object?>>(
-      'pickCustom',
-      <String, Object>{'allowedExtensions': allowedExtensions},
-    );
+    final Map<Object?, Object?>? raw = await _channel
+        .invokeMethod<Map<Object?, Object?>>('pickCustom', <String, Object>{
+          'allowedExtensions': allowedExtensions,
+        });
     return _mapSingle(raw);
   }
 
@@ -50,4 +50,3 @@ class FilePickerService {
     );
   }
 }
-

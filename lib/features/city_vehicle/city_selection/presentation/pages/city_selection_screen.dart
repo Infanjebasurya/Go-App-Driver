@@ -41,8 +41,9 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
   @override
   void initState() {
     super.initState();
-    _searchController =
-        PersistentTextController(storageKey: 'city_selection.search');
+    _searchController = PersistentTextController(
+      storageKey: 'city_selection.search',
+    );
     _searchController.attach();
     RegistrationProgressStore.setStep(RegistrationStep.citySelection);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -67,26 +68,27 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: const AppAppBar(title: 'GoApp', backEnabled: false),
-        bottomNavigationBar: BlocBuilder<CitySelectionCubit, CitySelectionState>(
-          builder: (context, state) {
-            return _ContinueButton(
-              enabled: state.hasSelection,
-              onTap: () {
-                if (state.hasSelection) {
-                  FocusScope.of(context).unfocus();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => VehicleSelectionScreen(
-                        selectedCity: state.selectedCity!,
-                      ),
-                    ),
-                  );
-                }
+        bottomNavigationBar:
+            BlocBuilder<CitySelectionCubit, CitySelectionState>(
+              builder: (context, state) {
+                return _ContinueButton(
+                  enabled: state.hasSelection,
+                  onTap: () {
+                    if (state.hasSelection) {
+                      FocusScope.of(context).unfocus();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VehicleSelectionScreen(
+                            selectedCity: state.selectedCity!,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                );
               },
-            );
-          },
-        ),
+            ),
         body: BlocBuilder<CitySelectionCubit, CitySelectionState>(
           builder: (context, state) {
             return SafeArea(
@@ -134,7 +136,9 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                           if (state.filteredFeaturedCities.isNotEmpty) ...[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: state.filteredFeaturedCities.map((city) {
+                              children: state.filteredFeaturedCities.map((
+                                city,
+                              ) {
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 4),
                                   child: FeaturedCityChip(
@@ -176,20 +180,17 @@ class _CitySelectionViewState extends State<_CitySelectionView> {
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, i) {
-                            final city = state.filteredAllCities[i];
-                            return CityListTile(
-                              key: ValueKey(city.id),
-                              city: city,
-                              isSelected: state.isSelected(city),
-                              onTap: () => context
-                                  .read<CitySelectionCubit>()
-                                  .selectCity(city),
-                            );
-                          },
-                          childCount: state.filteredAllCities.length,
-                        ),
+                        delegate: SliverChildBuilderDelegate((context, i) {
+                          final city = state.filteredAllCities[i];
+                          return CityListTile(
+                            key: ValueKey(city.id),
+                            city: city,
+                            isSelected: state.isSelected(city),
+                            onTap: () => context
+                                .read<CitySelectionCubit>()
+                                .selectCity(city),
+                          );
+                        }, childCount: state.filteredAllCities.length),
                       ),
                     ),
                   const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -225,7 +226,6 @@ class _SearchBar extends StatelessWidget {
           FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
         ],
 
-
         textStyle: const TextStyle(
           fontSize: 14.5,
           color: AppColors.headingNavy,
@@ -239,16 +239,19 @@ class _SearchBar extends StatelessWidget {
         ),
         trailing: controller.text.isNotEmpty
             ? GestureDetector(
-          onTap: onClear,
-          child: Icon(
-            Icons.close_rounded,
-            color: AppColors.gray.shade400,
-            size: 18,
-          ),
-        )
+                onTap: onClear,
+                child: Icon(
+                  Icons.close_rounded,
+                  color: AppColors.gray.shade400,
+                  size: 18,
+                ),
+              )
             : null,
         borderColor: AppColors.gray.shade400,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 14,
+        ),
       ),
     );
   }
@@ -294,9 +297,9 @@ class _ContinueButton extends StatelessWidget {
         12,
         20,
         math.max(
-          MediaQuery.viewInsetsOf(context).bottom,
-          MediaQuery.of(context).padding.bottom,
-        ) +
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
             20,
       ),
       child: AnimatedOpacity(
@@ -330,7 +333,3 @@ class _ContinueButton extends StatelessWidget {
     );
   }
 }
-
-
-
-

@@ -9,19 +9,18 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: ShadowButton(
-            onPressed: () {},
-            label: const Text('Tap'),
-          ),
+          body: ShadowButton(onPressed: () {}, label: const Text('Tap')),
         ),
       ),
     );
 
     final Container container = tester.widget<Container>(
-      find.descendant(
-        of: find.byType(ShadowButton),
-        matching: find.byType(Container),
-      ).first,
+      find
+          .descendant(
+            of: find.byType(ShadowButton),
+            matching: find.byType(Container),
+          )
+          .first,
     );
     final BoxDecoration decoration = container.decoration! as BoxDecoration;
 
@@ -34,20 +33,17 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: ShadowButton(
-            onPressed: null,
-            label: Text('Tap'),
-          ),
-        ),
+        home: Scaffold(body: ShadowButton(onPressed: null, label: Text('Tap'))),
       ),
     );
 
     final Container container = tester.widget<Container>(
-      find.descendant(
-        of: find.byType(ShadowButton),
-        matching: find.byType(Container),
-      ).first,
+      find
+          .descendant(
+            of: find.byType(ShadowButton),
+            matching: find.byType(Container),
+          )
+          .first,
     );
     final BoxDecoration decoration = container.decoration! as BoxDecoration;
 

@@ -101,14 +101,16 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                           onSelected: _cubit.setFilter,
                         ),
                         const SizedBox(height: 12),
-                        if (state.visibleTrips.isEmpty) const _EmptyResultState(),
+                        if (state.visibleTrips.isEmpty)
+                          const _EmptyResultState(),
                         ...state.visibleTrips.map(
                           (RideHistoryTrip trip) => Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _RideHistoryCard(
                               trip: trip,
                               expanded: state.expandedTripIds.contains(trip.id),
-                              onToggleExpand: () => _cubit.toggleExpanded(trip.id),
+                              onToggleExpand: () =>
+                                  _cubit.toggleExpanded(trip.id),
                             ),
                           ),
                         ),
@@ -121,6 +123,3 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     );
   }
 }
-
-
-

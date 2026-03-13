@@ -7,7 +7,8 @@ class _WeekView extends StatefulWidget {
   State<_WeekView> createState() => _WeekViewState();
 }
 
-class _WeekViewState extends State<_WeekView> with SingleTickerProviderStateMixin {
+class _WeekViewState extends State<_WeekView>
+    with SingleTickerProviderStateMixin {
   int _rangeIndex = 1;
   late final TabController _orderTabController;
 
@@ -84,9 +85,7 @@ class _WeekViewState extends State<_WeekView> with SingleTickerProviderStateMixi
                 ),
               ),
               const SizedBox(height: 10),
-              _OrderHistoryTabs(
-                controller: _orderTabController,
-              ),
+              _OrderHistoryTabs(controller: _orderTabController),
               const SizedBox(height: 10),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),

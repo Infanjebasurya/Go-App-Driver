@@ -138,4 +138,3 @@ class UpdateProfileDetailsResponseModel {
     return null;
   }
 }
-

@@ -43,11 +43,11 @@ class _OtpPageState extends SmsAutoFillState<OtpPage> {
   late final bool _ownsCubit;
   late final List<TextEditingController> _controllers = List.generate(
     OtpCubit.otpLength,
-        (_) => TextEditingController(),
+    (_) => TextEditingController(),
   );
   late final List<FocusNode> _focusNodes = List.generate(
     OtpCubit.otpLength,
-        (_) => FocusNode(),
+    (_) => FocusNode(),
   );
 
   @override
@@ -116,15 +116,19 @@ class _OtpPageState extends SmsAutoFillState<OtpPage> {
     }
     if (!mounted) return;
     final navigator = Navigator.of(context, rootNavigator: true);
-    navigator.pushReplacement(MaterialPageRoute(builder: (_) {
-      if (hasCompletedProfile) {
-        return BlocProvider<DriverCubit>(
-          create: (_) => sl<DriverCubit>(),
-          child: const HomeScreen(),
-        );
-      }
-      return const ProfileSetupPage();
-    }));
+    navigator.pushReplacement(
+      MaterialPageRoute(
+        builder: (_) {
+          if (hasCompletedProfile) {
+            return BlocProvider<DriverCubit>(
+              create: (_) => sl<DriverCubit>(),
+              child: const HomeScreen(),
+            );
+          }
+          return const ProfileSetupPage();
+        },
+      ),
+    );
     _otpCubit.consumeActions();
   }
 
@@ -197,7 +201,7 @@ class _OtpPageState extends SmsAutoFillState<OtpPage> {
                 ),
               BlocListener<OtpCubit, OtpState>(
                 listenWhen: (previous, current) =>
-                previous.code != current.code ||
+                    previous.code != current.code ||
                     previous.submitRequested != current.submitRequested ||
                     previous.submitError != current.submitError ||
                     previous.resendMessage != current.resendMessage ||
@@ -270,7 +274,7 @@ class _OtpPageState extends SmsAutoFillState<OtpPage> {
                           runSpacing: 8,
                           children: List.generate(
                             OtpCubit.otpLength,
-                                (index) => _OtpBox(
+                            (index) => _OtpBox(
                               fieldKey: index == 0
                                   ? const Key('otp_text_field')
                                   : null,
@@ -316,8 +320,8 @@ class _OtpPageState extends SmsAutoFillState<OtpPage> {
                                   color: otpState.canResend
                                       ? AuthUiColors.danger
                                       : AuthUiColors.danger.withValues(
-                                    alpha: 0.5,
-                                  ),
+                                          alpha: 0.5,
+                                        ),
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -391,10 +395,8 @@ class _OtpPageState extends SmsAutoFillState<OtpPage> {
                   loading: otpState.isLoading,
                   onPressed: otpState.isLoading
                       ? null
-                      : () => _otpCubit.submit(
-                            widget.phoneNumber,
-                            widget.otpId,
-                          ),
+                      : () =>
+                            _otpCubit.submit(widget.phoneNumber, widget.otpId),
                 ),
               ),
             );
@@ -457,6 +459,3 @@ class _OtpBox extends StatelessWidget {
     );
   }
 }
-
-
-

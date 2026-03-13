@@ -88,10 +88,7 @@ class ComplaintSubmitted extends ComplaintState {
   final SupportTicket ticket;
   final List<SupportTicket> recentTickets;
 
-  const ComplaintSubmitted({
-    required this.ticket,
-    required this.recentTickets,
-  });
+  const ComplaintSubmitted({required this.ticket, required this.recentTickets});
 
   @override
   List<Object?> get props => [ticket, recentTickets];

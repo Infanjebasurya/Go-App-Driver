@@ -220,6 +220,3 @@ class _AccountMenuTile extends StatelessWidget {
     );
   }
 }
-
-
-

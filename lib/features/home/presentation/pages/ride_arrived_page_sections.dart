@@ -42,9 +42,8 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
   String _selectedReason = _driverReasons.first;
   bool _submitting = false;
 
-  double get _cancellationFee => _cancelType == 'Customer'
-      ? widget.customerCancellationFee
-      : 0.0;
+  double get _cancellationFee =>
+      _cancelType == 'Customer' ? widget.customerCancellationFee : 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -125,11 +124,12 @@ class _CancellationReasonSheetState extends State<_CancellationReasonSheet> {
                 setState(() => _selectedReason = value);
               },
               child: Column(
-                children: (_cancelType == 'Driver'
-                        ? _driverReasons
-                        : _customerReasons)
-                    .map(_buildReasonTile)
-                    .toList(growable: false),
+                children:
+                    (_cancelType == 'Driver'
+                            ? _driverReasons
+                            : _customerReasons)
+                        .map(_buildReasonTile)
+                        .toList(growable: false),
               ),
             ),
             const SizedBox(height: 16),
@@ -272,7 +272,10 @@ class _DriverCard extends StatelessWidget {
             child: ClipOval(
               child: profilePath != null
                   ? Image.file(File(profilePath), fit: BoxFit.contain)
-                  : Image.asset('assets/image/profile.png', fit: BoxFit.contain),
+                  : Image.asset(
+                      'assets/image/profile.png',
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
           const SizedBox(width: 12),
@@ -503,7 +506,3 @@ class _PickupDropSection extends StatelessWidget {
     );
   }
 }
-
-
-
-

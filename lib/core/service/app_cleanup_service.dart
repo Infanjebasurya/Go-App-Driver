@@ -4,7 +4,7 @@ import 'package:goapp/features/documents/presentation/services/document_upload_f
 
 class AppCleanupService {
   AppCleanupService({required DocumentUploadFileService fileService})
-      : _fileService = fileService;
+    : _fileService = fileService;
 
   final DocumentUploadFileService _fileService;
 

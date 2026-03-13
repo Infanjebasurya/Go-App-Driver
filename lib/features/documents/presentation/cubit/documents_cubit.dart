@@ -138,9 +138,7 @@ class DocumentsCubit extends Cubit<DocumentsState> {
           frontImagePath: bankDocPath?.trim().isEmpty ?? true
               ? null
               : bankDocPath,
-          documentNumber: accountNumber.trim().isEmpty
-              ? null
-              : accountNumber,
+          documentNumber: accountNumber.trim().isEmpty ? null : accountNumber,
         );
       default:
         return doc;

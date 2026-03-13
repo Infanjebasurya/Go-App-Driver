@@ -26,11 +26,7 @@ class ProfileLogoutButton extends StatelessWidget {
               ),
             ),
             Spacer(),
-            Icon(
-              Icons.chevron_right,
-              color: Color(0x66E53935),
-              size: 20,
-            ),
+            Icon(Icons.chevron_right, color: Color(0x66E53935), size: 20),
           ],
         ),
       ),
@@ -154,7 +150,9 @@ class _ProfileConfirmActionSheetState extends State<ProfileConfirmActionSheet> {
               const SizedBox(width: 12),
               Expanded(
                 child: ShadowButton(
-                  onPressed: _loading ? null : () => Navigator.of(context).pop(),
+                  onPressed: _loading
+                      ? null
+                      : () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF0F0F0),
                     foregroundColor: const Color(0xFF444444),

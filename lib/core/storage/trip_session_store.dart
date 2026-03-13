@@ -57,7 +57,8 @@ class TripLatLng {
   }
 
   @override
-  String toString() => '(${latitude.toStringAsFixed(5)}, '
+  String toString() =>
+      '(${latitude.toStringAsFixed(5)}, '
       '${longitude.toStringAsFixed(5)})';
 }
 
@@ -272,9 +273,7 @@ class TripSession {
   /// Total trip duration from start to completion. Null if not yet completed.
   Duration? get tripDuration {
     if (tripStartedEpochMs == null || tripCompletedEpochMs == null) return null;
-    return Duration(
-      milliseconds: tripCompletedEpochMs! - tripStartedEpochMs!,
-    );
+    return Duration(milliseconds: tripCompletedEpochMs! - tripStartedEpochMs!);
   }
 
   /// Duration spent waiting at pickup before the passenger boarded.
@@ -372,10 +371,8 @@ class TripSession {
         orElse: () => TripSessionStage.none,
       ),
       acceptedAtEpochMs: (json['acceptedAtEpochMs'] as int?) ?? 0,
-      pickupLatLng:
-          readLatLng(json['pickupLatLng']) ?? const TripLatLng(0, 0),
-      dropLatLng:
-          readLatLng(json['dropLatLng']) ?? const TripLatLng(0, 0),
+      pickupLatLng: readLatLng(json['pickupLatLng']) ?? const TripLatLng(0, 0),
+      dropLatLng: readLatLng(json['dropLatLng']) ?? const TripLatLng(0, 0),
       pickupAddress: (json['pickupAddress'] as String?) ?? '',
       dropAddress: (json['dropAddress'] as String?) ?? '',
       fareLabel: (json['fareLabel'] as String?) ?? '',
@@ -477,18 +474,15 @@ class TripSessionStore {
     required List<String> tags,
     required String comment,
   }) {
-    return _savePassengerRatingImpl(
-      stars: stars,
-      tags: tags,
-      comment: comment,
-    );
+    return _savePassengerRatingImpl(stars: stars, tags: tags, comment: comment);
   }
 
   static Future<void> endSession() => _endSessionImpl();
 
   static Future<void> clearAll() => _clearAllImpl();
 
-  static Future<void> _saveActive(TripSession session) => _saveActiveImpl(session);
+  static Future<void> _saveActive(TripSession session) =>
+      _saveActiveImpl(session);
 
   static Future<void> _archiveSession(TripSession session) {
     return _archiveSessionImpl(session);

@@ -100,7 +100,9 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
             _fuelTypeController.text = state.fuelTypeDisplay;
             if (state.isSubmitted) {
               unawaited(
-                RegistrationProgressStore.setStep(RegistrationStep.verification),
+                RegistrationProgressStore.setStep(
+                  RegistrationStep.verification,
+                ),
               );
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const VerificationScreen()),
@@ -209,8 +211,9 @@ class _VehicleDetailsViewState extends State<_VehicleDetailsView> {
                           controller: _yearController,
                           errorText: state.errors.year,
                           keyboardType: TextInputType.number,
-                          onChanged:
-                              context.read<VehicleDetailsCubit>().updateYear,
+                          onChanged: context
+                              .read<VehicleDetailsCubit>()
+                              .updateYear,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(4),
@@ -349,9 +352,9 @@ class _ContinueButton extends StatelessWidget {
         12,
         20,
         math.max(
-          MediaQuery.viewInsetsOf(context).bottom,
-          MediaQuery.of(context).padding.bottom,
-        ) +
+              MediaQuery.viewInsetsOf(context).bottom,
+              MediaQuery.of(context).padding.bottom,
+            ) +
             20,
       ),
       decoration: const BoxDecoration(
@@ -374,28 +377,23 @@ class _ContinueButton extends StatelessWidget {
           onPressed: (isSubmitting || !enabled) ? null : onTap,
           child: isSubmitting
               ? const SizedBox(
-            width: 22,
-            height: 22,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-            ),
-          )
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                  ),
+                )
               : const Text(
-            'Continue',
-            style: TextStyle(
-              fontSize: 15.5,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -0.2,
-            ),
-          ),
+                  'Continue',
+                  style: TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
+                ),
         ),
       ),
     );
   }
 }
-
-
-
-
-

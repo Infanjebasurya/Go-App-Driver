@@ -70,8 +70,10 @@ class DocumentCaptureCard extends StatelessWidget {
               ),
             Center(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -81,9 +83,7 @@ class DocumentCaptureCard extends StatelessWidget {
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
                         child: showCardGuide
-                            ? const _CardGuideHint(
-                                key: ValueKey('card_guide'),
-                              )
+                            ? const _CardGuideHint(key: ValueKey('card_guide'))
                             : _fallbackIcon(
                                 key: const ValueKey('empty'),
                                 isDocument: false,
@@ -94,13 +94,14 @@ class DocumentCaptureCard extends StatelessWidget {
                       Text(
                         label,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.1,
-                        ).copyWith(
-                          color: labelColor ?? const Color(0xFF6B7C93),
-                        ),
+                        style:
+                            const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0.1,
+                            ).copyWith(
+                              color: labelColor ?? const Color(0xFF6B7C93),
+                            ),
                       ),
                     ],
                   ],

@@ -7,8 +7,9 @@ import 'package:flutter/foundation.dart';
 class SharedPreferencesStore {
   SharedPreferencesStore._(this._cache);
 
-  static const MethodChannel _channel =
-      MethodChannel('app/shared_preferences_service');
+  static const MethodChannel _channel = MethodChannel(
+    'app/shared_preferences_service',
+  );
 
   final Map<String, Object?> _cache;
 
@@ -26,8 +27,8 @@ class SharedPreferencesStore {
 
   static Future<void> init() async {
     if (_global != null) return;
-    final Map<Object?, Object?>? raw =
-        await _channel.invokeMapMethod<Object?, Object?>('getAll');
+    final Map<Object?, Object?>? raw = await _channel
+        .invokeMapMethod<Object?, Object?>('getAll');
     _global = SharedPreferencesStore._(_coerceStringKeyedMap(raw));
   }
 
@@ -70,11 +71,11 @@ class SharedPreferencesStore {
   }) async {
     final bool ok =
         await _channel.invokeMethod<bool>('set', <String, Object>{
-              'key': key,
-              'type': type,
-              'value': value,
-            }) ??
-            false;
+          'key': key,
+          'type': type,
+          'value': value,
+        }) ??
+        false;
     if (ok) {
       _cache[key] = value;
     }
@@ -84,9 +85,9 @@ class SharedPreferencesStore {
   Future<bool> remove(String key) async {
     final bool ok =
         await _channel.invokeMethod<bool>('remove', <String, Object>{
-              'key': key,
-            }) ??
-            false;
+          'key': key,
+        }) ??
+        false;
     if (ok) {
       _cache.remove(key);
     }

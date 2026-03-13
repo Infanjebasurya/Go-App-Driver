@@ -4,8 +4,8 @@ import 'package:goapp/features/auth/presentation/cubit/login_form_state.dart';
 
 class LoginFormCubit extends Cubit<LoginFormState> {
   LoginFormCubit({required PhoneNumberService phoneNumberService})
-      : _phoneNumberService = phoneNumberService,
-        super(const LoginFormState());
+    : _phoneNumberService = phoneNumberService,
+      super(const LoginFormState());
 
   final PhoneNumberService _phoneNumberService;
 

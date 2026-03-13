@@ -109,9 +109,7 @@ class SOSPage extends StatelessWidget {
                           onPressed: () =>
                               context.read<SosCubit>().sendAlertToAllContacts(),
                           icon: const Icon(Icons.check_circle, size: 18),
-                          label: const Text(
-                            'Share Live to All',
-                          ),
+                          label: const Text('Share Live to All'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.emerald,
                             foregroundColor: AppColors.white,
@@ -266,8 +264,3 @@ class _ContactCard extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

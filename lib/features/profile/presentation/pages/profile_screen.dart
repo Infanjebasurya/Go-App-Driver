@@ -140,7 +140,8 @@ class _ProfileBody extends StatelessWidget {
           initialValue: current,
           storageKey: 'profile_edit.email',
           keyboardType: TextInputType.emailAddress,
-          onSave: (String val) => context.read<ProfileEditCubit>().updateEmail(val),
+          onSave: (String val) =>
+              context.read<ProfileEditCubit>().updateEmail(val),
         ),
       ),
     );
@@ -153,14 +154,14 @@ class _ProfileBody extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
-          child: ProfileConfirmActionSheet(
-            icon: Icons.logout,
-            title: 'Logout',
-            message: 'Are you sure you want to Logout your account?',
-            actionLabel: 'Logout',
-            actionColor: AppColors.dangerDeep,
-            onConfirm: () => context.read<ProfileEditCubit>().logout(),
-          ),
+        child: ProfileConfirmActionSheet(
+          icon: Icons.logout,
+          title: 'Logout',
+          message: 'Are you sure you want to Logout your account?',
+          actionLabel: 'Logout',
+          actionColor: AppColors.dangerDeep,
+          onConfirm: () => context.read<ProfileEditCubit>().logout(),
+        ),
       ),
     );
   }
@@ -172,18 +173,15 @@ class _ProfileBody extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       builder: (_) => BlocProvider<ProfileEditCubit>.value(
         value: context.read<ProfileEditCubit>(),
-          child: ProfileConfirmActionSheet(
-            icon: Icons.delete_outline,
-            title: 'Delete Account',
-            message: 'Are you sure you want to Delete your account?',
-            actionLabel: 'Delete',
-            actionColor: AppColors.dangerDeep,
-            onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
-          ),
+        child: ProfileConfirmActionSheet(
+          icon: Icons.delete_outline,
+          title: 'Delete Account',
+          message: 'Are you sure you want to Delete your account?',
+          actionLabel: 'Delete',
+          actionColor: AppColors.dangerDeep,
+          onConfirm: () => context.read<ProfileEditCubit>().deleteAccount(),
+        ),
       ),
     );
   }
 }
-
-
-

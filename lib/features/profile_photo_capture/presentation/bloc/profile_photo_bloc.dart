@@ -14,11 +14,11 @@ class ProfilePhotoBloc extends Bloc<ProfilePhotoEvent, ProfilePhotoState> {
     required ImagePickerService imagePickerService,
     required ProfilePhotoImageProcessingService imageProcessingService,
     required SaveProfilePhotoUseCase saveUseCase,
-  })  : _permissionService = permissionService,
-        _imagePickerService = imagePickerService,
-        _imageProcessingService = imageProcessingService,
-        _saveUseCase = saveUseCase,
-        super(ProfilePhotoState.initial()) {
+  }) : _permissionService = permissionService,
+       _imagePickerService = imagePickerService,
+       _imageProcessingService = imageProcessingService,
+       _saveUseCase = saveUseCase,
+       super(ProfilePhotoState.initial()) {
     on<ProfilePhotoStarted>(_onStarted);
     on<ProfilePhotoRetakeRequested>(_onRetake);
   }
@@ -28,10 +28,20 @@ class ProfilePhotoBloc extends Bloc<ProfilePhotoEvent, ProfilePhotoState> {
   final ProfilePhotoImageProcessingService _imageProcessingService;
   final SaveProfilePhotoUseCase _saveUseCase;
 
-  Future<void> _onStarted(ProfilePhotoStarted event, Emitter<ProfilePhotoState> emit) async {
-    emit(state.copyWith(status: ProfilePhotoCaptureStatus.capturing, errorMessage: null));
+  Future<void> _onStarted(
+    ProfilePhotoStarted event,
+    Emitter<ProfilePhotoState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: ProfilePhotoCaptureStatus.capturing,
+        errorMessage: null,
+      ),
+    );
 
-    final AppPermissionStatus current = await _permissionService.status(AppPermission.camera);
+    final AppPermissionStatus current = await _permissionService.status(
+      AppPermission.camera,
+    );
     final AppPermissionStatus resolved = current == AppPermissionStatus.granted
         ? current
         : await _permissionService.request(AppPermission.camera);
@@ -42,7 +52,9 @@ class ProfilePhotoBloc extends Bloc<ProfilePhotoEvent, ProfilePhotoState> {
     }
 
     try {
-      final picked = await _imagePickerService.pickImage(source: AppImageSource.camera);
+      final picked = await _imagePickerService.pickImage(
+        source: AppImageSource.camera,
+      );
       if (picked == null) {
         emit(
           state.copyWith(
@@ -55,15 +67,12 @@ class ProfilePhotoBloc extends Bloc<ProfilePhotoEvent, ProfilePhotoState> {
 
       emit(state.copyWith(status: ProfilePhotoCaptureStatus.processing));
 
-      final ProcessedJpegImage processed =
-          await _imageProcessingService.processCapturedImage(picked.path);
+      final ProcessedJpegImage processed = await _imageProcessingService
+          .processCapturedImage(picked.path);
       final ProcessedProfilePhoto saved = await _saveUseCase(processed);
 
       emit(
-        state.copyWith(
-          status: ProfilePhotoCaptureStatus.preview,
-          photo: saved,
-        ),
+        state.copyWith(status: ProfilePhotoCaptureStatus.preview, photo: saved),
       );
     } catch (e) {
       emit(
@@ -75,7 +84,10 @@ class ProfilePhotoBloc extends Bloc<ProfilePhotoEvent, ProfilePhotoState> {
     }
   }
 
-  Future<void> _onRetake(ProfilePhotoRetakeRequested event, Emitter<ProfilePhotoState> emit) async {
+  Future<void> _onRetake(
+    ProfilePhotoRetakeRequested event,
+    Emitter<ProfilePhotoState> emit,
+  ) async {
     if (state.status != ProfilePhotoCaptureStatus.preview) return;
 
     emit(

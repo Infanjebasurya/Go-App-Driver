@@ -6,8 +6,9 @@ import 'package:flutter/services.dart';
 class PathProviderService {
   const PathProviderService();
 
-  static const MethodChannel _channel =
-      MethodChannel('app/path_provider_service');
+  static const MethodChannel _channel = MethodChannel(
+    'app/path_provider_service',
+  );
 
   Future<Directory> getApplicationDocumentsDirectory() async {
     final String? path = await _channel.invokeMethod<String>(
@@ -19,4 +20,3 @@ class PathProviderService {
     return Directory(path);
   }
 }
-

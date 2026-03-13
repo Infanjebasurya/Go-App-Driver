@@ -35,12 +35,14 @@ class OnlineHoursMockApi {
     }
   }
 
-  Future<Map<String, int>> fetchOnlineMinutesHistory({int limitDays = 30}) async {
+  Future<Map<String, int>> fetchOnlineMinutesHistory({
+    int limitDays = 30,
+  }) async {
     if (!_isTestRuntime) {
       await Future<void>.delayed(const Duration(milliseconds: 120));
     }
-    final Map<String, int> history = await OnlineHoursStore
-        .loadDailyMinutesHistory();
+    final Map<String, int> history =
+        await OnlineHoursStore.loadDailyMinutesHistory();
     final List<String> keys = history.keys.toList()..sort();
     if (keys.length <= limitDays) return history;
 

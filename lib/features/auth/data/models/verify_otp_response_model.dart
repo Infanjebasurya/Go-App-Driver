@@ -40,8 +40,7 @@ class VerifyOtpResponseModel {
       accessToken:
           (json['access_token'] ?? json['accessToken'] ?? json['token'])
               ?.toString(),
-      refreshToken:
-          (json['refresh_token'] ?? json['refreshToken'])?.toString(),
+      refreshToken: (json['refresh_token'] ?? json['refreshToken'])?.toString(),
       tokenType: (json['token_type'] ?? json['tokenType'])?.toString(),
       expiresIn: _toInt(json['expires_in'] ?? json['expiresIn']),
       user: parsedUser,
@@ -56,10 +55,7 @@ class VerifyOtpResponseModel {
       if (tokenType != null) 'token_type': tokenType,
       if (expiresIn != null) 'expires_in': expiresIn,
       if (user != null)
-        'user': <String, dynamic>{
-          'id': user!.id,
-          'phone': user!.phone,
-        },
+        'user': <String, dynamic>{'id': user!.id, 'phone': user!.phone},
     };
   }
 
@@ -70,4 +66,3 @@ class VerifyOtpResponseModel {
     return null;
   }
 }
-

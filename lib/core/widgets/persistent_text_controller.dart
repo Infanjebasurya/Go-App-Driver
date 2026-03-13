@@ -4,12 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:goapp/core/storage/text_field_store.dart';
 
 class PersistentTextController extends TextEditingController {
-  PersistentTextController({
-    required this.storageKey,
-    String? initialText,
-  }) : super(
-          text: initialText ?? TextFieldStore.read(storageKey) ?? '',
-        );
+  PersistentTextController({required this.storageKey, String? initialText})
+    : super(text: initialText ?? TextFieldStore.read(storageKey) ?? '');
 
   final String storageKey;
   bool _attached = false;

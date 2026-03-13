@@ -5,4 +5,3 @@ abstract class LiveFaceDetectionService {
   Future<List<DetectedFace>> detect(InputImage image);
   Future<void> close();
 }
-

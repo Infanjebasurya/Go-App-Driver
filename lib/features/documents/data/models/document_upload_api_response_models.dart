@@ -106,4 +106,3 @@ class UploadPanResponseModel extends DocumentUploadResponseModel {
     );
   }
 }
-

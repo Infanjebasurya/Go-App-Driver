@@ -139,8 +139,6 @@ class _RideChatPageState extends State<RideChatPage> {
   }
 }
 
-
-
 class _RoundIconButton extends StatelessWidget {
   const _RoundIconButton({
     required this.icon,
@@ -170,6 +168,3 @@ class _RoundIconButton extends StatelessWidget {
     );
   }
 }
-
-
-

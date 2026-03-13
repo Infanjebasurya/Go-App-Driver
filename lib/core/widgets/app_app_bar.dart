@@ -49,15 +49,16 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        (toolbarHeight ?? kToolbarHeight) + (bottom?.preferredSize.height ?? 0),
-      );
+    (toolbarHeight ?? kToolbarHeight) + (bottom?.preferredSize.height ?? 0),
+  );
 
   @override
   Widget build(BuildContext context) {
     final Widget? resolvedTitle = _resolveTitle();
-    final bool resolvedAutoLeading = automaticallyImplyLeading ??
-        (leading == null && backEnabled);
-    final Widget? resolvedLeading = leading ??
+    final bool resolvedAutoLeading =
+        automaticallyImplyLeading ?? (leading == null && backEnabled);
+    final Widget? resolvedLeading =
+        leading ??
         (resolvedAutoLeading
             ? IconButton(
                 icon: Icon(
@@ -86,7 +87,8 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget? _resolveTitle() {
-    final Widget? candidate = titleWidget ??
+    final Widget? candidate =
+        titleWidget ??
         switch (title) {
           String text => Text(text),
           Widget widget => widget,
@@ -126,6 +128,3 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
     return candidate;
   }
 }
-
-
-

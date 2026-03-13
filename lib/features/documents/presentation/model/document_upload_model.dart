@@ -140,20 +140,20 @@ class BankAccountData extends Equatable {
 
   bool get hasErrors =>
       nameError != null ||
-          bankNameError != null ||
-          accountNumberError != null ||
-          confirmAccountNumberError != null ||
-          ifscError != null ||
-          bankDocumentError != null;
+      bankNameError != null ||
+      accountNumberError != null ||
+      confirmAccountNumberError != null ||
+      ifscError != null ||
+      bankDocumentError != null;
 
   bool get isComplete =>
       bankName.trim().isNotEmpty &&
-          accountNumber.trim().isNotEmpty &&
-          confirmAccountNumber.trim().isNotEmpty &&
-          confirmAccountNumber == accountNumber &&
-          ifscCode.trim().isNotEmpty &&
-          bankDocumentPath != null &&
-          bankDocumentPath!.trim().isNotEmpty;
+      accountNumber.trim().isNotEmpty &&
+      confirmAccountNumber.trim().isNotEmpty &&
+      confirmAccountNumber == accountNumber &&
+      ifscCode.trim().isNotEmpty &&
+      bankDocumentPath != null &&
+      bankDocumentPath!.trim().isNotEmpty;
 
   BankAccountData copyWith({
     String? accountHolderName,
@@ -190,8 +190,9 @@ class BankAccountData extends Equatable {
           ? null
           : (bankDocumentType ?? this.bankDocumentType),
       nameError: clearNameError ? null : (nameError ?? this.nameError),
-      bankNameError:
-          clearBankNameError ? null : (bankNameError ?? this.bankNameError),
+      bankNameError: clearBankNameError
+          ? null
+          : (bankNameError ?? this.bankNameError),
       accountNumberError: clearAccountNumberError
           ? null
           : (accountNumberError ?? this.accountNumberError),
@@ -250,8 +251,9 @@ class StepData extends Equatable {
 
   bool get isNumberValid => documentNumber.trim().isNotEmpty;
   bool get isProfileStep => step == DocumentStep.profilePhoto;
-  bool get isComplete =>
-      isProfileStep ? frontCaptured : frontCaptured && backCaptured && isNumberValid;
+  bool get isComplete => isProfileStep
+      ? frontCaptured
+      : frontCaptured && backCaptured && isNumberValid;
 
   StepData copyWith({
     bool? frontCaptured,
@@ -330,7 +332,8 @@ class DocumentUploadState extends Equatable {
 
   bool get isCurrentStepBank => currentStepIndex == steps.length;
 
-  bool get isCurrentStepProfile => !isCurrentStepBank && currentDocStep.isProfileStep;
+  bool get isCurrentStepProfile =>
+      !isCurrentStepBank && currentDocStep.isProfileStep;
 
   StepData get currentDocStep => steps[currentStepIndex];
 

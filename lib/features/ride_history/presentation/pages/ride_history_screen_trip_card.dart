@@ -65,13 +65,12 @@ class _RideHistoryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                _StatusBadge(
-                  isCompleted: isCompleted,
-                  isCanceled: isCanceled,
-                ),
+                _StatusBadge(isCompleted: isCompleted, isCanceled: isCanceled),
                 const SizedBox(width: 6),
                 Icon(
-                  expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                  expanded
+                      ? Icons.expand_less_rounded
+                      : Icons.expand_more_rounded,
                   color: AppColors.neutral666,
                 ),
               ],
@@ -141,12 +140,11 @@ class _RideHistoryCard extends StatelessWidget {
                       label: 'Canceled By',
                       value: _prettyCanceledBy(trip.canceledBy),
                     ),
-                  if (trip.cancelReason != null && trip.cancelReason!.isNotEmpty)
-                    _InfoRow(
-                      label: 'Cancel Reason',
-                      value: trip.cancelReason!,
-                    ),
-                  if (trip.distanceLabel != null && trip.distanceLabel!.isNotEmpty)
+                  if (trip.cancelReason != null &&
+                      trip.cancelReason!.isNotEmpty)
+                    _InfoRow(label: 'Cancel Reason', value: trip.cancelReason!),
+                  if (trip.distanceLabel != null &&
+                      trip.distanceLabel!.isNotEmpty)
                     _InfoRow(label: 'Distance', value: trip.distanceLabel!),
                   if (trip.fareLabel != null && trip.fareLabel!.isNotEmpty)
                     _InfoRow(label: 'Total Earnings', value: trip.fareLabel!),
@@ -282,11 +280,11 @@ class _LocationLine extends StatelessWidget {
               children: <Widget>[
                 Text(
                   label,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.neutral666,
-                    ),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.neutral666,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -347,6 +345,3 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-
-
-

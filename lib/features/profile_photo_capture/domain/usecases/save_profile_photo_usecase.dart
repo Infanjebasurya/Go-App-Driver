@@ -14,4 +14,3 @@ class SaveProfilePhotoUseCase
     return _repository.saveProcessedPhoto(params);
   }
 }
-

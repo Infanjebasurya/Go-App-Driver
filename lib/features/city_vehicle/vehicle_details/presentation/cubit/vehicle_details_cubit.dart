@@ -59,7 +59,6 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
     emit(state.copyWith(year: value, errors: err));
   }
 
-
   static const int _maxImageBytes = 5 * 1024 * 1024;
 
   bool _validateFileSize(int sizeBytes) {
@@ -68,9 +67,7 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
         state.copyWith(
           hasPhoto: false,
           clearUpload: true,
-          errors: state.errors.copyWith(
-            photo: 'File size must be under 5 MB.',
-          ),
+          errors: state.errors.copyWith(photo: 'File size must be under 5 MB.'),
         ),
       );
       return false;
@@ -96,7 +93,6 @@ class VehicleDetailsCubit extends Cubit<VehicleDetailsState> {
       );
       return;
     }
-
 
     if (source == AppImageSource.gallery) {
       final file = await _filePickerService.pickImage();

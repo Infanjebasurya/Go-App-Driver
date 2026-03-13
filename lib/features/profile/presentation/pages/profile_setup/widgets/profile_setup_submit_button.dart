@@ -21,7 +21,9 @@ class ProfileSetupSubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final failure = profileState is ProfileFailure ? profileState as ProfileFailure : null;
+    final failure = profileState is ProfileFailure
+        ? profileState as ProfileFailure
+        : null;
     return KeyboardAwareBottom(
       padding: const EdgeInsets.fromLTRB(18, 0, 18, 14),
       child: Column(
@@ -53,10 +55,7 @@ class ProfileSetupSubmitButton extends StatelessWidget {
                       },
                 child: const Text(
                   'Save & Continue',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
               ),
             ),

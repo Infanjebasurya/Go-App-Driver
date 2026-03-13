@@ -42,7 +42,7 @@ class VerificationCubit extends Cubit<VerificationState> {
         return doc.copyWith(
           status: DocumentStatus.completed,
           filePath:
-          'uploaded/${type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+              'uploaded/${type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
         );
       }
       return doc;
@@ -50,7 +50,6 @@ class VerificationCubit extends Cubit<VerificationState> {
 
     emit(state.copyWith(documents: completedDocs));
   }
-
 
   void completeBankDetails(BankDetails details) {
     final updatedDocs = state.documents.map((doc) {
@@ -68,7 +67,6 @@ class VerificationCubit extends Cubit<VerificationState> {
   void removeDocument(DocumentType type) {
     final updatedDocs = state.documents.map((doc) {
       if (doc.type == type && doc.isCompleted) {
-
         return doc.copyWith(
           status: DocumentStatus.required,
           filePath: null,

@@ -26,12 +26,13 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
     emit(connected ? InternetState.connected() : InternetState.disconnected());
 
     await _subscription?.cancel();
-    _subscription = _internetRepository.onConnectivityChanged().distinct().listen((
-      connectedNow,
-    ) {
-      if (isClosed) return;
-      add(InternetConnectionChanged(isConnected: connectedNow));
-    });
+    _subscription = _internetRepository
+        .onConnectivityChanged()
+        .distinct()
+        .listen((connectedNow) {
+          if (isClosed) return;
+          add(InternetConnectionChanged(isConnected: connectedNow));
+        });
 
     _startPolling();
   }
@@ -40,7 +41,11 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
     InternetConnectionChanged event,
     Emitter<InternetState> emit,
   ) {
-    emit(event.isConnected ? InternetState.connected() : InternetState.disconnected());
+    emit(
+      event.isConnected
+          ? InternetState.connected()
+          : InternetState.disconnected(),
+    );
   }
 
   Future<void> _onCheckRequested(

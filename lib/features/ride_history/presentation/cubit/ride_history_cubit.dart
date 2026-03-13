@@ -21,11 +21,7 @@ class RideHistoryCubit extends Cubit<RideHistoryState> {
       query: state.searchQuery,
     );
     emit(
-      state.copyWith(
-        allTrips: loaded,
-        visibleTrips: visible,
-        isLoading: false,
-      ),
+      state.copyWith(allTrips: loaded, visibleTrips: visible, isLoading: false),
     );
   }
 

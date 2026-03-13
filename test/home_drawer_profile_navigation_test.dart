@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/core/storage/profile_display_store.dart';
@@ -116,9 +116,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: HomeDrawer(onReopenDrawer: () {}),
-        ),
+        home: Scaffold(body: HomeDrawer(onReopenDrawer: () {})),
       ),
     );
 

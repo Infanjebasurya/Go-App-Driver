@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum WalletTransactionType { earning, recharge, withdrawal }
+
 enum WalletTransactionStatus { completed, pending, cancelled }
 
 class TransactionItem extends Equatable {

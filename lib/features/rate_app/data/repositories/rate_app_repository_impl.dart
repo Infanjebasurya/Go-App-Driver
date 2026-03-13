@@ -8,10 +8,7 @@ class RateAppRepositoryImpl implements RateAppRepository {
   final RateAppMockApi _api;
 
   @override
-  Future<void> submitReview({
-    required int rating,
-    required String feedback,
-  }) {
+  Future<void> submitReview({required int rating, required String feedback}) {
     return _api.submitReview(rating: rating, feedback: feedback);
   }
 }

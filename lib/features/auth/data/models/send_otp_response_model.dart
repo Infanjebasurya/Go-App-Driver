@@ -1,9 +1,5 @@
 class SendOtpResponseModel {
-  const SendOtpResponseModel({
-    required this.otpId,
-    this.message,
-    this.success,
-  });
+  const SendOtpResponseModel({required this.otpId, this.message, this.success});
 
   final String otpId;
   final String? message;
@@ -37,4 +33,3 @@ class SendOtpResponseModel {
     return null;
   }
 }
-

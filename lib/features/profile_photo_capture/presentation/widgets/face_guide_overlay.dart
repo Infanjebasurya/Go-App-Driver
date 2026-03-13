@@ -22,11 +22,7 @@ class FaceGuideOverlay extends StatelessWidget {
     return IgnorePointer(
       child: Stack(
         children: [
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _FaceGuidePainter(),
-            ),
-          ),
+          Positioned.fill(child: CustomPaint(painter: _FaceGuidePainter())),
           if (showDebugBox && normalizedDebugBox != null)
             Positioned.fill(
               child: CustomPaint(
@@ -112,7 +108,10 @@ class _FaceGuidePainter extends CustomPainter {
       height: guideHeight,
     );
 
-    final RRect oval = RRect.fromRectAndRadius(guide, Radius.circular(guideWidth));
+    final RRect oval = RRect.fromRectAndRadius(
+      guide,
+      Radius.circular(guideWidth),
+    );
 
     final Path mask = Path()
       ..addRect(full)

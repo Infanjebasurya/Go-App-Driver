@@ -14,10 +14,10 @@ class AppBackgroundServiceClient {
   }
 
   Future<void> invoke(String event, [Map<String, dynamic>? data]) {
-    return _channel.invokeMethod<void>(
-      'invoke',
-      <String, Object?>{'event': event, 'data': data},
-    );
+    return _channel.invokeMethod<void>('invoke', <String, Object?>{
+      'event': event,
+      'data': data,
+    });
   }
 }
 

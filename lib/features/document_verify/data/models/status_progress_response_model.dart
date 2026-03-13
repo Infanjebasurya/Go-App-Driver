@@ -74,10 +74,11 @@ class StatusProgressResponseModel {
   factory StatusProgressResponseModel.fromJson(Map<String, dynamic> json) {
     final dynamic stepsRaw =
         json['steps'] ?? json['documents'] ?? json['data'] ?? const <dynamic>[];
-    final parsedSteps = (stepsRaw is List<dynamic> ? stepsRaw : const <dynamic>[])
-        .whereType<Map<String, dynamic>>()
-        .map(ProgressStepItemModel.fromJson)
-        .toList(growable: false);
+    final parsedSteps =
+        (stepsRaw is List<dynamic> ? stepsRaw : const <dynamic>[])
+            .whereType<Map<String, dynamic>>()
+            .map(ProgressStepItemModel.fromJson)
+            .toList(growable: false);
 
     final int? total = _toInt(json['total_count'] ?? json['totalCount']);
     final int? done = _toInt(json['completed_count'] ?? json['completedCount']);
@@ -86,7 +87,9 @@ class StatusProgressResponseModel {
       steps: parsedSteps,
       completedCount: done ?? parsedSteps.where((e) => e.completed).length,
       totalCount: total ?? parsedSteps.length,
-      progressPercent: _toInt(json['progress_percent'] ?? json['progressPercent']),
+      progressPercent: _toInt(
+        json['progress_percent'] ?? json['progressPercent'],
+      ),
       overallStatus: (json['overall_status'] ?? json['overallStatus'])
           ?.toString(),
       message: json['message']?.toString(),
@@ -124,4 +127,3 @@ class StatusProgressResponseModel {
     return null;
   }
 }
-

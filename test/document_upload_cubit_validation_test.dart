@@ -17,9 +17,15 @@ import 'package:goapp/core/di/injection.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const MethodChannel permissionChannel = MethodChannel('app/permission_service');
-  const MethodChannel imagePickerChannel = MethodChannel('app/image_picker_service');
-  const MethodChannel pathProviderChannel = MethodChannel('app/path_provider_service');
+  const MethodChannel permissionChannel = MethodChannel(
+    'app/permission_service',
+  );
+  const MethodChannel imagePickerChannel = MethodChannel(
+    'app/image_picker_service',
+  );
+  const MethodChannel pathProviderChannel = MethodChannel(
+    'app/path_provider_service',
+  );
   late String fakeImagePath;
   late String docsDirPath;
 
@@ -334,7 +340,10 @@ void main() {
 
         expect(find.text('Profile Picture'), findsOneWidget);
         expect(find.byIcon(Icons.camera_alt), findsNothing);
-        expect(find.byKey(const Key('profile_photo_frame_tap_area')), findsOneWidget);
+        expect(
+          find.byKey(const Key('profile_photo_frame_tap_area')),
+          findsOneWidget,
+        );
 
         await tester.tap(find.byKey(const Key('save_next_button')));
         await tester.pumpAndSettle();

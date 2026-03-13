@@ -52,6 +52,3 @@ class CityListTile extends StatelessWidget {
     );
   }
 }
-
-
-

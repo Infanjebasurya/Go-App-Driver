@@ -77,7 +77,10 @@ class _EarningsDetailsBody extends StatelessWidget {
           body: Column(
             children: <Widget>[
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceF5,
                   borderRadius: BorderRadius.circular(25),
@@ -87,24 +90,33 @@ class _EarningsDetailsBody extends StatelessWidget {
                     _PeriodTab(
                       label: 'Day',
                       selected: state.period == EarningsPeriod.day,
-                      onTap: () => context.read<EarningsCubit>().selectPeriod(EarningsPeriod.day),
+                      onTap: () => context.read<EarningsCubit>().selectPeriod(
+                        EarningsPeriod.day,
+                      ),
                     ),
                     _PeriodTab(
                       label: 'Week',
                       selected: state.period == EarningsPeriod.week,
-                      onTap: () => context.read<EarningsCubit>().selectPeriod(EarningsPeriod.week),
+                      onTap: () => context.read<EarningsCubit>().selectPeriod(
+                        EarningsPeriod.week,
+                      ),
                     ),
                     _PeriodTab(
                       label: 'Month',
                       selected: state.period == EarningsPeriod.month,
-                      onTap: () => context.read<EarningsCubit>().selectPeriod(EarningsPeriod.month),
+                      onTap: () => context.read<EarningsCubit>().selectPeriod(
+                        EarningsPeriod.month,
+                      ),
                     ),
                   ],
                 ),
               ),
               Expanded(
                 child: switch (state.period) {
-                  EarningsPeriod.day => _DayView(tabController: tabController, state: state),
+                  EarningsPeriod.day => _DayView(
+                    tabController: tabController,
+                    state: state,
+                  ),
                   EarningsPeriod.week => const _WeekView(),
                   EarningsPeriod.month => const _MonthView(),
                 },
@@ -169,19 +181,27 @@ class _DayViewState extends State<_DayView> {
               );
             }
             final trips = snapshot.data ?? const <RideHistoryTrip>[];
-            final completedForDay = trips.where((t) {
-              if (!EarningsCalculator.isCompletedTrip(t)) return false;
-              final epoch = t.completedAtEpochMs ?? 0;
-              return epoch > 0 &&
-                  DateTime.fromMillisecondsSinceEpoch(epoch).year == _selectedDay.year &&
-                  DateTime.fromMillisecondsSinceEpoch(epoch).month == _selectedDay.month &&
-                  DateTime.fromMillisecondsSinceEpoch(epoch).day == _selectedDay.day;
-            }).toList(growable: false);
+            final completedForDay = trips
+                .where((t) {
+                  if (!EarningsCalculator.isCompletedTrip(t)) return false;
+                  final epoch = t.completedAtEpochMs ?? 0;
+                  return epoch > 0 &&
+                      DateTime.fromMillisecondsSinceEpoch(epoch).year ==
+                          _selectedDay.year &&
+                      DateTime.fromMillisecondsSinceEpoch(epoch).month ==
+                          _selectedDay.month &&
+                      DateTime.fromMillisecondsSinceEpoch(epoch).day ==
+                          _selectedDay.day;
+                })
+                .toList(growable: false);
             final total = completedForDay.fold<double>(
               0,
               (sum, t) => sum + EarningsCalculator.totalEarning(t),
             );
-            return _RangeSummaryCard(total: total, rides: completedForDay.length);
+            return _RangeSummaryCard(
+              total: total,
+              rides: completedForDay.length,
+            );
           },
         ),
         const SizedBox(height: 20),
@@ -211,7 +231,3 @@ class _DayViewState extends State<_DayView> {
     );
   }
 }
-
-
-
-

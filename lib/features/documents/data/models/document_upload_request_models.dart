@@ -1,8 +1,5 @@
 class UploadProfileImageRequestModel {
-  const UploadProfileImageRequestModel({
-    required this.filePath,
-    this.fileName,
-  });
+  const UploadProfileImageRequestModel({required this.filePath, this.fileName});
 
   final String filePath;
   final String? fileName;
@@ -91,4 +88,3 @@ class UploadPanRequestModel {
     };
   }
 }
-

@@ -102,7 +102,3 @@ class VerificationProgressCard extends StatelessWidget {
     );
   }
 }
-
-
-
-

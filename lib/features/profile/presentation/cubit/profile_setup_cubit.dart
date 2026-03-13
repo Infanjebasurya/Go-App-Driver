@@ -122,10 +122,10 @@ class ProfileSetupCubit extends Cubit<ProfileSetupState> {
 
     final hasError =
         nameError != null ||
-            emailError != null ||
-            genderError != null ||
-            dobError != null ||
-            emergencyError != null;
+        emailError != null ||
+        genderError != null ||
+        dobError != null ||
+        emergencyError != null;
 
     if (hasError) {
       emit(

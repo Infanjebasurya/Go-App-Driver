@@ -14,11 +14,10 @@ class DriverCubit extends Cubit<DriverState> {
     LocationPermissionGuard? locationGuard,
     OnlineHoursMockApi? onlineHoursApi,
     double minimumDutyWalletBalance = kMinimumDutyWalletBalance,
-  })
-    : _locationGuard = locationGuard ?? const LocationPermissionGuard(),
-      _onlineHoursApi = onlineHoursApi ?? const OnlineHoursMockApi(),
-      _minimumDutyWalletBalance = minimumDutyWalletBalance,
-      super(const DriverState());
+  }) : _locationGuard = locationGuard ?? const LocationPermissionGuard(),
+       _onlineHoursApi = onlineHoursApi ?? const OnlineHoursMockApi(),
+       _minimumDutyWalletBalance = minimumDutyWalletBalance,
+       super(const DriverState());
 
   final LocationPermissionGuard _locationGuard;
   final OnlineHoursMockApi _onlineHoursApi;
@@ -63,7 +62,9 @@ class DriverCubit extends Cubit<DriverState> {
     totalFare = _round2(totalFare);
 
     final double walletBalance = _round2(await DriverWalletStore.loadBalance());
-    final int ridesToday = settledToday.where(EarningsCalculator.isCompletedTrip).length;
+    final int ridesToday = settledToday
+        .where(EarningsCalculator.isCompletedTrip)
+        .length;
     final int rewardProgress = ridesToday > state.targetRides
         ? state.targetRides
         : ridesToday;
@@ -300,8 +301,8 @@ class DriverCubit extends Cubit<DriverState> {
     _onlineMinutesToday = mockedMinutes >= cachedMinutes
         ? mockedMinutes
         : cachedMinutes;
-    _onlineSessionStartEpochMs = await OnlineHoursStore
-        .loadActiveSessionStartEpochMs();
+    _onlineSessionStartEpochMs =
+        await OnlineHoursStore.loadActiveSessionStartEpochMs();
     _onlineMinutesDateKey = _todayKey();
     _ensureTodayWindow();
 
@@ -445,6 +446,5 @@ class DriverCubit extends Cubit<DriverState> {
 
 // Backwards-compatible alias for older imports.
 class DriverStatusCubit extends DriverCubit {
-  DriverStatusCubit({super.locationGuard})
-    : super(minimumDutyWalletBalance: 0);
+  DriverStatusCubit({super.locationGuard}) : super(minimumDutyWalletBalance: 0);
 }

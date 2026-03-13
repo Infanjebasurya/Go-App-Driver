@@ -5,10 +5,12 @@ import 'package:flutter/services.dart';
 
 /// Base State wrapper so feature code doesn't import `sms_autofill` directly.
 abstract class SmsAutoFillState<T extends StatefulWidget> extends State<T> {
-  static const MethodChannel _methodChannel =
-      MethodChannel('app/sms_autofill_service');
-  static const EventChannel _eventChannel =
-      EventChannel('app/sms_autofill_events');
+  static const MethodChannel _methodChannel = MethodChannel(
+    'app/sms_autofill_service',
+  );
+  static const EventChannel _eventChannel = EventChannel(
+    'app/sms_autofill_events',
+  );
 
   StreamSubscription<Object?>? _subscription;
 

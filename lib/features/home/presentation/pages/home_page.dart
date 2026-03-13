@@ -48,9 +48,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (Env.mockApi) {
       unawaited(HomeTripResumeStore.markForceHomeOnNextLaunch());
     }
-    unawaited(
-      RegistrationProgressStore.setStep(RegistrationStep.home),
-    );
+    unawaited(RegistrationProgressStore.setStep(RegistrationStep.home));
     _locationSyncTimer = Timer.periodic(const Duration(seconds: 2), (_) {
       unawaited(context.read<DriverCubit>().syncWalletBalance());
       unawaited(_syncLocationUiState());
@@ -111,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             unawaited(_showLocationBlockedDialog(state.offlineBlockIssue!));
           }
         }
-
       },
       builder: (context, state) {
         return HomeNoDeviceBack(
@@ -121,7 +118,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             drawer: AppDrawer(
               onReopenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
             ),
-            body: state.isOnline ? const OnlineContent() : const OfflineContent(),
+            body: state.isOnline
+                ? const OnlineContent()
+                : const OfflineContent(),
           ),
         );
       },
@@ -193,7 +192,4 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return 'Location permission is permanently denied. Enable it from app settings.';
     }
   }
-
 }
-
-

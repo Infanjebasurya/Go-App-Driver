@@ -107,16 +107,15 @@ class _AppEntryGateState extends State<AppEntryGate> {
     return GetStartedPage(
       onGetStarted: () {
         RegistrationProgressStore.markOnboardingSeen();
-        Navigator.of(context).push(
-          onboardingSlideRoute(const BikeTaxiOnboardingPage()),
-        );
+        Navigator.of(
+          context,
+        ).push(onboardingSlideRoute(const BikeTaxiOnboardingPage()));
       },
       onSignIn: () {
         RegistrationProgressStore.markOnboardingSeen();
-        Navigator.of(context).pushAndRemoveUntil(
-          loginFormRoute(),
-          (_) => false,
-        );
+        Navigator.of(
+          context,
+        ).pushAndRemoveUntil(loginFormRoute(), (_) => false);
       },
     );
   }
@@ -128,17 +127,13 @@ class _AppEntryGateState extends State<AppEntryGate> {
     if (user == null && !progress.onboardingSeen) {
       await RideHistoryStore.clearAll();
       await cleanupService.clearKycDraftsAndSensitiveFiles();
-      return const _EntryBootstrap(
-        onboardingSeen: false,
-      );
+      return const _EntryBootstrap(onboardingSeen: false);
     }
     if (user == null) {
       await RideHistoryStore.clearAll();
       // Logged out (or no cached user): keep persisted KYC/documents/profile photo so
       // they show up again after re-login.
-      return const _EntryBootstrap(
-        onboardingSeen: true,
-      );
+      return const _EntryBootstrap(onboardingSeen: true);
     }
     if (!progress.otpVerified) {
       // Signed out but user cache exists: keep persisted KYC/documents/profile photo.
@@ -163,5 +158,3 @@ class _EntryBootstrap {
   final bool onboardingSeen;
   final RegistrationProgress? progress;
 }
-
-

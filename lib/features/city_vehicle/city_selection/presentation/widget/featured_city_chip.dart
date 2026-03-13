@@ -86,7 +86,3 @@ class FeaturedCityChip extends StatelessWidget {
     );
   }
 }
-
-
-
-

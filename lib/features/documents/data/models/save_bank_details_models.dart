@@ -19,8 +19,8 @@ class BankDetailsModel {
           (json['account_holder_name'] ?? json['accountHolderName'] ?? '')
               .toString(),
       bankName: (json['bank_name'] ?? json['bankName'] ?? '').toString(),
-      accountNumber:
-          (json['account_number'] ?? json['accountNumber'] ?? '').toString(),
+      accountNumber: (json['account_number'] ?? json['accountNumber'] ?? '')
+          .toString(),
       ifscCode: (json['ifsc_code'] ?? json['ifscCode'] ?? '').toString(),
       branchName: (json['branch_name'] ?? json['branchName'])?.toString(),
     );
@@ -38,9 +38,7 @@ class BankDetailsModel {
 }
 
 class SaveBankDetailsRequestModel {
-  const SaveBankDetailsRequestModel({
-    required this.bankDetails,
-  });
+  const SaveBankDetailsRequestModel({required this.bankDetails});
 
   final BankDetailsModel bankDetails;
 
@@ -100,4 +98,3 @@ class SaveBankDetailsResponseModel {
     return null;
   }
 }
-

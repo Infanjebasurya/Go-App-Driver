@@ -47,6 +47,8 @@ class EarningsCalculator {
 
     final double explicit = trip.netEarningAmount ?? 0;
     if (explicit > 0) return explicit;
-    return tripAmount(trip) + incentiveAmount(trip) + cancellationFeeAmount(trip);
+    return tripAmount(trip) +
+        incentiveAmount(trip) +
+        cancellationFeeAmount(trip);
   }
 }

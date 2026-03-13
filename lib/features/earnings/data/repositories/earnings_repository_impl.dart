@@ -5,7 +5,7 @@ import 'package:goapp/features/earnings/domain/repositories/earnings_repository.
 
 class EarningsRepositoryImpl implements EarningsRepository {
   const EarningsRepositoryImpl({required EarningsWalletMockApi api})
-      : _api = api;
+    : _api = api;
 
   final EarningsWalletMockApi _api;
 

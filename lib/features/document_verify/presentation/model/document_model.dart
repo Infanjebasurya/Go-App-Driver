@@ -61,7 +61,6 @@ class Document extends Equatable {
   List<Object?> get props => [type, status, filePath, bankDetails];
 }
 
-
 class BankDetails extends Equatable {
   const BankDetails({
     required this.accountHolderName,

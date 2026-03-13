@@ -77,8 +77,9 @@ class InviteFriendsLoaded extends InviteFriendsState {
     return InviteFriendsLoaded(
       contacts: contacts ?? this.contacts,
       query: query ?? this.query,
-      invitingContactId:
-          clearInvitingContactId ? null : (invitingContactId ?? this.invitingContactId),
+      invitingContactId: clearInvitingContactId
+          ? null
+          : (invitingContactId ?? this.invitingContactId),
     );
   }
 
@@ -92,11 +93,11 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
     required PermissionService permissionService,
     required ContactsService contactsService,
     required UrlLauncherService urlLauncherService,
-  })  : _referralCode = referralCode,
-        _permissionService = permissionService,
-        _contactsService = contactsService,
-        _urlLauncherService = urlLauncherService,
-      super(const InviteFriendsLoading());
+  }) : _referralCode = referralCode,
+       _permissionService = permissionService,
+       _contactsService = contactsService,
+       _urlLauncherService = urlLauncherService,
+       super(const InviteFriendsLoading());
 
   final String _referralCode;
   final PermissionService _permissionService;
@@ -107,8 +108,9 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
   Future<void> initialize() async {
     emit(const InviteFriendsLoading());
 
-    final AppPermissionStatus current =
-        await _permissionService.status(AppPermission.contacts);
+    final AppPermissionStatus current = await _permissionService.status(
+      AppPermission.contacts,
+    );
     final AppPermissionStatus resolved = current == AppPermissionStatus.granted
         ? current
         : await _permissionService.request(AppPermission.contacts);
@@ -146,7 +148,9 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
         'whatsapp://send?phone=$waPhoneDigits&text=${Uri.encodeComponent(message)}',
       );
 
-      final bool waLaunched = await _urlLauncherService.launch(waUri.toString());
+      final bool waLaunched = await _urlLauncherService.launch(
+        waUri.toString(),
+      );
 
       if (waLaunched) return;
 
@@ -177,19 +181,22 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
         withProperties: true,
       );
 
-      final List<InviteContact> mapped = contacts
-          .where((c) => c.phones.isNotEmpty)
-          .map((c) {
-            final String name = c.displayName.trim();
-            final String phone = c.phones.first.number.trim();
-            return InviteContact(
-              id: c.id,
-              name: name.isEmpty ? phone : name,
-              phone: phone,
+      final List<InviteContact> mapped =
+          contacts
+              .where((c) => c.phones.isNotEmpty)
+              .map((c) {
+                final String name = c.displayName.trim();
+                final String phone = c.phones.first.number.trim();
+                return InviteContact(
+                  id: c.id,
+                  name: name.isEmpty ? phone : name,
+                  phone: phone,
+                );
+              })
+              .toList(growable: false)
+            ..sort(
+              (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
             );
-          })
-          .toList(growable: false)
-        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
       _all = mapped;
       emit(InviteFriendsLoaded(contacts: mapped, query: ''));
@@ -202,12 +209,14 @@ class InviteFriendsCubit extends Cubit<InviteFriendsState> {
     if (query.isEmpty) return _all;
     final String q = query.toLowerCase();
     final String qDigits = _onlyDigits(query);
-    return _all.where((c) {
-      final bool nameMatch = c.name.toLowerCase().contains(q);
-      if (nameMatch) return true;
-      if (qDigits.isEmpty) return false;
-      return _onlyDigits(c.phone).contains(qDigits);
-    }).toList(growable: false);
+    return _all
+        .where((c) {
+          final bool nameMatch = c.name.toLowerCase().contains(q);
+          if (nameMatch) return true;
+          if (qDigits.isEmpty) return false;
+          return _onlyDigits(c.phone).contains(qDigits);
+        })
+        .toList(growable: false);
   }
 
   String _inviteMessage() {

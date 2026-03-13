@@ -7,8 +7,9 @@ Future<TripSession?> _loadActiveImpl() async {
   try {
     final dynamic decoded = jsonDecode(raw);
     if (decoded is! Map) return null;
-    final TripSession session =
-        TripSession.fromJson(Map<String, dynamic>.from(decoded));
+    final TripSession session = TripSession.fromJson(
+      Map<String, dynamic>.from(decoded),
+    );
     if (session.id.isEmpty || session.stage == TripSessionStage.none) {
       return null;
     }
@@ -27,9 +28,7 @@ Future<List<TripSession>> _loadArchiveImpl() async {
     if (decoded is! List) return const <TripSession>[];
     return decoded
         .whereType<Map>()
-        .map(
-          (dynamic e) => TripSession.fromJson(Map<String, dynamic>.from(e)),
-        )
+        .map((dynamic e) => TripSession.fromJson(Map<String, dynamic>.from(e)))
         .where((TripSession s) => s.id.isNotEmpty)
         .toList(growable: false);
   } catch (_) {

@@ -156,7 +156,8 @@ class _VerificationViewState extends State<_VerificationView> {
     Document doc,
     VerificationState state,
   ) {
-    final VerificationCubit verificationCubit = context.read<VerificationCubit>();
+    final VerificationCubit verificationCubit = context
+        .read<VerificationCubit>();
     final NavigatorState navigator = Navigator.of(context);
     final stepIndex = _stepIndexForDoc(doc.type);
     if (stepIndex != null) {
@@ -200,7 +201,8 @@ class _VerificationViewState extends State<_VerificationView> {
   }
 
   Future<void> _openProfileStep(BuildContext context) async {
-    final VerificationCubit verificationCubit = context.read<VerificationCubit>();
+    final VerificationCubit verificationCubit = context
+        .read<VerificationCubit>();
     final NavigatorState navigator = Navigator.of(context);
     unawaited(
       RegistrationProgressStore.setStep(
@@ -239,7 +241,8 @@ class _VerificationViewState extends State<_VerificationView> {
     if (!mounted) return;
     if (capturedPath == null || capturedPath.trim().isEmpty) return;
 
-    final DocumentUploadFileService fileService = sl<DocumentUploadFileService>();
+    final DocumentUploadFileService fileService =
+        sl<DocumentUploadFileService>();
     final String? previousPath = DocumentProgressStore.profileImagePath();
     final String persistedPath = await fileService.persistImageToAppStorage(
       capturedPath,

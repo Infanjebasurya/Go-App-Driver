@@ -235,8 +235,9 @@ Future<void> _captureFront(
     }
 
     if (_requiresCr80CardAspect(cubit.state.currentDocStep.step)) {
-      final String? ratioError =
-          await cubit._fileService.validateCr80CardImage(picked.path);
+      final String? ratioError = await cubit._fileService.validateCr80CardImage(
+        picked.path,
+      );
       if (ratioError != null) {
         cubit._emitState(
           cubit.state.copyWithDocStep(
@@ -295,7 +296,8 @@ Future<void> _captureFrontDocument(DocumentUploadCubit cubit) async {
       cubit._emitState(
         cubit.state.copyWithDocStep(
           cubit.state.currentDocStep.copyWith(
-            imageError: 'Please upload a card photo (image only) for this document.',
+            imageError:
+                'Please upload a card photo (image only) for this document.',
           ),
         ),
       );
@@ -376,8 +378,9 @@ Future<void> _captureBack(
     }
 
     if (_requiresCr80CardAspect(cubit.state.currentDocStep.step)) {
-      final String? ratioError =
-          await cubit._fileService.validateCr80CardImage(picked.path);
+      final String? ratioError = await cubit._fileService.validateCr80CardImage(
+        picked.path,
+      );
       if (ratioError != null) {
         cubit._emitState(
           cubit.state.copyWithDocStep(
@@ -436,7 +439,8 @@ Future<void> _captureBackDocument(DocumentUploadCubit cubit) async {
       cubit._emitState(
         cubit.state.copyWithDocStep(
           cubit.state.currentDocStep.copyWith(
-            imageError: 'Please upload a card photo (image only) for this document.',
+            imageError:
+                'Please upload a card photo (image only) for this document.',
           ),
         ),
       );

@@ -179,11 +179,11 @@ class _LocationLine extends StatelessWidget {
               children: <Widget>[
                 Text(
                   label,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.black,
-                    ),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.black,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(

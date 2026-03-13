@@ -8,13 +8,16 @@ import 'package:goapp/features/profile_photo_capture/domain/repositories/profile
 
 class ProfilePhotoRepositoryImpl implements ProfilePhotoRepository {
   const ProfilePhotoRepositoryImpl({required PathProviderService pathProvider})
-      : _pathProvider = pathProvider;
+    : _pathProvider = pathProvider;
 
   final PathProviderService _pathProvider;
 
   @override
-  Future<ProcessedProfilePhoto> saveProcessedPhoto(ProcessedJpegImage image) async {
-    final Directory root = await _pathProvider.getApplicationDocumentsDirectory();
+  Future<ProcessedProfilePhoto> saveProcessedPhoto(
+    ProcessedJpegImage image,
+  ) async {
+    final Directory root = await _pathProvider
+        .getApplicationDocumentsDirectory();
     final Directory dir = Directory(p.join(root.path, 'profile_photos'));
     if (!await dir.exists()) {
       await dir.create(recursive: true);
@@ -25,7 +28,10 @@ class ProfilePhotoRepositoryImpl implements ProfilePhotoRepository {
     final File out = File(p.join(dir.path, fileName));
     await out.writeAsBytes(image.bytes, flush: true);
 
-    return ProcessedProfilePhoto(path: out.path, widthPx: image.widthPx, heightPx: image.heightPx);
+    return ProcessedProfilePhoto(
+      path: out.path,
+      widthPx: image.widthPx,
+      heightPx: image.heightPx,
+    );
   }
 }
-

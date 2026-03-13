@@ -77,12 +77,13 @@ class UnderlineInputField extends StatelessWidget {
                 : null,
             suffixText: suffixText,
             errorText: errorText,
-            errorStyle: const TextStyle(fontSize: 11, color: AppColors.hexFFE53935),
+            errorStyle: const TextStyle(
+              fontSize: 11,
+              color: AppColors.hexFFE53935,
+            ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError
-                    ? AppColors.hexFFE53935
-                    : AppColors.hexFFE2E8F0,
+                color: hasError ? AppColors.hexFFE53935 : AppColors.hexFFE2E8F0,
                 width: 1.2,
               ),
             ),
@@ -106,7 +107,3 @@ class UnderlineInputField extends StatelessWidget {
     );
   }
 }
-
-
-
-

@@ -6,6 +6,7 @@ enum FuelType { petrol, electric }
 enum BikeType { bike, scooter }
 
 enum SeatOption { four, six, eight }
+
 enum VehicleUploadType { image, document }
 
 extension FuelTypeExt on FuelType {

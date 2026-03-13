@@ -41,6 +41,3 @@ class AuthPrimaryButton extends StatelessWidget {
     );
   }
 }
-
-
-

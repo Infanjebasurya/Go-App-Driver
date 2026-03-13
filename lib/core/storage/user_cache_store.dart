@@ -42,7 +42,10 @@ class UserCacheStore {
       await init();
     }
     _cached = user;
-    await SharedPreferencesStore.global.setString(_key, jsonEncode(user.toJson()));
+    await SharedPreferencesStore.global.setString(
+      _key,
+      jsonEncode(user.toJson()),
+    );
   }
 
   static Future<void> clear() async {

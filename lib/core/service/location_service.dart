@@ -9,10 +9,7 @@ enum AppLocationPermissionStatus {
 }
 
 class AppLocationPosition {
-  const AppLocationPosition({
-    required this.latitude,
-    required this.longitude,
-  });
+  const AppLocationPosition({required this.latitude, required this.longitude});
 
   final double latitude;
   final double longitude;
@@ -51,19 +48,19 @@ class LocationService {
   }
 
   Future<AppLocationPosition?> getLastKnownPosition() async {
-    final Map<Object?, Object?>? position =
-        await _channel.invokeMethod<Map<Object?, Object?>>('getLastKnownPosition');
+    final Map<Object?, Object?>? position = await _channel
+        .invokeMethod<Map<Object?, Object?>>('getLastKnownPosition');
     return _mapPosition(position);
   }
 
   Future<AppLocationPosition> getCurrentPosition({
     Duration timeLimit = const Duration(seconds: 8),
   }) async {
-    final Map<Object?, Object?>? position =
-        await _channel.invokeMethod<Map<Object?, Object?>>(
-      'getCurrentPosition',
-      <String, int>{'timeLimitMs': timeLimit.inMilliseconds},
-    );
+    final Map<Object?, Object?>? position = await _channel
+        .invokeMethod<Map<Object?, Object?>>(
+          'getCurrentPosition',
+          <String, int>{'timeLimitMs': timeLimit.inMilliseconds},
+        );
     final AppLocationPosition? mapped = _mapPosition(position);
     if (mapped == null) {
       throw PlatformException(

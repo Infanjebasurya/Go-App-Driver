@@ -63,9 +63,7 @@ class _RLoginPageState extends State<RLoginPage> {
                         BlocProvider<AuthBloc>.value(
                           value: context.read<AuthBloc>(),
                         ),
-                        BlocProvider<OtpCubit>(
-                          create: (_) => sl<OtpCubit>(),
-                        ),
+                        BlocProvider<OtpCubit>(create: (_) => sl<OtpCubit>()),
                       ],
                       child: OtpPage(phoneNumber: phone, otpId: state.otpId),
                     ),
@@ -315,12 +313,10 @@ class _RLoginPageState extends State<RLoginPage> {
   }
 
   Future<void> _openPolicyLink() async {
-    final launched = await sl<UrlLauncherService>().launch(_policyUri.toString());
+    final launched = await sl<UrlLauncherService>().launch(
+      _policyUri.toString(),
+    );
     if (!mounted || launched) return;
     SnackBarUtils.show(context, 'Unable to open link');
   }
 }
-
-
-
-

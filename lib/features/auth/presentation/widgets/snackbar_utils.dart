@@ -48,5 +48,3 @@ abstract final class SnackBarUtils {
     );
   }
 }
-
-

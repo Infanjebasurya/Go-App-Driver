@@ -54,15 +54,13 @@ class DocNumberField extends StatelessWidget {
         TextField(
           controller: controller,
           onChanged: onChanged,
-          textCapitalization:
-          forceUppercase ? TextCapitalization.characters : TextCapitalization.none,
+          textCapitalization: forceUppercase
+              ? TextCapitalization.characters
+              : TextCapitalization.none,
           inputFormatters: [
             if (allowedPattern != null)
-              FilteringTextInputFormatter.allow(
-                RegExp(allowedPattern!),
-              ),
-            if (maxLength != null)
-              LengthLimitingTextInputFormatter(maxLength),
+              FilteringTextInputFormatter.allow(RegExp(allowedPattern!)),
+            if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
             if (forceUppercase) _UpperCaseTextFormatter(),
             if (formatAsAadhaar) _AadhaarTextFormatter(),
             if (formatAsPan) _PanTextFormatter(),
@@ -85,9 +83,7 @@ class DocNumberField extends StatelessWidget {
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError
-                    ? AppColors.hexFFE53935
-                    : AppColors.hexFFD5DDE5,
+                color: hasError ? AppColors.hexFFE53935 : AppColors.hexFFD5DDE5,
                 width: 1.2,
               ),
             ),
@@ -132,9 +128,9 @@ class DocNumberField extends StatelessWidget {
 class _UpperCaseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
@@ -142,9 +138,9 @@ class _UpperCaseTextFormatter extends TextInputFormatter {
 class _AadhaarTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
     final trimmed = digitsOnly.length > 12
         ? digitsOnly.substring(0, 12)
@@ -168,10 +164,13 @@ class _AadhaarTextFormatter extends TextInputFormatter {
 class _PanTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
-    final raw = newValue.text.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final raw = newValue.text.toUpperCase().replaceAll(
+      RegExp(r'[^A-Z0-9]'),
+      '',
+    );
     final buffer = StringBuffer();
 
     for (var i = 0; i < raw.length; i++) {
@@ -202,10 +201,13 @@ class _PanTextFormatter extends TextInputFormatter {
 class _VehicleNumberTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
-    final raw = newValue.text.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final raw = newValue.text.toUpperCase().replaceAll(
+      RegExp(r'[^A-Z0-9]'),
+      '',
+    );
     final buffer = StringBuffer();
 
     for (var i = 0; i < raw.length; i++) {
@@ -238,10 +240,13 @@ class _VehicleNumberTextFormatter extends TextInputFormatter {
 class _DrivingLicenseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
-    final raw = newValue.text.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final raw = newValue.text.toUpperCase().replaceAll(
+      RegExp(r'[^A-Z0-9]'),
+      '',
+    );
     final buffer = StringBuffer();
 
     for (var i = 0; i < raw.length; i++) {

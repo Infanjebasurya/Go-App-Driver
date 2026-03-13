@@ -35,14 +35,12 @@ class ProfilePhotoState extends Equatable {
     return ProfilePhotoState(
       status: status ?? this.status,
       photo: photo == _unset ? this.photo : photo as ProcessedProfilePhoto?,
-      errorMessage: errorMessage == _unset ? this.errorMessage : errorMessage as String?,
+      errorMessage: errorMessage == _unset
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        status,
-        photo,
-        errorMessage,
-      ];
+  List<Object?> get props => <Object?>[status, photo, errorMessage];
 }

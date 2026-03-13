@@ -26,9 +26,7 @@ void main() {
       ),
     ];
 
-    await tester.pumpWidget(
-      MaterialApp(home: TicketsScreen(tickets: tickets)),
-    );
+    await tester.pumpWidget(MaterialApp(home: TicketsScreen(tickets: tickets)));
     await tester.pumpAndSettle();
 
     final resolvedText = tester.widget<Text>(find.text('Resolved'));
@@ -43,22 +41,24 @@ void main() {
     final closedDecoration = closedContainer.decoration! as BoxDecoration;
 
     expect(resolvedDecoration.color, const Color(0x1A00A86B));
-    expect((resolvedDecoration.border! as Border).top.color, const Color(0x3300A86B));
+    expect(
+      (resolvedDecoration.border! as Border).top.color,
+      const Color(0x3300A86B),
+    );
     expect(closedDecoration.color, const Color(0xFFF5F5F4));
-    expect((closedDecoration.border! as Border).top.color, const Color(0xFFE7E5E4));
+    expect(
+      (closedDecoration.border! as Border).top.color,
+      const Color(0xFFE7E5E4),
+    );
   });
 }
 
 Container _findStatusChipContainer(WidgetTester tester, String label) {
   final containers = tester.widgetList<Container>(
-    find.ancestor(
-      of: find.text(label),
-      matching: find.byType(Container),
-    ),
+    find.ancestor(of: find.text(label), matching: find.byType(Container)),
   );
   return containers.firstWhere((container) {
     final decoration = container.decoration;
     return decoration is BoxDecoration && decoration.border != null;
   });
 }
-

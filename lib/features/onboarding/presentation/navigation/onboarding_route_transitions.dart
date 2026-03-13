@@ -22,9 +22,9 @@ Route<T> onboardingCabToParcelRoute<T>(Widget page) {
 }
 
 Route<T> onboardingRoute<T>(
-    Widget page, {
-      OnboardingTransitionStyle style = OnboardingTransitionStyle.slide,
-    }) {
+  Widget page, {
+  OnboardingTransitionStyle style = OnboardingTransitionStyle.slide,
+}) {
   return PageRouteBuilder<T>(
     pageBuilder: (context, animation, secondaryAnimation) => page,
     transitionDuration: const Duration(milliseconds: 420),

@@ -5,10 +5,7 @@ import 'package:flutter/services.dart';
 enum AppImageSource { camera, gallery }
 
 class PickedImage {
-  const PickedImage({
-    required this.path,
-    required this.name,
-  });
+  const PickedImage({required this.path, required this.name});
 
   final String path;
   final String name;
@@ -26,8 +23,9 @@ class PickedImage {
 class ImagePickerService {
   ImagePickerService();
 
-  static const MethodChannel _channel =
-      MethodChannel('app/image_picker_service');
+  static const MethodChannel _channel = MethodChannel(
+    'app/image_picker_service',
+  );
 
   Future<PickedImage?> pickImage({
     required AppImageSource source,
@@ -35,21 +33,20 @@ class ImagePickerService {
     double? maxWidth,
     double? maxHeight,
   }) async {
-    final Map<Object?, Object?>? picked =
-        await _channel.invokeMethod<Map<Object?, Object?>>(
-      'pickImage',
-      <String, Object?>{
-        'source': source.name,
-        'imageQuality': imageQuality,
-        'maxWidth': maxWidth,
-        'maxHeight': maxHeight,
-      },
-    );
+    final Map<Object?, Object?>? picked = await _channel
+        .invokeMethod<Map<Object?, Object?>>('pickImage', <String, Object?>{
+          'source': source.name,
+          'imageQuality': imageQuality,
+          'maxWidth': maxWidth,
+          'maxHeight': maxHeight,
+        });
     if (picked == null) return null;
     final String? path = picked['path'] as String?;
     final String? name = picked['name'] as String?;
     if (path == null || path.isEmpty) return null;
-    return PickedImage(path: path, name: name ?? File(path).uri.pathSegments.last);
+    return PickedImage(
+      path: path,
+      name: name ?? File(path).uri.pathSegments.last,
+    );
   }
 }
-

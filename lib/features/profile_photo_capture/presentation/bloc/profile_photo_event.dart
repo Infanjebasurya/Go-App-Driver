@@ -14,4 +14,3 @@ final class ProfilePhotoStarted extends ProfilePhotoEvent {
 final class ProfilePhotoRetakeRequested extends ProfilePhotoEvent {
   const ProfilePhotoRetakeRequested();
 }
-

@@ -56,7 +56,9 @@ class FaceProfilePhotoCaptureState extends Equatable {
       status: status ?? this.status,
       message: message ?? this.message,
       stabilityProgress: stabilityProgress ?? this.stabilityProgress,
-      debugFaceBox: clearDebugFaceBox ? null : (debugFaceBox ?? this.debugFaceBox),
+      debugFaceBox: clearDebugFaceBox
+          ? null
+          : (debugFaceBox ?? this.debugFaceBox),
       photo: clearPhoto ? null : (photo ?? this.photo),
       cameraReadyNonce: cameraReadyNonce ?? this.cameraReadyNonce,
     );
@@ -64,12 +66,11 @@ class FaceProfilePhotoCaptureState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        status,
-        message,
-        stabilityProgress,
-        debugFaceBox,
-        photo,
-        cameraReadyNonce,
-      ];
+    status,
+    message,
+    stabilityProgress,
+    debugFaceBox,
+    photo,
+    cameraReadyNonce,
+  ];
 }
-

@@ -41,4 +41,3 @@ class SaveVehicleDetailsResponseModel {
     return null;
   }
 }
-

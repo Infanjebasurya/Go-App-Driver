@@ -282,8 +282,12 @@ class ReferralPersonCard extends StatelessWidget {
                     isCompleted ? 'PAID OUT' : 'EST. REWARD',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isCompleted ? AppColors.headingDark : AppColors.neutralAAA,
-                      fontWeight: isCompleted ? FontWeight.w700 : FontWeight.w500,
+                      color: isCompleted
+                          ? AppColors.headingDark
+                          : AppColors.neutralAAA,
+                      fontWeight: isCompleted
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -322,17 +326,17 @@ class ReferralPersonCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: person.progressPercent,
-                              minHeight: 6,
-                              backgroundColor: AppColors.surfaceF0,
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                AuthUiColors.brandGreen,
-                              ),
-                            ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: person.progressPercent,
+                          minHeight: 6,
+                          backgroundColor: AppColors.surfaceF0,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            AuthUiColors.brandGreen,
                           ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -340,7 +344,8 @@ class ReferralPersonCard extends StatelessWidget {
             ),
           ],
           if (person.status == ReferralStatus.pending &&
-              (person.ridesCompleted == null || person.ridesCompleted == 0)) ...[
+              (person.ridesCompleted == null ||
+                  person.ridesCompleted == 0)) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

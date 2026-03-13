@@ -21,4 +21,3 @@ class DetectedFace {
   final double? rightEyeOpenProbability;
   final double? smilingProbability;
 }
-

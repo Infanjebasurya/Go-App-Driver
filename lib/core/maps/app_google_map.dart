@@ -18,32 +18,29 @@ class _NativeMapControllerAdapter implements AppMapController {
 
   @override
   Future<void> animateTo(LatLng target, {double zoom = 14}) async {
-    await _channel.invokeMethod<void>(
-      'animateTo',
-      <String, Object>{
-        'latitude': target.latitude,
-        'longitude': target.longitude,
-        'zoom': zoom,
-      },
-    );
+    await _channel.invokeMethod<void>('animateTo', <String, Object>{
+      'latitude': target.latitude,
+      'longitude': target.longitude,
+      'zoom': zoom,
+    });
   }
 
   @override
-  Future<void> animateToBounds(LatLngBounds bounds, {double padding = 0}) async {
-    await _channel.invokeMethod<void>(
-      'animateToBounds',
-      <String, Object>{
-        'southwest': <String, Object>{
-          'latitude': bounds.southwest.latitude,
-          'longitude': bounds.southwest.longitude,
-        },
-        'northeast': <String, Object>{
-          'latitude': bounds.northeast.latitude,
-          'longitude': bounds.northeast.longitude,
-        },
-        'padding': padding,
+  Future<void> animateToBounds(
+    LatLngBounds bounds, {
+    double padding = 0,
+  }) async {
+    await _channel.invokeMethod<void>('animateToBounds', <String, Object>{
+      'southwest': <String, Object>{
+        'latitude': bounds.southwest.latitude,
+        'longitude': bounds.southwest.longitude,
       },
-    );
+      'northeast': <String, Object>{
+        'latitude': bounds.northeast.latitude,
+        'longitude': bounds.northeast.longitude,
+      },
+      'padding': padding,
+    });
   }
 }
 
@@ -122,10 +119,7 @@ class _AppGoogleMapState extends State<AppGoogleMap> {
   Widget build(BuildContext context) {
     if (_isTest && widget.showTestPlaceholder) {
       return Center(
-        child: Text(
-          widget.testPlaceholderText,
-          key: widget.testPlaceholderKey,
-        ),
+        child: Text(widget.testPlaceholderText, key: widget.testPlaceholderKey),
       );
     }
 
@@ -210,26 +204,21 @@ class _AppGoogleMapState extends State<AppGoogleMap> {
     final MethodChannel? channel = _channel;
     if (channel == null || _viewId == null) return;
     try {
-      await channel.invokeMethod<void>(
-        'updateOptions',
-        <String, Object?>{
-          'myLocationEnabled': widget.myLocationEnabled,
-          'myLocationButtonEnabled': widget.myLocationButtonEnabled,
-          'zoomControlsEnabled': widget.zoomControlsEnabled,
-          'mapToolbarEnabled': widget.mapToolbarEnabled,
-          'compassEnabled': widget.compassEnabled,
-          'style': widget.style,
-          'padding': _encodePadding(widget.padding),
-        },
-      );
-      await channel.invokeMethod<void>(
-        'setMarkers',
-        <String, Object?>{'markers': _encodeMarkers(widget.markers)},
-      );
-      await channel.invokeMethod<void>(
-        'setPolylines',
-        <String, Object?>{'polylines': _encodePolylines(widget.polylines)},
-      );
+      await channel.invokeMethod<void>('updateOptions', <String, Object?>{
+        'myLocationEnabled': widget.myLocationEnabled,
+        'myLocationButtonEnabled': widget.myLocationButtonEnabled,
+        'zoomControlsEnabled': widget.zoomControlsEnabled,
+        'mapToolbarEnabled': widget.mapToolbarEnabled,
+        'compassEnabled': widget.compassEnabled,
+        'style': widget.style,
+        'padding': _encodePadding(widget.padding),
+      });
+      await channel.invokeMethod<void>('setMarkers', <String, Object?>{
+        'markers': _encodeMarkers(widget.markers),
+      });
+      await channel.invokeMethod<void>('setPolylines', <String, Object?>{
+        'polylines': _encodePolylines(widget.polylines),
+      });
     } catch (_) {}
   }
 

@@ -29,7 +29,10 @@ void runFeatureStructureTests({
 
     for (final dir in expectedTopLevelDirs) {
       test('contains top-level "$dir" directory', () {
-        expect(Directory('lib/features/$featureName/$dir').existsSync(), isTrue);
+        expect(
+          Directory('lib/features/$featureName/$dir').existsSync(),
+          isTrue,
+        );
       });
     }
   });

@@ -39,14 +39,32 @@ class _IncentivesView extends StatelessWidget {
         final List<IncentiveTier> tiers = state.tiers.isNotEmpty
             ? state.tiers
             : const <IncentiveTier>[
-                IncentiveTier(title: 'Silver Milestone', targetRides: 3, rewardAmount: 50),
-                IncentiveTier(title: 'Gold Milestone', targetRides: 5, rewardAmount: 100),
-                IncentiveTier(title: 'Platinum Milestone', targetRides: 7, rewardAmount: 150),
+                IncentiveTier(
+                  title: 'Silver Milestone',
+                  targetRides: 3,
+                  rewardAmount: 50,
+                ),
+                IncentiveTier(
+                  title: 'Gold Milestone',
+                  targetRides: 5,
+                  rewardAmount: 100,
+                ),
+                IncentiveTier(
+                  title: 'Platinum Milestone',
+                  targetRides: 7,
+                  rewardAmount: 150,
+                ),
               ];
         final int currentRides = state.achievedRides;
-        final int activeTierIndex = _activeTierIndex(achievedRides: currentRides, tiers: tiers);
+        final int activeTierIndex = _activeTierIndex(
+          achievedRides: currentRides,
+          tiers: tiers,
+        );
         final int totalTarget = tiers.isEmpty ? 1 : tiers.last.targetRides;
-        final double progressFraction = (currentRides / totalTarget).clamp(0, 1);
+        final double progressFraction = (currentRides / totalTarget).clamp(
+          0,
+          1,
+        );
 
         return Scaffold(
           backgroundColor: AppColors.white,
@@ -59,7 +77,10 @@ class _IncentivesView extends StatelessWidget {
           body: Column(
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.gray[100],
                   borderRadius: BorderRadius.circular(25),
@@ -78,28 +99,34 @@ class _IncentivesView extends StatelessWidget {
                     ? ListView(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        children: List<Widget>.generate(state.dayOptions.length, (index) {
-                          final DateTime day = state.dayOptions[index];
-                          return _buildDateItem(
-                            context,
-                            state,
-                            _weekDays[day.weekday - 1],
-                            day.day.toString().padLeft(2, '0'),
-                            index,
-                          );
-                        }),
+                        children: List<Widget>.generate(
+                          state.dayOptions.length,
+                          (index) {
+                            final DateTime day = state.dayOptions[index];
+                            return _buildDateItem(
+                              context,
+                              state,
+                              _weekDays[day.weekday - 1],
+                              day.day.toString().padLeft(2, '0'),
+                              index,
+                            );
+                          },
+                        ),
                       )
                     : ListView(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        children: List<Widget>.generate(state.rangeLabels.length, (index) {
-                          return _buildRangeItem(
-                            context,
-                            state,
-                            state.rangeLabels[index],
-                            index,
-                          );
-                        }),
+                        children: List<Widget>.generate(
+                          state.rangeLabels.length,
+                          (index) {
+                            return _buildRangeItem(
+                              context,
+                              state,
+                              state.rangeLabels[index],
+                              index,
+                            );
+                          },
+                        ),
                       ),
               ),
               Expanded(
@@ -130,16 +157,18 @@ class _IncentivesView extends StatelessWidget {
                             const SizedBox(height: 30),
                             ...List<Widget>.generate(tiers.length, (index) {
                               final IncentiveTier tier = tiers[index];
-                              final bool unlocked = currentRides >= tier.targetRides;
-                              final bool isActive = index == activeTierIndex && !unlocked;
+                              final bool unlocked =
+                                  currentRides >= tier.targetRides;
+                              final bool isActive =
+                                  index == activeTierIndex && !unlocked;
                               return _buildMilestoneItem(
                                 isLast: index == tiers.length - 1,
                                 isUnlocked: unlocked,
                                 icon: index == 2
                                     ? Icons.diamond_outlined
                                     : (index == 1
-                                        ? Icons.emoji_events
-                                        : Icons.emoji_events_outlined),
+                                          ? Icons.emoji_events
+                                          : Icons.emoji_events_outlined),
                                 title: tier.title,
                                 subtitle: _milestoneSubtitle(
                                   selectedTab: state.selectedTab,
@@ -169,8 +198,8 @@ class _IncentivesView extends StatelessWidget {
                                   icon: index == 2
                                       ? Icons.diamond_outlined
                                       : (index == 1
-                                          ? Icons.emoji_events
-                                          : Icons.emoji_events_outlined),
+                                            ? Icons.emoji_events
+                                            : Icons.emoji_events_outlined),
                                   title: tier.title,
                                   subtitle: _milestoneSubtitle(
                                     selectedTab: state.selectedTab,
@@ -372,12 +401,14 @@ class _IncentivesView extends StatelessWidget {
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: tiers.map((tier) {
-                      return _buildProgressMarker(
-                        tier.targetRides.toString(),
-                        currentRides >= tier.targetRides,
-                      );
-                    }).toList(growable: false),
+                    children: tiers
+                        .map((tier) {
+                          return _buildProgressMarker(
+                            tier.targetRides.toString(),
+                            currentRides >= tier.targetRides,
+                          );
+                        })
+                        .toList(growable: false),
                   ),
                 ],
               );
@@ -386,11 +417,11 @@ class _IncentivesView extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '$achievedDisplay of $currentTarget rides completed',
-                  style: const TextStyle(color: AppColors.white70, fontSize: 12),
-                ),
+            children: [
+              Text(
+                '$achievedDisplay of $currentTarget rides completed',
+                style: const TextStyle(color: AppColors.white70, fontSize: 12),
+              ),
               Text(
                 'TIER ${activeTierIndex + 1}',
                 style: const TextStyle(
@@ -468,7 +499,9 @@ class _IncentivesView extends StatelessWidget {
                   ),
                 ),
                 if (!isLast)
-                  Expanded(child: Container(width: 2, color: AppColors.gray[200])),
+                  Expanded(
+                    child: Container(width: 2, color: AppColors.gray[200]),
+                  ),
               ],
             ),
           ),
@@ -492,7 +525,9 @@ class _IncentivesView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isUnlocked ? AppColors.hexFFFFF8E1 : AppColors.gray[50],
+                      color: isUnlocked
+                          ? AppColors.hexFFFFF8E1
+                          : AppColors.gray[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -511,7 +546,9 @@ class _IncentivesView extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color: isUnlocked ? AppColors.black : AppColors.gray[400],
+                            color: isUnlocked
+                                ? AppColors.black
+                                : AppColors.gray[400],
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -533,7 +570,9 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: isUnlocked ? AppColors.emerald : AppColors.gray[300],
+                          color: isUnlocked
+                              ? AppColors.emerald
+                              : AppColors.gray[300],
                         ),
                       ),
                       Text(
@@ -541,7 +580,9 @@ class _IncentivesView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isUnlocked ? AppColors.gold : AppColors.gray[300],
+                          color: isUnlocked
+                              ? AppColors.gold
+                              : AppColors.gray[300],
                         ),
                       ),
                     ],
@@ -594,7 +635,3 @@ class _IncentivesView extends StatelessWidget {
     return 'Complete $targetRides rides today';
   }
 }
-
-
-
-

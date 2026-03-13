@@ -47,22 +47,22 @@ class ShadowButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: resolvedBorderRadius,
-    boxShadow: (enabled && shadowEnabled)
-        ? <BoxShadow>[
-            BoxShadow(
-              offset: const Offset(0, 8),
-              blurRadius: 10,
-              spreadRadius: -6,
-              color: AppColors.black.withValues(alpha: 0.1),
-            ),
-            BoxShadow(
-              offset: const Offset(0, 20),
-              blurRadius: 25,
-              spreadRadius: -5,
-              color: AppColors.black.withValues(alpha: 0.1),
-            ),
-          ]
-        : <BoxShadow>[],
+        boxShadow: (enabled && shadowEnabled)
+            ? <BoxShadow>[
+                BoxShadow(
+                  offset: const Offset(0, 8),
+                  blurRadius: 10,
+                  spreadRadius: -6,
+                  color: AppColors.black.withValues(alpha: 0.1),
+                ),
+                BoxShadow(
+                  offset: const Offset(0, 20),
+                  blurRadius: 25,
+                  spreadRadius: -5,
+                  color: AppColors.black.withValues(alpha: 0.1),
+                ),
+              ]
+            : <BoxShadow>[],
       ),
       child: ElevatedButton(
         onPressed: onPressed,
@@ -108,8 +108,9 @@ class ShadowButton extends StatelessWidget {
     final ButtonStyle normalized = (style ?? const ButtonStyle()).copyWith(
       elevation: const WidgetStatePropertyAll<double>(0),
       shadowColor: const WidgetStatePropertyAll<Color>(AppColors.transparent),
-      surfaceTintColor:
-          const WidgetStatePropertyAll<Color>(AppColors.transparent),
+      surfaceTintColor: const WidgetStatePropertyAll<Color>(
+        AppColors.transparent,
+      ),
       backgroundColor: backgroundColor != null
           ? WidgetStatePropertyAll<Color>(backgroundColor!)
           : null,
@@ -134,6 +135,3 @@ class ShadowButton extends StatelessWidget {
     return BorderRadius.circular(12);
   }
 }
-
-
-

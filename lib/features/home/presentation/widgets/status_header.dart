@@ -21,7 +21,9 @@ class DriverAppBar extends StatelessWidget implements PreferredSizeWidget {
     return BlocBuilder<DriverCubit, DriverState>(
       builder: (context, state) {
         return AppAppBar(
-          backgroundColor: state.isOnline ? AppColors.transparent : AppColors.white,
+          backgroundColor: state.isOnline
+              ? AppColors.transparent
+              : AppColors.white,
           elevation: state.isOnline ? 6 : 6,
           shadowColor: AppColors.black12,
           surfaceTintColor: AppColors.transparent,
@@ -119,6 +121,3 @@ class _Tab extends StatelessWidget {
     );
   }
 }
-
-
-

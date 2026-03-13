@@ -137,7 +137,8 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: '•••• •••• •••• ••••',
             controller: _accCtrl,
             errorText: data.accountNumberError,
-            onChanged: (value) => cubit.updateAccountNumber(value.toUpperCase()),
+            onChanged: (value) =>
+                cubit.updateAccountNumber(value.toUpperCase()),
             keyboardType: TextInputType.number,
             obscureText: _obscureAccount,
             inputFormatters: [
@@ -288,9 +289,7 @@ class _BankField extends StatelessWidget {
             suffixIcon: suffixIcon,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: hasError
-                    ? AppColors.hexFFE53935
-                    : AppColors.hexFFD5DDE5,
+                color: hasError ? AppColors.hexFFE53935 : AppColors.hexFFD5DDE5,
                 width: 1.2,
               ),
             ),
@@ -328,7 +327,3 @@ class _UpperCaseFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
-
-
-
-

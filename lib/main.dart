@@ -37,9 +37,7 @@ class MyApp extends StatelessWidget {
     // B-08 FIX: AuthBloc now uses the shared repository from get_it.
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
-        BlocProvider<AuthBloc>(
-          create: (_) => sl<AuthBloc>(),
-        ),
+        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
         BlocProvider<InternetBloc>(create: (_) => sl<InternetBloc>()),
         BlocProvider<ReconnectOverlayCubit>(
           create: (_) => sl<ReconnectOverlayCubit>(),
