@@ -3,9 +3,7 @@ import 'package:goapp/app.dart';
 import 'package:goapp/core/di/injection.dart';
 
 void main() {
-  testWidgets('renders home page shell', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('renders home page shell', (WidgetTester tester) async {
     await sl.reset();
     await initializeDependencies();
 

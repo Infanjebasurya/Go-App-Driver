@@ -49,7 +49,9 @@ class _NewDriverActivationScreenState extends State<NewDriverActivationScreen> {
       _startReviewCountdown();
     } else {
       unawaited(
-        RegistrationProgressStore.setStep(RegistrationStep.verificationSubmitted),
+        RegistrationProgressStore.setStep(
+          RegistrationStep.verificationSubmitted,
+        ),
       );
     }
   }
@@ -378,6 +380,3 @@ class _WalletActivationCard extends StatelessWidget {
     );
   }
 }
-
-
-

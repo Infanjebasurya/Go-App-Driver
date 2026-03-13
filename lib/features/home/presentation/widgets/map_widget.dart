@@ -110,7 +110,8 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
         return;
       }
 
-      final AppLocationPosition? known = await _locationService.getLastKnownPosition();
+      final AppLocationPosition? known = await _locationService
+          .getLastKnownPosition();
       if (known != null && mounted) {
         final knownPoint = LatLng(known.latitude, known.longitude);
         setState(() {
@@ -209,6 +210,3 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
     );
   }
 }
-
-
-

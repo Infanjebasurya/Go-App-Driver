@@ -45,7 +45,9 @@ class _WithdrawPageState extends State<WithdrawPage> {
         if (_amountController.text != state.rechargeAmount) {
           _amountController.value = TextEditingValue(
             text: state.rechargeAmount,
-            selection: TextSelection.collapsed(offset: state.rechargeAmount.length),
+            selection: TextSelection.collapsed(
+              offset: state.rechargeAmount.length,
+            ),
           );
         }
         return Scaffold(
@@ -159,9 +161,9 @@ class _WithdrawPageState extends State<WithdrawPage> {
                                       decimal: true,
                                     ),
                                 onChanged: (value) {
-                                  context.read<EarningsCubit>().setRechargeAmount(
-                                    value,
-                                  );
+                                  context
+                                      .read<EarningsCubit>()
+                                      .setRechargeAmount(value);
                                   if (_inlineError != null) {
                                     setState(() => _inlineError = null);
                                   }
@@ -289,7 +291,9 @@ class _WithdrawPageState extends State<WithdrawPage> {
                     child: ElevatedButton(
                       onPressed: () async {
                         final String enteredAmount = _amountController.text;
-                        context.read<EarningsCubit>().setRechargeAmount(enteredAmount);
+                        context.read<EarningsCubit>().setRechargeAmount(
+                          enteredAmount,
+                        );
                         final bool ok = await context
                             .read<EarningsCubit>()
                             .withdrawWallet(rawAmount: enteredAmount);
@@ -351,16 +355,15 @@ class _WithdrawPageState extends State<WithdrawPage> {
     required EarningsState state,
     required String rawAmount,
   }) {
-    final String cleaned = rawAmount
-        .replaceAll(RegExp(r'[^0-9.]'), '')
-        .trim();
+    final String cleaned = rawAmount.replaceAll(RegExp(r'[^0-9.]'), '').trim();
     final double? amount = double.tryParse(cleaned);
     if (amount == null || amount <= 0) {
       return 'Enter a valid withdrawal amount';
     }
 
-    final double maxWithdrawable =
-        double.parse(state.snapshot.walletBalance.toStringAsFixed(2));
+    final double maxWithdrawable = double.parse(
+      state.snapshot.walletBalance.toStringAsFixed(2),
+    );
     if (maxWithdrawable <= 0) {
       return 'No withdrawable wallet balance available';
     }
@@ -447,18 +450,20 @@ class _SavedBankTile extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: selected ? AppColors.emerald : AppColors.neutralCCC,
+                      color: selected
+                          ? AppColors.emerald
+                          : AppColors.neutralCCC,
                       width: 1.5,
                     ),
                   ),
                   child: selected
                       ? const Center(
-                        child: Icon(
-                          Icons.circle,
-                          size: 10,
-                          color: AppColors.emerald,
-                        ),
-                      )
+                          child: Icon(
+                            Icons.circle,
+                            size: 10,
+                            color: AppColors.emerald,
+                          ),
+                        )
                       : null,
                 ),
               ],
@@ -466,10 +471,7 @@ class _SavedBankTile extends StatelessWidget {
             if (showDivider)
               const Padding(
                 padding: EdgeInsets.only(top: 14),
-                child: Divider(
-                  height: 1,
-                  color: AppColors.hexFFF5F5F5,
-                ),
+                child: Divider(height: 1, color: AppColors.hexFFF5F5F5),
               ),
           ],
         ),

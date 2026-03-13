@@ -115,7 +115,10 @@ class _SearchField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: 'Search by pickup, drop, or trip id',
         hintStyle: const TextStyle(fontSize: 13, color: AppColors.neutral888),
-        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.neutral666),
+        prefixIcon: const Icon(
+          Icons.search_rounded,
+          color: AppColors.neutral666,
+        ),
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
@@ -123,7 +126,10 @@ class _SearchField extends StatelessWidget {
                   controller.clear();
                   onChanged('');
                 },
-                icon: const Icon(Icons.close_rounded, color: AppColors.neutral666),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.neutral666,
+                ),
               ),
         filled: true,
         fillColor: AppColors.white,
@@ -277,7 +283,3 @@ class _EmptyResultState extends StatelessWidget {
     );
   }
 }
-
-
-
-

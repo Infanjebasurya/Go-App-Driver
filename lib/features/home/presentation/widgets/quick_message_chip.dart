@@ -29,6 +29,3 @@ class QuickMessageChip extends StatelessWidget {
     );
   }
 }
-
-
-

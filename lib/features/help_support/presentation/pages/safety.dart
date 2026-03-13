@@ -51,10 +51,12 @@ class SafetyPage extends StatelessWidget {
                           .setAutoShare,
                       inactiveThumbColor: AppColors.white,
                       inactiveTrackColor: AppColors.warmGray,
-                      trackOutlineColor:
-                          const WidgetStatePropertyAll<Color>(AppColors.transparent),
-                      trackOutlineWidth:
-                          const WidgetStatePropertyAll<double>(0),
+                      trackOutlineColor: const WidgetStatePropertyAll<Color>(
+                        AppColors.transparent,
+                      ),
+                      trackOutlineWidth: const WidgetStatePropertyAll<double>(
+                        0,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -70,10 +72,12 @@ class SafetyPage extends StatelessWidget {
                           .setShareAtNight,
                       inactiveThumbColor: AppColors.white,
                       inactiveTrackColor: AppColors.warmGray,
-                      trackOutlineColor:
-                          const WidgetStatePropertyAll<Color>(AppColors.transparent),
-                      trackOutlineWidth:
-                          const WidgetStatePropertyAll<double>(0),
+                      trackOutlineColor: const WidgetStatePropertyAll<Color>(
+                        AppColors.transparent,
+                      ),
+                      trackOutlineWidth: const WidgetStatePropertyAll<double>(
+                        0,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -262,7 +266,8 @@ class AddEmergencyNumberPage extends StatelessWidget {
       child: Builder(
         builder: (context) {
           return Scaffold(
-            appBar: const AppAppBar(title: 'Add Emergency Number',
+            appBar: const AppAppBar(
+              title: 'Add Emergency Number',
               titleStyle: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -502,7 +507,8 @@ class _EmergencyContactsList extends StatelessWidget {
               ),
               IconButton(
                 key: menuAnchorKey,
-                onPressed: () => _showContactMenu(context, menuAnchorKey, index),
+                onPressed: () =>
+                    _showContactMenu(context, menuAnchorKey, index),
                 icon: const Icon(
                   Icons.more_vert,
                   size: 20,
@@ -748,7 +754,8 @@ class _AppButton extends StatelessWidget {
     return ShadowButton(
       onPressed: onPressed,
       icon: leading ?? const SizedBox.shrink(),
-      label: Text(label,
+      label: Text(
+        label,
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
@@ -766,7 +773,3 @@ class _AppButton extends StatelessWidget {
     );
   }
 }
-
-
-
-

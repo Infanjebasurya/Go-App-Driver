@@ -13,7 +13,9 @@ class ComplaintCategoryPickerSheet extends StatelessWidget {
     return BlocBuilder<ComplaintCubit, ComplaintState>(
       builder: (context, state) {
         final cubit = context.read<ComplaintCubit>();
-        final selected = state is ComplaintFormState ? state.selectedCategoryId : null;
+        final selected = state is ComplaintFormState
+            ? state.selectedCategoryId
+            : null;
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 30),
           child: Column(
@@ -54,7 +56,9 @@ class ComplaintCategoryPickerSheet extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ShadowButton(
-                onPressed: selected != null ? () => Navigator.pop(context) : null,
+                onPressed: selected != null
+                    ? () => Navigator.pop(context)
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.emerald,
                   foregroundColor: AppColors.white,

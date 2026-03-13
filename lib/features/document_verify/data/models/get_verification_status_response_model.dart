@@ -88,4 +88,3 @@ class GetVerificationStatusResponseModel {
     return null;
   }
 }
-

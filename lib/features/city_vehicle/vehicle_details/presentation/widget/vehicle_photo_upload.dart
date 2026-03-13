@@ -27,7 +27,8 @@ class VehiclePhotoUpload extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isImage = hasPhoto &&
+    final isImage =
+        hasPhoto &&
         uploadType == VehicleUploadType.image &&
         uploadPath != null &&
         uploadPath!.isNotEmpty;
@@ -148,9 +149,8 @@ class _UploadedState extends StatelessWidget {
               child: Image.file(
                 File(uploadPath!),
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Center(
-                  child: _fallbackIcon(),
-                ),
+                errorBuilder: (context, error, stackTrace) =>
+                    Center(child: _fallbackIcon()),
               ),
             ),
           ),
@@ -266,7 +266,3 @@ class _UploadedState extends StatelessWidget {
     );
   }
 }
-
-
-
-

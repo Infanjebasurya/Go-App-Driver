@@ -6,7 +6,6 @@ import 'package:goapp/features/auth/presentation/theme/auth_ui_tokens.dart';
 
 import '../../../cubit/profile_edit_state.dart';
 
-
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.data});
 

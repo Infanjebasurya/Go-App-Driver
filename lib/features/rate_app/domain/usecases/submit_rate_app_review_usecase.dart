@@ -5,10 +5,7 @@ class SubmitRateAppReviewUseCase {
 
   final RateAppRepository _repository;
 
-  Future<void> call({
-    required int rating,
-    required String feedback,
-  }) {
+  Future<void> call({required int rating, required String feedback}) {
     return _repository.submitReview(rating: rating, feedback: feedback);
   }
 }

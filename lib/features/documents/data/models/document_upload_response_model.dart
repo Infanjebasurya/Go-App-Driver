@@ -15,8 +15,8 @@ class DocumentUploadResponseModel {
 
   factory DocumentUploadResponseModel.fromJson(Map<String, dynamic> json) {
     return DocumentUploadResponseModel(
-      documentId:
-          (json['document_id'] ?? json['documentId'] ?? json['id'])?.toString(),
+      documentId: (json['document_id'] ?? json['documentId'] ?? json['id'])
+          ?.toString(),
       fileUrl: (json['file_url'] ?? json['fileUrl'] ?? json['url'])?.toString(),
       status: json['status']?.toString(),
       message: json['message']?.toString(),
@@ -45,4 +45,3 @@ class DocumentUploadResponseModel {
     return null;
   }
 }
-

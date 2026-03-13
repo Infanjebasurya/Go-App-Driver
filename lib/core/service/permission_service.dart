@@ -1,11 +1,6 @@
 import 'package:flutter/services.dart';
 
-enum AppPermission {
-  camera,
-  contacts,
-  photos,
-  notification,
-}
+enum AppPermission { camera, contacts, photos, notification }
 
 enum AppPermissionStatus {
   granted,

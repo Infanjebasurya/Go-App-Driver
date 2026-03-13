@@ -117,20 +117,20 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
                               bankData: state.bankData,
                             )
                           : state.isCurrentStepProfile
-                              ? ProfilePhotoStepContent(
-                                  key: const ValueKey('profile_photo_step'),
-                                  stepData: state.currentDocStep,
-                                  isProcessing: state.isProfileImageProcessing,
-                                  onCameraTap: () =>
-                                      showProfileImageSourceSheet(context),
-                                )
-                              : DocumentStepContent(
-                                  key: ValueKey(state.currentStepIndex),
-                                  config: state.currentConfig,
-                                  stepData: state.currentDocStep,
-                                  numberController:
-                                      _docControllers[state.currentStepIndex],
-                                ),
+                          ? ProfilePhotoStepContent(
+                              key: const ValueKey('profile_photo_step'),
+                              stepData: state.currentDocStep,
+                              isProcessing: state.isProfileImageProcessing,
+                              onCameraTap: () =>
+                                  showProfileImageSourceSheet(context),
+                            )
+                          : DocumentStepContent(
+                              key: ValueKey(state.currentStepIndex),
+                              config: state.currentConfig,
+                              stepData: state.currentDocStep,
+                              numberController:
+                                  _docControllers[state.currentStepIndex],
+                            ),
                     ),
                   ),
                   DocumentActionButton(
@@ -174,9 +174,8 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (_, _, _) => VerificationSubmittedScreen(
-          snackbarMessage: null,
-        ),
+        pageBuilder: (_, _, _) =>
+            VerificationSubmittedScreen(snackbarMessage: null),
         transitionsBuilder: (_, anim, _, child) =>
             FadeTransition(opacity: anim, child: child),
       ),
@@ -195,8 +194,9 @@ class _DocumentUploadViewState extends State<_DocumentUploadView>
       DocumentType.panCard,
       DocumentType.bankDetails,
     ];
-    final allComplete =
-        requiredDocs.every((doc) => DocumentProgressStore.isCompleted(doc));
+    final allComplete = requiredDocs.every(
+      (doc) => DocumentProgressStore.isCompleted(doc),
+    );
     if (allComplete) return null;
     return 'Please upload all required documents.';
   }

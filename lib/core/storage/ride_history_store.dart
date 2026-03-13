@@ -67,7 +67,9 @@ class RideHistoryTrip {
       canceledBy: canceledBy ?? this.canceledBy,
       cancelReason: cancelReason ?? this.cancelReason,
       fareLabel: clearFare ? null : (fareLabel ?? this.fareLabel),
-      distanceLabel: clearDistance ? null : (distanceLabel ?? this.distanceLabel),
+      distanceLabel: clearDistance
+          ? null
+          : (distanceLabel ?? this.distanceLabel),
       tripAmount: tripAmount ?? this.tripAmount,
       incentiveAmount: incentiveAmount ?? this.incentiveAmount,
       cancellationFeeAmount:
@@ -115,8 +117,8 @@ class RideHistoryTrip {
       distanceLabel: json['distanceLabel'] as String?,
       tripAmount: (json['tripAmount'] as num?)?.toDouble(),
       incentiveAmount: (json['incentiveAmount'] as num?)?.toDouble(),
-      cancellationFeeAmount:
-          (json['cancellationFeeAmount'] as num?)?.toDouble(),
+      cancellationFeeAmount: (json['cancellationFeeAmount'] as num?)
+          ?.toDouble(),
       netEarningAmount: (json['netEarningAmount'] as num?)?.toDouble(),
     );
   }
@@ -186,9 +188,7 @@ class RideHistoryStore {
     final RideHistoryTrip? active = await _loadTripForProgressUpdate();
     if (active == null) return;
     await _upsertTrip(
-      active.copyWith(
-        pickedUpAtEpochMs: DateTime.now().millisecondsSinceEpoch,
-      ),
+      active.copyWith(pickedUpAtEpochMs: DateTime.now().millisecondsSinceEpoch),
     );
   }
 
@@ -196,9 +196,7 @@ class RideHistoryStore {
     final RideHistoryTrip? active = await _loadTripForProgressUpdate();
     if (active == null) return;
     await _upsertTrip(
-      active.copyWith(
-        startedAtEpochMs: DateTime.now().millisecondsSinceEpoch,
-      ),
+      active.copyWith(startedAtEpochMs: DateTime.now().millisecondsSinceEpoch),
     );
   }
 
@@ -382,7 +380,9 @@ class RideHistoryStore {
   }) async {
     final prefs = SharedPreferencesStore.global;
     final List<RideHistoryTrip> trips = (await loadTrips()).toList();
-    final int existing = trips.indexWhere((RideHistoryTrip t) => t.id == trip.id);
+    final int existing = trips.indexWhere(
+      (RideHistoryTrip t) => t.id == trip.id,
+    );
     if (existing == -1) {
       trips.insert(0, trip);
     } else {
@@ -407,7 +407,9 @@ class RideHistoryStore {
   static Future<void> _saveTrips(List<RideHistoryTrip> trips) async {
     final prefs = SharedPreferencesStore.global;
     final String encoded = jsonEncode(
-      trips.map((RideHistoryTrip trip) => trip.toJson()).toList(growable: false),
+      trips
+          .map((RideHistoryTrip trip) => trip.toJson())
+          .toList(growable: false),
     );
     await prefs.setString(_historyKey, encoded);
   }

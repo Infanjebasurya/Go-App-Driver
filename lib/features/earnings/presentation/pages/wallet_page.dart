@@ -57,12 +57,15 @@ class _WalletView extends StatelessWidget {
           final List<TransactionItem> walletTransactions = state.transactions
               .where((item) => item.type != WalletTransactionType.earning)
               .toList(growable: false);
-          final List<TransactionItem> preview =
-              walletTransactions.take(3).toList(growable: false);
+          final List<TransactionItem> preview = walletTransactions
+              .take(3)
+              .toList(growable: false);
           return LayoutBuilder(
             builder: (context, constraints) {
               final bool tablet = constraints.maxWidth >= 700;
-              final double horizontal = tablet ? constraints.maxWidth * 0.14 : 14;
+              final double horizontal = tablet
+                  ? constraints.maxWidth * 0.14
+                  : 14;
               return ListView(
                 padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, 20),
                 children: <Widget>[
@@ -175,7 +178,11 @@ class _WalletBalanceCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(26),
         boxShadow: const <BoxShadow>[
-          BoxShadow(color: AppColors.hex14000000, blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+            color: AppColors.hex14000000,
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
         ],
       ),
       child: Column(
@@ -209,9 +216,14 @@ class _WalletBalanceCard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.emerald,
                     foregroundColor: AppColors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),
@@ -219,15 +231,23 @@ class _WalletBalanceCard extends StatelessWidget {
               Expanded(
                 child: ShadowButton(
                   onPressed: onWithdraw,
-                  icon: const Icon(Icons.account_balance_wallet_rounded, size: 16),
+                  icon: const Icon(
+                    Icons.account_balance_wallet_rounded,
+                    size: 16,
+                  ),
                   label: const Text('Withdraw'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.hexFFF3F3F3,
                     foregroundColor: AppColors.neutral666,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     elevation: 0,
-                    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
                   ),
                   shadowEnabled: false,
                 ),
@@ -262,7 +282,11 @@ class _WalletPerformanceCard extends StatelessWidget {
             children: const <Widget>[
               Text(
                 'Earning Performance',
-                style: TextStyle(color: AppColors.neutralAAA, fontWeight: FontWeight.w700, fontSize: 11),
+                style: TextStyle(
+                  color: AppColors.neutralAAA,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                ),
               ),
               Spacer(),
               _LegendDot(color: AppColors.emerald, label: 'Weekday'),
@@ -278,7 +302,10 @@ class _WalletPerformanceCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List<Widget>.generate(values.length, (index) {
                 final bool weekend = index >= 5;
-                final double height = ((values[index] / maxValue) * 86).clamp(8, 86);
+                final double height = ((values[index] / maxValue) * 86).clamp(
+                  8,
+                  86,
+                );
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
@@ -349,7 +376,3 @@ List<int> _buildWeekBars(List<TransactionItem> transactions) {
   }
   return counts;
 }
-
-
-
-

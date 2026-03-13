@@ -14,9 +14,7 @@ class _FakeLocationPermissionGuard extends LocationPermissionGuard {
   Future<LocationAccessResult> ensureReady({
     bool requestPermission = false,
   }) async {
-    final current = _index < _results.length
-        ? _results[_index]
-        : _results.last;
+    final current = _index < _results.length ? _results[_index] : _results.last;
     _index++;
     return current;
   }
@@ -27,11 +25,13 @@ void main() {
     late DriverStatusCubit cubit;
 
     setUp(() async {
-      await initMockSharedPreferencesStore(<String, Object>{'driver_wallet_balance_v1': 120.5});
+      await initMockSharedPreferencesStore(<String, Object>{
+        'driver_wallet_balance_v1': 120.5,
+      });
       cubit = DriverStatusCubit(
-        locationGuard: _FakeLocationPermissionGuard(
-          const [LocationAccessResult.ready()],
-        ),
+        locationGuard: _FakeLocationPermissionGuard(const [
+          LocationAccessResult.ready(),
+        ]),
       );
     });
 
@@ -103,43 +103,45 @@ void main() {
       expect(cubit.state.isOffline, isTrue);
     });
 
-    test('goOnline stays offline and sets block issue when gps is off', () async {
-      await cubit.close();
-      cubit = DriverStatusCubit(
-        locationGuard: _FakeLocationPermissionGuard(
-          const [
+    test(
+      'goOnline stays offline and sets block issue when gps is off',
+      () async {
+        await cubit.close();
+        cubit = DriverStatusCubit(
+          locationGuard: _FakeLocationPermissionGuard(const [
             LocationAccessResult.blocked(LocationIssue.serviceDisabled),
-          ],
-        ),
-      );
+          ]),
+        );
 
-      await cubit.goOnline();
+        await cubit.goOnline();
 
-      expect(cubit.state.isOffline, isTrue);
-      expect(cubit.state.offlineBlockIssue, LocationIssue.serviceDisabled);
-      expect(cubit.state.navigateToOrdersToken, 0);
-    });
+        expect(cubit.state.isOffline, isTrue);
+        expect(cubit.state.offlineBlockIssue, LocationIssue.serviceDisabled);
+        expect(cubit.state.navigateToOrdersToken, 0);
+      },
+    );
 
-    test('auto-goes offline if location becomes unavailable while online', () async {
-      await cubit.close();
-      cubit = DriverStatusCubit(
-        locationGuard: _FakeLocationPermissionGuard(
-          const [
+    test(
+      'auto-goes offline if location becomes unavailable while online',
+      () async {
+        await cubit.close();
+        cubit = DriverStatusCubit(
+          locationGuard: _FakeLocationPermissionGuard(const [
             LocationAccessResult.ready(),
             LocationAccessResult.ready(),
             LocationAccessResult.blocked(LocationIssue.serviceDisabled),
-          ],
-        ),
-      );
+          ]),
+        );
 
-      await cubit.goOnline();
-      expect(cubit.state.isOnline, isTrue);
+        await cubit.goOnline();
+        expect(cubit.state.isOnline, isTrue);
 
-      await Future<void>.delayed(const Duration(seconds: 7));
+        await Future<void>.delayed(const Duration(seconds: 7));
 
-      expect(cubit.state.isOffline, isTrue);
-      expect(cubit.state.offlineBlockIssue, LocationIssue.serviceDisabled);
-      expect(cubit.state.navigateToOrdersToken, 0);
-    });
+        expect(cubit.state.isOffline, isTrue);
+        expect(cubit.state.offlineBlockIssue, LocationIssue.serviceDisabled);
+        expect(cubit.state.navigateToOrdersToken, 0);
+      },
+    );
   });
 }

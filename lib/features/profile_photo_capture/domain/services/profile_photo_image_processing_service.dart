@@ -3,4 +3,3 @@ import 'package:goapp/features/profile_photo_capture/domain/models/processed_jpe
 abstract interface class ProfilePhotoImageProcessingService {
   Future<ProcessedJpegImage> processCapturedImage(String capturedImagePath);
 }
-

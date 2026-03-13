@@ -15,14 +15,14 @@ class TicketsScreen extends StatelessWidget {
       backgroundColor: AppColors.white,
       appBar: AppAppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.chevron_left,
-            color: AppColors.textBody,
-          ),
+          icon: const Icon(Icons.chevron_left, color: AppColors.textBody),
           onPressed: () => Navigator.of(context).pop(),
         ),
         centerTitle: true,
-        title: const Text('Recent Support Tickets',style: TextStyle(fontSize: 18)),
+        title: const Text(
+          'Recent Support Tickets',
+          style: TextStyle(fontSize: 18),
+        ),
         backgroundColor: AppColors.white,
         elevation: 0,
         bottom: PreferredSize(
@@ -95,7 +95,6 @@ class _TicketCard extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _StatusChip extends StatelessWidget {
@@ -165,7 +164,3 @@ class _StatusStyle {
   final Color border;
   final Color text;
 }
-
-
-
-

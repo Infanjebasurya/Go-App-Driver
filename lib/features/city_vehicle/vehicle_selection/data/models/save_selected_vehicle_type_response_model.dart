@@ -17,10 +17,10 @@ class SaveSelectedVehicleTypeResponseModel {
     return SaveSelectedVehicleTypeResponseModel(
       message: json['message']?.toString(),
       success: _parseBool(json['success'] ?? json['status']),
-      selectionId:
-          (json['selection_id'] ?? json['selectionId'] ?? json['id'])?.toString(),
-      vehicleTypeCode:
-          (json['vehicle_type'] ?? json['vehicleType'])?.toString(),
+      selectionId: (json['selection_id'] ?? json['selectionId'] ?? json['id'])
+          ?.toString(),
+      vehicleTypeCode: (json['vehicle_type'] ?? json['vehicleType'])
+          ?.toString(),
     );
   }
 
@@ -44,4 +44,3 @@ class SaveSelectedVehicleTypeResponseModel {
     return null;
   }
 }
-

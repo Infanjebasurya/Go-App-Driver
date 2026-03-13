@@ -39,7 +39,9 @@ class ProfileAddressSection extends StatelessWidget {
                     child: Text(
                       displayGender,
                       style: TextStyle(
-                        color: isGenderEmpty ? AppColors.inputHint : AppColors.black,
+                        color: isGenderEmpty
+                            ? AppColors.inputHint
+                            : AppColors.black,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -68,7 +70,9 @@ class ProfileAddressSection extends StatelessWidget {
                     child: Text(
                       displayDob,
                       style: TextStyle(
-                        color: isDobEmpty ? AppColors.inputHint : AppColors.black,
+                        color: isDobEmpty
+                            ? AppColors.inputHint
+                            : AppColors.black,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -105,7 +109,9 @@ Future<void> showGenderSheet(
         child: AnimatedPadding(
           duration: const Duration(milliseconds: 160),
           curve: Curves.easeOut,
-          padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
+          ),
           child: SafeArea(
             top: false,
             bottom: true,
@@ -166,7 +172,9 @@ Future<void> showGenderSheet(
                         for (final gender in genders)
                           InkWell(
                             onTap: () {
-                              context.read<ProfileSetupCubit>().updateGender(gender);
+                              context.read<ProfileSetupCubit>().updateGender(
+                                gender,
+                              );
                               Navigator.of(sheetContext).pop();
                             },
                             child: Padding(
@@ -243,7 +251,9 @@ Future<void> showDobSheet(
       return AnimatedPadding(
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
-        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
+        ),
         child: SafeArea(
           top: false,
           bottom: true,

@@ -58,6 +58,3 @@ class KeyWithStarBadge extends StatelessWidget {
     );
   }
 }
-
-
-

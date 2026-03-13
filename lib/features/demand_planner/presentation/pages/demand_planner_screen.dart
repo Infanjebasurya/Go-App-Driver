@@ -331,9 +331,7 @@ class _SurgeToggleCard extends StatelessWidget {
               enabled
                   ? Icons.notifications_active_outlined
                   : Icons.notifications_off_outlined,
-              color: enabled
-                  ? AuthUiColors.brandGreen
-                  : AppColors.hexFF00A86B,
+              color: enabled ? AuthUiColors.brandGreen : AppColors.hexFF00A86B,
               size: 20,
             ),
           ),
@@ -353,7 +351,10 @@ class _SurgeToggleCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   'Alerts for >1.2x multipliers',
-                  style: TextStyle(fontSize: 12, color: AppColors.gray.shade500),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.gray.shade500,
+                  ),
                 ),
               ],
             ),
@@ -541,7 +542,3 @@ class _LoadingView extends StatelessWidget {
     );
   }
 }
-
-
-
-

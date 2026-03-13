@@ -26,7 +26,15 @@ class TotalEarningActivity extends Equatable {
   final String label;
 
   @override
-  List<Object?> get props => [id, name, initials, dateText, status, amount, label];
+  List<Object?> get props => [
+    id,
+    name,
+    initials,
+    dateText,
+    status,
+    amount,
+    label,
+  ];
 }
 
 sealed class TotalEarningState extends Equatable {
@@ -83,8 +91,9 @@ class TotalEarningCubit extends Cubit<TotalEarningState> {
       return;
     }
 
-    final List<TotalEarningActivity> activities =
-        _mapActivities(state.allReferrals);
+    final List<TotalEarningActivity> activities = _mapActivities(
+      state.allReferrals,
+    );
     emit(
       TotalEarningLoaded(
         totalEarnings: state.totalEarnings,
@@ -131,4 +140,3 @@ class TotalEarningCubit extends Cubit<TotalEarningState> {
     return super.close();
   }
 }
-

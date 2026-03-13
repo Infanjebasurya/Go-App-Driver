@@ -109,7 +109,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _openTermsOfService() async {
-    final launched = await sl<UrlLauncherService>().launch(_termsUri.toString());
+    final launched = await sl<UrlLauncherService>().launch(
+      _termsUri.toString(),
+    );
     if (!mounted || launched) return;
     ScaffoldMessenger.of(
       context,
@@ -123,10 +125,15 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   void _prefillFromProfile(Profile profile) {
     if (_prefilled) return;
     _prefilled = true;
-    final name = _nameController.text.isNotEmpty ? _nameController.text : profile.name;
-    final email =
-        _emailController.text.isNotEmpty ? _emailController.text : (profile.email ?? '');
-    final refer = _referController.text.isNotEmpty ? _referController.text : profile.refer;
+    final name = _nameController.text.isNotEmpty
+        ? _nameController.text
+        : profile.name;
+    final email = _emailController.text.isNotEmpty
+        ? _emailController.text
+        : (profile.email ?? '');
+    final refer = _referController.text.isNotEmpty
+        ? _referController.text
+        : profile.refer;
     final emergency = _emergencyController.text.isNotEmpty
         ? _emergencyController.text
         : profile.emergencyContact;
@@ -204,7 +211,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             ? null
                             : formState.email.trim(),
                         phone: state.profile.phone,
-                        dob: formState.dob.trim().isEmpty ? null : formState.dob.trim(),
+                        dob: formState.dob.trim().isEmpty
+                            ? null
+                            : formState.dob.trim(),
                         rating: state.profile.rating,
                         totalTrips: state.profile.totalTrips,
                         totalYears: state.profile.totalYears,
@@ -215,7 +224,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                     _clearForm();
                     Navigator.of(context)
                         .pushReplacement(
-                          MaterialPageRoute(builder: (_) => const CitySelectionScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const CitySelectionScreen(),
+                          ),
                         )
                         .then((_) {
                           if (!mounted) return;
@@ -259,8 +270,12 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             formState: formState,
                             nameController: _nameController,
                             emailController: _emailController,
-                            onNameChanged: context.read<ProfileSetupCubit>().updateName,
-                            onEmailChanged: context.read<ProfileSetupCubit>().updateEmail,
+                            onNameChanged: context
+                                .read<ProfileSetupCubit>()
+                                .updateName,
+                            onEmailChanged: context
+                                .read<ProfileSetupCubit>()
+                                .updateEmail,
                           ),
                           const SizedBox(height: 20),
                           ProfileAddressSection(
@@ -280,7 +295,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                           const SizedBox(height: 20),
                           ProfileVehicleSection(
                             referController: _referController,
-                            onReferChanged: context.read<ProfileSetupCubit>().updateRefer,
+                            onReferChanged: context
+                                .read<ProfileSetupCubit>()
+                                .updateRefer,
                           ),
                           const SizedBox(height: 40),
                         ],
@@ -290,27 +307,28 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                 ),
               ),
             ),
-            bottomNavigationBar: BlocBuilder<ProfileSetupCubit, ProfileSetupState>(
-              builder: (context, formState) {
-                final isFormValid = context.read<ProfileSetupCubit>().isFormValid;
-                return BlocBuilder<ProfileBloc, ProfileState>(
-                  builder: (context, profileState) {
-                    return ProfileSetupSubmitButton(
-                      profileState: profileState,
-                      isFormValid: isFormValid,
-                      onSubmit: () => context.read<ProfileSetupCubit>().submit(),
-                      termsTap: _termsTap,
+            bottomNavigationBar:
+                BlocBuilder<ProfileSetupCubit, ProfileSetupState>(
+                  builder: (context, formState) {
+                    final isFormValid = context
+                        .read<ProfileSetupCubit>()
+                        .isFormValid;
+                    return BlocBuilder<ProfileBloc, ProfileState>(
+                      builder: (context, profileState) {
+                        return ProfileSetupSubmitButton(
+                          profileState: profileState,
+                          isFormValid: isFormValid,
+                          onSubmit: () =>
+                              context.read<ProfileSetupCubit>().submit(),
+                          termsTap: _termsTap,
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
           ),
         ),
       ),
     );
   }
 }
-
-
-

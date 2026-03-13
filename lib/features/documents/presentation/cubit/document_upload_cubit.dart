@@ -62,10 +62,13 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     final updatedSteps = state.steps.map((step) {
       if (step.step == DocumentStep.profilePhoto) {
         final profilePath = DocumentProgressStore.profileImagePath();
-        final bool hasProfile = profilePath != null &&
+        final bool hasProfile =
+            profilePath != null &&
             profilePath.trim().isNotEmpty &&
             File(profilePath).existsSync();
-        if (profilePath != null && profilePath.trim().isNotEmpty && !hasProfile) {
+        if (profilePath != null &&
+            profilePath.trim().isNotEmpty &&
+            !hasProfile) {
           DocumentProgressStore.setProfileImagePath(null);
         }
         return step.copyWith(

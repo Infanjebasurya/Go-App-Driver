@@ -120,11 +120,17 @@ class _ProfileEditFieldSheetState extends State<ProfileEditFieldSheet> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(999),
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1.2),
+                borderSide: const BorderSide(
+                  color: Color(0xFFE5E7EB),
+                  width: 1.2,
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(999),
-                borderSide: const BorderSide(color: Color(0xFF00A86B), width: 1.6),
+                borderSide: const BorderSide(
+                  color: Color(0xFF00A86B),
+                  width: 1.6,
+                ),
               ),
             ),
           ),
@@ -139,7 +145,9 @@ class _ProfileEditFieldSheetState extends State<ProfileEditFieldSheet> {
                   style: OutlinedButton.styleFrom(
                     backgroundColor: const Color(0xFFF2F0ED),
                     foregroundColor: const Color(0xFF656565),
-                    side: BorderSide(color: Colors.black.withValues(alpha: 0.06)),
+                    side: BorderSide(
+                      color: Colors.black.withValues(alpha: 0.06),
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(999),
                     ),

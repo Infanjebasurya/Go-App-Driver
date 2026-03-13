@@ -89,6 +89,3 @@ class RideCallPage extends StatelessWidget {
     );
   }
 }
-
-
-

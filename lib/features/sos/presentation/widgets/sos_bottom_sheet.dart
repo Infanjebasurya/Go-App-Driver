@@ -247,6 +247,3 @@ class _ShareLocationButton extends StatelessWidget {
     );
   }
 }
-
-
-

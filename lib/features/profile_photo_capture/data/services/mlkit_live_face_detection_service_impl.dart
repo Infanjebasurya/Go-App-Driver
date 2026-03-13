@@ -4,15 +4,15 @@ import 'package:goapp/features/profile_photo_capture/domain/services/live_face_d
 
 class MlkitLiveFaceDetectionServiceImpl implements LiveFaceDetectionService {
   MlkitLiveFaceDetectionServiceImpl()
-      : _detector = FaceDetector(
-          options: FaceDetectorOptions(
-            performanceMode: FaceDetectorMode.fast,
-            enableClassification: true,
-            enableTracking: true,
-            enableLandmarks: false,
-            enableContours: false,
-          ),
-        );
+    : _detector = FaceDetector(
+        options: FaceDetectorOptions(
+          performanceMode: FaceDetectorMode.fast,
+          enableClassification: true,
+          enableTracking: true,
+          enableLandmarks: false,
+          enableContours: false,
+        ),
+      );
 
   final FaceDetector _detector;
 

@@ -402,12 +402,12 @@ class _BottomWalletCard extends StatelessWidget {
           const SizedBox(width: 10),
           ShadowButton(
             onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const WalletPage())).then((_) {
-                if (!context.mounted) return;
-                context.read<DriverCubit>().refreshDashboardMetrics();
-              });
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const WalletPage()))
+                  .then((_) {
+                    if (!context.mounted) return;
+                    context.read<DriverCubit>().refreshDashboardMetrics();
+                  });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AuthUiColors.brandGreen,
@@ -445,12 +445,3 @@ class _GpsButton extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-

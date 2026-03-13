@@ -6,11 +6,7 @@ import 'package:goapp/features/home/presentation/cubit/trip_navigation_cubit.dar
 void main() {
   group('TripNavigationCubit', () {
     late TripNavigationCubit cubit;
-    const path = <LatLng>[
-      LatLng(10, 10),
-      LatLng(20, 20),
-      LatLng(30, 30),
-    ];
+    const path = <LatLng>[LatLng(10, 10), LatLng(20, 20), LatLng(30, 30)];
     const alignPath = <Alignment>[
       Alignment(-1, -1),
       Alignment(0, 0),

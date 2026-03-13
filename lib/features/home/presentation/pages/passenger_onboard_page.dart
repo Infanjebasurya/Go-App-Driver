@@ -323,11 +323,17 @@ class _PassengerOnboardPageState extends State<PassengerOnboardPage>
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.emerald, width: 2),
+                          border: Border.all(
+                            color: AppColors.emerald,
+                            width: 2,
+                          ),
                         ),
                         child: ClipOval(
                           child: profilePath != null
-                              ? Image.file(File(profilePath), fit: BoxFit.contain)
+                              ? Image.file(
+                                  File(profilePath),
+                                  fit: BoxFit.contain,
+                                )
                               : Image.asset(
                                   'assets/image/profile.png',
                                   fit: BoxFit.contain,
@@ -540,8 +546,3 @@ class _MapCenterMarker extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

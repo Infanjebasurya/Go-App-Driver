@@ -15,7 +15,6 @@ class Profile extends Equatable {
     this.totalYears = 0.0,
   });
 
-
   final String id;
   final String name;
   final String gender;
@@ -56,7 +55,6 @@ class Profile extends Equatable {
     );
   }
 
-
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
@@ -72,7 +70,6 @@ class Profile extends Equatable {
       'totalYears': totalYears,
     };
   }
-
 
   factory Profile.fromMap(Map<String, dynamic> map) {
     return Profile(

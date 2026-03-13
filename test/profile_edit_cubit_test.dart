@@ -7,7 +7,6 @@ import 'package:goapp/features/profile/presentation/cubit/profile_edit_cubit.dar
 import 'package:goapp/features/profile/presentation/cubit/profile_edit_state.dart';
 import 'package:goapp/features/profile/presentation/widgets/either.dart';
 
-
 class _FakeProfileRepository implements ProfileRepository {
   @override
   Future<Either<Failure, Profile?>> getCachedProfile() async {

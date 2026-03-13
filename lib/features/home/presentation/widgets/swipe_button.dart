@@ -183,6 +183,3 @@ class _SwipeToggleButtonState extends State<SwipeToggleButton>
     );
   }
 }
-
-
-

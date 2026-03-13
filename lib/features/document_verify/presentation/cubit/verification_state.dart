@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../model/document_model.dart';
 
-
 class VerificationState extends Equatable {
   const VerificationState({
     required this.documents,
@@ -21,11 +20,20 @@ class VerificationState extends Equatable {
   factory VerificationState.initial() {
     return const VerificationState(
       documents: [
-        Document(type: DocumentType.drivingLicense, status: DocumentStatus.required),
+        Document(
+          type: DocumentType.drivingLicense,
+          status: DocumentStatus.required,
+        ),
         Document(type: DocumentType.vehicleRC, status: DocumentStatus.required),
-        Document(type: DocumentType.aadhaarCard, status: DocumentStatus.required),
+        Document(
+          type: DocumentType.aadhaarCard,
+          status: DocumentStatus.required,
+        ),
         Document(type: DocumentType.panCard, status: DocumentStatus.required),
-        Document(type: DocumentType.bankDetails, status: DocumentStatus.required),
+        Document(
+          type: DocumentType.bankDetails,
+          status: DocumentStatus.required,
+        ),
       ],
       isProfileImageUploaded: false,
     );
@@ -38,8 +46,9 @@ class VerificationState extends Equatable {
   int get completedCountWithProfile =>
       completedCount + (isProfileImageUploaded ? 1 : 0);
 
-  double get progressPercentage =>
-      totalRequiredCount == 0 ? 0 : completedCountWithProfile / totalRequiredCount;
+  double get progressPercentage => totalRequiredCount == 0
+      ? 0
+      : completedCountWithProfile / totalRequiredCount;
 
   int get progressPercent => (progressPercentage * 100).round();
 

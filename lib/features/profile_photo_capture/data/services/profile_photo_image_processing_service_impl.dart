@@ -6,18 +6,19 @@ class ProfilePhotoImageProcessingServiceImpl
     implements ProfilePhotoImageProcessingService {
   ProfilePhotoImageProcessingServiceImpl();
 
-  static const MethodChannel _channel =
-      MethodChannel('app/profile_photo_processing_service');
+  static const MethodChannel _channel = MethodChannel(
+    'app/profile_photo_processing_service',
+  );
 
   @override
   Future<ProcessedJpegImage> processCapturedImage(
     String capturedImagePath,
   ) async {
-    final Map<Object?, Object?>? out =
-        await _channel.invokeMethod<Map<Object?, Object?>>(
-      'processCapturedImage',
-      <String, Object>{'path': capturedImagePath},
-    );
+    final Map<Object?, Object?>? out = await _channel
+        .invokeMethod<Map<Object?, Object?>>(
+          'processCapturedImage',
+          <String, Object>{'path': capturedImagePath},
+        );
 
     final Uint8List? bytes = out?['bytes'] as Uint8List?;
     final int widthPx = (out?['widthPx'] as num?)?.toInt() ?? 0;
@@ -27,6 +28,10 @@ class ProfilePhotoImageProcessingServiceImpl
       throw StateError('Failed to process captured image.');
     }
 
-    return ProcessedJpegImage(bytes: bytes, widthPx: widthPx, heightPx: heightPx);
+    return ProcessedJpegImage(
+      bytes: bytes,
+      widthPx: widthPx,
+      heightPx: heightPx,
+    );
   }
 }

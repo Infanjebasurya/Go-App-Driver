@@ -14,4 +14,3 @@ class ProcessedProfilePhoto extends Equatable {
   @override
   List<Object?> get props => <Object?>[path, widthPx, heightPx];
 }
-

@@ -687,6 +687,3 @@ class _TripNavigationViewState extends State<_TripNavigationView>
     );
   }
 }
-
-
-

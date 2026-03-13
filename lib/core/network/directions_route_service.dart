@@ -138,8 +138,9 @@ class DirectionsRouteService {
       if (routes is! List || routes.isEmpty) return null;
       final firstRouteRaw = routes.first;
       if (firstRouteRaw is! Map) return null;
-      final Map<String, dynamic> firstRoute =
-          Map<String, dynamic>.from(firstRouteRaw);
+      final Map<String, dynamic> firstRoute = Map<String, dynamic>.from(
+        firstRouteRaw,
+      );
 
       final polyline = firstRoute['polyline'];
       if (polyline is! Map) return null;

@@ -41,7 +41,9 @@ class _WeekRangeChips extends StatelessWidget {
             children: List<Widget>.generate(ranges.length, (index) {
               return Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(right: index == ranges.length - 1 ? 0 : 10),
+                  padding: EdgeInsets.only(
+                    right: index == ranges.length - 1 ? 0 : 10,
+                  ),
                   child: _WeekRangeChip(
                     label: ranges[index].label,
                     selected: selectedIndex == index,
@@ -121,7 +123,3 @@ class _OrderHistoryTabs extends StatelessWidget {
     );
   }
 }
-
-
-
-

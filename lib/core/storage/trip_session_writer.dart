@@ -105,22 +105,18 @@ Future<void> _markPaymentReceivedImpl({String method = 'cash'}) async {
   final TripSession? session = await TripSessionStore.loadActive();
   if (session == null) return;
   final int now = DateTime.now().millisecondsSinceEpoch;
-  final TripPaymentDetails updatedPayment =
-      session.payment != null
-          ? session.payment!.copyWith(
-              receivedAtEpochMs: now,
-              method: method,
-            )
-          : TripPaymentDetails(
-              totalEarnings: 0,
-              tripFare: 0,
-              tips: 0,
-              discountPercent: 0,
-              discountAmount: 0,
-              paymentLink: '',
-              method: method,
-              receivedAtEpochMs: now,
-            );
+  final TripPaymentDetails updatedPayment = session.payment != null
+      ? session.payment!.copyWith(receivedAtEpochMs: now, method: method)
+      : TripPaymentDetails(
+          totalEarnings: 0,
+          tripFare: 0,
+          tips: 0,
+          discountPercent: 0,
+          discountAmount: 0,
+          paymentLink: '',
+          method: method,
+          receivedAtEpochMs: now,
+        );
   await TripSessionStore._saveActive(
     session.copyWith(
       stage: TripSessionStage.paymentReceived,
@@ -170,8 +166,11 @@ Future<void> _saveActiveImpl(TripSession session) async {
 
 Future<void> _archiveSessionImpl(TripSession session) async {
   final prefs = SharedPreferencesStore.global;
-  final List<TripSession> archive = (await TripSessionStore.loadArchive()).toList();
-  final int existing = archive.indexWhere((TripSession s) => s.id == session.id);
+  final List<TripSession> archive = (await TripSessionStore.loadArchive())
+      .toList();
+  final int existing = archive.indexWhere(
+    (TripSession s) => s.id == session.id,
+  );
   if (existing == -1) {
     archive.insert(0, session);
   } else {

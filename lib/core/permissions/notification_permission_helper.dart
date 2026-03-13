@@ -19,7 +19,9 @@ class NotificationPermissionHelper {
 
     _requested = true;
     try {
-      final status = await _permissionService.status(AppPermission.notification);
+      final status = await _permissionService.status(
+        AppPermission.notification,
+      );
       if (status == AppPermissionStatus.granted ||
           status == AppPermissionStatus.permanentlyDenied) {
         return;
@@ -38,7 +40,9 @@ class NotificationPermissionHelper {
 
     _requested = true;
     try {
-      final status = await _permissionService.status(AppPermission.notification);
+      final status = await _permissionService.status(
+        AppPermission.notification,
+      );
       if (status == AppPermissionStatus.granted) return;
       if (!context.mounted) return;
 
@@ -128,5 +132,3 @@ class NotificationPermissionHelper {
     );
   }
 }
-
-

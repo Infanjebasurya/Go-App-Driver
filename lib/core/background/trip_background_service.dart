@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:goapp/core/service/background_service.dart';
+
 class TripBackgroundService {
   TripBackgroundService._();
 
@@ -33,11 +34,14 @@ class TripBackgroundService {
     if (!await BackgroundService.instance.isRunning()) {
       await BackgroundService.instance.startService();
     }
-    BackgroundService.instance.invoke(BackgroundService.startTripEvent, <String, dynamic>{
-      'title': title,
-      'subtitle': subtitle,
-      'duration_ms': duration.inMilliseconds,
-    });
+    BackgroundService.instance.invoke(
+      BackgroundService.startTripEvent,
+      <String, dynamic>{
+        'title': title,
+        'subtitle': subtitle,
+        'duration_ms': duration.inMilliseconds,
+      },
+    );
   }
 
   static Future<void> stopTrip() async {

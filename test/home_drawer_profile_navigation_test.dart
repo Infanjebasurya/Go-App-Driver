@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/core/storage/profile_display_store.dart';
@@ -116,17 +116,16 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: HomeDrawer(onReopenDrawer: () {}),
-        ),
+        home: Scaffold(body: HomeDrawer(onReopenDrawer: () {})),
       ),
     );
 
     // Ignore any network-image loading exception from drawer avatar in test env.
     tester.takeException();
 
-    await tester.tap(find.text(ProfileDisplayStore.displayName()));
-    await tester.tap(find.byIcon(Icons.chevron_right).first);
+    final nameFinder = find.text(ProfileDisplayStore.displayName());
+    await tester.ensureVisible(nameFinder);
+    await tester.tap(nameFinder);
     await tester.pumpAndSettle();
 
     expect(find.byType(ProfileScreen), findsOneWidget);

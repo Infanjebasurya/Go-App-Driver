@@ -9,22 +9,25 @@ void main() {
     await initMockSharedPreferencesStore();
   });
 
-  test('resetForSignedOut keeps onboarding and clears signed-in progress', () async {
-    await RegistrationProgressStore.save(
-      const RegistrationProgress(
-        otpVerified: true,
-        onboardingSeen: true,
-        step: RegistrationStep.home,
-      ),
-    );
+  test(
+    'resetForSignedOut keeps onboarding and clears signed-in progress',
+    () async {
+      await RegistrationProgressStore.save(
+        const RegistrationProgress(
+          otpVerified: true,
+          onboardingSeen: true,
+          step: RegistrationStep.home,
+        ),
+      );
 
-    await RegistrationProgressStore.resetForSignedOut();
+      await RegistrationProgressStore.resetForSignedOut();
 
-    final progress = await RegistrationProgressStore.load();
-    expect(progress.onboardingSeen, isTrue);
-    expect(progress.otpVerified, isFalse);
-    expect(progress.step, RegistrationStep.none);
-  });
+      final progress = await RegistrationProgressStore.load();
+      expect(progress.onboardingSeen, isTrue);
+      expect(progress.otpVerified, isFalse);
+      expect(progress.step, RegistrationStep.none);
+    },
+  );
 
   test('resetForSignedOut can preserve current onboarding flag', () async {
     await RegistrationProgressStore.save(

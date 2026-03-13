@@ -10,10 +10,10 @@ class AudioService {
   }
 
   Future<void> playAsset(String assetPath, {double volume = 1.0}) {
-    return _channel.invokeMethod<void>(
-      'playAsset',
-      <String, Object>{'assetPath': assetPath, 'volume': volume},
-    );
+    return _channel.invokeMethod<void>('playAsset', <String, Object>{
+      'assetPath': assetPath,
+      'volume': volume,
+    });
   }
 
   Future<void> dispose() {

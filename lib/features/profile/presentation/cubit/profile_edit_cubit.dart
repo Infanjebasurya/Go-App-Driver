@@ -10,10 +10,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     Duration statusResetDelay = const Duration(milliseconds: 400),
     Duration actionDelay = const Duration(milliseconds: 800),
   }) : _getCachedProfileUseCase = getCachedProfileUseCase,
-        _saveDelay = saveDelay,
-        _statusResetDelay = statusResetDelay,
-        _actionDelay = actionDelay,
-        super(const ProfileEditState()) {
+       _saveDelay = saveDelay,
+       _statusResetDelay = statusResetDelay,
+       _actionDelay = actionDelay,
+       super(const ProfileEditState()) {
     loadProfile();
   }
 
@@ -26,31 +26,37 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     emit(state.copyWith(status: ProfileEditStatus.loading));
     final result = await _getCachedProfileUseCase.call();
     result.fold(
-          (failure) => emit(state.copyWith(
-        status: ProfileEditStatus.error,
-        errorMessage: failure.message,
-      )),
-          (profile) {
+      (failure) => emit(
+        state.copyWith(
+          status: ProfileEditStatus.error,
+          errorMessage: failure.message,
+        ),
+      ),
+      (profile) {
         if (profile == null) {
-          emit(state.copyWith(
-            status: ProfileEditStatus.error,
-            errorMessage: 'Profile not found.',
-          ));
+          emit(
+            state.copyWith(
+              status: ProfileEditStatus.error,
+              errorMessage: 'Profile not found.',
+            ),
+          );
           return;
         }
-        emit(state.copyWith(
-          status: ProfileEditStatus.loaded,
-          data: ProfileEditData(
-            fullName: profile.name,
-            email: profile.email ?? '',
-            phone: profile.phone ?? '',
-            gender: profile.gender,
-            dateOfBirth: profile.dob ?? '',
-            rating: profile.rating,
-            totalTrips: profile.totalTrips,
-            totalYears: profile.totalYears,
+        emit(
+          state.copyWith(
+            status: ProfileEditStatus.loaded,
+            data: ProfileEditData(
+              fullName: profile.name,
+              email: profile.email ?? '',
+              phone: profile.phone ?? '',
+              gender: profile.gender,
+              dateOfBirth: profile.dob ?? '',
+              rating: profile.rating,
+              totalTrips: profile.totalTrips,
+              totalYears: profile.totalYears,
+            ),
           ),
-        ));
+        );
       },
     );
   }
@@ -59,10 +65,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     if (state.data == null || name.trim().isEmpty) return;
     emit(state.copyWith(status: ProfileEditStatus.saving));
     await Future<void>.delayed(_saveDelay);
-    emit(state.copyWith(
-      status: ProfileEditStatus.saved,
-      data: state.data!.copyWith(fullName: name.trim()),
-    ));
+    emit(
+      state.copyWith(
+        status: ProfileEditStatus.saved,
+        data: state.data!.copyWith(fullName: name.trim()),
+      ),
+    );
     final cached = UserCacheStore.read();
     if (cached != null) {
       await UserCacheStore.save(cached.copyWith(fullName: name.trim()));
@@ -75,10 +83,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     if (state.data == null || email.trim().isEmpty) return;
     emit(state.copyWith(status: ProfileEditStatus.saving));
     await Future<void>.delayed(_saveDelay);
-    emit(state.copyWith(
-      status: ProfileEditStatus.saved,
-      data: state.data!.copyWith(email: email.trim()),
-    ));
+    emit(
+      state.copyWith(
+        status: ProfileEditStatus.saved,
+        data: state.data!.copyWith(email: email.trim()),
+      ),
+    );
     final cached = UserCacheStore.read();
     if (cached != null) {
       await UserCacheStore.save(
@@ -101,4 +111,3 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     emit(state.copyWith(status: ProfileEditStatus.deleted));
   }
 }
-

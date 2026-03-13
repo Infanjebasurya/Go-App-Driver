@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../cubit/profile_edit_state.dart';
 
-
-
 class ProfileStatsCard extends StatelessWidget {
   const ProfileStatsCard({super.key, required this.data});
 

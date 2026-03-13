@@ -79,7 +79,8 @@ class DocumentStepContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCardCaptureStep = config.step == DocumentStep.drivingLicense ||
+    final isCardCaptureStep =
+        config.step == DocumentStep.drivingLicense ||
         config.step == DocumentStep.vehicleRC ||
         config.step == DocumentStep.identityAadhaar ||
         config.step == DocumentStep.identityPan;
@@ -176,8 +177,9 @@ class DocumentStepContent extends StatelessWidget {
             key: ValueKey('number_${config.step.name}'),
             label: config.numberLabel,
             hint: config.numberHint,
-            example:
-                config.numberExample.isNotEmpty ? config.numberExample : null,
+            example: config.numberExample.isNotEmpty
+                ? config.numberExample
+                : null,
             controller: numberController,
             errorText: stepData.numberError,
             allowedPattern: config.allowedPattern,

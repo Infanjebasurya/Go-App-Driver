@@ -158,7 +158,10 @@ class _ProfileHeader extends StatelessWidget {
                         child: Container(
                           color: AppColors.hexFF3A3A3A,
                           child: profilePath != null
-                              ? Image.file(File(profilePath), fit: BoxFit.contain)
+                              ? Image.file(
+                                  File(profilePath),
+                                  fit: BoxFit.contain,
+                                )
                               : const Icon(
                                   Icons.person,
                                   size: 44,
@@ -265,6 +268,3 @@ class _DrawerItem extends StatelessWidget {
     );
   }
 }
-
-
-

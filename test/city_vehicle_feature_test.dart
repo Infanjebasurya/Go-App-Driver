@@ -7,6 +7,10 @@ void main() {
 
   runFeatureStructureTests(
     featureName: 'city_vehicle',
-    expectedTopLevelDirs: <String>['city_selection', 'vehicle_details', 'vehicle_selection'],
+    expectedTopLevelDirs: <String>[
+      'city_selection',
+      'vehicle_details',
+      'vehicle_selection',
+    ],
   );
 }

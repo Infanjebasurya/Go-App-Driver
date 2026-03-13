@@ -31,4 +31,3 @@ class ProfileDisplayStore {
     return raw;
   }
 }
-

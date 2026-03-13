@@ -55,8 +55,7 @@ class PolylineId {
   final String value;
 
   @override
-  bool operator ==(Object other) =>
-      other is PolylineId && other.value == value;
+  bool operator ==(Object other) => other is PolylineId && other.value == value;
 
   @override
   int get hashCode => value.hashCode;
@@ -148,5 +147,3 @@ class Polyline {
   @override
   int get hashCode => polylineId.hashCode;
 }
-
-

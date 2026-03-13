@@ -17,9 +17,15 @@ import 'package:goapp/core/di/injection.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const MethodChannel permissionChannel = MethodChannel('app/permission_service');
-  const MethodChannel imagePickerChannel = MethodChannel('app/image_picker_service');
-  const MethodChannel pathProviderChannel = MethodChannel('app/path_provider_service');
+  const MethodChannel permissionChannel = MethodChannel(
+    'app/permission_service',
+  );
+  const MethodChannel imagePickerChannel = MethodChannel(
+    'app/image_picker_service',
+  );
+  const MethodChannel pathProviderChannel = MethodChannel(
+    'app/path_provider_service',
+  );
   late String fakeImagePath;
   late String docsDirPath;
 
@@ -319,7 +325,7 @@ void main() {
     });
 
     testWidgets(
-      'shows mandatory error and allows upload from camera-icon bottom sheet',
+      'shows mandatory error and allows upload from profile photo tap area',
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
@@ -333,7 +339,11 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Profile Picture'), findsOneWidget);
-        expect(find.byIcon(Icons.camera_alt), findsOneWidget);
+        expect(find.byIcon(Icons.camera_alt), findsNothing);
+        expect(
+          find.byKey(const Key('profile_photo_frame_tap_area')),
+          findsOneWidget,
+        );
 
         await tester.tap(find.byKey(const Key('save_next_button')));
         await tester.pumpAndSettle();
@@ -342,7 +352,7 @@ void main() {
           findsOneWidget,
         );
 
-        await tester.tap(find.byIcon(Icons.camera_alt));
+        await tester.tap(find.byKey(const Key('profile_photo_frame_tap_area')));
         await tester.pumpAndSettle();
         expect(find.text('Upload Profile Photo'), findsOneWidget);
         expect(find.text('Gallery'), findsOneWidget);

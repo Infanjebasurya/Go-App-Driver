@@ -7,11 +7,7 @@ import 'package:goapp/core/theme/app_colors.dart';
 
 /// A lightweight in-app floating icon that stays above all pages.
 class GlobalFloatingIcon extends StatefulWidget {
-  const GlobalFloatingIcon({
-    super.key,
-    required this.child,
-    this.navigatorKey,
-  });
+  const GlobalFloatingIcon({super.key, required this.child, this.navigatorKey});
 
   final Widget child;
   final GlobalKey<NavigatorState>? navigatorKey;
@@ -29,10 +25,7 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
   void _snapToNearestEdge(double maxX, double maxY) {
     final double snapX = _offset.dx > (maxX / 2) ? maxX : 0;
     setState(() {
-      _offset = Offset(
-        snapX,
-        _offset.dy.clamp(0, maxY),
-      );
+      _offset = Offset(snapX, _offset.dy.clamp(0, maxY));
     });
   }
 
@@ -62,8 +55,14 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
         const double iconSize = 56;
         const double panelWidth = 220;
         const double panelMaxHeight = 260;
-        final double maxX = (constraints.maxWidth - iconSize).clamp(0, double.infinity);
-        final double maxY = (constraints.maxHeight - iconSize).clamp(0, double.infinity);
+        final double maxX = (constraints.maxWidth - iconSize).clamp(
+          0,
+          double.infinity,
+        );
+        final double maxY = (constraints.maxHeight - iconSize).clamp(
+          0,
+          double.infinity,
+        );
         final double effectivePanelMaxHeight = (constraints.maxHeight - 16)
             .clamp(120, panelMaxHeight)
             .toDouble();
@@ -71,16 +70,26 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
           _offset.dx.clamp(0, maxX),
           _offset.dy.clamp(0, maxY),
         );
-        final bool placePanelLeft = bubbleOffset.dx > (constraints.maxWidth / 2);
+        final bool placePanelLeft =
+            bubbleOffset.dx > (constraints.maxWidth / 2);
 
         final double panelLeft = placePanelLeft
-            ? (bubbleOffset.dx - panelWidth - 12).clamp(8, constraints.maxWidth - panelWidth - 8)
-            : (bubbleOffset.dx + iconSize + 12).clamp(8, constraints.maxWidth - panelWidth - 8);
+            ? (bubbleOffset.dx - panelWidth - 12).clamp(
+                8,
+                constraints.maxWidth - panelWidth - 8,
+              )
+            : (bubbleOffset.dx + iconSize + 12).clamp(
+                8,
+                constraints.maxWidth - panelWidth - 8,
+              );
         final double panelTop = bubbleOffset.dy
             .clamp(8, constraints.maxHeight - effectivePanelMaxHeight - 8)
             .toDouble();
         final bool hiddenOnRight = bubbleOffset.dx > (maxX / 2);
-        final double hiddenTabTop = bubbleOffset.dy.clamp(8, constraints.maxHeight - 72);
+        final double hiddenTabTop = bubbleOffset.dy.clamp(
+          8,
+          constraints.maxHeight - 72,
+        );
 
         return Stack(
           children: <Widget>[
@@ -192,7 +201,9 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                       ),
                     ),
                     child: Icon(
-                      hiddenOnRight ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
+                      hiddenOnRight
+                          ? Icons.chevron_left_rounded
+                          : Icons.chevron_right_rounded,
                       color: AppColors.white,
                     ),
                   ),
@@ -249,7 +260,9 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
                       ],
                     ),
                     child: Icon(
-                      _isExpanded ? Icons.close_rounded : Icons.open_in_new_rounded,
+                      _isExpanded
+                          ? Icons.close_rounded
+                          : Icons.open_in_new_rounded,
                       color: AppColors.white,
                       size: 26,
                     ),
@@ -262,5 +275,3 @@ class _GlobalFloatingIconState extends State<GlobalFloatingIcon> {
     );
   }
 }
-
-

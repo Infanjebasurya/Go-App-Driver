@@ -46,7 +46,10 @@ class RiderContactHeader extends StatelessWidget {
             child: ClipOval(
               child: profilePath != null
                   ? Image.file(File(profilePath), fit: BoxFit.contain)
-                  : Image.asset('assets/image/profile.png', fit: BoxFit.contain),
+                  : Image.asset(
+                      'assets/image/profile.png',
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
           const SizedBox(width: 10),
@@ -123,6 +126,3 @@ class _CircleButton extends StatelessWidget {
     );
   }
 }
-
-
-

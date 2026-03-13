@@ -40,10 +40,11 @@ class VerifyBankAccountResponseModel {
       message: json['message']?.toString(),
       success: _parseBool(json['success']),
       verified: _parseBool(json['verified'] ?? json['is_verified']),
-      pennyDropReferenceId: (json['penny_drop_reference_id'] ??
-              json['pennyDropReferenceId'] ??
-              json['reference_id'])
-          ?.toString(),
+      pennyDropReferenceId:
+          (json['penny_drop_reference_id'] ??
+                  json['pennyDropReferenceId'] ??
+                  json['reference_id'])
+              ?.toString(),
       accountHolderNameMatch: _parseBool(
         json['account_holder_name_match'] ?? json['accountHolderNameMatch'],
       ),
@@ -75,4 +76,3 @@ class VerifyBankAccountResponseModel {
     return null;
   }
 }
-

@@ -21,10 +21,12 @@ class ProfilePhotoStepContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final shortestSide = MediaQuery.of(context).size.shortestSide;
     const double passportAspectRatio = 3.5 / 4.5;
-    final double frameWidth =
-        (shortestSide * 0.52).clamp(210.0, 260.0).toDouble();
+    final double frameWidth = (shortestSide * 0.52)
+        .clamp(210.0, 260.0)
+        .toDouble();
     const double borderRadius = 16;
-    final hasImage = stepData.frontCaptured &&
+    final hasImage =
+        stepData.frontCaptured &&
         stepData.frontPath != null &&
         stepData.frontPath!.isNotEmpty &&
         File(stepData.frontPath!).existsSync();
@@ -54,9 +56,9 @@ class ProfilePhotoStepContent extends StatelessWidget {
                 fontSize: 16,
                 color: Colors.grey.shade500,
                 fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
             const SizedBox(height: 24),
             Center(
               child: SizedBox(
@@ -67,7 +69,10 @@ class ProfilePhotoStepContent extends StatelessWidget {
                     children: [
                       Positioned.fill(
                         child: GestureDetector(
-                          onTap: (isProcessing || hasImage) ? null : onCameraTap,
+                          key: const Key('profile_photo_frame_tap_area'),
+                          onTap: (isProcessing || hasImage)
+                              ? null
+                              : onCameraTap,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.grey.shade200,
@@ -88,38 +93,6 @@ class ProfilePhotoStepContent extends StatelessWidget {
                                     size: frameWidth * 0.42,
                                     color: Colors.white54,
                                   ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 10,
-                        bottom: 10,
-                        child: GestureDetector(
-                          onTap: isProcessing ? null : onCameraTap,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.white,
-                              border: Border.all(
-                                color: AppColors.emerald,
-                                width: 1.6,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color:
-                                  isProcessing ? Colors.black26 : AppColors.emerald,
-                              size: 20,
-                            ),
                           ),
                         ),
                       ),

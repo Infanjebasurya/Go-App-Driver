@@ -474,9 +474,3 @@ class _RewardCard extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

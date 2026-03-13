@@ -319,8 +319,3 @@ class _PaymentMethodTile extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

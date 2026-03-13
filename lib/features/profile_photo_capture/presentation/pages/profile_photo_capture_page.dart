@@ -34,51 +34,62 @@ class _ProfilePhotoCaptureView extends StatelessWidget {
         foregroundColor: AppColors.white,
         title: const Text('Capture Profile Photo'),
       ),
-      body: BlocConsumer<FaceProfilePhotoCaptureCubit, FaceProfilePhotoCaptureState>(
-        listener: (context, state) {
-          if (state.status == FaceProfileCaptureStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        builder: (context, state) {
-          return switch (state.status) {
-            FaceProfileCaptureStatus.permissionDenied => _PermissionDeniedView(
-                onOpenSettings: () => sl<PermissionService>().openAppSettings(),
-                onRetry: () => context.read<FaceProfilePhotoCaptureCubit>().start(),
-              ),
-            FaceProfileCaptureStatus.preview => _PreviewView(
-                path: state.photo?.path,
-                onRetake: () => context.read<FaceProfilePhotoCaptureCubit>().retake(),
-                onConfirm: () {
-                  final String? path = state.photo?.path;
-                  if (path != null) Navigator.of(context).pop<String>(path);
-                },
-              ),
-            FaceProfileCaptureStatus.capturing => const _BusyView(
-                title: 'Auto capturing...',
-              ),
-            FaceProfileCaptureStatus.processing => const _BusyView(
-                title: 'Processing photo...',
-              ),
-            FaceProfileCaptureStatus.failure => _FailureView(
-                message: state.message,
-                onRetry: () => context.read<FaceProfilePhotoCaptureCubit>().start(),
-              ),
-            FaceProfileCaptureStatus.timeout => _TimeoutView(
-                message: state.message,
-                onRetry: () => context.read<FaceProfilePhotoCaptureCubit>().retake(),
-              ),
-            FaceProfileCaptureStatus.scanning || FaceProfileCaptureStatus.initializing => _LiveCameraView(
-                statusText: state.message,
-                progress: state.stabilityProgress,
-                debugFaceBox: state.debugFaceBox,
-                cameraReadyNonce: state.cameraReadyNonce,
-              ),
-          };
-        },
-      ),
+      body:
+          BlocConsumer<
+            FaceProfilePhotoCaptureCubit,
+            FaceProfilePhotoCaptureState
+          >(
+            listener: (context, state) {
+              if (state.status == FaceProfileCaptureStatus.failure) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+            },
+            builder: (context, state) {
+              return switch (state.status) {
+                FaceProfileCaptureStatus.permissionDenied =>
+                  _PermissionDeniedView(
+                    onOpenSettings: () =>
+                        sl<PermissionService>().openAppSettings(),
+                    onRetry: () =>
+                        context.read<FaceProfilePhotoCaptureCubit>().start(),
+                  ),
+                FaceProfileCaptureStatus.preview => _PreviewView(
+                  path: state.photo?.path,
+                  onRetake: () =>
+                      context.read<FaceProfilePhotoCaptureCubit>().retake(),
+                  onConfirm: () {
+                    final String? path = state.photo?.path;
+                    if (path != null) Navigator.of(context).pop<String>(path);
+                  },
+                ),
+                FaceProfileCaptureStatus.capturing => const _BusyView(
+                  title: 'Auto capturing...',
+                ),
+                FaceProfileCaptureStatus.processing => const _BusyView(
+                  title: 'Processing photo...',
+                ),
+                FaceProfileCaptureStatus.failure => _FailureView(
+                  message: state.message,
+                  onRetry: () =>
+                      context.read<FaceProfilePhotoCaptureCubit>().start(),
+                ),
+                FaceProfileCaptureStatus.timeout => _TimeoutView(
+                  message: state.message,
+                  onRetry: () =>
+                      context.read<FaceProfilePhotoCaptureCubit>().retake(),
+                ),
+                FaceProfileCaptureStatus.scanning ||
+                FaceProfileCaptureStatus.initializing => _LiveCameraView(
+                  statusText: state.message,
+                  progress: state.stabilityProgress,
+                  debugFaceBox: state.debugFaceBox,
+                  cameraReadyNonce: state.cameraReadyNonce,
+                ),
+              };
+            },
+          ),
     );
   }
 }
@@ -292,7 +303,9 @@ class _PreviewView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(999),
-                      side: BorderSide(color: Colors.black.withValues(alpha: 0.08)),
+                      side: BorderSide(
+                        color: Colors.black.withValues(alpha: 0.08),
+                      ),
                     ),
                   ),
                 ),

@@ -326,10 +326,10 @@ class _AvailableOrdersPageState extends State<AvailableOrdersPage>
                 thirdPickup,
               );
               final double fourthTripKm = _distanceKm(fourthPickup, fourthDrop);
-               final double fourthPickupKm = _distanceKm(
-                 _defaultDriverPoint,
-                 fourthPickup,
-               );
+              final double fourthPickupKm = _distanceKm(
+                _defaultDriverPoint,
+                fourthPickup,
+              );
               final List<Widget> cards = <Widget>[];
 
               if (state.showFirstOrder) {
@@ -497,13 +497,13 @@ class _OrdersAppBarTitle extends StatelessWidget {
         const SizedBox(height: 6),
         Row(
           children: <Widget>[
-              const Expanded(
-                  child: Text(
-                 'Tap to Accept   |   Auto-expires in 15s',
-                 maxLines: 1,
-                 overflow: TextOverflow.ellipsis,
-                 style: TextStyle(
-                   fontSize: 13,
+            const Expanded(
+              child: Text(
+                'Tap to Accept   |   Auto-expires in 15s',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.neutral555,
                 ),
@@ -731,6 +731,7 @@ class _OrderCard extends StatelessWidget {
     );
   }
 }
+
 class _LocationPoint extends StatelessWidget {
   const _LocationPoint({
     required this.title,
@@ -812,7 +813,3 @@ class _LocationPoint extends StatelessWidget {
     );
   }
 }
-
-
-
-

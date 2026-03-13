@@ -174,9 +174,7 @@ class _DrivingLicenseDetail extends StatelessWidget {
           children: [
             _InfoRow(
               label: 'LICENSE NUMBER',
-              value: licenseNumber?.isNotEmpty == true
-                  ? licenseNumber!
-                  : '—',
+              value: licenseNumber?.isNotEmpty == true ? licenseNumber! : '—',
               valueLarge: true,
             ),
             const SizedBox(height: 16),
@@ -259,9 +257,7 @@ class _VehicleRCDetail extends StatelessWidget {
           children: [
             _InfoRow(
               label: 'VEHICLE NUMBER',
-              value: vehicleNumber?.isNotEmpty == true
-                  ? vehicleNumber!
-                  : '—',
+              value: vehicleNumber?.isNotEmpty == true ? vehicleNumber! : '—',
               valueLarge: true,
             ),
             const SizedBox(height: 16),
@@ -364,8 +360,8 @@ class _AadhaarCardDetailState extends State<_AadhaarCardDetail> {
                   _masked
                       ? _maskLast4(widget.aadhaarNumber) ?? '—'
                       : (widget.aadhaarNumber?.isNotEmpty == true
-                          ? widget.aadhaarNumber!
-                          : '—'),
+                            ? widget.aadhaarNumber!
+                            : '—'),
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w600,
@@ -452,8 +448,8 @@ class _PanCardDetailState extends State<_PanCardDetail> {
                   _masked
                       ? _maskLast4(widget.panNumber) ?? '—'
                       : (widget.panNumber?.isNotEmpty == true
-                          ? widget.panNumber!
-                          : '—'),
+                            ? widget.panNumber!
+                            : '—'),
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -1047,8 +1043,3 @@ class _EncryptionFooter extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

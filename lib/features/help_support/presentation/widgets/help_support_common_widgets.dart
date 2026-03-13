@@ -18,8 +18,7 @@ class _HelpSearchBarState extends State<HelpSearchBar> {
   @override
   void initState() {
     super.initState();
-    _controller =
-        PersistentTextController(storageKey: 'help_support.search');
+    _controller = PersistentTextController(storageKey: 'help_support.search');
     _controller.attach();
     if (_controller.text.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,15 +60,15 @@ class _HelpSearchBarState extends State<HelpSearchBar> {
             vertical: 10,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(24),
             borderSide: const BorderSide(color: AppColors.borderSoft),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(24),
             borderSide: const BorderSide(color: AppColors.borderSoft),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(24),
             borderSide: const BorderSide(color: AppColors.emerald, width: 1.5),
           ),
         ),
@@ -103,7 +102,3 @@ class HelpLiveChatBar extends StatelessWidget {
     );
   }
 }
-
-
-
-

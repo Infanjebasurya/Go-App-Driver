@@ -91,7 +91,10 @@ class _WalletTransactionsList extends StatelessWidget {
       return const Center(
         child: Text(
           'No wallet transactions found',
-          style: TextStyle(color: AppColors.neutral666, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: AppColors.neutral666,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       );
     }
@@ -99,7 +102,9 @@ class _WalletTransactionsList extends StatelessWidget {
     final _DateBuckets buckets = _bucketByDate(items);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double horizontal = constraints.maxWidth >= 700 ? constraints.maxWidth * 0.14 : 14;
+        final double horizontal = constraints.maxWidth >= 700
+            ? constraints.maxWidth * 0.14
+            : 14;
         return ListView(
           padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 16),
           children: <Widget>[
@@ -179,9 +184,9 @@ _DateBuckets _bucketByDate(List<TransactionItem> items) {
     }
   }
 
-  return _DateBuckets(today: todayItems, yesterday: yesterdayItems, older: olderItems);
+  return _DateBuckets(
+    today: todayItems,
+    yesterday: yesterdayItems,
+    older: olderItems,
+  );
 }
-
-
-
-

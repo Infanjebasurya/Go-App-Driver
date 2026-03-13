@@ -10,8 +10,8 @@ class DocumentUploadFileService {
   DocumentUploadFileService({
     required PathProviderService pathProvider,
     required PermissionService permissionService,
-  })  : _pathProvider = pathProvider,
-        _permissionService = permissionService;
+  }) : _pathProvider = pathProvider,
+       _permissionService = permissionService;
 
   final PathProviderService _pathProvider;
   final PermissionService _permissionService;
@@ -48,7 +48,9 @@ class DocumentUploadFileService {
         ? AppPermission.camera
         : AppPermission.photos;
 
-    final AppPermissionStatus current = await _permissionService.status(permission);
+    final AppPermissionStatus current = await _permissionService.status(
+      permission,
+    );
     final AppPermissionStatus resolved = current == AppPermissionStatus.granted
         ? current
         : await _permissionService.request(permission);
@@ -156,8 +158,8 @@ class DocumentUploadFileService {
         '${directory.path}${Platform.pathSeparator}document_uploads',
       ).path;
       final normalizedPath = path.replaceAll('\\', '/');
-      final normalizedUploadsDir =
-          '$uploadsDir${Platform.pathSeparator}'.replaceAll('\\', '/');
+      final normalizedUploadsDir = '$uploadsDir${Platform.pathSeparator}'
+          .replaceAll('\\', '/');
       return normalizedPath.startsWith(normalizedUploadsDir);
     } catch (_) {
       return false;

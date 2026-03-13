@@ -31,8 +31,9 @@ class _BankAccountFormState extends State<BankAccountForm> {
     _nameCtrl = TextEditingController(text: widget.bankData.accountHolderName);
     _bankCtrl = TextEditingController(text: widget.bankData.bankName);
     _accCtrl = TextEditingController(text: widget.bankData.accountNumber);
-    _confirmCtrl =
-        TextEditingController(text: widget.bankData.confirmAccountNumber);
+    _confirmCtrl = TextEditingController(
+      text: widget.bankData.confirmAccountNumber,
+    );
     _ifscCtrl = TextEditingController(text: widget.bankData.ifscCode);
   }
 
@@ -111,7 +112,8 @@ class _BankAccountFormState extends State<BankAccountForm> {
             hint: '•••• •••• •••• ••••',
             controller: _accCtrl,
             errorText: data.accountNumberError,
-            onChanged: (value) => cubit.updateAccountNumber(value.toUpperCase()),
+            onChanged: (value) =>
+                cubit.updateAccountNumber(value.toUpperCase()),
             keyboardType: TextInputType.number,
             obscureText: _obscureAccount,
             inputFormatters: [
@@ -162,7 +164,8 @@ class _BankAccountFormState extends State<BankAccountForm> {
           DocumentCaptureCard(
             label: 'Bank Book Front Page',
             captured:
-                data.bankDocumentPath != null && data.bankDocumentPath!.trim().isNotEmpty,
+                data.bankDocumentPath != null &&
+                data.bankDocumentPath!.trim().isNotEmpty,
             filePath: data.bankDocumentPath,
             uploadType: data.bankDocumentType,
             showCardGuide: true,
@@ -280,8 +283,9 @@ class _BankField extends StatelessWidget {
             suffixIcon: suffixIcon,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    hasError ? const Color(0xFFE53935) : const Color(0xFFD5DDE5),
+                color: hasError
+                    ? const Color(0xFFE53935)
+                    : const Color(0xFFD5DDE5),
                 width: 1.2,
               ),
             ),

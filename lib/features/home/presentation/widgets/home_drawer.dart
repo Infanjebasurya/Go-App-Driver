@@ -57,7 +57,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const EarningsScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const EarningsScreen(),
+                          ),
                         ).then((_) {
                           onReopenDrawer();
                           if (!context.mounted) return;
@@ -72,7 +74,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const IncentivesPage()),
+                          MaterialPageRoute(
+                            builder: (_) => const IncentivesPage(),
+                          ),
                         ).then((_) => onReopenDrawer());
                       },
                     ),
@@ -83,7 +87,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const DocumentsScreen(),
+                          ),
                         ).then((_) => onReopenDrawer());
                       },
                     ),
@@ -107,7 +113,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const ReferEarnScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const ReferEarnScreen(),
+                          ),
                         ).then((_) => onReopenDrawer());
                       },
                     ),
@@ -118,7 +126,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const RideHistoryScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const RideHistoryScreen(),
+                          ),
                         );
                       },
                     ),
@@ -134,7 +144,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const AboutScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const AboutScreen(),
+                          ),
                         ).then((_) => onReopenDrawer());
                       },
                     ),
@@ -145,7 +157,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const RateAppScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const RateAppScreen(),
+                          ),
                         ).then((_) => onReopenDrawer());
                       },
                     ),
@@ -156,7 +170,9 @@ class HomeDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const HelpSupportScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const HelpSupportScreen(),
+                          ),
                         ).then((_) => onReopenDrawer());
                       },
                     ),
@@ -262,7 +278,7 @@ class _ProfileHeaderState extends State<_ProfileHeader> {
                                     Icons.person,
                                     size: 44,
                                     color: AppColors.white54,
-                              ),
+                                  ),
                           ),
                         ),
                       ),
@@ -376,6 +392,3 @@ class _DrawerItem extends StatelessWidget {
     );
   }
 }
-
-
-

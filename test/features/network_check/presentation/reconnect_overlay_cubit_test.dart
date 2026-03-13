@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goapp/features/network_check/domain/repositories/internet_repository.dart';
@@ -7,7 +7,7 @@ import 'package:goapp/features/network_check/presentation/bloc/reconnect_overlay
 
 class _FakeInternetRepository implements InternetRepository {
   _FakeInternetRepository({required bool initialConnected})
-      : _connected = initialConnected;
+    : _connected = initialConnected;
 
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
   bool _connected;

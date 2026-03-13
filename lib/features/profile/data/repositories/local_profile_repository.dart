@@ -83,4 +83,3 @@ class LocalProfileRepository implements ProfileRepository {
     );
   }
 }
-

@@ -50,6 +50,3 @@ class OnboardingPrimaryButton extends StatelessWidget {
     );
   }
 }
-
-
-

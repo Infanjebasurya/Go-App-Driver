@@ -193,5 +193,3 @@ class OnboardingSubtitle extends StatelessWidget {
     );
   }
 }
-
-

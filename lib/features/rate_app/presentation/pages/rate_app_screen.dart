@@ -41,9 +41,7 @@ class _RateAppViewState extends State<_RateAppView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (_feedbackController.text.isNotEmpty) {
-        context.read<RateAppCubit>().updateFeedback(
-              _feedbackController.text,
-            );
+        context.read<RateAppCubit>().updateFeedback(_feedbackController.text);
       }
     });
   }
@@ -397,7 +395,10 @@ class _FeedbackBox extends StatelessWidget {
           enabledBorder: border,
           disabledBorder: border,
           focusedBorder: border.copyWith(
-            borderSide: const BorderSide(color: AppColors.strokeLight, width: 1.2),
+            borderSide: const BorderSide(
+              color: AppColors.strokeLight,
+              width: 1.2,
+            ),
           ),
           contentPadding: const EdgeInsets.all(16),
         ),
@@ -454,9 +455,3 @@ class _SubmitButton extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

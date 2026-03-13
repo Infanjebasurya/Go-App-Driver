@@ -4,4 +4,3 @@ import 'package:goapp/features/profile_photo_capture/domain/models/processed_jpe
 abstract interface class ProfilePhotoRepository {
   Future<ProcessedProfilePhoto> saveProcessedPhoto(ProcessedJpegImage image);
 }
-

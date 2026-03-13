@@ -48,7 +48,10 @@ class GetVehicleTypesResponseModel {
 
   factory GetVehicleTypesResponseModel.fromJson(Map<String, dynamic> json) {
     final dynamic listRaw =
-        json['data'] ?? json['vehicle_types'] ?? json['vehicleTypes'] ?? json['types'];
+        json['data'] ??
+        json['vehicle_types'] ??
+        json['vehicleTypes'] ??
+        json['types'];
     final List<VehicleTypeItemModel> parsedTypes =
         (listRaw is List<dynamic> ? listRaw : const <dynamic>[])
             .whereType<Map<String, dynamic>>()
@@ -81,4 +84,3 @@ class GetVehicleTypesResponseModel {
     return null;
   }
 }
-

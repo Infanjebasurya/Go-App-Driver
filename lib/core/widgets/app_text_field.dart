@@ -76,8 +76,7 @@ class AppTextField extends StatelessWidget {
       autofillHints: autofillHints,
       autocorrect: autocorrect ?? true,
       enableSuggestions: enableSuggestions ?? true,
-      enableIMEPersonalizedLearning:
-          enableIMEPersonalizedLearning ?? true,
+      enableIMEPersonalizedLearning: enableIMEPersonalizedLearning ?? true,
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
@@ -103,12 +102,8 @@ class AppTextField extends StatelessWidget {
                 ),
               ),
         filled: filled,
-        fillColor: AppColors.transparent
-
+        fillColor: AppColors.transparent,
       ),
     );
   }
 }
-
-
-

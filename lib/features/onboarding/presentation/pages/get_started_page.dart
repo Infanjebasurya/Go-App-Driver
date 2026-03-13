@@ -99,7 +99,10 @@ class _GetStartedPageState extends State<GetStartedPage> {
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [AppColors.hex00FFFFFF, AppColors.hexFFFFFFFF],
+                              colors: [
+                                AppColors.hex00FFFFFF,
+                                AppColors.hexFFFFFFFF,
+                              ],
                               stops: [0.0, 0.619],
                             ),
                           ),
@@ -206,6 +209,3 @@ class _GetStartedPageState extends State<GetStartedPage> {
     );
   }
 }
-
-
-

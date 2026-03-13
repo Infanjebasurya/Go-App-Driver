@@ -46,7 +46,8 @@ class TripNavigationCubit extends Cubit<TripNavigationState> {
       return;
     }
 
-    final int pausedAt = _pausedAtEpochMs ?? DateTime.now().millisecondsSinceEpoch;
+    final int pausedAt =
+        _pausedAtEpochMs ?? DateTime.now().millisecondsSinceEpoch;
     _pausedAccumulatedMs += DateTime.now().millisecondsSinceEpoch - pausedAt;
     _pausedAtEpochMs = null;
     emit(state.copyWith(isPaused: false));

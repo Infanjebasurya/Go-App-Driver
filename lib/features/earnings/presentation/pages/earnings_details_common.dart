@@ -1,4 +1,4 @@
-﻿part of 'earnings_details_page.dart';
+part of 'earnings_details_page.dart';
 
 class _PeriodTab extends StatelessWidget {
   const _PeriodTab({
@@ -186,9 +186,12 @@ class _DayDateChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color accent = AppColors.emerald;
     final Color textColor = selected ? accent : AppColors.neutral666;
-    final Color bg = selected ? accent.withValues(alpha: 0.12) : AppColors.white;
-    final BorderSide? borderSide =
-        selected ? BorderSide(color: accent, width: 1.2) : null;
+    final Color bg = selected
+        ? accent.withValues(alpha: 0.12)
+        : AppColors.white;
+    final BorderSide? borderSide = selected
+        ? BorderSide(color: accent, width: 1.2)
+        : null;
 
     const List<String> weekdays = <String>[
       'Mon',
@@ -353,13 +356,17 @@ class _CancelledList extends StatelessWidget {
           itemBuilder: (context, index) {
             final RideHistoryTrip trip = cancelled[index];
             final int startEpoch =
-                trip.startedAtEpochMs ?? trip.pickedUpAtEpochMs ?? trip.acceptedAtEpochMs;
+                trip.startedAtEpochMs ??
+                trip.pickedUpAtEpochMs ??
+                trip.acceptedAtEpochMs;
             final int endEpoch = trip.canceledAtEpochMs ?? startEpoch;
             return TripCard(
               date: _formatDateLabel(endEpoch),
-              timeRange: '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
+              timeRange:
+                  '${_formatTimeLabel(startEpoch)} to ${_formatTimeLabel(endEpoch)}',
               statusLine: 'Cancelled by Customer',
-              price: '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(0)}',
+              price:
+                  '\u20B9${EarningsCalculator.totalEarning(trip).toStringAsFixed(0)}',
               pickupLocation: _locationTitle(trip.pickupLocation),
               pickupAddress: trip.pickupLocation,
               dropLocation: _locationTitle(trip.dropLocation),
@@ -531,4 +538,3 @@ bool _isEpochInDay(int epochMs, DateTime day) {
   final DateTime dt = DateTime.fromMillisecondsSinceEpoch(epochMs);
   return _isSameDay(dt, day);
 }
-

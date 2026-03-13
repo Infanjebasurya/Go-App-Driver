@@ -3,15 +3,22 @@ part of 'document_upload_cubit.dart';
 void _updateDocumentNumber(DocumentUploadCubit cubit, String value) {
   if (cubit.state.isCurrentStepBank || cubit.state.isCurrentStepProfile) return;
   final raw = value.trim();
-  final normalized = _normalizeDocumentNumber(cubit.state.currentDocStep.step, raw);
-  final isAadhaarOrPan = cubit.state.currentDocStep.step == DocumentStep.identityAadhaar ||
+  final normalized = _normalizeDocumentNumber(
+    cubit.state.currentDocStep.step,
+    raw,
+  );
+  final isAadhaarOrPan =
+      cubit.state.currentDocStep.step == DocumentStep.identityAadhaar ||
       cubit.state.currentDocStep.step == DocumentStep.identityPan;
   final hasValue = raw.isNotEmpty;
   final error = isAadhaarOrPan
       ? null
       : (hasValue
-          ? _validateDocumentNumber(cubit.state.currentDocStep.step, normalized)
-          : null);
+            ? _validateDocumentNumber(
+                cubit.state.currentDocStep.step,
+                normalized,
+              )
+            : null);
   final updated = cubit.state.currentDocStep.copyWith(
     documentNumber: raw,
     numberError: error,
@@ -53,7 +60,10 @@ bool _validateDocStep(DocumentUploadCubit cubit) {
           : 'Please upload the document image',
     );
     cubit._emitState(cubit.state.copyWithDocStep(updated));
-    DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);
+    DocumentProgressStore.setCompleted(
+      cubit._mapStepToDocType(step.step),
+      false,
+    );
     return false;
   }
 
@@ -61,7 +71,10 @@ bool _validateDocStep(DocumentUploadCubit cubit) {
   if (rawValue.isEmpty) {
     final updated = step.copyWith(numberError: 'Document number is required');
     cubit._emitState(cubit.state.copyWithDocStep(updated));
-    DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);
+    DocumentProgressStore.setCompleted(
+      cubit._mapStepToDocType(step.step),
+      false,
+    );
     return false;
   }
 
@@ -70,7 +83,10 @@ bool _validateDocStep(DocumentUploadCubit cubit) {
   if (error != null) {
     final updated = step.copyWith(numberError: error);
     cubit._emitState(cubit.state.copyWithDocStep(updated));
-    DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), false);
+    DocumentProgressStore.setCompleted(
+      cubit._mapStepToDocType(step.step),
+      false,
+    );
     return false;
   }
 
@@ -83,7 +99,9 @@ bool _validateDocStep(DocumentUploadCubit cubit) {
     cubit._emitState(cubit.state.copyWithDocStep(updated));
   }
   if (step.imageError != null) {
-    cubit._emitState(cubit.state.copyWithDocStep(step.copyWith(clearImageError: true)));
+    cubit._emitState(
+      cubit.state.copyWithDocStep(step.copyWith(clearImageError: true)),
+    );
   }
   DocumentProgressStore.setCompleted(cubit._mapStepToDocType(step.step), true);
   return true;
@@ -110,7 +128,9 @@ bool _validateBankStep(DocumentUploadCubit cubit) {
   bool valid = true;
 
   if (b.accountHolderName.trim().isNotEmpty &&
-      !RegExp(r'^[A-Z ]+$').hasMatch(b.accountHolderName.trim().toUpperCase())) {
+      !RegExp(
+        r'^[A-Z ]+$',
+      ).hasMatch(b.accountHolderName.trim().toUpperCase())) {
     updated = updated.copyWith(nameError: 'Only alphabets are allowed');
     valid = false;
   }
@@ -122,9 +142,13 @@ bool _validateBankStep(DocumentUploadCubit cubit) {
     valid = false;
   }
   if (b.accountNumber.trim().isEmpty) {
-    updated = updated.copyWith(accountNumberError: 'Account number is required');
+    updated = updated.copyWith(
+      accountNumberError: 'Account number is required',
+    );
     valid = false;
-  } else if (!RegExp(r'^[A-Z0-9]+$').hasMatch(b.accountNumber.trim().toUpperCase())) {
+  } else if (!RegExp(
+    r'^[A-Z0-9]+$',
+  ).hasMatch(b.accountNumber.trim().toUpperCase())) {
     updated = updated.copyWith(
       accountNumberError: 'Only alphabets and numbers are allowed',
     );
@@ -135,8 +159,9 @@ bool _validateBankStep(DocumentUploadCubit cubit) {
       confirmAccountNumberError: 'Please confirm account number',
     );
     valid = false;
-  } else if (!RegExp(r'^[A-Z0-9]+$')
-      .hasMatch(b.confirmAccountNumber.trim().toUpperCase())) {
+  } else if (!RegExp(
+    r'^[A-Z0-9]+$',
+  ).hasMatch(b.confirmAccountNumber.trim().toUpperCase())) {
     updated = updated.copyWith(
       confirmAccountNumberError: 'Only alphabets and numbers are allowed',
     );
@@ -150,13 +175,16 @@ bool _validateBankStep(DocumentUploadCubit cubit) {
   if (b.ifscCode.trim().isEmpty) {
     updated = updated.copyWith(ifscError: 'IFSC code is required');
     valid = false;
-  } else if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$')
-      .hasMatch(b.ifscCode.trim().toUpperCase())) {
+  } else if (!RegExp(
+    r'^[A-Z]{4}0[A-Z0-9]{6}$',
+  ).hasMatch(b.ifscCode.trim().toUpperCase())) {
     updated = updated.copyWith(ifscError: 'Enter a valid IFSC code');
     valid = false;
   }
   if (b.bankDocumentPath == null || b.bankDocumentPath!.trim().isEmpty) {
-    updated = updated.copyWith(bankDocumentError: 'Please upload bank document');
+    updated = updated.copyWith(
+      bankDocumentError: 'Please upload bank document',
+    );
     valid = false;
   }
 
@@ -167,7 +195,9 @@ bool _validateBankStep(DocumentUploadCubit cubit) {
 }
 
 Future<void> _saveAndNext(DocumentUploadCubit cubit) async {
-  if (cubit.state.isSubmitting || cubit._isPicking || cubit.state.isProfileImageProcessing) {
+  if (cubit.state.isSubmitting ||
+      cubit._isPicking ||
+      cubit.state.isProfileImageProcessing) {
     return;
   }
   if (cubit.state.isCurrentStepBank) {
@@ -178,7 +208,9 @@ Future<void> _saveAndNext(DocumentUploadCubit cubit) async {
     );
     cubit._emitState(cubit.state.copyWith(isSubmitting: true));
     await Future.delayed(const Duration(seconds: 2));
-    cubit._emitState(cubit.state.copyWith(isSubmitting: false, isAllDone: true));
+    cubit._emitState(
+      cubit.state.copyWith(isSubmitting: false, isAllDone: true),
+    );
   } else {
     cubit._emitState(cubit.state.copyWith(isSubmitting: true));
     if (!_validateDocStep(cubit)) {

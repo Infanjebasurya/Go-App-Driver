@@ -16,4 +16,3 @@ class ProcessedJpegImage extends Equatable {
   @override
   List<Object?> get props => <Object?>[bytes, widthPx, heightPx];
 }
-

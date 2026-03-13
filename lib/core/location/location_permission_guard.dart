@@ -28,10 +28,9 @@ class LocationPermissionGuard {
   Future<LocationAccessResult> ensureReady({
     bool requestPermission = false,
   }) async {
-    AppLocationPermissionStatus permission =
-        await _locationService.checkPermission();
-    if (permission == AppLocationPermissionStatus.denied &&
-        requestPermission) {
+    AppLocationPermissionStatus permission = await _locationService
+        .checkPermission();
+    if (permission == AppLocationPermissionStatus.denied && requestPermission) {
       permission = await _locationService.requestPermission();
     }
 
@@ -45,7 +44,8 @@ class LocationPermissionGuard {
       );
     }
 
-    final bool serviceEnabled = await _locationService.isLocationServiceEnabled();
+    final bool serviceEnabled = await _locationService
+        .isLocationServiceEnabled();
     if (!serviceEnabled) {
       return const LocationAccessResult.blocked(LocationIssue.serviceDisabled);
     }

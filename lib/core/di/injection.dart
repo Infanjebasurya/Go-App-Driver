@@ -160,21 +160,30 @@ void _registerCore() {
     ..registerLazySingleton<AudioService>(() => AudioService())
     ..registerLazySingleton<VibrationService>(() => const VibrationService())
     ..registerLazySingleton<LocationService>(() => const LocationService())
-    ..registerLazySingleton<OnlineHoursMockApi>(() => const OnlineHoursMockApi())
+    ..registerLazySingleton<OnlineHoursMockApi>(
+      () => const OnlineHoursMockApi(),
+    )
     ..registerLazySingleton<EarningsWalletMockApi>(
       () => EarningsWalletMockApi(sl<SharedPreferencesStore>()),
     )
     ..registerLazySingleton<ImagePickerService>(() => ImagePickerService())
     ..registerLazySingleton<FilePickerService>(() => const FilePickerService())
-    ..registerLazySingleton<PathProviderService>(() => const PathProviderService())
+    ..registerLazySingleton<PathProviderService>(
+      () => const PathProviderService(),
+    )
     ..registerLazySingleton<DocumentUploadFileService>(
-      () => DocumentUploadFileService(pathProvider: sl(), permissionService: sl()),
+      () => DocumentUploadFileService(
+        pathProvider: sl(),
+        permissionService: sl(),
+      ),
     )
     ..registerLazySingleton<AppCleanupService>(
       () => AppCleanupService(fileService: sl()),
     )
     ..registerLazySingleton<PermissionService>(() => const PermissionService())
-    ..registerLazySingleton<UrlLauncherService>(() => const UrlLauncherService())
+    ..registerLazySingleton<UrlLauncherService>(
+      () => const UrlLauncherService(),
+    )
     ..registerLazySingleton<ContactsService>(() => const ContactsService())
     ..registerLazySingleton<PhoneNumberService>(() => PhoneNumberService())
     ..registerLazySingleton<ProfileValidationService>(
@@ -219,12 +228,11 @@ void _registerHome() {
     )
     ..registerFactory<HomeCubit>(() => HomeCubit(sl<GetCaptainProfile>()))
     ..registerFactory<DriverCubit>(
-      () => DriverCubit(
-        locationGuard: sl(),
-        onlineHoursApi: sl(),
-      ),
+      () => DriverCubit(locationGuard: sl(), onlineHoursApi: sl()),
     )
-    ..registerFactory<DriverStatusCubit>(() => DriverStatusCubit(locationGuard: sl()))
+    ..registerFactory<DriverStatusCubit>(
+      () => DriverStatusCubit(locationGuard: sl()),
+    )
     ..registerFactory<TripNavigationCubit>(() => TripNavigationCubit())
     ..registerFactory<AvailableOrdersCubit>(() => AvailableOrdersCubit())
     ..registerFactory<EnterRideCodeCubit>(() => EnterRideCodeCubit());
@@ -233,9 +241,15 @@ void _registerHome() {
 void _registerProfile() {
   sl
     ..registerLazySingleton<ProfileRepository>(() => LocalProfileRepository())
-    ..registerLazySingleton<CreateProfileUseCase>(() => CreateProfileUseCase(sl()))
-    ..registerLazySingleton<GetCachedProfileUseCase>(() => GetCachedProfileUseCase(sl()))
-    ..registerFactory<ProfileBloc>(() => ProfileBloc(sl(), sl(), autoLoad: false))
+    ..registerLazySingleton<CreateProfileUseCase>(
+      () => CreateProfileUseCase(sl()),
+    )
+    ..registerLazySingleton<GetCachedProfileUseCase>(
+      () => GetCachedProfileUseCase(sl()),
+    )
+    ..registerFactory<ProfileBloc>(
+      () => ProfileBloc(sl(), sl(), autoLoad: false),
+    )
     ..registerFactory<ProfileSetupCubit>(
       () => ProfileSetupCubit(validationService: sl()),
     )
@@ -246,15 +260,21 @@ void _registerProfile() {
 
 void _registerProfilePhotoCapture() {
   sl
-    ..registerLazySingleton<FaceAutoCapturePolicy>(() => const FaceAutoCapturePolicy())
-    ..registerFactory<LiveFaceDetectionService>(() => MlkitLiveFaceDetectionServiceImpl())
+    ..registerLazySingleton<FaceAutoCapturePolicy>(
+      () => const FaceAutoCapturePolicy(),
+    )
+    ..registerFactory<LiveFaceDetectionService>(
+      () => MlkitLiveFaceDetectionServiceImpl(),
+    )
     ..registerFactory<ProfilePhotoImageProcessingService>(
       () => ProfilePhotoImageProcessingServiceImpl(),
     )
     ..registerLazySingleton<ProfilePhotoRepository>(
       () => ProfilePhotoRepositoryImpl(pathProvider: sl()),
     )
-    ..registerLazySingleton<SaveProfilePhotoUseCase>(() => SaveProfilePhotoUseCase(sl()))
+    ..registerLazySingleton<SaveProfilePhotoUseCase>(
+      () => SaveProfilePhotoUseCase(sl()),
+    )
     ..registerFactory<FaceProfilePhotoCaptureCubit>(
       () => FaceProfilePhotoCaptureCubit(
         permissionService: sl(),
@@ -310,14 +330,18 @@ void _registerIncentives() {
 
 void _registerRideHistory() {
   sl
-    ..registerLazySingleton<RideHistoryMockApi>(() => const RideHistoryMockApi())
+    ..registerLazySingleton<RideHistoryMockApi>(
+      () => const RideHistoryMockApi(),
+    )
     ..registerLazySingleton<RideHistoryRepository>(
       () => RideHistoryRepositoryImpl(api: sl()),
     )
     ..registerLazySingleton<GetRideHistoryUseCase>(
       () => GetRideHistoryUseCase(sl()),
     )
-    ..registerFactory<RideHistoryCubit>(() => RideHistoryCubit(getRideHistory: sl()));
+    ..registerFactory<RideHistoryCubit>(
+      () => RideHistoryCubit(getRideHistory: sl()),
+    );
 }
 
 void _registerRideComplete() {
@@ -331,7 +355,9 @@ void _registerRideComplete() {
     ..registerLazySingleton<GetFeedbackTags>(() => GetFeedbackTags(sl()))
     ..registerLazySingleton<SubmitRideFeedback>(() => SubmitRideFeedback(sl()))
     ..registerFactory<RideCompletedCubit>(() => RideCompletedCubit(sl()))
-    ..registerFactory<RateExperienceCubit>(() => RateExperienceCubit(sl(), sl()));
+    ..registerFactory<RateExperienceCubit>(
+      () => RateExperienceCubit(sl(), sl()),
+    );
 }
 
 void _registerRateApp() {
@@ -343,7 +369,9 @@ void _registerRateApp() {
     ..registerLazySingleton<SubmitRateAppReviewUseCase>(
       () => SubmitRateAppReviewUseCase(sl()),
     )
-    ..registerFactory<RateAppCubit>(() => RateAppCubit(submitRateAppReview: sl()));
+    ..registerFactory<RateAppCubit>(
+      () => RateAppCubit(submitRateAppReview: sl()),
+    );
 }
 
 void _registerReferEarn() {
@@ -357,7 +385,9 @@ void _registerDemandPlanner() {
     ..registerLazySingleton<DemandPlannerMockApi>(
       () => const DemandPlannerMockApi(),
     )
-    ..registerFactory<DemandPlannerCubit>(() => DemandPlannerCubit(mockApi: sl()));
+    ..registerFactory<DemandPlannerCubit>(
+      () => DemandPlannerCubit(mockApi: sl()),
+    );
 }
 
 void _registerDocuments() {

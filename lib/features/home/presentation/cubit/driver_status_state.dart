@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:goapp/core/location/location_permission_guard.dart';
 
 enum DriverStatus { offline, online }
+
 const double kMinimumDutyWalletBalance = -50.0;
 
 @immutable
@@ -83,7 +84,8 @@ class DriverState {
           ? null
           : (offlineBlockIssue ?? this.offlineBlockIssue),
       offlineBlockEventId: offlineBlockEventId ?? this.offlineBlockEventId,
-      lowWalletBlockEventId: lowWalletBlockEventId ?? this.lowWalletBlockEventId,
+      lowWalletBlockEventId:
+          lowWalletBlockEventId ?? this.lowWalletBlockEventId,
       showLowWalletWarning: showLowWalletWarning ?? this.showLowWalletWarning,
     );
   }
