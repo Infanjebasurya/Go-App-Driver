@@ -125,8 +125,9 @@ void main() {
     // Ignore any network-image loading exception from drawer avatar in test env.
     tester.takeException();
 
-    await tester.tap(find.text(ProfileDisplayStore.displayName()));
-    await tester.tap(find.byIcon(Icons.chevron_right).first);
+    final nameFinder = find.text(ProfileDisplayStore.displayName());
+    await tester.ensureVisible(nameFinder);
+    await tester.tap(nameFinder);
     await tester.pumpAndSettle();
 
     expect(find.byType(ProfileScreen), findsOneWidget);
