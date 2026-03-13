@@ -4,6 +4,9 @@ import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/features/help_support/presentation/pages/new_account_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/new_app_issue_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/ticket_tracking_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -54,7 +57,13 @@ class ExploreScreen extends StatelessWidget {
                     width: 200,
                     height: 44,
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const TicketTrackingScreen(),
+                          ),
+                        );
+                      },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textBody,
                         side: const BorderSide(color: AppColors.borderSoft),
@@ -105,10 +114,12 @@ class ExploreScreen extends StatelessWidget {
                             const SizedBox.shrink(),
                         itemBuilder: (context, i) {
                           final item = filteredItems[i];
+                          final bool isAccount = item.title == 'Account';
+                          final bool isAppIssues = item.title == 'App issues';
                           return Material(
                             color: AppColors.transparent,
                             child: InkWell(
-                              onTap: () {},
+                              onTap: (isAccount || isAppIssues) ? null : () {},
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
@@ -131,11 +142,58 @@ class ExploreScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const Icon(
-                                      Icons.chevron_right,
-                                      color: AppColors.textSecondary,
-                                      size: 20,
-                                    ),
+                                    if (isAccount)
+                                      InkWell(
+                                        key: const Key(
+                                          'explore_issue_account_chevron',
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const NewAccountScreen(),
+                                            ),
+                                          );
+                                        },
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(6),
+                                          child: Icon(
+                                            Icons.chevron_right,
+                                            color: AppColors.textSecondary,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      )
+                                    else if (isAppIssues)
+                                      InkWell(
+                                        key: const Key(
+                                          'explore_issue_app_issues_chevron',
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const NewAppIssueScreen(),
+                                            ),
+                                          );
+                                        },
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(6),
+                                          child: Icon(
+                                            Icons.chevron_right,
+                                            color: AppColors.textSecondary,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      const Icon(
+                                        Icons.chevron_right,
+                                        color: AppColors.textSecondary,
+                                        size: 20,
+                                      ),
                                   ],
                                 ),
                               ),
