@@ -99,9 +99,7 @@ class EarningsHelpRepositoryMock implements EarningsHelpRepository {
           HelpFaqItem(title: 'Transfer request is awaiting approval'),
           HelpFaqItem(title: 'Transfer request is on hold'),
           HelpFaqItem(title: 'Transfer request was rejected'),
-          HelpFaqItem(
-            title: 'Transfer request is initiated but not completed',
-          ),
+          HelpFaqItem(title: 'Transfer request is initiated but not completed'),
           HelpFaqItem(title: 'Transfer request failed'),
           HelpFaqItem(
             title: 'Money is credited but not showing in my bank account',

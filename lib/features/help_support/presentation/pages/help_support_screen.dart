@@ -195,9 +195,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Container(
                       decoration: BoxDecoration(
-                              color: AppColors.handleGray.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                        color: AppColors.handleGray.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Column(
                         children: [
                           _MenuTile(

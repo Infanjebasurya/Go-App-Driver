@@ -162,7 +162,9 @@ class ExploreScreen extends StatelessWidget {
                           final bool isAppIssues = item.title == 'App issues';
                           return Container(
                             decoration: BoxDecoration(
-                              color: AppColors.handleGray.withValues(alpha: 0.05),
+                              color: AppColors.handleGray.withValues(
+                                alpha: 0.05,
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Padding(
@@ -197,7 +199,9 @@ class ExploreScreen extends StatelessWidget {
                                             'explore_issue_account_chevron',
                                           ),
                                           onTap: () => openIssue(item),
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius: BorderRadius.circular(
+                                            18,
+                                          ),
                                           child: const Padding(
                                             padding: EdgeInsets.all(6),
                                             child: Icon(
@@ -213,7 +217,9 @@ class ExploreScreen extends StatelessWidget {
                                             'explore_issue_app_issues_chevron',
                                           ),
                                           onTap: () => openIssue(item),
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius: BorderRadius.circular(
+                                            18,
+                                          ),
                                           child: const Padding(
                                             padding: EdgeInsets.all(6),
                                             child: Icon(

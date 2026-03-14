@@ -16,7 +16,8 @@ class EmergencyTrafficChallanScreen extends StatelessWidget {
             style: EmergencyArticleText.body,
             children: [
               TextSpan(
-                text: 'GoApp Drivers must always follow traffic regulations.\n\n',
+                text:
+                    'GoApp Drivers must always follow traffic regulations.\n\n',
               ),
               TextSpan(
                 text:

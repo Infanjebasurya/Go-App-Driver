@@ -132,10 +132,7 @@ class _OrderHelpTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(text: 'After accepting the ride, move towards the '),
-              TextSpan(
-                text: 'pickup location',
-                style: GettingStartedText.bold,
-              ),
+              TextSpan(text: 'pickup location', style: GettingStartedText.bold),
               TextSpan(text: '.'),
             ],
           ),
@@ -148,8 +145,7 @@ class _OrderHelpTopic {
               TextSpan(text: 'Use the '),
               TextSpan(text: 'Navigate', style: GettingStartedText.bold),
               TextSpan(
-                text:
-                    ' icon to find the route to the customer’s pickup point.',
+                text: ' icon to find the route to the customer’s pickup point.',
               ),
             ],
           ),

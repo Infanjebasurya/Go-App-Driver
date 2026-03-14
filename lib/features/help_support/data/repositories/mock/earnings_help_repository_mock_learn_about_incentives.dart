@@ -1,8 +1,9 @@
 part of '../earnings_help_repository_mock.dart';
 
 HelpArticleContent? _learnAboutIncentivesArticle(String faqTitle) {
-  final String normalizedTitle =
-      faqTitle.replaceAll(RegExp(r'\s+'), ' ').trim();
+  final String normalizedTitle = faqTitle
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
   switch (normalizedTitle) {
     case 'What are incentives?':
       return const HelpArticleContent(
@@ -17,10 +18,7 @@ HelpArticleContent? _learnAboutIncentivesArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('Targets may be based on the '),
-            HelpTextRun(
-              'number of orders or kilometers completed',
-              bold: true,
-            ),
+            HelpTextRun('number of orders or kilometers completed', bold: true),
             HelpTextRun(' within a '),
             HelpTextRun('daily, weekly, or bonus period', bold: true),
             HelpTextRun('.'),

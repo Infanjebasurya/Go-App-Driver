@@ -207,8 +207,7 @@ class _OngoingOrderTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text:
-                    'If you face any issues while canceling, please contact ',
+                text: 'If you face any issues while canceling, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',

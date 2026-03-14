@@ -75,9 +75,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun(
-              'In some cases, deductions or penalties may apply if ',
-            ),
+            HelpTextRun('In some cases, deductions or penalties may apply if '),
             HelpTextRun(
               'policy violations or suspicious activity are detected',
               bold: true,

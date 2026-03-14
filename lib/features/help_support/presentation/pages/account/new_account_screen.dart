@@ -57,7 +57,6 @@ class NewAccountScreen extends StatelessWidget {
                 );
               },
             ),
-           
           );
         },
       ),

@@ -41,9 +41,9 @@ class EmergencyScreen extends StatelessWidget {
             title: item.title,
             chevronKey: item.chevronKey,
             onChevronTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => item.destination),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute<void>(builder: (_) => item.destination));
             },
           );
         },
