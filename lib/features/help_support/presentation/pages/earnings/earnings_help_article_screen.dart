@@ -62,10 +62,7 @@ class _EarningsHelpArticleScreenState extends State<EarningsHelpArticleScreen> {
             actions: const [],
             backgroundColor: AppColors.white,
             elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(height: 1, color: AppColors.borderSoft),
-            ),
+            bottom: const HelpSupportAppBarBottomDivider(),
           ),
           bottomNavigationBar: content?.showBottomActions == true
               ? HelpCustomerCareSupportChatBar(onSupportChat: _openSupportChat)

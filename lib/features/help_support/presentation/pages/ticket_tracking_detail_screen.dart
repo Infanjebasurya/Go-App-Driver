@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 
 class TicketTrackingDetailScreen extends StatelessWidget {
   const TicketTrackingDetailScreen({super.key, required this.model});
@@ -20,10 +21,7 @@ class TicketTrackingDetailScreen extends StatelessWidget {
         title: const Text('Tickets Tracking', style: TextStyle(fontSize: 18)),
         backgroundColor: AppColors.white,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.borderSoft),
-        ),
+        bottom: const HelpSupportAppBarBottomDivider(),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:goapp/features/help_support/presentation/pages/account_support_article_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/account/account_support_article_screen.dart';
 
 class UpdateRcDetailsScreen extends StatelessWidget {
   const UpdateRcDetailsScreen({super.key});

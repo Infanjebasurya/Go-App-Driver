@@ -6,6 +6,7 @@ import 'package:goapp/features/help_support/domain/entities/support_chat_message
 import 'package:goapp/features/help_support/presentation/cubit/support_chat_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/support_chat_state.dart';
 import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
+import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 
 class SupportChatScreen extends StatefulWidget {
   const SupportChatScreen({super.key});
@@ -125,10 +126,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
             ),
             backgroundColor: AppColors.white,
             elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(height: 1, color: AppColors.borderSoft),
-            ),
+            bottom: const HelpSupportAppBarBottomDivider(),
           ),
           body: Column(
             children: [

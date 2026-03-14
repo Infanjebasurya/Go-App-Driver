@@ -2,6 +2,151 @@ import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/persistent_text_controller.dart';
 import 'package:goapp/core/widgets/shadow_button.dart';
+import 'package:goapp/features/help_support/presentation/pages/ticket_tracking_screen.dart';
+import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
+
+class HelpSupportAppBarBottomDivider extends StatelessWidget
+    implements PreferredSizeWidget {
+  const HelpSupportAppBarBottomDivider({super.key, this.alpha = 0.55});
+
+  final double alpha;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(1);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 1,
+      color: AppColors.borderSoft.withValues(alpha: alpha),
+    );
+  }
+}
+
+class HelpSupportThinDivider extends StatelessWidget {
+  const HelpSupportThinDivider({
+    super.key,
+    this.indent = 16,
+    this.endIndent = 16,
+    this.alpha = 0.45,
+  });
+
+  final double indent;
+  final double endIndent;
+  final double alpha;
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: AppColors.borderSoft.withValues(alpha: alpha),
+      indent: indent,
+      endIndent: endIndent,
+    );
+  }
+}
+
+class HelpSupportChevronListItem extends StatelessWidget {
+  const HelpSupportChevronListItem({
+    super.key,
+    required this.title,
+    required this.onTap,
+    this.leading,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    this.titleStyle = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textBody,
+    ),
+    this.chevronSize = 18,
+  });
+
+  final String title;
+  final VoidCallback? onTap;
+  final Widget? leading;
+  final EdgeInsetsGeometry padding;
+  final TextStyle titleStyle;
+  final double chevronSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: padding,
+          child: Row(
+            children: [
+              if (leading != null) ...[leading!, const SizedBox(width: 14)],
+              Expanded(child: Text(title, style: titleStyle)),
+              Icon(
+                Icons.chevron_right,
+                color: AppColors.textSecondary,
+                size: chevronSize,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HelpSupportChevronOnlyListItem extends StatelessWidget {
+  const HelpSupportChevronOnlyListItem({
+    super.key,
+    required this.title,
+    required this.chevronKey,
+    required this.onChevronTap,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    this.titleStyle = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textBody,
+    ),
+    this.chevronSize = 20,
+  });
+
+  final String title;
+  final String chevronKey;
+  final VoidCallback onChevronTap;
+  final EdgeInsetsGeometry padding;
+  final TextStyle titleStyle;
+  final double chevronSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.transparent,
+      child: InkWell(
+        onTap: null,
+        child: Padding(
+          padding: padding,
+          child: Row(
+            children: [
+              Expanded(child: Text(title, style: titleStyle)),
+              InkWell(
+                key: Key(chevronKey),
+                onTap: onChevronTap,
+                borderRadius: BorderRadius.circular(18),
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textSecondary,
+                    size: chevronSize,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class HelpSearchBar extends StatefulWidget {
   final ValueChanged<String> onChanged;
@@ -110,6 +255,15 @@ class HelpTicketTrackingFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void openTicketTracking() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: HelpSupportRoutes.ticketTracking),
+          builder: (_) => const TicketTrackingScreen(),
+        ),
+      );
+    }
+
     return SafeArea(
       top: false,
       child: Container(
@@ -122,7 +276,7 @@ class HelpTicketTrackingFooter extends StatelessWidget {
               width: 200,
               height: 44,
               child: OutlinedButton(
-                onPressed: onPressed ?? () {},
+                onPressed: onPressed ?? openTicketTracking,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.textBody,
                   side: const BorderSide(color: AppColors.borderSoft),
@@ -244,7 +398,6 @@ class HelpRoundedListSection extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(borderRadius),
-          border: Border.all(color: AppColors.borderSoft),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(borderRadius),
@@ -253,10 +406,10 @@ class HelpRoundedListSection extends StatelessWidget {
               for (int i = 0; i < itemCount; i++) ...[
                 itemBuilder(context, i),
                 if (i != itemCount - 1)
-                  const Divider(
+                  Divider(
                     height: 1,
                     thickness: 1,
-                    color: AppColors.borderSoft,
+                    color: AppColors.borderSoft.withValues(alpha: 0.45),
                     indent: 16,
                     endIndent: 16,
                   ),
