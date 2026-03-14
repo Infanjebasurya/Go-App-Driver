@@ -12,4 +12,5 @@ class HelpSupportRoutes {
   static const String nearbyDemandLocationDetail =
       '/help_support/nearby_demand/detail';
   static const String supportChat = '/help_support/support_chat';
+  static const String gettingStarted = '/help_support/getting_started';
 }

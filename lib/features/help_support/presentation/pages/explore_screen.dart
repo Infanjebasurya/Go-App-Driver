@@ -10,9 +10,9 @@ import 'package:goapp/features/help_support/presentation/pages/emergency/emergen
 import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
-import 'package:goapp/features/help_support/presentation/pages/new_account_screen.dart';
-import 'package:goapp/features/help_support/presentation/pages/new_app_issue_screen.dart';
-import 'package:goapp/features/help_support/presentation/pages/ticket_tracking_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/account/new_account_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/app_issues/new_app_issue_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/getting_started/getting_started_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -100,6 +100,18 @@ class ExploreScreen extends StatelessWidget {
             return;
           }
 
+          if (item.title == 'Getting Started') {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(
+                  name: HelpSupportRoutes.gettingStarted,
+                ),
+                builder: (_) => const GettingStartedScreen(),
+              ),
+            );
+            return;
+          }
+
           openComingSoon(item.title);
         }
 
@@ -117,60 +129,9 @@ class ExploreScreen extends StatelessWidget {
             ),
             backgroundColor: AppColors.white,
             elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(height: 1, color: AppColors.borderSoft),
-            ),
+            bottom: const HelpSupportAppBarBottomDivider(),
           ),
-          bottomNavigationBar: SafeArea(
-            top: false,
-            child: Container(
-              color: AppColors.white,
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 200,
-                    height: 44,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            settings: const RouteSettings(
-                              name: HelpSupportRoutes.ticketTracking,
-                            ),
-                            builder: (_) => const TicketTrackingScreen(),
-                          ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textBody,
-                        side: const BorderSide(color: AppColors.borderSoft),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      child: const Text('Ticket Tracking'),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Our support team typically responds within 15 minutes.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          bottomNavigationBar: const HelpTicketTrackingFooter(),
           body: Column(
             children: [
               HelpSearchBar(onChanged: cubit.updateSearch),

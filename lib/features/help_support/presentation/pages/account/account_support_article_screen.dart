@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:goapp/core/di/injection.dart';
 import 'package:goapp/core/theme/app_colors.dart';
 import 'package:goapp/core/widgets/app_app_bar.dart';
+import 'package:goapp/features/help_support/presentation/cubit/support_chat_cubit.dart';
+import 'package:goapp/features/help_support/presentation/pages/support_chat_screen.dart';
+import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
+import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 
 class AccountSupportArticleScreen extends StatelessWidget {
   const AccountSupportArticleScreen({
@@ -16,6 +22,19 @@ class AccountSupportArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void openSupportChat() {
+      ensureSupportChatDependenciesRegistered();
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: HelpSupportRoutes.supportChat),
+          builder: (_) => BlocProvider(
+            create: (_) => sl<SupportChatCubit>(),
+            child: const SupportChatScreen(),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppAppBar(
@@ -27,10 +46,7 @@ class AccountSupportArticleScreen extends StatelessWidget {
         title: Text(title, style: const TextStyle(fontSize: 18)),
         backgroundColor: AppColors.white,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.borderSoft),
-        ),
+        bottom: const HelpSupportAppBarBottomDivider(),
       ),
       bottomNavigationBar: SafeArea(
         top: false,
@@ -62,7 +78,7 @@ class AccountSupportArticleScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: openSupportChat,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.emerald,
                     foregroundColor: AppColors.white,

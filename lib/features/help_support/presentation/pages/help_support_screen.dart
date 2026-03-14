@@ -8,9 +8,10 @@ import 'package:goapp/features/help_support/presentation/cubit/support_chat_cubi
 import 'package:goapp/features/help_support/presentation/pages/explore_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/earnings/earnings_help_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/emergency/emergency_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/getting_started/getting_started_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/nearby_demand_location/nearby_demand_location_screen.dart';
-import 'package:goapp/features/help_support/presentation/pages/new_account_screen.dart';
-import 'package:goapp/features/help_support/presentation/pages/new_app_issue_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/account/new_account_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/app_issues/new_app_issue_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/safety.dart';
 import 'package:goapp/features/help_support/presentation/pages/support_chat_screen.dart';
 import 'package:goapp/features/help_support/presentation/pages/ticket_tracking_screen.dart';
@@ -85,6 +86,18 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           MaterialPageRoute<void>(
             settings: const RouteSettings(name: HelpSupportRoutes.emergency),
             builder: (_) => const EmergencyScreen(),
+          ),
+        );
+        return;
+      }
+
+      if (lastRoute == HelpSupportRoutes.gettingStarted) {
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(
+              name: HelpSupportRoutes.gettingStarted,
+            ),
+            builder: (_) => const GettingStartedScreen(),
           ),
         );
         return;

@@ -47,17 +47,16 @@ class _EarningsHelpDetailScreenState extends State<EarningsHelpDetailScreen> {
             title: Text(widget.title, style: const TextStyle(fontSize: 18)),
             backgroundColor: AppColors.white,
             elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(height: 1, color: AppColors.borderSoft),
-            ),
+            bottom: const HelpSupportAppBarBottomDivider(),
           ),
           bottomNavigationBar: const HelpTicketTrackingFooter(),
           body: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.only(top: 8),
             children: [
               HelpRoundedListSection(
                 itemCount: state.items.length,
+                contentPadding: EdgeInsets.zero,
+                borderRadius: 0,
                 itemBuilder: (context, index) {
                   final item = state.items[index];
                   return Material(

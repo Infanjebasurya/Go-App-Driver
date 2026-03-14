@@ -24,10 +24,7 @@ class NearbyDemandLocationScreen extends StatelessWidget {
         ),
         backgroundColor: AppColors.white,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.borderSoft),
-        ),
+        bottom: const HelpSupportAppBarBottomDivider(),
       ),
       bottomNavigationBar: const HelpTicketTrackingFooter(),
       body: Padding(

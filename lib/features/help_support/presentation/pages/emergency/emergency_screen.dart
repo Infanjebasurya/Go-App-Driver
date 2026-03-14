@@ -25,17 +25,14 @@ class EmergencyScreen extends StatelessWidget {
         title: const Text('Emergency', style: TextStyle(fontSize: 18)),
         backgroundColor: AppColors.white,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.borderSoft),
-        ),
+        bottom: const HelpSupportAppBarBottomDivider(),
       ),
       bottomNavigationBar: const HelpTicketTrackingFooter(),
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         itemCount: items.length,
         separatorBuilder: (context, index) =>
-            const Divider(height: 1, color: AppColors.borderSoft),
+            const HelpSupportThinDivider(indent: 0, endIndent: 0),
         itemBuilder: (context, index) {
           final item = items[index];
           return Material(
@@ -107,10 +104,7 @@ class _EmergencyDetailScreen extends StatelessWidget {
         title: Text(issue.title, style: const TextStyle(fontSize: 18)),
         backgroundColor: AppColors.white,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.borderSoft),
-        ),
+        bottom: const HelpSupportAppBarBottomDivider(),
       ),
       bottomNavigationBar: HelpCustomerCareSupportChatBar(
         onSupportChat: () => _openSupportChat(context),

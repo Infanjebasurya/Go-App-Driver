@@ -6,6 +6,7 @@ import 'package:goapp/core/widgets/app_app_bar.dart';
 import 'package:goapp/features/help_support/presentation/cubit/support_chat_cubit.dart';
 import 'package:goapp/features/help_support/presentation/pages/support_chat_screen.dart';
 import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
+import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 
 class NearbyDemandLocationDetailScreen extends StatelessWidget {
   const NearbyDemandLocationDetailScreen({super.key});
@@ -26,10 +27,7 @@ class NearbyDemandLocationDetailScreen extends StatelessWidget {
         ),
         backgroundColor: AppColors.white,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.borderSoft),
-        ),
+        bottom: const HelpSupportAppBarBottomDivider(),
       ),
       bottomNavigationBar: SafeArea(
         top: false,

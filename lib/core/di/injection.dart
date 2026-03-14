@@ -54,11 +54,19 @@ import 'package:goapp/features/help_support/presentation/cubit/emergency_contact
 import 'package:goapp/features/help_support/presentation/cubit/help_cubit.dart';
 import 'package:goapp/features/help_support/presentation/cubit/safety_preference_cubit.dart';
 import 'package:goapp/features/help_support/data/repositories/earnings_help_repository_mock.dart';
+import 'package:goapp/features/help_support/data/repositories/account_help_repository_mock.dart';
+import 'package:goapp/features/help_support/data/repositories/app_issues_help_repository_mock.dart';
 import 'package:goapp/features/help_support/domain/repositories/earnings_help_repository.dart';
+import 'package:goapp/features/help_support/domain/repositories/account_help_repository.dart';
+import 'package:goapp/features/help_support/domain/repositories/app_issues_help_repository.dart';
 import 'package:goapp/features/help_support/domain/usecases/get_earnings_help_article_usecase.dart';
 import 'package:goapp/features/help_support/domain/usecases/get_earnings_help_faqs_usecase.dart';
 import 'package:goapp/features/help_support/domain/usecases/get_earnings_help_links_usecase.dart';
+import 'package:goapp/features/help_support/domain/usecases/get_account_help_links_usecase.dart';
+import 'package:goapp/features/help_support/domain/usecases/get_app_issues_help_links_usecase.dart';
 import 'package:goapp/features/help_support/presentation/cubit/earnings_help_cubit.dart';
+import 'package:goapp/features/help_support/presentation/cubit/account_help_cubit.dart';
+import 'package:goapp/features/help_support/presentation/cubit/app_issues_help_cubit.dart';
 import 'package:goapp/features/help_support/data/repositories/support_chat_repository_mock.dart';
 import 'package:goapp/features/help_support/domain/repositories/support_chat_repository.dart';
 import 'package:goapp/features/help_support/domain/usecases/get_support_chat_transcript_usecase.dart';
@@ -433,6 +441,22 @@ void _registerSupport() {
     ..registerFactory<HelpCubit>(() => HelpCubit())
     ..registerFactory<SafetyPreferencesCubit>(() => SafetyPreferencesCubit())
     ..registerFactory<EmergencyContactsCubit>(() => EmergencyContactsCubit())
+    ..registerLazySingleton<AccountHelpRepository>(
+      () => const AccountHelpRepositoryMock(),
+    )
+    ..registerLazySingleton<GetAccountHelpLinksUseCase>(
+      () => GetAccountHelpLinksUseCase(sl()),
+    )
+    ..registerFactory<AccountHelpCubit>(() => AccountHelpCubit(getLinks: sl()))
+    ..registerLazySingleton<AppIssuesHelpRepository>(
+      () => const AppIssuesHelpRepositoryMock(),
+    )
+    ..registerLazySingleton<GetAppIssuesHelpLinksUseCase>(
+      () => GetAppIssuesHelpLinksUseCase(sl()),
+    )
+    ..registerFactory<AppIssuesHelpCubit>(
+      () => AppIssuesHelpCubit(getLinks: sl()),
+    )
     ..registerLazySingleton<EarningsHelpRepository>(
       () => const EarningsHelpRepositoryMock(),
     )

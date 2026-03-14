@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/help_support/presentation/pages/account_support_article_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/account/account_support_article_screen.dart';
 
 class UnableToGoOnDutyScreen extends StatelessWidget {
   const UnableToGoOnDutyScreen({super.key});
