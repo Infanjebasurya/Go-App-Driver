@@ -72,7 +72,7 @@ class _OrderHelpTopic {
                 text: 'GoApp Driver account',
                 style: GettingStartedText.bold,
               ),
-              TextSpan(text: ' is activated, you can\nstart receiving orders'),
+              TextSpan(text: ' is activated, you can start receiving orders'),
             ],
           ),
         ),
@@ -95,7 +95,7 @@ class _OrderHelpTopic {
               TextSpan(text: 'Open the app and use the '),
               TextSpan(text: 'On Duty toggle', style: GettingStartedText.bold),
               TextSpan(
-                text: ' on the home\nscreen to start receiving ride requests.',
+                text: ' on the home screen to start receiving ride requests.',
               ),
             ],
           ),
@@ -106,7 +106,7 @@ class _OrderHelpTopic {
       title: 'How do I accept an order?',
       content: [
         Text(
-          'When a customer nearby requests a ride, you will\nreceive a notification in the app.',
+          'When a customer nearby requests a ride, you will receive a notification in the app.',
           style: GettingStartedText.body,
         ),
         SizedBox(height: 18),
@@ -118,7 +118,7 @@ class _OrderHelpTopic {
               TextSpan(text: 'Accept Ride', style: GettingStartedText.bold),
               TextSpan(text: ' to take the order or '),
               TextSpan(text: 'Skip', style: GettingStartedText.bold),
-              TextSpan(text: '\nto ignore it.'),
+              TextSpan(text: ' to ignore it.'),
             ],
           ),
         ),
@@ -132,10 +132,7 @@ class _OrderHelpTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(text: 'After accepting the ride, move towards the '),
-              TextSpan(
-                text: 'pickup\nlocation',
-                style: GettingStartedText.bold,
-              ),
+              TextSpan(text: 'pickup location', style: GettingStartedText.bold),
               TextSpan(text: '.'),
             ],
           ),
@@ -148,8 +145,7 @@ class _OrderHelpTopic {
               TextSpan(text: 'Use the '),
               TextSpan(text: 'Navigate', style: GettingStartedText.bold),
               TextSpan(
-                text:
-                    ' icon to find the route to the\ncustomer’s pickup point.',
+                text: ' icon to find the route to the customer’s pickup point.',
               ),
             ],
           ),
@@ -165,7 +161,7 @@ class _OrderHelpTopic {
               TextSpan(text: ' to notify the customer.'),
             ],
             [
-              TextSpan(text: 'Once the customer enters the vehicle, ask for\n'),
+              TextSpan(text: 'Once the customer enters the vehicle, ask for '),
               TextSpan(text: 'the 4-digit PIN', style: GettingStartedText.bold),
               TextSpan(text: '.'),
             ],
@@ -187,7 +183,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(text: 'To contact the customer, tap the '),
               TextSpan(text: 'Chat/Call', style: GettingStartedText.bold),
-              TextSpan(text: ' icon in the\napp.'),
+              TextSpan(text: ' icon in the app.'),
             ],
           ),
         ),
@@ -217,7 +213,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(
                 text:
-                    'If you need assistance during an order, you can\ncontact ',
+                    'If you need assistance during an order, you can contact ',
               ),
               TextSpan(
                 text: 'Customer Care or Support Chat',
@@ -246,10 +242,10 @@ class _OrderHelpTopic {
               TextSpan(text: 'Then select '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
               TextSpan(
-                text: ' and choose the reason for\nsupport to connect with ',
+                text: ' and choose the reason for support to connect with ',
               ),
               TextSpan(
-                text: 'Customer Care or Support\nChat',
+                text: 'Customer Care or Support Chat',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: '.'),
@@ -267,7 +263,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(text: 'If the customer pays '),
               TextSpan(text: 'online', style: GettingStartedText.bold),
-              TextSpan(text: ', your earnings will be\nadded to your '),
+              TextSpan(text: ', your earnings will be added to your '),
               TextSpan(text: 'wallet', style: GettingStartedText.bold),
               TextSpan(text: '.'),
             ],
@@ -280,10 +276,10 @@ class _OrderHelpTopic {
             children: [
               TextSpan(
                 text:
-                    'If the customer pays cash, you can collect the ride fare\ndirectly. The ',
+                    'If the customer pays cash, you can collect the ride fare directly. The ',
               ),
               TextSpan(text: 'platform fee', style: GettingStartedText.bold),
-              TextSpan(text: ' will be deducted from your\nwallet.'),
+              TextSpan(text: ' will be deducted from your wallet.'),
             ],
           ),
         ),
@@ -299,7 +295,7 @@ class _OrderHelpTopic {
               ),
               TextSpan(
                 text:
-                    ',\nthe remaining amount will be adjusted in your wallet\nafter deducting the platform fee.',
+                    ', the remaining amount will be adjusted in your wallet after deducting the platform fee.',
               ),
             ],
           ),
@@ -315,7 +311,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(text: 'To receive more orders while you are '),
               TextSpan(text: 'On Duty', style: GettingStartedText.bold),
-              TextSpan(text: ', enable\n'),
+              TextSpan(text: ', enable '),
               TextSpan(
                 text: 'High Demand Areas',
                 style: GettingStartedText.bold,
@@ -326,7 +322,7 @@ class _OrderHelpTopic {
         ),
         SizedBox(height: 18),
         Text(
-          'This will highlight nearby locations with high demand.\nMoving towards these areas can help you get more\nride requests.',
+          'This will highlight nearby locations with high demand. Moving towards these areas can help you get more ride requests.',
           style: GettingStartedText.body,
         ),
       ],
@@ -340,7 +336,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(
                 text:
-                    'When this option is enabled, the app will try to assign\nrides ',
+                    'When this option is enabled, the app will try to assign rides ',
               ),
               TextSpan(
                 text: 'towards your home route',
@@ -357,7 +353,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(text: 'To use this feature, you must first '),
               TextSpan(
-                text: 'save your home\naddress',
+                text: 'save your home address',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' in the app.'),
@@ -376,7 +372,7 @@ class _OrderHelpTopic {
               ),
               TextSpan(text: ' up to '),
               TextSpan(
-                text: 'two times per\nday',
+                text: 'two times per day',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ', and it will automatically disable after '),
@@ -398,7 +394,7 @@ class _OrderHelpTopic {
               TextSpan(text: 'On-Ride Booking', style: GettingStartedText.bold),
               TextSpan(text: ' is enabled, '),
               TextSpan(text: 'GoApp', style: GettingStartedText.bold),
-              TextSpan(text: ' may assign\nyour '),
+              TextSpan(text: ' may assign your '),
               TextSpan(text: 'next ride', style: GettingStartedText.bold),
               TextSpan(text: ' before you complete the current one.'),
             ],
@@ -411,7 +407,7 @@ class _OrderHelpTopic {
             children: [
               TextSpan(text: 'You will see the details of the next order '),
               TextSpan(
-                text: 'after finishing\nthe ongoing ride',
+                text: 'after finishing the ongoing ride',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: '.'),
@@ -421,7 +417,7 @@ class _OrderHelpTopic {
         SizedBox(height: 18),
         Text('Note:', style: GettingStartedText.noteLabel),
         Text(
-          'Enabling this option does not guarantee that you will\nreceive another ride immediately. Order availability\ndepends on demand in the area.',
+          'Enabling this option does not guarantee that you will receive another ride immediately. Order availability depends on demand in the area.',
           style: GettingStartedText.body,
         ),
       ],

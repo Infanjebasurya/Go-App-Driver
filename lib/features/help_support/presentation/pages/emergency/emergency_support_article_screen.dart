@@ -8,8 +8,8 @@ import 'package:goapp/features/help_support/presentation/pages/support_chat_scre
 import 'package:goapp/features/help_support/presentation/routes/help_support_routes.dart';
 import 'package:goapp/features/help_support/presentation/widgets/help_support_common_widgets.dart';
 
-class AccountSupportArticleScreen extends StatelessWidget {
-  const AccountSupportArticleScreen({
+class EmergencySupportArticleScreen extends StatelessWidget {
+  const EmergencySupportArticleScreen({
     super.key,
     required this.title,
     required this.content,
@@ -20,21 +20,21 @@ class AccountSupportArticleScreen extends StatelessWidget {
   final List<Widget> content;
   final bool showDefaultGetHelpLine;
 
+  void _openSupportChat(BuildContext context) {
+    ensureSupportChatDependenciesRegistered();
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: HelpSupportRoutes.supportChat),
+        builder: (_) => BlocProvider(
+          create: (_) => sl<SupportChatCubit>(),
+          child: const SupportChatScreen(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    void openSupportChat() {
-      ensureSupportChatDependenciesRegistered();
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          settings: const RouteSettings(name: HelpSupportRoutes.supportChat),
-          builder: (_) => BlocProvider(
-            create: (_) => sl<SupportChatCubit>(),
-            child: const SupportChatScreen(),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppAppBar(
@@ -78,7 +78,7 @@ class AccountSupportArticleScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: openSupportChat,
+                  onPressed: () => _openSupportChat(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.emerald,
                     foregroundColor: AppColors.white,
@@ -109,7 +109,7 @@ class AccountSupportArticleScreen extends StatelessWidget {
                 const SizedBox(height: 18),
                 Text.rich(
                   TextSpan(
-                    style: ArticleText.body,
+                    style: EmergencyArticleText.body,
                     children: const [
                       TextSpan(text: 'If you need further help, tap '),
                       TextSpan(
@@ -119,7 +119,7 @@ class AccountSupportArticleScreen extends StatelessWidget {
                           color: AppColors.headingDark,
                         ),
                       ),
-                      TextSpan(text: ' below'),
+                      TextSpan(text: ' below.'),
                     ],
                   ),
                 ),
@@ -133,71 +133,12 @@ class AccountSupportArticleScreen extends StatelessWidget {
   }
 }
 
-class ArticleText {
-  ArticleText._();
+class EmergencyArticleText {
+  EmergencyArticleText._();
 
   static const TextStyle body = TextStyle(
     fontSize: 14,
     color: AppColors.textSecondary,
     height: 2,
   );
-
-  static const TextStyle bodySmall = TextStyle(
-    fontSize: 14,
-    color: AppColors.headingDark,
-    height: 2,
-  );
-
-  static const TextStyle sectionTitle = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    color: AppColors.headingDark,
-  );
-
-  static const TextStyle bold = TextStyle(fontWeight: FontWeight.w700);
-}
-
-class _BulletLine extends StatelessWidget {
-  const _BulletLine({required this.spans});
-
-  final List<TextSpan> spans;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 2),
-            child: Text(
-              '•',
-              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text.rich(
-              TextSpan(style: ArticleText.bodySmall, children: spans),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ArticleBulletList extends StatelessWidget {
-  const ArticleBulletList({super.key, required this.items});
-
-  final List<List<TextSpan>> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: items.map((spans) => _BulletLine(spans: spans)).toList(),
-    );
-  }
 }

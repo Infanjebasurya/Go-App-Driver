@@ -82,7 +82,7 @@ class EarningsHelpRepositoryMock implements EarningsHelpRepository {
           HelpFaqItem(title: 'How can I check my incentives?'),
           HelpFaqItem(title: "Why can't I see incentives for today?"),
           HelpFaqItem(
-            title: "Why wasn't my incentive added after\nreaching the target?",
+            title: "Why wasn't my incentive added after reaching the target?",
           ),
           HelpFaqItem(title: 'How can I track my incentive progress?'),
         ];
@@ -99,12 +99,10 @@ class EarningsHelpRepositoryMock implements EarningsHelpRepository {
           HelpFaqItem(title: 'Transfer request is awaiting approval'),
           HelpFaqItem(title: 'Transfer request is on hold'),
           HelpFaqItem(title: 'Transfer request was rejected'),
-          HelpFaqItem(
-            title: 'Transfer request is initiated but not\ncompleted',
-          ),
+          HelpFaqItem(title: 'Transfer request is initiated but not completed'),
           HelpFaqItem(title: 'Transfer request failed'),
           HelpFaqItem(
-            title: 'Money is credited but not showing in my\nbank account',
+            title: 'Money is credited but not showing in my bank account',
           ),
         ];
       default:

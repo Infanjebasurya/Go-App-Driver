@@ -9,7 +9,7 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('Your earnings are calculated based on the '),
-            HelpTextRun('route\nsuggested by GoApp', bold: true),
+            HelpTextRun('route suggested by GoApp', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
@@ -19,7 +19,7 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If you need further assistance, please contact '),
-            HelpTextRun('Support\nChat or Customer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -34,19 +34,17 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('Please follow the '),
             HelpTextRun('route suggested by GoApp', bold: true),
-            HelpTextRun('\nwhenever possible.'),
+            HelpTextRun(' whenever possible.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'If a customer asks you to take a different route or\nchange the drop location, you may follow the\ncustomer’s request.',
+              'If a customer asks you to take a different route or change the drop location, you may follow the customer’s request.',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
-            HelpTextRun(
-              'Your earnings will be calculated based on the final\n',
-            ),
+            HelpTextRun('Your earnings will be calculated based on the final '),
             HelpTextRun('drop location', bold: true),
             HelpTextRun('.'),
           ]),
@@ -65,14 +63,14 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('If a customer asks you to drop them at a '),
-            HelpTextRun('different\nlocation', bold: true),
+            HelpTextRun('different location', bold: true),
             HelpTextRun(', please follow the customer’s instructions.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('Your '),
             HelpTextRun(
-              'earnings will be calculated based on the new\ndrop location',
+              'earnings will be calculated based on the new drop location',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -80,7 +78,7 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the issue continues, please contact '),
-            HelpTextRun('Support Chat or\nCustomer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -95,13 +93,13 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('The '),
             HelpTextRun('GoApp Driver app', bold: true),
-            HelpTextRun(' helps you navigate to the\ncorrect pickup point.'),
+            HelpTextRun(' helps you navigate to the correct pickup point.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('Please use the '),
             HelpTextRun('Navigation', bold: true),
-            HelpTextRun(' option in the app to reach\nthe pickup location.'),
+            HelpTextRun(' option in the app to reach the pickup location.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -119,7 +117,7 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('The '),
             HelpTextRun('GoApp Driver app', bold: true),
-            HelpTextRun(' helps you navigate to the\ncorrect drop location.'),
+            HelpTextRun(' helps you navigate to the correct drop location.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -130,13 +128,13 @@ HelpArticleContent? _routeOrLocationIssuesArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('Your earnings will be calculated based on the '),
-            HelpTextRun('route\nsuggested by GoApp', bold: true),
+            HelpTextRun('route suggested by GoApp', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the amount is missing, please contact '),
-            HelpTextRun('Support Chat\nor Customer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),

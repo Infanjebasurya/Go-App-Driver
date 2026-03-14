@@ -70,7 +70,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If you are unable to find the pickup location, try\ncontacting the ',
+                    'If you are unable to find the pickup location, try contacting the ',
               ),
               TextSpan(text: 'rider', style: GettingStartedText.bold),
               TextSpan(text: ' for additional directions.'),
@@ -84,10 +84,10 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If you are still unable to reach the pickup location or\nconnect with the rider, please contact ',
+                    'If you are still unable to reach the pickup location or connect with the rider, please contact ',
               ),
               TextSpan(
-                text: 'Support Chat or\nCustomer Care',
+                text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' by tapping '),
@@ -107,13 +107,13 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(text: 'Please contact the '),
               TextSpan(text: 'rider', style: GettingStartedText.bold),
-              TextSpan(text: ' to confirm the correct drop\nlocation.'),
+              TextSpan(text: ' to confirm the correct drop location.'),
             ],
           ),
         ),
         SizedBox(height: 18),
         Text(
-          'You should drop the rider at their preferred location.\nYour earnings will be recalculated based on the\nupdated drop location.',
+          'You should drop the rider at their preferred location. Your earnings will be recalculated based on the updated drop location.',
           style: GettingStartedText.body,
         ),
         SizedBox(height: 18),
@@ -123,14 +123,14 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If you face any issues with your earnings, please\ncontact ',
+                    'If you face any issues with your earnings, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' by tapping '),
-              TextSpan(text: 'Get\nHelp', style: GettingStartedText.bold),
+              TextSpan(text: 'Get Help', style: GettingStartedText.bold),
               TextSpan(text: ' below.'),
             ],
           ),
@@ -146,7 +146,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(text: 'We recommend using the '),
               TextSpan(text: 'Navigation', style: GettingStartedText.bold),
-              TextSpan(text: ' option in the\n'),
+              TextSpan(text: ' option in the '),
               TextSpan(text: 'GoApp app', style: GettingStartedText.bold),
               TextSpan(text: ' and following the suggested route.'),
             ],
@@ -159,15 +159,15 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If you had to take a different route due to on-ground\nconditions and your ',
+                    'If you had to take a different route due to on-ground conditions and your ',
               ),
               TextSpan(
-                text: 'earnings were not calculated\ncorrectly',
+                text: 'earnings were not calculated correctly',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ', please contact '),
               TextSpan(
-                text: 'Support Chat or Customer\nCare',
+                text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' by tapping '),
@@ -207,8 +207,7 @@ class _OngoingOrderTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text:
-                    'If you face any issues while canceling, please contact\n',
+                text: 'If you face any issues while canceling, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
@@ -216,7 +215,7 @@ class _OngoingOrderTopic {
               ),
               TextSpan(text: ' by tapping '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
-              TextSpan(text: '\nbelow.'),
+              TextSpan(text: ' below.'),
             ],
           ),
         ),
@@ -226,7 +225,7 @@ class _OngoingOrderTopic {
       title: 'Pickup distance is too long',
       content: const [
         Text(
-          'The long pickup fare will be shown on the order accept\nscreen and after you accept the ride.',
+          'The long pickup fare will be shown on the order accept screen and after you accept the ride.',
           style: GettingStartedText.body,
         ),
         SizedBox(height: 18),
@@ -236,7 +235,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If eligible, the additional pickup distance fare will be\n',
+                    'If eligible, the additional pickup distance fare will be ',
               ),
               TextSpan(
                 text: 'automatically added to your earnings.',
@@ -252,7 +251,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'Extra payment is applied only for the distance traveled\n',
+                    'Extra payment is applied only for the distance traveled ',
               ),
               TextSpan(
                 text: 'beyond the defined limit for your city.',
@@ -268,7 +267,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(text: 'If you need further assistance, please contact '),
               TextSpan(
-                text: 'Support\nChat or Customer Care',
+                text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' by tapping '),
@@ -288,7 +287,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'Your earnings are updated after every ride and\nautomatically reflected in your ',
+                    'Your earnings are updated after every ride and automatically reflected in your ',
               ),
               TextSpan(text: 'wallet', style: GettingStartedText.bold),
               TextSpan(text: '.'),
@@ -301,7 +300,7 @@ class _OngoingOrderTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text: 'If the earnings are not updated, please contact\n',
+                text: 'If the earnings are not updated, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
@@ -309,17 +308,17 @@ class _OngoingOrderTopic {
               ),
               TextSpan(text: ' by tapping '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
-              TextSpan(text: '\nbelow.'),
+              TextSpan(text: ' below.'),
             ],
           ),
         ),
       ],
     ),
     _OngoingOrderTopic(
-      title: 'Will I get a cancellation fee for the previous\norder?',
+      title: 'Will I get a cancellation fee for the previous order?',
       content: const [
         Text(
-          'Eligibility for receiving the cancellation fare depends\non the distance and time traveled and may vary by\ncity.',
+          'Eligibility for receiving the cancellation fare depends on the distance and time traveled and may vary by city.',
           style: GettingStartedText.body,
         ),
         SizedBox(height: 18),
@@ -328,7 +327,7 @@ class _OngoingOrderTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text: 'If you are eligible, the cancellation amount will be\n',
+                text: 'If you are eligible, the cancellation amount will be ',
               ),
               TextSpan(
                 text: 'automatically added to your wallet.',
@@ -344,7 +343,7 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(text: 'If you need further assistance, please contact '),
               TextSpan(
-                text: 'Support\nChat or Customer Care',
+                text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' by tapping '),
@@ -367,7 +366,7 @@ class _OngoingOrderTopic {
                 text: 'earnings will be recalculated',
                 style: GettingStartedText.bold,
               ),
-              TextSpan(text: ' based on the\nupdated drop location.'),
+              TextSpan(text: ' based on the updated drop location.'),
             ],
           ),
         ),
@@ -378,13 +377,13 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If you notice any issues with the updated earnings,\nplease contact ',
+                    'If you notice any issues with the updated earnings, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
-              TextSpan(text: ' by\ntapping '),
+              TextSpan(text: ' by tapping '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
               TextSpan(text: ' below.'),
             ],
@@ -401,9 +400,9 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(text: 'We recommend using the '),
               TextSpan(text: 'Navigation', style: GettingStartedText.bold),
-              TextSpan(text: ' option in the\n'),
+              TextSpan(text: ' option in the '),
               TextSpan(text: 'GoApp', style: GettingStartedText.bold),
-              TextSpan(text: ' app and following the suggested route.\n'),
+              TextSpan(text: ' app and following the suggested route. '),
             ],
           ),
         ),
@@ -414,10 +413,10 @@ class _OngoingOrderTopic {
             children: [
               TextSpan(
                 text:
-                    'If you had to take a different route due to on-ground\nconditions, your earnings will be ',
+                    'If you had to take a different route due to on-ground conditions, your earnings will be ',
               ),
               TextSpan(
-                text: 'recalculated\naccordingly.',
+                text: 'recalculated accordingly.',
                 style: GettingStartedText.bold,
               ),
             ],
@@ -429,7 +428,7 @@ class _OngoingOrderTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text: 'If the earnings appear incorrect, please contact\n',
+                text: 'If the earnings appear incorrect, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
@@ -437,7 +436,7 @@ class _OngoingOrderTopic {
               ),
               TextSpan(text: ' by tapping '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
-              TextSpan(text: '\nbelow.'),
+              TextSpan(text: ' below.'),
             ],
           ),
         ),

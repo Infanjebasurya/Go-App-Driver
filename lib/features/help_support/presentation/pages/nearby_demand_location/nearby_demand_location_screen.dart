@@ -36,8 +36,8 @@ class NearbyDemandLocationScreen extends StatelessWidget {
             boxShadow: const [
               BoxShadow(
                 color: AppColors.hex14000000,
-                blurRadius: 4,
-                offset: Offset(0, 2),
+                blurRadius: 2,
+                offset: Offset(0, 1),
               ),
             ],
           ),

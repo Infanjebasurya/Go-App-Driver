@@ -10,13 +10,13 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('The '),
             HelpTextRun('Rate Card', bold: true),
-            HelpTextRun(' shows how your earnings are calculated\non GoApp.'),
+            HelpTextRun(' shows how your earnings are calculated on GoApp.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('It may vary depending on the '),
             HelpTextRun('service type and the city', bold: true),
-            HelpTextRun(' you\noperate in.'),
+            HelpTextRun(' you operate in.'),
           ]),
         ],
       );
@@ -31,14 +31,14 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
           HelpSpacerBlock(12),
           HelpParagraphBlock([
             HelpTextRun(
-              'Order Fare + Extra Fare (if applicable) – Commission –\nGST',
+              'Order Fare + Extra Fare (if applicable) – Commission – GST',
               bold: true,
             ),
           ]),
           HelpSpacerBlock(16),
           HelpParagraphBlock([
             HelpTextRun('You can check the detailed breakdown in your '),
-            HelpTextRun('Rate\nCard', bold: true),
+            HelpTextRun('Rate Card', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
@@ -103,14 +103,14 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('If a customer cancels a ride, you '),
-            HelpTextRun('may receive a\ncancellation fare', bold: true),
+            HelpTextRun('may receive a cancellation fare', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('Eligibility depends on the '),
             HelpTextRun(
-              'distance traveled towards\nthe pickup location',
+              'distance traveled towards the pickup location',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -119,7 +119,7 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('If you are eligible, the '),
             HelpTextRun(
-              'cancellation amount will be\nautomatically added to your wallet',
+              'cancellation amount will be automatically added to your wallet',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -128,7 +128,7 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('You can check your '),
             HelpTextRun('Rate Card', bold: true),
-            HelpTextRun(' to see the maximum\ncancellation fare.'),
+            HelpTextRun(' to see the maximum cancellation fare.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
@@ -149,14 +149,14 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
             ),
             HelpTextRun('Long Pickup Fare', bold: true),
             HelpTextRun(
-              ' for the extra distance traveled to\nreach the pickup point.',
+              ' for the extra distance traveled to reach the pickup point.',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If applicable, this amount will be '),
             HelpTextRun(
-              'automatically added\nto your order earnings',
+              'automatically added to your order earnings',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -196,21 +196,21 @@ HelpArticleContent? _learnAboutEarningsArticle(String faqTitle) {
         showBottomActions: true,
         blocks: [
           HelpParagraphBlock([
-            HelpTextRun('When customers tip you for good service, you keep\n'),
+            HelpTextRun('When customers tip you for good service, you keep '),
             HelpTextRun('100% of the tip amount', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'If a customer adds a tip to the ride, it will be credited to\nyour wallet or You can collect the cash based on\npayment.',
+              'If a customer adds a tip to the ride, it will be credited to your wallet or You can collect the cash based on payment.',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('You can view the tip in '),
             HelpTextRun('Transaction History', bold: true),
-            HelpTextRun(' under the\n'),
+            HelpTextRun(' under the '),
             HelpTextRun('Wallet', bold: true),
             HelpTextRun(' tab in the '),
             HelpTextRun('Earnings', bold: true),

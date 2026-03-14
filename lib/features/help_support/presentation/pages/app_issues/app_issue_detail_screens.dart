@@ -24,7 +24,7 @@ class UnableToGoOnDutyScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: ', please check the\nfollowing:'),
+              TextSpan(text: ', please check the following:'),
             ],
           ),
         ),
@@ -79,7 +79,7 @@ class UnableToGoOnDutyScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: '\nagain, or '),
+              TextSpan(text: ' again, or '),
               TextSpan(
                 text: 'reinstall the app',
                 style: TextStyle(
@@ -100,7 +100,7 @@ class UnableToGoOnDutyScreen extends StatelessWidget {
                 text: 'If you are still unable to go On Duty, please contact ',
               ),
               TextSpan(
-                text: '\nSupport Chat or Customer Care',
+                text: 'Support Chat or Customer Care',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -115,7 +115,7 @@ class UnableToGoOnDutyScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: '\nbelow.'),
+              TextSpan(text: ' below.'),
             ],
           ),
         ),
@@ -173,7 +173,7 @@ class NotReceivingOrdersScreen extends StatelessWidget {
                 text: 'To increase your chances of getting orders, check on ',
               ),
               TextSpan(
-                text: '\nHigh Demand Areas',
+                text: 'High Demand Areas',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -215,7 +215,7 @@ class ServiceSuspendedScreen extends StatelessWidget {
       showDefaultGetHelpLine: false,
       content: [
         Text(
-          'Your service may be suspended if any of the following\nare observed:',
+          'Your service may be suspended if any of the following are observed:',
           style: ArticleText.body,
         ),
         SizedBox(height: 18),
@@ -262,7 +262,7 @@ class ServiceSuspendedScreen extends StatelessWidget {
             children: [
               TextSpan(text: 'If you need more information, please contact '),
               TextSpan(
-                text: 'Support\nChat or Customer Care',
+                text: 'Support Chat or Customer Care',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -277,7 +277,7 @@ class ServiceSuspendedScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: '\nbelow.'),
+              TextSpan(text: ' below.'),
             ],
           ),
         ),
@@ -305,7 +305,7 @@ class AppCrashingScreen extends StatelessWidget {
             [
               TextSpan(text: 'Make sure your app is '),
               TextSpan(
-                text: 'updated to the latest\nversion',
+                text: 'updated to the latest version',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -331,7 +331,7 @@ class AppCrashingScreen extends StatelessWidget {
             children: [
               TextSpan(text: 'If the issue continues, please contact '),
               TextSpan(
-                text: 'Support Chat or\nCustomer Care',
+                text: 'Support Chat or Customer Care',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -387,7 +387,7 @@ class ChangeMobileNumberScreen extends StatelessWidget {
             children: [
               TextSpan(text: 'To update your number, please contact '),
               TextSpan(
-                text: 'Support Chat\nor Customer Care',
+                text: 'Support Chat or Customer Care',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -486,7 +486,7 @@ class UpdateVehicleDetailsScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: '\nand tap '),
+              TextSpan(text: ' and tap '),
               TextSpan(
                 text: 'Save',
                 style: TextStyle(
@@ -577,7 +577,7 @@ class UnableToUploadDocumentsScreen extends StatelessWidget {
             children: [
               TextSpan(text: 'If the issue continues, please contact '),
               TextSpan(
-                text: 'Support Chat or\nCustomer Care',
+                text: 'Support Chat or Customer Care',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,

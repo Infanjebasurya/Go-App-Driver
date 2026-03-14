@@ -37,9 +37,13 @@ class NewAccountScreen extends StatelessWidget {
               bottom: const HelpSupportAppBarBottomDivider(),
             ),
             body: ListView.separated(
-              padding: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               itemCount: items.length,
-              separatorBuilder: (_, _) => const HelpSupportThinDivider(),
+              separatorBuilder: (context, index) => Divider(
+                height: 0,
+                thickness: 0.5,
+                color: AppColors.handleGray.withValues(alpha: 0.2),
+              ),
               itemBuilder: (context, index) {
                 final item = items[index];
                 return HelpSupportChevronOnlyListItem(

@@ -1,48 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/help_support/presentation/pages/account/account_support_article_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/emergency/emergency_support_article_screen.dart';
 
-class UpdateDrivingLicenseScreen extends StatelessWidget {
-  const UpdateDrivingLicenseScreen({super.key});
+class EmergencyCustomerIssueScreen extends StatelessWidget {
+  const EmergencyCustomerIssueScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const AccountSupportArticleScreen(
-      title: 'Update driving license',
+    return const EmergencySupportArticleScreen(
+      title: 'I had an issue with a customer',
       showDefaultGetHelpLine: false,
       content: [
         Text.rich(
           TextSpan(
-            style: ArticleText.body,
+            style: EmergencyArticleText.body,
             children: [
-              TextSpan(text: 'Once uploaded and verified, the '),
               TextSpan(
-                text: 'driving license cannot be updated',
+                text:
+                    'Please avoid getting into an argument with the customer.\n\n',
+              ),
+              TextSpan(
+                text:
+                    'If a customer\'s behaviour made you feel unsafe or prevented you from starting or completing the ride, please contact ',
+              ),
+              TextSpan(
+                text: 'Support Chat',
                 style: TextStyle(
-                  height: 2,
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: '.'),
-            ],
-          ),
-        ),
-        SizedBox(height: 18),
-        Text.rich(
-          TextSpan(
-            style: ArticleText.body,
-            children: [
-              TextSpan(text: 'If you need further assistance, please contact '),
+              TextSpan(text: ' or '),
               TextSpan(
-                text: 'Support Chat or Customer Care',
+                text: 'Customer Care',
                 style: TextStyle(
-                  height: 2,
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
                 ),
               ),
-
               TextSpan(text: ' by tapping '),
               TextSpan(
                 text: 'Get Help',
@@ -51,7 +46,7 @@ class UpdateDrivingLicenseScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: ' below.'),
+              TextSpan(text: ' below.\n\n'),
             ],
           ),
         ),

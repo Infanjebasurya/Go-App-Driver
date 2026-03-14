@@ -430,79 +430,90 @@ class _PickupDropSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          width: 20,
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 2),
-              Container(
-                width: 9,
-                height: 9,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceFDF8,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.emerald, width: 1.5),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 2),
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceFDF8,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.emerald, width: 1.5),
+                  ),
                 ),
-              ),
-              Container(width: 1.2, height: 34, color: AppColors.neutralAAA),
-              Container(
-                width: 9,
-                height: 9,
-                decoration: const BoxDecoration(
-                  color: AppColors.neutral333,
-                  shape: BoxShape.circle,
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Container(width: 1.2, color: AppColors.neutralAAA),
+                  ),
                 ),
-              ),
-            ],
+
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: AppColors.neutral333,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Pickup',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.neutral666,
+          const SizedBox(width: 10),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Pickup',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.neutral666,
+                  ),
                 ),
-              ),
-              SizedBox(height: 3),
-              Text(
-                pickupAddress,
-                style: TextStyle(
-                  fontSize: 21 / 2,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.neutral333,
+                const SizedBox(height: 3),
+                Text(
+                  pickupAddress,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.neutral333,
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Dropoff',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.neutral666,
+                const SizedBox(height: 10),
+
+                Text(
+                  'Dropoff',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.neutral666,
+                  ),
                 ),
-              ),
-              SizedBox(height: 3),
-              Text(
-                dropAddress,
-                style: TextStyle(
-                  fontSize: 21 / 2,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.neutral333,
+                const SizedBox(height: 3),
+                Text(
+                  dropAddress,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.neutral333,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

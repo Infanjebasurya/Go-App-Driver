@@ -191,36 +191,55 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     onChanged: context.read<HelpCubit>().updateSearch,
                   ),
                   const SizedBox(height: 10),
-                  _MenuTile(
-                    icon: Icons.help_outline,
-                    title: 'Explore all Issue',
-                    onTap: () {
-                      context.read<HelpCubit>().goToExplore();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          settings: const RouteSettings(
-                            name: HelpSupportRoutes.explore,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.handleGray.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          _MenuTile(
+                            icon: Icons.help_outline,
+                            title: 'Explore all Issue',
+                            onTap: () {
+                              context.read<HelpCubit>().goToExplore();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  settings: const RouteSettings(
+                                    name: HelpSupportRoutes.explore,
+                                  ),
+                                  builder: (_) => BlocProvider.value(
+                                    value: context.read<HelpCubit>(),
+                                    child: const ExploreScreen(),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          builder: (_) => BlocProvider.value(
-                            value: context.read<HelpCubit>(),
-                            child: const ExploreScreen(),
+                          const SizedBox(height: 3),
+                          Divider(
+                            height: 0,
+                            thickness: 1,
+                            color: AppColors.handleGray.withValues(alpha: 0.2),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _MenuTile(
-                    icon: Icons.shield_outlined,
-                    title: 'Safety',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        settings: const RouteSettings(
-                          name: HelpSupportRoutes.safety,
-                        ),
-                        builder: (_) => const SafetyPage(),
+                          const SizedBox(height: 3),
+                          _MenuTile(
+                            icon: Icons.shield_outlined,
+                            title: 'Safety',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                settings: const RouteSettings(
+                                  name: HelpSupportRoutes.safety,
+                                ),
+                                builder: (_) => const SafetyPage(),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -248,18 +267,18 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.hex14000000,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      // decoration: BoxDecoration(
+      //   color: AppColors.white,
+      //   borderRadius: BorderRadius.circular(14),
+      //   boxShadow: const [
+      //     BoxShadow(
+      //       color: AppColors.hex14000000,
+      //       blurRadius: 4,
+      //       offset: Offset(0, 2),
+      //     ),
+      //   ],
+      // ),
       child: Material(
         color: AppColors.transparent,
         child: InkWell(

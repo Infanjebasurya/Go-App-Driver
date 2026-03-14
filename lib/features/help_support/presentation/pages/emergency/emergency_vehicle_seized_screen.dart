@@ -1,48 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:goapp/core/theme/app_colors.dart';
-import 'package:goapp/features/help_support/presentation/pages/account/account_support_article_screen.dart';
+import 'package:goapp/features/help_support/presentation/pages/emergency/emergency_support_article_screen.dart';
 
-class UpdateDrivingLicenseScreen extends StatelessWidget {
-  const UpdateDrivingLicenseScreen({super.key});
+class EmergencyVehicleSeizedScreen extends StatelessWidget {
+  const EmergencyVehicleSeizedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const AccountSupportArticleScreen(
-      title: 'Update driving license',
+    return const EmergencySupportArticleScreen(
+      title: 'My vehicle was seized by authorities',
       showDefaultGetHelpLine: false,
       content: [
         Text.rich(
           TextSpan(
-            style: ArticleText.body,
+            style: EmergencyArticleText.body,
             children: [
-              TextSpan(text: 'Once uploaded and verified, the '),
               TextSpan(
-                text: 'driving license cannot be updated',
+                text:
+                    'GoApp Drivers must always follow traffic regulations.\n\n',
+              ),
+              TextSpan(
+                text:
+                    'If your vehicle was seized due to any traffic reason, please contact ',
+              ),
+              TextSpan(
+                text: 'Support Chat',
                 style: TextStyle(
-                  height: 2,
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: '.'),
-            ],
-          ),
-        ),
-        SizedBox(height: 18),
-        Text.rich(
-          TextSpan(
-            style: ArticleText.body,
-            children: [
-              TextSpan(text: 'If you need further assistance, please contact '),
+              TextSpan(text: ' or '),
               TextSpan(
-                text: 'Support Chat or Customer Care',
+                text: 'Customer Care',
                 style: TextStyle(
-                  height: 2,
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
                 ),
               ),
-
               TextSpan(text: ' by tapping '),
               TextSpan(
                 text: 'Get Help',
