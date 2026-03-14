@@ -73,7 +73,7 @@ class _EarnMoreTopic {
                 text: 'earn extra rewards',
                 style: GettingStartedText.bold,
               ),
-              TextSpan(text: ' by completing\ncertain targets.'),
+              TextSpan(text: ' by completing certain targets.'),
             ],
           ),
         ),
@@ -84,12 +84,12 @@ class _EarnMoreTopic {
             children: [
               TextSpan(text: 'Targets may be based on the '),
               TextSpan(
-                text: 'number of orders or\nkilometers completed',
+                text: 'number of orders or kilometers completed',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' within a '),
               TextSpan(
-                text: 'daily, weekly, or Bonus\nperiod.',
+                text: 'daily, weekly, or Bonus period.',
                 style: GettingStartedText.bold,
               ),
             ],
@@ -103,7 +103,7 @@ class _EarnMoreTopic {
               TextSpan(text: 'Once you achieve the target, the '),
               TextSpan(
                 text:
-                    'incentive amount is\nautomatically credited to your wallet.',
+                    'incentive amount is automatically credited to your wallet.',
                 style: GettingStartedText.bold,
               ),
             ],
@@ -116,7 +116,7 @@ class _EarnMoreTopic {
             children: [
               TextSpan(text: 'You can check available incentives by opening '),
               TextSpan(
-                text: 'Menu \u2192\nIncentives.',
+                text: 'Menu \u2192 Incentives.',
                 style: GettingStartedText.bold,
               ),
             ],
@@ -149,7 +149,7 @@ class _EarnMoreTopic {
             children: [
               TextSpan(text: 'You can invite friends to join '),
               TextSpan(text: 'GoApp', style: GettingStartedText.bold),
-              TextSpan(text: ' using your\nReferral Code.'),
+              TextSpan(text: ' using your Referral Code.'),
             ],
           ),
         ),
@@ -160,9 +160,9 @@ class _EarnMoreTopic {
             children: [
               TextSpan(text: 'If the eligibility criteria are met, the '),
               TextSpan(text: 'referral bonus', style: GettingStartedText.bold),
-              TextSpan(text: ' will\nbe credited to your '),
+              TextSpan(text: ' will be credited to your '),
               TextSpan(text: 'GoApp Wallet', style: GettingStartedText.bold),
-              TextSpan(text: ', which you can\n'),
+              TextSpan(text: ', which you can '),
               TextSpan(
                 text: 'transfer to your bank account.',
                 style: GettingStartedText.bold,

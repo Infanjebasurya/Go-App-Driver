@@ -17,7 +17,7 @@ class UpdateAadhaarPanDetailsScreen extends StatelessWidget {
             children: [
               TextSpan(text: 'Once uploaded and verified, the '),
               TextSpan(
-                text: 'Aadhaar or PAN\ncannot be updated',
+                text: 'Aadhaar or PAN cannot be updated',
                 style: TextStyle(
                   height: 2,
                   fontWeight: FontWeight.w700,
@@ -44,7 +44,7 @@ class UpdateAadhaarPanDetailsScreen extends StatelessWidget {
               ),
 
               TextSpan(
-                text: '\nCustomer Care',
+                text: ' Customer Care',
                 style: TextStyle(
                   height: 2,
                   fontWeight: FontWeight.w700,

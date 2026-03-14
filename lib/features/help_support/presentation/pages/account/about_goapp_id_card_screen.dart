@@ -50,7 +50,7 @@ class AboutGoAppIdCardScreen extends StatelessWidget {
               ),
               TextSpan(text: ' and '),
               TextSpan(
-                text: 'driving license\nnumber',
+                text: 'driving license number',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -62,7 +62,7 @@ class AboutGoAppIdCardScreen extends StatelessWidget {
         ),
         SizedBox(height: 16),
         Text(
-          'You can show this ID while taking rides if someone\nasks for identification.',
+          'You can show this ID while taking rides if someone asks for identification.',
           style: ArticleText.body,
         ),
         SizedBox(height: 22),

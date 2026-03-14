@@ -81,9 +81,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
               icon: const Icon(Icons.chevron_left),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            centerTitle: true,
             titleWidget: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: 34,
@@ -307,6 +305,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                                 Expanded(
                                   child: TextField(
                                     controller: _composer,
+                                    textAlignVertical: TextAlignVertical.center,
                                     decoration: const InputDecoration(
                                       hintText: 'Type a message...',
                                       hintStyle: TextStyle(
@@ -316,6 +315,8 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                                       filled: true,
                                       fillColor: AppColors.transparent,
                                       border: InputBorder.none,
+                                      isCollapsed: true,
+                                      contentPadding: EdgeInsets.zero,
                                     ),
                                     onSubmitted: (value) async {
                                       _composer.clear();

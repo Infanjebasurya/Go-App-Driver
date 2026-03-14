@@ -149,79 +149,88 @@ class ExploreScreen extends StatelessWidget {
                         ),
                       )
                     : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         itemCount: filteredItems.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox.shrink(),
+                        separatorBuilder: (context, index) => Divider(
+                          height: 0,
+                          thickness: 0.5,
+                          color: AppColors.handleGray.withValues(alpha: 0.2),
+                        ),
                         itemBuilder: (context, i) {
                           final item = filteredItems[i];
                           final bool isAccount = item.title == 'Account';
                           final bool isAppIssues = item.title == 'App issues';
-                          return Material(
-                            color: AppColors.transparent,
-                            child: InkWell(
-                              onTap: () => openIssue(item),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      item.icon,
-                                      size: 22,
-                                      color: AppColors.textBody,
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Text(
-                                        item.title,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textBody,
-                                        ),
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.handleGray.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: InkWell(
+                                onTap: () => openIssue(item),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        item.icon,
+                                        size: 22,
+                                        color: AppColors.textBody,
                                       ),
-                                    ),
-                                    if (isAccount)
-                                      InkWell(
-                                        key: const Key(
-                                          'explore_issue_account_chevron',
-                                        ),
-                                        onTap: () => openIssue(item),
-                                        borderRadius: BorderRadius.circular(18),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(6),
-                                          child: Icon(
-                                            Icons.chevron_right,
-                                            color: AppColors.textSecondary,
-                                            size: 20,
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Text(
+                                          item.title,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.textBody,
                                           ),
                                         ),
-                                      )
-                                    else if (isAppIssues)
-                                      InkWell(
-                                        key: const Key(
-                                          'explore_issue_app_issues_chevron',
-                                        ),
-                                        onTap: () => openIssue(item),
-                                        borderRadius: BorderRadius.circular(18),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(6),
-                                          child: Icon(
-                                            Icons.chevron_right,
-                                            color: AppColors.textSecondary,
-                                            size: 20,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      const Icon(
-                                        Icons.chevron_right,
-                                        color: AppColors.textSecondary,
-                                        size: 20,
                                       ),
-                                  ],
+                                      if (isAccount)
+                                        InkWell(
+                                          key: const Key(
+                                            'explore_issue_account_chevron',
+                                          ),
+                                          onTap: () => openIssue(item),
+                                          borderRadius: BorderRadius.circular(18),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(6),
+                                            child: Icon(
+                                              Icons.chevron_right,
+                                              color: AppColors.textSecondary,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        )
+                                      else if (isAppIssues)
+                                        InkWell(
+                                          key: const Key(
+                                            'explore_issue_app_issues_chevron',
+                                          ),
+                                          onTap: () => openIssue(item),
+                                          borderRadius: BorderRadius.circular(18),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(6),
+                                            child: Icon(
+                                              Icons.chevron_right,
+                                              color: AppColors.textSecondary,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        )
+                                      else
+                                        const Icon(
+                                          Icons.chevron_right,
+                                          color: AppColors.textSecondary,
+                                          size: 20,
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

@@ -9,7 +9,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('Your money transfer request has been sent for '),
-            HelpTextRun('manual\napproval', bold: true),
+            HelpTextRun('manual approval', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
@@ -17,13 +17,13 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
             HelpTextRun('This process may take '),
             HelpTextRun('up to 24 hours', bold: true),
             HelpTextRun(
-              '. Once approved,\nthe amount will be transferred to your bank account.',
+              '. Once approved, the amount will be transferred to your bank account.',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If you need further assistance, please contact '),
-            HelpTextRun('Support\nChat or Customer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -38,9 +38,9 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('Your money transfer request may be placed '),
             HelpTextRun('on hold', bold: true),
-            HelpTextRun(' if\nthe system detects '),
+            HelpTextRun(' if the system detects '),
             HelpTextRun(
-              'unusual activity or verification is\nrequired',
+              'unusual activity or verification is required',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -48,7 +48,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'In such cases, the request will be reviewed by our\nteam. This process may take ',
+              'In such cases, the request will be reviewed by our team. This process may take ',
             ),
             HelpTextRun('up to 48 hours', bold: true),
             HelpTextRun('.'),
@@ -56,7 +56,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If you need further assistance, please contact '),
-            HelpTextRun('Support\nChat or Customer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -70,13 +70,13 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('This means the money transfer request '),
-            HelpTextRun('could not be\nprocessed', bold: true),
+            HelpTextRun('could not be processed', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'In some cases, deductions or penalties may apply if\n',
+              'In some cases, deductions or penalties may apply if ',
             ),
             HelpTextRun(
               'policy violations or suspicious activity are detected',
@@ -87,14 +87,14 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the issue continues, please contact '),
-            HelpTextRun('Support Chat or\nCustomer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
           ]),
         ],
       );
-    case 'Transfer request is initiated but not\ncompleted':
+    case 'Transfer request is initiated but not completed':
       return const HelpArticleContent(
         title: 'Transfer request is initiated',
         showBottomActions: true,
@@ -102,12 +102,12 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('Your transfer request has been '),
             HelpTextRun('successfully initiated', bold: true),
-            HelpTextRun('\nand is currently being processed by the bank.'),
+            HelpTextRun(' and is currently being processed by the bank.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('Sometimes delays can occur due to '),
-            HelpTextRun('bank processing\ntime', bold: true),
+            HelpTextRun('bank processing time', bold: true),
             HelpTextRun(' or '),
             HelpTextRun('technical issues', bold: true),
             HelpTextRun('.'),
@@ -115,24 +115,24 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'Please wait for some time. The amount will be credited\nto your bank account once processing is complete',
+              'Please wait for some time. The amount will be credited to your bank account once processing is complete',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the transfer status shows '),
             HelpTextRun('Failed', bold: true),
-            HelpTextRun(', the amount will be\nreturned to your '),
+            HelpTextRun(', the amount will be returned to your '),
             HelpTextRun('GoApp Wallet', bold: true),
-            HelpTextRun(', and you can try the\ntransfer again.'),
+            HelpTextRun(', and you can try the transfer again.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'If the incentive is still not credited after the day ends,\nplease contact ',
+              'If the incentive is still not credited after the day ends, please contact ',
             ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
-            HelpTextRun(' by\ntapping '),
+            HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
           ]),
@@ -146,7 +146,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('This can happen if there is an '),
             HelpTextRun(
-              'issue with the bank or a\ntechnical problem during the transaction',
+              'issue with the bank or a technical problem during the transaction',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -154,28 +154,28 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('In such cases, the amount will be '),
-            HelpTextRun('returned to your\nGoApp Wallet', bold: true),
+            HelpTextRun('returned to your GoApp Wallet', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'You can try transferring the amount again after some\ntime.',
+              'You can try transferring the amount again after some time.',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'If the incentive is still not credited after the day ends,\nplease contact ',
+              'If the incentive is still not credited after the day ends, please contact ',
             ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
-            HelpTextRun(' by\ntapping '),
+            HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
           ]),
         ],
       );
-    case 'Money is credited but not showing in my\nbank account':
+    case 'Money is credited but not showing in my bank account':
       return const HelpArticleContent(
         title: 'Money not showing in my bank account',
         showBottomActions: true,
@@ -186,7 +186,7 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'The amount should reflect in your bank account within\n',
+              'The amount should reflect in your bank account within ',
             ),
             HelpTextRun('4-7 working days', bold: true),
             HelpTextRun('.'),
@@ -196,16 +196,16 @@ HelpArticleContent? _issueTransferringToBankArticle(String faqTitle) {
             HelpTextRun('You can also use the '),
             HelpTextRun('Bank Reference Number', bold: true),
             HelpTextRun(
-              ' shown\nin the app to confirm the transaction with your bank.',
+              ' shown in the app to confirm the transaction with your bank.',
             ),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'If the incentive is still not credited after the day ends,\nplease contact ',
+              'If the incentive is still not credited after the day ends, please contact ',
             ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
-            HelpTextRun(' by\ntapping '),
+            HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
           ]),

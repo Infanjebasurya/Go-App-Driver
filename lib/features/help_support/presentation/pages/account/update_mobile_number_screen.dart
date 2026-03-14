@@ -27,7 +27,7 @@ class UpdateMobileNumberScreen extends StatelessWidget {
                   color: AppColors.headingDark,
                 ),
               ),
-              TextSpan(text: ' to log in and\nreceive orders.'),
+              TextSpan(text: ' to log in and receive orders.'),
             ],
           ),
         ),
@@ -49,7 +49,7 @@ class UpdateMobileNumberScreen extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: '\nor Customer Care',
+                text: ' or Customer Care',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.headingDark,
@@ -107,7 +107,7 @@ class UpdateMobileNumberScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 14),
               ),
               TextSpan(
-                text: '\nregistered with GoApp',
+                text: ' registered with GoApp',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

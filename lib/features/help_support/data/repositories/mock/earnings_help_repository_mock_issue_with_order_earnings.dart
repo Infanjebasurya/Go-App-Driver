@@ -11,16 +11,16 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('Your earnings are updated '),
             HelpTextRun('after every completed ride', bold: true),
-            HelpTextRun('\nin the '),
+            HelpTextRun(' in the '),
             HelpTextRun('Earnings', bold: true),
-            HelpTextRun(' section and automatically reflected in\nyour '),
+            HelpTextRun(' section and automatically reflected in your '),
             HelpTextRun('wallet', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the amount is missing, please contact '),
-            HelpTextRun('Support Chat\nor Customer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -34,7 +34,7 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun(
-              'Your earnings remain the same whether the customer\npays ',
+              'Your earnings remain the same whether the customer pays ',
             ),
             HelpTextRun('cash', bold: true),
             HelpTextRun(' or '),
@@ -46,10 +46,10 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
             HelpTextRun('For '),
             HelpTextRun('cash rides', bold: true),
             HelpTextRun(
-              ', the customer pays the total amount\ndirectly to you. From this amount, ',
+              ', the customer pays the total amount directly to you. From this amount, ',
             ),
             HelpTextRun(
-              'GoApp deducts the\ncommission and GST from your wallet',
+              'GoApp deducts the commission and GST from your wallet',
               bold: true,
             ),
             HelpTextRun('.'),
@@ -57,9 +57,9 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the customer had any '),
-            HelpTextRun('pending balance from a\nprevious ride', bold: true),
+            HelpTextRun('pending balance from a previous ride', bold: true),
             HelpTextRun(
-              ', you may collect it, and the same amount\nwill be deducted from your wallet.',
+              ', you may collect it, and the same amount will be deducted from your wallet.',
             ),
           ]),
           HelpSpacerBlock(18),
@@ -84,21 +84,21 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('If a customer cancels an order and you are '),
-            HelpTextRun('eligible for\na cancellation fare', bold: true),
+            HelpTextRun('eligible for a cancellation fare', bold: true),
             HelpTextRun(', the amount is '),
-            HelpTextRun('automatically added\nto your wallet', bold: true),
+            HelpTextRun('automatically added to your wallet', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('You can check your '),
             HelpTextRun('Wallet', bold: true),
-            HelpTextRun(' to confirm if the amount\nhas been credited.'),
+            HelpTextRun(' to confirm if the amount has been credited.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'Eligibility for the cancellation fare depends on the\n',
+              'Eligibility for the cancellation fare depends on the ',
             ),
             HelpTextRun(
               'distance traveled towards the pickup location',
@@ -111,13 +111,13 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
             HelpTextRun('Please check your '),
             HelpTextRun('Rate Card', bold: true),
             HelpTextRun(' to see the '),
-            HelpTextRun('maximum\ncancellation fare', bold: true),
+            HelpTextRun('maximum cancellation fare', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the issue continues, please contact '),
-            HelpTextRun('Support Chat or\nCustomer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -133,12 +133,12 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('You must collect the '),
             HelpTextRun('amount shown in the app', bold: true),
-            HelpTextRun(' directly\nfrom the customer.'),
+            HelpTextRun(' directly from the customer.'),
           ]),
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun(
-              'If the customer refuses to pay or there is any issue,\nplease contact ',
+              'If the customer refuses to pay or there is any issue, please contact ',
             ),
             HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' immediately while the customer is still present.'),
@@ -159,7 +159,7 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
           HelpParagraphBlock([
             HelpTextRun('If you are '),
             HelpTextRun('eligible for a Long Pickup Fare', bold: true),
-            HelpTextRun(', the amount\nis '),
+            HelpTextRun(', the amount is '),
             HelpTextRun(
               'automatically added to your total order earnings',
               bold: true,
@@ -193,7 +193,7 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
           HelpSpacerBlock(18),
           HelpParagraphBlock([
             HelpTextRun('If the amount is missing, please contact '),
-            HelpTextRun('Support Chat\nor Customer Care', bold: true),
+            HelpTextRun('Support Chat or Customer Care', bold: true),
             HelpTextRun(' by tapping '),
             HelpTextRun('Get Help', bold: true),
             HelpTextRun(' below.'),
@@ -207,7 +207,7 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
         blocks: [
           HelpParagraphBlock([
             HelpTextRun('Your earnings are calculated based on the '),
-            HelpTextRun('route\nsuggested by GoApp', bold: true),
+            HelpTextRun('route suggested by GoApp', bold: true),
             HelpTextRun('.'),
           ]),
           HelpSpacerBlock(18),
@@ -219,9 +219,9 @@ HelpArticleContent? _issueWithOrderEarningsArticle(String faqTitle) {
             HelpTextRun('If you had to take a '),
             HelpTextRun('different route', bold: true),
             HelpTextRun(', contact '),
-            HelpTextRun('Customer\nCare or Support Chat', bold: true),
+            HelpTextRun('Customer Care or Support Chat', bold: true),
             HelpTextRun(
-              ' and explain the reason so the\nteam can review and make any required adjustments\nto your wallet.',
+              ' and explain the reason so the team can review and make any required adjustments to your wallet.',
             ),
           ]),
           HelpSpacerBlock(18),

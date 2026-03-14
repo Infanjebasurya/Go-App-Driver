@@ -81,7 +81,7 @@ class _TransferHelpTopic {
             children: [
               TextSpan(text: 'To transfer money from your '),
               TextSpan(text: 'GoApp Wallet', style: GettingStartedText.bold),
-              TextSpan(text: ' to your\n'),
+              TextSpan(text: ' to your '),
               TextSpan(text: 'bank account', style: GettingStartedText.bold),
               TextSpan(text: ':'),
             ],
@@ -132,7 +132,7 @@ class _TransferHelpTopic {
             children: [
               TextSpan(text: 'In most cases, the money will be '),
               TextSpan(
-                text: 'transferred\nimmediately.',
+                text: 'transferred immediately.',
                 style: GettingStartedText.bold,
               ),
             ],
@@ -161,9 +161,9 @@ class _TransferHelpTopic {
             children: [
               TextSpan(text: 'Your money transfer request may be placed '),
               TextSpan(text: 'on hold', style: GettingStartedText.bold),
-              TextSpan(text: ' if\nthe system detects '),
+              TextSpan(text: ' if the system detects '),
               TextSpan(
-                text: 'unusual activity or verification is\nrequired.',
+                text: 'unusual activity or verification is required.',
                 style: GettingStartedText.bold,
               ),
             ],
@@ -176,7 +176,7 @@ class _TransferHelpTopic {
             children: [
               TextSpan(
                 text:
-                    'In such cases, the request will be reviewed by our\nteam. This process may take ',
+                    'In such cases, the request will be reviewed by our team. This process may take ',
               ),
               TextSpan(text: 'up to 48 hours.', style: GettingStartedText.bold),
             ],
@@ -189,7 +189,7 @@ class _TransferHelpTopic {
             children: [
               TextSpan(text: 'If you need further assistance, please contact '),
               TextSpan(
-                text: 'Support\nChat or Customer Care',
+                text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
               TextSpan(text: ' by tapping '),
@@ -205,7 +205,7 @@ class _TransferHelpTopic {
       needsSupportBar: true,
       content: [
         Text(
-          'Penalties may be charged if a ride violates GoApp\npolicies or if fraudulent activity is detected.',
+          'Penalties may be charged if a ride violates GoApp policies or if fraudulent activity is detected.',
           style: GettingStartedText.body,
         ),
         SizedBox(height: 18),
@@ -214,7 +214,7 @@ class _TransferHelpTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text: 'If you need further clarification, please contact\n',
+                text: 'If you need further clarification, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
@@ -222,7 +222,7 @@ class _TransferHelpTopic {
               ),
               TextSpan(text: ' by tapping '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
-              TextSpan(text: '\nbelow.'),
+              TextSpan(text: ' below.'),
             ],
           ),
         ),
@@ -242,7 +242,7 @@ class _TransferHelpTopic {
             style: GettingStartedText.body,
             children: [
               TextSpan(
-                text: 'The amount should reflect in your bank account within\n',
+                text: 'The amount should reflect in your bank account within ',
               ),
               TextSpan(
                 text: '4-7 working days.',
@@ -263,7 +263,7 @@ class _TransferHelpTopic {
               ),
               TextSpan(
                 text:
-                    ' shown\nin the app to confirm the transaction with your bank.',
+                    ' shown in the app to confirm the transaction with your bank.',
               ),
             ],
           ),
@@ -275,13 +275,13 @@ class _TransferHelpTopic {
             children: [
               TextSpan(
                 text:
-                    'If the incentive is still not credited after the day ends,\nplease contact ',
+                    'If the incentive is still not credited after the day ends, please contact ',
               ),
               TextSpan(
                 text: 'Support Chat or Customer Care',
                 style: GettingStartedText.bold,
               ),
-              TextSpan(text: ' by\ntapping '),
+              TextSpan(text: ' by tapping '),
               TextSpan(text: 'Get Help', style: GettingStartedText.bold),
               TextSpan(text: ' below.'),
             ],
